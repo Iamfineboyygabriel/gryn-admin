@@ -1,0 +1,152 @@
+import React, { useState } from "react";
+import { CgAsterisk } from "react-icons/cg";
+import { IoIosArrowDown } from "react-icons/io";
+import { FiSearch } from "react-icons/fi";
+import ReactLoading from "react-loading";
+
+export interface DropdownItem {
+  id?: number;
+  name?: string;
+}
+
+interface ToggleDropdownProps {
+  items: DropdownItem[];
+  selectedItem: DropdownItem | null;
+  onSelectItem: (item: DropdownItem) => void;
+  label?: string;
+  asterisk?: boolean;
+  searchVisible?: boolean;
+  labelClassName?: string;
+  className?: string;
+  onChange?: (value: string) => void;
+  loading?: boolean;
+}
+
+const useToggleDropdown = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleDropdown = () => {
+    setIsOpen((prevIsOpen) => !prevIsOpen);
+  };
+
+  const closeDropdown = () => {
+    setIsOpen(false);
+  };
+
+  return {
+    isOpen,
+    toggleDropdown,
+    closeDropdown,
+  };
+};
+
+export const Dropdown: React.FC<ToggleDropdownProps> = ({
+  items,
+  selectedItem,
+  onSelectItem,
+  label,
+  asterisk = false,
+  searchVisible = false,
+  className = "",
+  labelClassName = "",
+  onChange,
+  loading = false,
+}) => {
+  const { isOpen, toggleDropdown, closeDropdown } = useToggleDropdown();
+  const [search, setSearch] = useState("");
+
+  const filteredItems = items?.filter((item) =>
+    item?.name?.toLowerCase().includes(search?.toLowerCase()),
+  );
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+    onChange?.(e.target.value);
+  };
+
+  const handleSelectItem = (item: DropdownItem) => {
+    onSelectItem(item);
+    onChange?.(item?.name ?? "");
+    closeDropdown();
+  };
+
+  return (
+    <div className="w-full font-outfit">
+      <label
+        htmlFor="dropdown"
+        className={`flex-start text-l flex font-medium ${labelClassName}`}
+      >
+        {label}
+        {asterisk && <CgAsterisk className="ml-1 text-red-500" />}
+      </label>
+      <div className="relative mt-[10px]">
+        <button
+          className={`border-border text-l flex w-full justify-between rounded-lg border-[2px] bg-inherit p-3 text-left font-medium`}
+          type="button"
+          onClick={toggleDropdown}
+          aria-haspopup="listbox"
+          aria-expanded={isOpen}
+        >
+          {selectedItem ? (
+            <p className="text-purple-deep">{selectedItem?.name}</p>
+          ) : (
+            <>
+              <p>Select {label?.toLowerCase()}</p>
+              <IoIosArrowDown className="ml-2" />
+            </>
+          )}
+        </button>
+        {isOpen && (
+          <div className="border-border absolute z-10 mt-2 max-h-[250px] w-full rounded-lg border-[2px] bg-white font-medium">
+            {searchVisible && (
+              <div className="relative w-full p-2">
+                <input
+                  type="text"
+                  className="border-border w-full rounded-full border-[1px] bg-gray-100 py-2 pl-2 pr-[3em] text-sm placeholder:text-grey focus:border-grey-primary focus:outline-none dark:bg-gray-700 dark:text-white"
+                  placeholder={`Search ${label?.toLowerCase()}`}
+                  value={search}
+                  onChange={handleSearchChange}
+                />
+                <FiSearch className="absolute right-[1em] top-1/2 -translate-y-1/2 transform text-lg text-gray-500" />
+              </div>
+            )}
+            {loading ? (
+              <div className="flex items-center p-4">
+                <ReactLoading
+                  color="#1F141F"
+                  width={25}
+                  height={25}
+                  // type="spin"
+                />
+              </div>
+            ) : (
+              <ul
+                className="flex max-h-[170px] flex-col items-start overflow-auto"
+                role="listbox"
+                tabIndex={-1}
+              >
+                {filteredItems?.length > 0 ? (
+                  filteredItems.map((item, index) => (
+                    <li
+                      key={index}
+                      className={`flex w-full cursor-pointer flex-col items-start bg-white p-3 hover:bg-gray-100 ${className}`}
+                      role="option"
+                      aria-selected={selectedItem?.id === item?.id}
+                      onClick={() => handleSelectItem(item)}
+                    >
+                      {item?.name}
+                    </li>
+                  ))
+                ) : (
+                  <li className="p-3 text-sm text-red-600">
+                    No results found 📪
+                  </li>
+                )}
+              </ul>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};

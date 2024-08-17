@@ -1,0 +1,172 @@
+import home from "../assets/svg/Home.svg";
+import homeActive from "../assets/svg/ActiveHome.svg";
+import application from "../assets/svg/Application.svg";
+import applicationActive from "../assets/svg/Application.svg";
+import payment from "../assets/svg/Payment.svg";
+import paymentActive from "../assets/svg/ActivePayments.svg";
+import messaging from "../assets/svg/Money.svg";
+import messagingActive from "../assets/svg/ActiveMessaging.svg";
+import setting from "../assets/svg/Setting.svg";
+import settingActive from "../assets/svg/ActiveSetting.svg";
+import certificate from "../assets/svg/Cerificate.svg";
+import circle from "../assets/svg/WhiteCircle.svg";
+import reportAcive from "../assets/svg/ActiveReport.svg";
+import report from "../assets/svg/ActiveReport.svg";
+
+
+export const staffSidebarLinks = [
+  {
+    img: home,
+    imgActive: homeActive,
+    text: "Dashboard",
+    to: "/staff/dashboard/home",
+    pathsToCheck: ["/staff/dashboard/home"],
+  },
+ {
+    img: application,
+    imgActive: applicationActive,
+    text: "Application",
+    to: "/staff/dashboard/application",
+    pathsToCheck: ["/staff/dashboard/application"],
+  },
+  {
+    img: payment,
+    imgActive: paymentActive,
+    text: "Payments",
+    to: "/staff/dashboard/payments",
+    pathsToCheck: [
+      "/staff/dashboard/payments",
+      "/staff/dashboard/payments/payment_application",
+    ],
+  },
+  {
+    img: reportAcive,
+    imgActive: report,
+    text: "Report",
+    to: "/staff/dashboard/reports",
+    pathsToCheck: ["/staff/dashboard/reports"],
+  },
+  {
+    img: messaging,
+    imgActive: messagingActive,
+    text: "Messaging",
+    to: "/staff/dashboard/messages",
+    pathsToCheck: ["/staff/dashboard/messages"],
+  },
+  {
+    img: setting,
+    imgActive: settingActive,
+    text: "Settings",
+    to: "/staff/dashboard/settings",
+    pathsToCheck: ["/staff/dashboard/settings"],
+  },
+];
+
+export const adminSideBarLinks = [
+  {
+    img: home,
+    imgActive: homeActive,
+    text: "Dashboard",
+    to: "/agent/dashboard/home",
+    pathsToCheck: ["/agent/dashboard/home"],
+  },
+  {
+    img: application,
+    imgActive: applicationActive,
+    text: "Application",
+    to: "/agent/dashboard/application",
+    pathsToCheck: ["/agent/dashboard/application"],
+  },
+  {
+    img: payment,
+    imgActive: paymentActive,
+    text: "Payments",
+    to: "/agent/dashboard/payments",
+    pathsToCheck: [
+      "/agent/dashboard/payments",
+      "/agent/dashboard/payments/payment_application",
+    ],
+  },
+  {
+    img: reportAcive,
+    imgActive: report,
+    text: "Report",
+    to: "/agent/dashboard/reports",
+    pathsToCheck: ["/agent/dashboard/reports"],
+  },
+  {
+    img: messaging,
+    imgActive: messagingActive,
+    text: "Messaging",
+    to: "/agent/dashboard/messages",
+    pathsToCheck: ["/agent/dashboard/messages"],
+  },
+  {
+    img: setting,
+    imgActive: settingActive,
+    text: "Settings",
+    to: "/agent/dashboard/settings",
+    pathsToCheck: ["/agent/dashboard/settings"],
+  },
+];
+
+export const studentStats = [
+  {
+    label: "Number of Applications",
+    p: "Submitted",
+    key: "size",
+  },
+  {
+    label: "Number of Pending",
+    p: "Submitted",
+    key: "pending",
+  },
+  {
+    label: "Number of Completed",
+    p: "Applications",
+    key: "completed",
+  },
+];
+
+export const studentDegree = [
+  {
+    iconA: certificate,
+    iconB: circle,
+    titleA: "Bachelor's",
+    titleB: "Degree",
+    value: "BACHELOR",
+  },
+  {
+    iconA: certificate,
+    iconB: circle,
+    titleA: "Master's",
+    titleB: "Degree",
+    value: "MASTERS",
+  },
+  {
+    iconA: certificate,
+    iconB: circle,
+    titleA: "Doctorial's",
+    titleB: "Degree",
+    value: "DOCTORATE",
+  },
+];
+
+export enum DocumentType {
+  RESUME = "RESUME",
+  INTERNATIONAL_PASSPORT = "INTERNATIONAL_PASSPORT",
+  OLD_LEVEL = "OLD_LEVEL",
+  BACHELOR_DEGREE_CERTIFICATE = "BACHELOR_DEGREE_CERTIFICATE",
+  BACHELOR_DEGREE_TRANSCRIPT = "BACHELOR_DEGREE_TRANSCRIPT",
+  PERSONAL_STATEMENT = "PERSONAL_STATEMENT",
+  REFERENCE_LETTER1 = "REFERENCE_LETTER1",
+  REFERENCE_LETTER2 = "REFERENCE_LETTER2",
+  RESEARCH_THESIS = "RESEARCH_THESIS",
+  SERVICE_CHARGE = "SERVICE_CHARGE",
+  APPLICATION_FEE = "APPLICATION_FEE",
+  TUTION_FEE = "TUTION_FEE",
+  "PASSPORT" = "PASSPORT",
+  "REFLETTER" = "REFLETTER",
+  "IDCARD" = "IDCARD",
+  "CACDOC" = "CACDOC",
+}
