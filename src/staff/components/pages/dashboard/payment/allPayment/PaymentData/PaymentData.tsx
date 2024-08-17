@@ -1,6 +1,7 @@
-import { usePagination } from "../../../../../shared/utils/paginationUtils";
-import CustomPagination from "../../../../../shared/utils/customPagination";
-import transaction from "../../../../../assets/svg/Transaction.svg";
+import { usePagination } from "../../../../../../../shared/utils/paginationUtils";
+import CustomPagination from "../../../../../../../shared/utils/customPagination";
+import transaction from "../../../../../../../assets/svg/Transaction.svg";
+import { FiSearch } from "react-icons/fi";
 
 const Data = [
   {
@@ -81,6 +82,16 @@ const PaymentData = () => {
 
   return (
     <main className="font-outfit">
+      <div className="flex items-center gap-[1em]">
+        <div className="relative">
+          <input
+            type="text"
+            className="w-full rounded-full bg-gray-100 py-2 pl-2 pr-[3em] text-sm"
+            placeholder="search"
+          />
+          <FiSearch className="absolute right-[1em] top-1/2 -translate-y-1/2 transform text-lg text-gray-500" />
+        </div>
+      </div>
       <div className="mt-[1.5em] overflow-x-auto">
         <table className="w-full border-collapse">
           <thead className="text-gray-500">

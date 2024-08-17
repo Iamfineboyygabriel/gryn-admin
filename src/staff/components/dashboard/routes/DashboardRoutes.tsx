@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import DashboardLayout from "../layout/DasboardLayout";
 import Home from "../../pages/dashboard/home/Home";
 import Application from "../../pages/dashboard/application/Application";
-import Payment from "../../pages/dashboard/payment/Payment";
+import Payment from "../../pages/dashboard/payment/main/Payments";
 import Messaging from "../../pages/dashboard/messaging/Message";
 import Settings from "../../pages/dashboard/settings/Settings";
 import Report from "../../pages/dashboard/reports copy/main/Report";
@@ -12,6 +12,8 @@ import ApplicationDetails from "../../pages/dashboard/application/manageStudents
 import ViewStudentApplication from "../../../../staff/components/pages/dashboard/application/manageStudents/applicationDetail/view/main/ViewApplication";
 import AgentDetails from "../../pages/dashboard/application/manageAgents/agentDetails/main/AgentDetails";
 import ViewAgentStudentApplication from "../../pages/dashboard/application/manageAgents/agentDetails/manageStudents/view/main/ViewApplication";
+import NewApplication from "../../pages/dashboard/application/manageApplication/newApplication/main/NewApplication";
+import UpdateApplication from "../../pages/dashboard/application/manageApplication/update/newApplication/main/NewApplication";
 
 const DashboardRoutes = () => {
   return (
@@ -48,6 +50,14 @@ const DashboardRoutes = () => {
         <Route
           path="/application/manage_agent/manage_student/view_application"
           element={<ViewAgentStudentApplication />}
+        />
+        <Route
+          path="/application/manage_application/new_application"
+          element={<NewApplication />}
+        />
+        <Route
+          path="/application/manage_application/update_application"
+          element={<UpdateApplication />}
         />
       </Routes>
     </DashboardLayout>

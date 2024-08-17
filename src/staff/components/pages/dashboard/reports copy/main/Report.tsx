@@ -1,6 +1,6 @@
-import Header from "../header/Header";
 import Counts from "../counts/Counts";
 import MostApplied from "../mostApplied/MostApplied";
+import Stats from "../stats/Stats";
 
 const Report = () => {
   return (
@@ -9,7 +9,7 @@ const Report = () => {
         <h1 className="text-2xl font-bold">Reports</h1>
       </header>
       <div className="mt-[1.2em] flex flex-col gap-[1.2em]">
-        <Header />
+        <Stats />
         <Counts />
         <MostApplied />
       </div>
