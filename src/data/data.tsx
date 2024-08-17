@@ -13,7 +13,6 @@ import circle from "../assets/svg/WhiteCircle.svg";
 import reportAcive from "../assets/svg/ActiveReport.svg";
 import report from "../assets/svg/ActiveReport.svg";
 
-
 export const staffSidebarLinks = [
   {
     img: home,
@@ -22,7 +21,7 @@ export const staffSidebarLinks = [
     to: "/staff/dashboard/home",
     pathsToCheck: ["/staff/dashboard/home"],
   },
- {
+  {
     img: application,
     imgActive: applicationActive,
     text: "Application",
@@ -110,24 +109,6 @@ export const adminSideBarLinks = [
   },
 ];
 
-export const studentStats = [
-  {
-    label: "Number of Applications",
-    p: "Submitted",
-    key: "size",
-  },
-  {
-    label: "Number of Pending",
-    p: "Submitted",
-    key: "pending",
-  },
-  {
-    label: "Number of Completed",
-    p: "Applications",
-    key: "completed",
-  },
-];
-
 export const studentDegree = [
   {
     iconA: certificate,
@@ -149,6 +130,49 @@ export const studentDegree = [
     titleA: "Doctorial's",
     titleB: "Degree",
     value: "DOCTORATE",
+  },
+];
+
+export const StaffStats = [
+  {
+    label: "Total Number of",
+    p: "Students",
+    figure: "35",
+  },
+  {
+    label: "Total Number of",
+    p: "Application",
+    figure: "20",
+  },
+  {
+    label: "Number of Completed",
+    p: "Applications",
+    figure: "15",
+  },
+  {
+    label: "Number of Pending",
+    p: "Applications",
+    figure: "200,000",
+  },
+  {
+    label: "All",
+    p: "Agents",
+    figure: "25",
+  },
+  {
+    label: "Conditional",
+    p: "Offer",
+    figure: "10",
+  },
+  {
+    label: "Unconditional",
+    p: "Offer",
+    figure: "20",
+  },
+  {
+    label: "Confirmation for",
+    p: "Acceptance Studies",
+    figure: "5",
   },
 ];
 

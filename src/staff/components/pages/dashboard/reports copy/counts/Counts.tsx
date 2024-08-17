@@ -1,31 +1,10 @@
-const Data = [
-  {
-    label: "Total Number of",
-    p: "Students",
-    figure: "35",
-  },
-  {
-    label: "Total Number of",
-    p: "Application",
-    figure: "20",
-  },
-  {
-    label: "Number of Completed",
-    p: "Applications",
-    figure: "15",
-  },
-  {
-    label: "Number of Pending",
-    p: "Applications",
-    figure: "200,000",
-  },
-];
+import { StaffStats } from "../../../../../../data/data";
 
 const Counts = () => {
   return (
     <main className="font-outfit">
-      <div className="flex justify-between gap-3 rounded-lg font-medium text-grey-primary">
-        {Data.map((text, index) => (
+      <div className="grid grid-cols-1 gap-5 rounded-lg font-medium text-grey-primary md:grid-cols-2 lg:grid-cols-4">
+        {StaffStats.map((text, index) => (
           <div
             key={index}
             className="w-full rounded-lg bg-white px-[20px] py-[1.5em] transition-colors duration-300"
