@@ -50,3 +50,92 @@ input[type="number"]::-webkit-outer-spin-button {
 ::-webkit-scrollbar-track {
   background-color: transparent !important;
 }
+
+.btn-2 {
+  position: relative;
+  background: linear-gradient(
+    0deg,
+    rgba(255, 102, 153, 1) 0%,
+    rgba(240, 9, 96, 1) 100%
+  );
+  border: none;
+  padding: 0.5em 2em;
+  color: #fff;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.btn-2:before {
+  content: "";
+  position: absolute;
+  height: 0;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.5);
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  transition: height 0.4s ease;
+  z-index: 0;
+}
+
+.btn-2:hover:before {
+  height: 100%;
+}
+
+.btn-2:hover {
+  box-shadow: 4px 4px 6px 0 rgba(255, 255, 255, 0.5),
+    -4px -4px 6px 0 rgba(116, 125, 136, 0.5),
+    inset -4px -4px 6px 0 rgba(255, 255, 255, 0.2),
+    inset 4px 4px 6px 0 rgba(0, 0, 0, 0.4);
+}
+
+.btn-2:active {
+  transform: scale(0.95);
+}
+
+.btn-auth {
+  position: relative;
+  background: linear-gradient(
+    0deg,
+    rgba(255, 102, 153, 1) 0%,
+    rgba(240, 9, 96, 1) 100%
+  );
+  border: none;
+  color: #fff;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.btn-auth:before {
+  content: "";
+  position: absolute;
+  height: 0;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.5);
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  transition: height 0.4s ease;
+  z-index: 0;
+}
+
+.btn-auth:hover:before {
+  height: 100%;
+}
+
+.btn-auth:hover {
+  box-shadow: 4px 4px 6px 0 rgba(255, 255, 255, 0.5),
+    -4px -4px 6px 0 rgba(116, 125, 136, 0.5),
+    inset -4px -4px 6px 0 rgba(255, 255, 255, 0.2),
+    inset 4px 4px 6px 0 rgba(0, 0, 0, 0.4);
+}
+
+.btn-auth:active {
+  transform: scale(0.95);
+}

@@ -1,6 +1,5 @@
 import { button } from "../../../../../../../shared/buttons/Button";
 import plus from "../../../../../../../assets/svg/plus.svg";
-import Sort from "../sort/Sort";
 import AllApplication from "../allApplication/AllApplication";
 import { Link } from "react-router-dom";
 import { useState } from "react";
@@ -15,8 +14,8 @@ const ManageApplication = () => {
 
   return (
     <main className="font-outfit">
-      <header className="flex justify-between">
-        <h1 className="font-medium text-lg">All Application</h1>
+      <header className="flex items-center justify-between">
+        <h1 className="font-medium text-xl">All Application</h1>
         <div className="flex gap-2">
           <button.PrimaryButton
             onClick={handleOpenModal}
@@ -37,7 +36,6 @@ const ManageApplication = () => {
           </button.PrimaryButton>
         </div>
       </header>
-      <Sort />
       <AllApplication />
       {isModalOpen && (
         <Modal

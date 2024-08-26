@@ -15,11 +15,11 @@ const ManageStudents = () => {
   return (
     <main className="font-outfit">
       <header className="flex justify-between">
-        <h1 className="font-medium text-lg">All Students</h1>
+        <h1 className="font-medium text-xl">All Students</h1>
         <div className="flex gap-2">
           <button.PrimaryButton
             onClick={handleOpenModal}
-            className="mt-[1em] flex gap-2 rounded-full bg-primary-200 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300 hover:bg-primary-700 hover:text-white"
+            className="mt-[1em] flex gap-2 rounded-full bg-pink-primary px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300 hover:bg-primary-700 hover:text-white"
           >
             <img src={plus} alt="plus" />
             Update Student

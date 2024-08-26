@@ -10,8 +10,10 @@ import setting from "../assets/svg/Setting.svg";
 import settingActive from "../assets/svg/ActiveSetting.svg";
 import certificate from "../assets/svg/Cerificate.svg";
 import circle from "../assets/svg/WhiteCircle.svg";
-import reportAcive from "../assets/svg/ActiveReport.svg";
-import report from "../assets/svg/ActiveReport.svg";
+import reportAcive from "../assets/svg/InactiveReport.svg";
+import report from "../assets/svg/ActiveRepor.svg";
+import visaActive from "../assets/svg/activevisa.svg";
+import visa from "../assets/svg/inactivevisa.svg";
 
 export const staffSidebarLinks = [
   {
@@ -27,6 +29,13 @@ export const staffSidebarLinks = [
     text: "Application",
     to: "/staff/dashboard/application",
     pathsToCheck: ["/staff/dashboard/application"],
+  },
+  {
+    img: visa,
+    imgActive: visaActive,
+    text: "Visa Application",
+    to: "/staff/dashboard/visa",
+    pathsToCheck: ["/staff/dashboard/visa"],
   },
   {
     img: payment,
@@ -66,46 +75,46 @@ export const adminSideBarLinks = [
     img: home,
     imgActive: homeActive,
     text: "Dashboard",
-    to: "/agent/dashboard/home",
-    pathsToCheck: ["/agent/dashboard/home"],
+    to: "/admin/dashboard/home",
+    pathsToCheck: ["/admin/dashboard/home"],
   },
   {
     img: application,
     imgActive: applicationActive,
     text: "Application",
-    to: "/agent/dashboard/application",
-    pathsToCheck: ["/agent/dashboard/application"],
+    to: "/admin/dashboard/application",
+    pathsToCheck: ["/admin/dashboard/application"],
   },
   {
     img: payment,
     imgActive: paymentActive,
     text: "Payments",
-    to: "/agent/dashboard/payments",
+    to: "/admin/dashboard/payments",
     pathsToCheck: [
-      "/agent/dashboard/payments",
-      "/agent/dashboard/payments/payment_application",
+      "/admin/dashboard/payments",
+      "/admin/dashboard/payments/payment_application",
     ],
   },
   {
     img: reportAcive,
     imgActive: report,
     text: "Report",
-    to: "/agent/dashboard/reports",
-    pathsToCheck: ["/agent/dashboard/reports"],
+    to: "/admin/dashboard/reports",
+    pathsToCheck: ["/admin/dashboard/reports"],
   },
   {
     img: messaging,
     imgActive: messagingActive,
     text: "Messaging",
-    to: "/agent/dashboard/messages",
-    pathsToCheck: ["/agent/dashboard/messages"],
+    to: "/admin/dashboard/messages",
+    pathsToCheck: ["/admin/dashboard/messages"],
   },
   {
     img: setting,
     imgActive: settingActive,
     text: "Settings",
-    to: "/agent/dashboard/settings",
-    pathsToCheck: ["/agent/dashboard/settings"],
+    to: "/admin/dashboard/settings",
+    pathsToCheck: ["/admin/dashboard/settings"],
   },
 ];
 

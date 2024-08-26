@@ -1,5 +1,5 @@
 import Counts from "../counts/Counts";
-import MostApplied from "../mostApplied/MostApplied";
+import MostApplied from "../../../../../../shared/mostApplied/MostApplied";
 import { button } from "../../../../../../shared/buttons/Button";
 import plus from "../../../../../../assets/svg/Upload.svg";
 

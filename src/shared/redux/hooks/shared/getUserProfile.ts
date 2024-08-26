@@ -1,0 +1,338 @@
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
+import {
+  getAllAgents,
+  getAllStudents,
+  getCurrentUser,
+  getTopCountries,
+  getTopUniversities,
+  getUserProfile,
+  updateProfile,
+  uploadAvatar,
+} from "../../shared/slices/shareApplication.slices";
+import { AppDispatch } from "../../store";
+import { setMessage } from "../../message.slices";
+import { getStudentApplication } from "../../shared/services/shareApplication.services";
+import { useQuery } from "react-query";
+
+interface UpdateProfile {
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  password?: string;
+}
+
+export interface ApplicationDetails {
+  status: number;
+  message: string;
+  data: {
+    email: string;
+    id: number;
+    phoneNumber: string;
+    firstName: string;
+    lastName: string;
+    middleName: string;
+    dateOfBirth: string;
+    address: string;
+    localGovtArea: string;
+    state: string;
+    country: string;
+    internationalPassportNumber: string;
+    status: string;
+    userId: string;
+    createdAt: string;
+    updatedAt: string;
+    degree: {
+      id: number;
+      country: string;
+      university: string;
+      degreeType: string;
+      course: string;
+      applicationId: number;
+      createdAt: string;
+      updatedAt: string;
+    };
+    documents: {
+      id: number;
+      name: string;
+      publicURL: string;
+      documentType: string;
+      uploadType: string;
+      applicationId: number;
+      paymentId: null;
+      agentId: null;
+      createdAt: string;
+      updatedAt: string;
+    }[];
+  };
+}
+
+interface Country {
+  name: string;
+  cca2: string;
+}
+
+export const useUserProfile = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+  const userToken = sessionStorage.getItem("userData");
+
+  const userProfile = useSelector(
+    (state: any) => state.shareApplication?.userProfile?.data?.userprofile
+  );
+
+  useEffect(() => {
+    if (userToken) {
+      setLoading(true);
+      dispatch(getUserProfile())
+        .unwrap()
+        .then(() => setLoading(false))
+        .catch((error: any) => {
+          const errorMessage = error.message;
+          dispatch(setMessage(errorMessage));
+          setLoading(false);
+        });
+    } else {
+      dispatch(setMessage("Token not found"));
+    }
+  }, [dispatch, userToken]);
+
+  const updateUserProfile = async (body: UpdateProfile) => {
+    if (!userToken) {
+      dispatch(setMessage("Token not found"));
+      return;
+    }
+    setLoading(true);
+    try {
+      const response = await dispatch(updateProfile(body)).unwrap();
+      dispatch(getUserProfile()).unwrap();
+      setLoading(false);
+      return response;
+    } catch (error: any) {
+      const errorMessage = error?.message;
+      dispatch(setMessage(errorMessage));
+      setLoading(false);
+      throw new Error(errorMessage);
+    }
+  };
+
+  const uploadUserAvatar = async (selectedFile: File) => {
+    if (userToken && selectedFile) {
+      try {
+        let body = new FormData();
+        body.append("file", selectedFile);
+        await dispatch(uploadAvatar(body)).unwrap();
+        dispatch(getUserProfile()).unwrap();
+        userProfile();
+      } catch (error: any) {}
+    } else {
+      dispatch(setMessage("Token not found"));
+    }
+  };
+  return { userProfile, loading, updateUserProfile, uploadUserAvatar };
+};
+
+export const useCurrentUser = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+
+  const userDetails = useSelector(
+    (state: any) => state.shareApplication?.currentUser
+  );
+  const userToken = sessionStorage.getItem("userData");
+
+  useEffect(() => {
+    if (userToken) {
+      setLoading(true);
+      dispatch(getCurrentUser())
+        .unwrap()
+        .then(() => setLoading(false))
+        .catch((error: any) => {
+          const errorMessage = error.message || "Failed to fetch user details";
+          dispatch(setMessage(errorMessage));
+          setLoading(false);
+        });
+    } else {
+      dispatch(setMessage("Token not found"));
+    }
+  }, [dispatch, userToken]);
+
+  return { userDetails, loading };
+};
+
+export default useUserProfile;
+
+export const useApplicationDetails = (applicationId: string) => {
+  const dispatch = useDispatch();
+
+  const {
+    data: applicationDetails,
+    isLoading: loading,
+    error,
+  } = useQuery<ApplicationDetails, Error>(
+    ["applicationDetails", applicationId],
+    async () => {
+      if (!applicationId) {
+        throw new Error("No application ID provided");
+      }
+      const endpoint = `/application/${applicationId}`;
+      return await getStudentApplication(endpoint);
+    },
+    {
+      enabled: !!applicationId,
+      onError: (error) => {
+        dispatch(setMessage(error.message));
+      },
+    }
+  );
+
+  return { applicationDetails, loading, error };
+};
+
+export const useCountries = () => {
+  const [countries, setCountries] = useState<Country[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchCountries = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch("https://restcountries.com/v3.1/all");
+        const data = await response.json();
+        const mappedCountries = data?.map((country: any) => ({
+          name: country?.name?.common,
+          cca2: country?.cca2,
+        }));
+        setCountries(mappedCountries);
+      } catch (error) {
+        setError("Error fetching countries");
+        console.error("Error fetching countries:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCountries();
+  }, []);
+
+  return { countries, loading, error };
+};
+
+export const useTopCountries = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+
+  const userTopCountries = useSelector(
+    (state: any) => state.shareApplication?.topCountries
+  );
+  const userToken = sessionStorage.getItem("userData");
+
+  useEffect(() => {
+    if (userToken) {
+      setLoading(true);
+      dispatch(getTopCountries())
+        .unwrap()
+        .then(() => setLoading(false))
+        .catch((error: any) => {
+          const errorMessage = error.message || "Failed to fetch top countries";
+          dispatch(setMessage(errorMessage));
+          setLoading(false);
+        });
+    } else {
+      dispatch(setMessage("Token not found"));
+    }
+  }, [dispatch, userToken]);
+
+  return { userTopCountries, loading };
+};
+
+export const useTopUniversities = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+
+  const userTopUniversities = useSelector(
+    (state: any) => state.shareApplication?.topUniversities
+  );
+  const userToken = sessionStorage.getItem("userData");
+
+  useEffect(() => {
+    if (userToken) {
+      setLoading(true);
+      dispatch(getTopUniversities())
+        .unwrap()
+        .then(() => setLoading(false))
+        .catch((error: any) => {
+          const errorMessage =
+            error.message || "Failed to fetch top universities";
+          dispatch(setMessage(errorMessage));
+          setLoading(false);
+        });
+    } else {
+      dispatch(setMessage("Token not found"));
+    }
+  }, [dispatch, userToken]);
+
+  return { userTopUniversities, loading };
+};
+
+export const useAllStudent = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+
+  const useAllStudents = useSelector(
+    (state: any) => state.shareApplication?.allStudents
+  );
+  const userToken = sessionStorage.getItem("userData");
+
+  useEffect(() => {
+    if (userToken) {
+      setLoading(true);
+      dispatch(getAllStudents())
+        .unwrap()
+        .then(() => setLoading(false))
+        .catch((error: any) => {
+          const errorMessage =
+            error.message || "Failed to fetch top universities";
+          dispatch(setMessage(errorMessage));
+          setLoading(false);
+        });
+    } else {
+      dispatch(setMessage("Token not found"));
+    }
+  }, [dispatch, userToken]);
+
+  return { useAllStudents, loading };
+};
+
+export const useAllAgents = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+
+  const useAllAgent = useSelector(
+    (state: any) => state.shareApplication?.allAgents
+  );
+
+  const userToken = sessionStorage.getItem("userData");
+
+  useEffect(() => {
+    if (userToken) {
+      setLoading(true);
+      dispatch(getAllAgents())
+        .unwrap()
+        .then(() => setLoading(false))
+        .catch((error: any) => {
+          const errorMessage =
+            error.message || "Failed to fetch top universities";
+          dispatch(setMessage(errorMessage));
+          setLoading(false);
+        });
+    } else {
+      dispatch(setMessage("Token not found"));
+    }
+  }, [dispatch, userToken]);
+
+  return { useAllAgent, loading };
+};

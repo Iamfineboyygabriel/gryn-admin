@@ -1,19 +1,17 @@
 import transaction from "../../../../../assets/svg/Transaction.svg";
 
 const RecentApplication = ({ sortOption }: any) => {
- 
-
   return (
-    <main className="mt-8 font-outfit">
+    <main className="mt-7 font-outfit">
       <div>
         <div>
           <h1 className="text-lg font-semibold dark:text-white">
             Recent Applications
           </h1>
         </div>
-        <div className="mt-8 overflow-x-auto">
+        <div className="overflow-x-auto">
           <table className="w-full border-collapse">
-            <thead className="text-gray-500 dark:text-white">
+            <thead className="text-gray-500  border-b border-gray-200">
               <tr>
                 <div className="flex items-center gap-2 px-6 py-3">
                   <th className="px-6 py-3 text-left text-sm font-normal">
@@ -45,24 +43,18 @@ const RecentApplication = ({ sortOption }: any) => {
             </thead>
 
             <tbody className="divide-y divide-gray-200">
-          
-
-         
-                <tr>
-                  <td
-                    colSpan={9}
-                    className="px-6 py-4 text-center text-gray-500"
-                  >
-                    <div className="flex flex-col items-center justify-center">
-                      <img
-                        src={transaction}
-                        alt="No applications"
-                        className="mb-4"
-                      />
-                      No applications
-                    </div>
-                  </td>
-                </tr>
+              <tr>
+                <td colSpan={9} className="px-6 py-4 text-center text-gray-500">
+                  <div className="flex flex-col items-center justify-center">
+                    <img
+                      src={transaction}
+                      alt="No applications"
+                      className="mb-4"
+                    />
+                    No applications
+                  </div>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>

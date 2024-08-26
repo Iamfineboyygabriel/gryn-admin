@@ -27,7 +27,7 @@ const Payments = () => {
               </div>
               <div
                 className={`${
-                  activeLink === "manageStudents"
+                  activeLink === "allInvoices"
                     ? "bg-purple-white text-primary-700"
                     : "bg-gray-100 text-grey-primary"
                 } cursor-pointer rounded-lg px-[1em] py-[10px] font-medium`}

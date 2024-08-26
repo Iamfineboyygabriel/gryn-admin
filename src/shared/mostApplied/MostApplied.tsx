@@ -1,0 +1,93 @@
+import React from "react";
+import ReactCountryFlag from "react-country-flag";
+import { countries } from "countries-list";
+import {
+  useTopCountries,
+  useTopUniversities,
+} from "../redux/hooks/shared/getUserProfile";
+
+const getCountryCode = (countryName: any) => {
+  const countryEntry = Object.entries(countries).find(
+    ([code, country]) =>
+      country.name.toLowerCase() === countryName.toLowerCase()
+  );
+  return countryEntry ? countryEntry[0] : "UN";
+};
+
+const MostApplied = () => {
+  const { userTopCountries } = useTopCountries();
+  const { userTopUniversities } = useTopUniversities();
+
+  return (
+    <main className="font-outfit">
+      <div className="flex justify-between gap-[1em]">
+        <div className="h-auto w-full rounded-lg bg-white px-[2.5em] py-[1.3em]">
+          <header>
+            <div className="flex items-center justify-between">
+              <h1 className="text-lg font-bold text-grey-primary">
+                Most Applied Countries
+              </h1>
+              <p className="font-medium text-primary-700">No. of Students</p>
+            </div>
+          </header>
+          <div className="mt-[1em] flex flex-col gap-[1.2em]">
+            {userTopCountries?.data?.map((country: any, index: number) => (
+              <div className="flex items-center justify-between" key={index}>
+                <div className="flex items-center gap-[0.5em]">
+                  <div className="w-6 h-6 rounded-full overflow-hidden flex items-center justify-center bg-gray-100">
+                    <div
+                      className="rounded-full overflow-hidden"
+                      style={{
+                        width: "2em",
+                        height: "2em",
+                      }}
+                    >
+                      <ReactCountryFlag
+                        countryCode={getCountryCode(country.name)}
+                        svg
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
+                        title={country.name}
+                      />
+                    </div>
+                  </div>
+                  <small>{country.name}</small>
+                </div>
+                <div>
+                  <h1 className="font-semibold">{country.applicationCount}</h1>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="h-auto w-full rounded-lg bg-white px-[2.5em] py-[1.3em]">
+          <header>
+            <div className="flex items-center justify-between">
+              <h1 className="text-lg font-bold text-grey-primary">
+                Most Applied Schools
+              </h1>
+              <p className="font-medium text-primary-700">No. of Students</p>
+            </div>
+          </header>
+          <div className="mt-[1em] flex flex-col gap-[1.2em]">
+            {userTopUniversities?.data?.map((school: any, index: number) => (
+              <div className="flex items-center justify-between" key={index}>
+                <div className="flex items-center gap-[0.5em]">
+                  <small>{school.name}</small>
+                </div>
+                <div>
+                  <h1 className="font-semibold">{school.applicationCount}</h1>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+};
+
+export default MostApplied;

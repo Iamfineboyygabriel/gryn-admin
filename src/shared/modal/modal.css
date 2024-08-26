@@ -1,0 +1,89 @@
+.btn-yes {
+  position: relative;
+  background: red;
+  border: none;
+  z-index: 1;
+  color: #fff;
+  padding: 0.5em 3em;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  overflow: hidden;
+}
+.btn-yes:after {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 0;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  border-radius: 5px;
+  background-color: #ff4d4d;
+  background-image: linear-gradient(315deg, #ff4d4d 0%, #ff9999 74%);
+  box-shadow:
+    inset 2px 2px 2px 0px rgba(255, 255, 255, 0.5),
+    7px 7px 20px 0px rgba(0, 0, 0, 0.1),
+    4px 4px 5px 0px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.btn-yes:hover {
+  color: #000;
+}
+
+.btn-yes:hover:after {
+  top: auto;
+  bottom: 0;
+  height: 100%;
+}
+
+.btn-yes:active {
+  top: 2px;
+}
+
+/* Styling for .btn-no */
+.btn-no {
+  position: relative;
+  background: #28a745; /* A solid green background */
+  border: none;
+  z-index: 1;
+  color: #fff;
+  padding: 0.5em 3em;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.btn-no:after {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 0;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  border-radius: 5px;
+  background-color: #28a745;
+  background-image: linear-gradient(315deg, #28a745 0%, #85e085 74%);
+  box-shadow:
+    inset 2px 2px 2px 0px rgba(255, 255, 255, 0.5),
+    7px 7px 20px 0px rgba(0, 0, 0, 0.1),
+    4px 4px 5px 0px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.btn-no:hover {
+  color: #000;
+}
+
+.btn-no:hover:after {
+  top: auto;
+  bottom: 0;
+  height: 100%;
+}
+
+.btn-no:active {
+  top: 2px;
+}

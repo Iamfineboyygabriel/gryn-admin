@@ -1,14 +1,71 @@
-import { Link } from "react-router-dom";
+import { useCallback, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { AppDispatch } from "../redux/store";
+import { useDispatch } from "react-redux";
+import { login } from "../redux/shared/slices/shareLanding.slices";
+import usePasswordToggle from "../utils/usePasswordToggle";
+import { button } from "../buttons/Button";
 import welcome_signup from "../../assets/png/welcome_signup.png";
 import gryn_index_logo from "../../assets/svg/Gryn_Index _logo.svg";
-import { button } from "../buttons/Button";
-import usePasswordToggle from "../utils/usePasswordToggle";
 import { MdOutlineVisibilityOff, MdOutlineVisibility } from "react-icons/md";
+import { toast } from "react-toastify";
+import ReactLoading from "react-loading";
 
+const ROUTES = {
+  STAFF_DASHBOARD: "/staff/dashboard/home",
+  ADMIN_SIGNIN: "/admin_login",
+  FORGOT_PASSWORD: "/forgot_password",
+};
+
+interface LoginFormData {
+  email: string;
+  password: string;
+}
 
 const StaffLanding = () => {
   const [passwordType, togglePasswordType] = usePasswordToggle();
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState<LoginFormData>({
+    email: "",
+    password: "",
+  });
+  const navigate = useNavigate();
+  const dispatch: AppDispatch = useDispatch();
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const loginUserData = useCallback(
+    async (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+
+      setLoading(true);
+
+      try {
+        const response = await dispatch(login(formData)).unwrap();
+
+        const role = response?.data?.role;
+
+        if (role === "STAFF") {
+          toast.success("Welcome");
+          navigate(ROUTES.STAFF_DASHBOARD);
+        } else {
+          toast.error("Invalid credentials");
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          toast.error(error.message);
+        } else {
+          toast.error("Network error: please check your internet connection");
+        }
+      } finally {
+        setLoading(false);
+      }
+    },
+    [dispatch, formData, navigate]
+  );
   return (
     <main className="fixed flex min-h-screen w-full justify-between font-outfit">
       <section
@@ -16,16 +73,16 @@ const StaffLanding = () => {
         aria-labelledby="StaffLanding-header"
       >
         <div className="mx-auto w-full max-w-[80%] flex-1 items-center justify-center">
-      <img
-        src={gryn_index_logo}
-        alt="gryn_index_logo"
-        className="w-[11em] cursor-pointer"
-      />
+          <img
+            src={gryn_index_logo}
+            alt="gryn_index_logo"
+            className="w-[11em] cursor-pointer"
+          />
           <article
             className="flex h-full w-full flex-col justify-center"
             aria-labelledby="StaffLanding-article-header"
           >
-           <header className="flex flex-col gap-[10px]">
+            <header className="flex flex-col gap-[10px]">
               <h1 className="text-2xl font-medium">Staff Login</h1>
               <p className="text-grey- text-lg font-normal">
                 Welcome back! Provide your login details
@@ -33,12 +90,13 @@ const StaffLanding = () => {
               <p>
                 Login as a Admin
                 <span className="ml-1 font-bold text-primary-700">
-                  <Link to="/admin_login">Click Here</Link>
+                  <Link to={ROUTES.ADMIN_SIGNIN}>Click Here</Link>
                 </span>
               </p>
             </header>
             <div className="w-full max-w-[60%]">
               <form
+                onSubmit={loginUserData}
                 className="mt-[2em] flex flex-col gap-[1em] text-grey-primary"
               >
                 <div>
@@ -52,6 +110,9 @@ const StaffLanding = () => {
                     name="email"
                     id="email"
                     type="email"
+                    disabled={loading}
+                    onChange={handleInputChange}
+                    value={formData.email}
                     className="mt-[11px] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
                   />
                 </div>
@@ -60,13 +121,16 @@ const StaffLanding = () => {
                     htmlFor="password"
                     className="flex-start flex font-medium"
                   >
-                    Enter 
+                    Enter Password
                   </label>
                   <div className="relative flex items-center text-center">
                     <input
                       name="password"
                       id="password"
                       type={passwordType}
+                      disabled={loading}
+                      onChange={handleInputChange}
+                      value={formData.password}
                       className="mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
                     />
                     <button
@@ -84,7 +148,7 @@ const StaffLanding = () => {
                 </div>
                 <div className="flex w-full justify-end">
                   <p className="font-semibold text-primary-700">
-                    <Link to="/forgot_Password">Forgot Password ?</Link>
+                    <Link to={ROUTES.FORGOT_PASSWORD}>Forgot Password?</Link>
                   </p>
                 </div>
 
@@ -92,8 +156,16 @@ const StaffLanding = () => {
                   className="mt-[1em] rounded-full bg-linear-gradient px-2 py-[13px] text-lg font-semibold text-white"
                   type="submit"
                 >
-             
-                    Login
+                  {loading ? (
+                    <ReactLoading
+                      color="#FFFFFF"
+                      width={25}
+                      height={25}
+                      type="spin"
+                    />
+                  ) : (
+                    "Login"
+                  )}
                 </button.PrimaryButton>
               </form>
             </div>

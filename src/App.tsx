@@ -5,6 +5,7 @@ import ForgotPassword from "./staff/components/pages/auth/ForgotPassword";
 import RecoveryMail from "./staff/components/pages/auth/RecoveryMessage";
 import ResetPassword from "./staff/components/pages/auth/ResetPassword";
 import StaffRoutes from "./staff/components/dashboard/routes/DashboardRoutes";
+import AdminRoutes from "./admin/components/dashboard/routes/DashboardRoutes";
 
 function App() {
   return (
@@ -16,7 +17,8 @@ function App() {
         <Route path="/recovery_mail" element={<RecoveryMail />} />
         <Route path="/reset_password" element={<ResetPassword />} />
         <Route path="/staff/dashboard/*" element={<StaffRoutes />} />
-     </Routes>
+        <Route path="/admin/dashboard/*" element={<AdminRoutes />} />
+      </Routes>
     </Router>
   );
 }

@@ -1,10 +1,10 @@
-import Sort from "../../../../manageApplication/sort/Sort";
+// import Sort from "../../../../manageApplication/sort/Sort";
 import AllStudents from "../allStudents/AllStudents";
 
 const ManageStudents = () => {
   return (
     <main>
-      <Sort />
+      {/* <Sort /> */}
       <AllStudents />
     </main>
   );

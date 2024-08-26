@@ -22,8 +22,6 @@ const Data = [
 ];
 
 const Counts = () => {
- 
-
   return (
     <main>
       <div className="flex justify-between gap-3 rounded-lg font-medium text-grey-primary">
@@ -39,7 +37,6 @@ const Counts = () => {
             <h1 className="mt-[1.5em] text-2xl">{text.figure}</h1>
           </div>
         ))}
-       
       </div>
     </main>
   );

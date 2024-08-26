@@ -1,25 +1,45 @@
-import React from "react";
+import React, { useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import transaction from "../../../../../../../assets/svg/Transaction.svg";
 import { Link } from "react-router-dom";
+import { useAllAgents } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
+import DOMPurify from "dompurify";
+import CustomPagination from "../../../../../../../shared/utils/customPagination";
+import { usePagination } from "../../../../../../../shared/utils/paginationUtils";
 
 const AllAgents = () => {
-  const agentsData = [
-    {
-      id: 1,
-      firstName: "John",
-      lastName: "Doe",
-      email: "john.doe@example.com",
-      phoneNumber: "+234 65789 847",
-    },
-    {
-      id: 2,
-      firstName: "Jane",
-      lastName: "Smith",
-      email: "jane.smith@example.com",
-      phoneNumber: "+234 65789 847",
-    },
-  ];
+  const { useAllAgent } = useAllAgents();
+  const [searchQuery, setSearchQuery] = useState("");
+  const agentData = useAllAgent?.data || [];
+
+  const escapeRegExp = (string: any) => {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  };
+
+  const highlightText = (text: any, query: any) => {
+    if (!query) return text;
+    const escapedQuery = escapeRegExp(query);
+    const parts = text.split(new RegExp(`(${escapedQuery})`, "gi"));
+    return parts.map((part: any, index: any) =>
+      part.toLowerCase() === query.toLowerCase() ? (
+        <span key={index} style={{ backgroundColor: "yellow" }}>
+          {DOMPurify.sanitize(part)}
+        </span>
+      ) : (
+        part
+      )
+    );
+  };
+
+  const filteredAgents = agentData.filter((agent: any) =>
+    agent.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const itemsPerPage = 5;
+  const { currentPage, totalPages, visibleData, handlePageChange } =
+    usePagination(filteredAgents, itemsPerPage);
+
+  const formatData = (data: any) => (data ? data : "-");
 
   return (
     <main>
@@ -29,6 +49,7 @@ const AllAgents = () => {
             type="text"
             className="flex-grow rounded-full bg-transparent py-2 pl-4 pr-2 text-sm focus:border-grey-primary focus:outline-none"
             placeholder="Search"
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
           <FiSearch className="mr-3 text-lg text-gray-500" />
         </div>
@@ -52,39 +73,35 @@ const AllAgents = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {agentsData.length > 0 ? (
-              agentsData.map((student, index) => (
-                <tr key={student.id} className="text-sm text-gray-700">
-                  <td className="whitespace-nowrap px-6 py-4">{index + 1}</td>
-                  <td className="whitespace-nowrap px-6 py-4">
-                    {student.lastName} {student.firstName}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4">
-                    {student.phoneNumber}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4">
-                    {student.email}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4">
-                    <Link
-                      to="/staff/dashboard/application/manage_student/new_student"
-                      className="text-primary-700"
-                    >
-                      View Application
-                    </Link>
-                  </td>
-                </tr>
-              ))
-            ) : (
+            {visibleData.map((agent: any, index: number) => (
+              <tr key={agent.id} className="text-sm text-gray-700">
+                <td className="whitespace-nowrap px-6 py-4">
+                  {index + 1 + (currentPage - 1) * itemsPerPage}
+                </td>
+                <td className="py-[16px] gap-1 px-[24px]">
+                  {formatData(agent?.lastName)} {formatData(agent?.firstName)}
+                </td>
+                <td className="whitespace-nowrap px-6 py-4">
+                  {formatData(agent?.phoneNumber)}
+                </td>
+                <td className="whitespace-nowrap px-6 py-4">
+                  {highlightText(agent.email, searchQuery)}
+                </td>
+                <td className="whitespace-nowrap px-6 py-4">
+                  <Link to={`${agent.id}`} className="text-primary-700">
+                    View Application
+                  </Link>
+                </td>
+              </tr>
+            ))}
+            {filteredAgents.length === 0 && (
               <tr>
-                <td colSpan={4}>
-                  <div className="mt-8 flex flex-col items-center justify-center">
-                    <img
-                      src={transaction}
-                      alt="No applications"
-                      className="w-24 h-24"
-                    />
-                    <p className="mt-2 font-medium">No applications</p>
+                <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+                  <div className="mt-[2em] flex flex-col items-center justify-center">
+                    <img src={transaction} alt="No applications" />
+                    <p className="mt-2 text-sm text-gray-500 dark:text-white">
+                      No recent applications.
+                    </p>
                   </div>
                 </td>
               </tr>
@@ -92,6 +109,19 @@ const AllAgents = () => {
           </tbody>
         </table>
       </div>
+
+      {totalPages > 1 && (
+        <div className="mt-4 flex w-[60%] items-center justify-between">
+          <small>
+            Showing {visibleData.length} of {filteredAgents.length} results
+          </small>
+          <CustomPagination
+            totalPages={totalPages}
+            currentPage={currentPage}
+            handlePageChange={handlePageChange}
+          />
+        </div>
+      )}
     </main>
   );
 };

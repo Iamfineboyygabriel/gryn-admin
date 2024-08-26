@@ -56,7 +56,7 @@ export const Dropdown: React.FC<ToggleDropdownProps> = ({
   const [search, setSearch] = useState("");
 
   const filteredItems = items?.filter((item) =>
-    item?.name?.toLowerCase().includes(search?.toLowerCase()),
+    item?.name?.toLowerCase().includes(search?.toLowerCase())
   );
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,7 +71,7 @@ export const Dropdown: React.FC<ToggleDropdownProps> = ({
   };
 
   return (
-    <div className="w-full font-outfit">
+    <div className={`w-full font-outfit ${className}`}>
       <label
         htmlFor="dropdown"
         className={`flex-start text-l flex font-medium ${labelClassName}`}
@@ -90,10 +90,10 @@ export const Dropdown: React.FC<ToggleDropdownProps> = ({
           {selectedItem ? (
             <p className="text-purple-deep">{selectedItem?.name}</p>
           ) : (
-            <>
+            <p className="items-center flex">
               <p>Select {label?.toLowerCase()}</p>
               <IoIosArrowDown className="ml-2" />
-            </>
+            </p>
           )}
         </button>
         {isOpen && (
