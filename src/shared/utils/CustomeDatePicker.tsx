@@ -31,8 +31,8 @@ const CustomDatePicker = ({ selected, onChange, className = "" }: any) => {
           id="date-picker"
           selected={selected}
           onChange={onChange}
-          dateFormat="dd/MM/yyyy"
-          placeholderText="DD/MM/YYYY"
+          dateFormat="yyyy/MM/dd"
+          placeholderText="YYYY/MM/DD"
           popperPlacement="bottom-end"
           popperClassName="date-picker-popper"
           showPopperArrow={false}

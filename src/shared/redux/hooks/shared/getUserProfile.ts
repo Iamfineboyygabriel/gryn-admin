@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 
 import {
   getAllAgents,
+  getAllDraftItems,
+  getAllInvoice,
   getAllStudents,
   getCurrentUser,
   getTopCountries,
@@ -335,4 +337,62 @@ export const useAllAgents = () => {
   }, [dispatch, userToken]);
 
   return { useAllAgent, loading };
+};
+
+export const useAllDraftItems = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+
+  const useAllItems = useSelector(
+    (state: any) => state.shareApplication?.allDraftItems
+  );
+  const userToken = sessionStorage.getItem("userData");
+
+  useEffect(() => {
+    if (userToken) {
+      setLoading(true);
+      dispatch(getAllDraftItems())
+        .unwrap()
+        .then(() => setLoading(false))
+        .catch((error: any) => {
+          const errorMessage =
+            error.message || "Failed to fetch top universities";
+          dispatch(setMessage(errorMessage));
+          setLoading(false);
+        });
+    } else {
+      dispatch(setMessage("Token not found"));
+    }
+  }, [dispatch, userToken]);
+
+  return { useAllItems, loading };
+};
+
+export const useAllInvoices = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+
+  const useAllInvoice = useSelector(
+    (state: any) => state.shareApplication?.allInvoice
+  );
+  const userToken = sessionStorage.getItem("userData");
+
+  useEffect(() => {
+    if (userToken) {
+      setLoading(true);
+      dispatch(getAllInvoice())
+        .unwrap()
+        .then(() => setLoading(false))
+        .catch((error: any) => {
+          const errorMessage =
+            error.message || "Failed to fetch top universities";
+          dispatch(setMessage(errorMessage));
+          setLoading(false);
+        });
+    } else {
+      dispatch(setMessage("Token not found"));
+    }
+  }, [dispatch, userToken]);
+
+  return { useAllInvoice, loading };
 };

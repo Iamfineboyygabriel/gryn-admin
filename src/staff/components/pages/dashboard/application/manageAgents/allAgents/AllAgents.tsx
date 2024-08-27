@@ -115,11 +115,11 @@ const AllAgents = () => {
           <small>
             Showing {visibleData.length} of {filteredAgents.length} results
           </small>
-          <CustomPagination
+          {/* <CustomPagination
             totalPages={totalPages}
             currentPage={currentPage}
             handlePageChange={handlePageChange}
-          />
+          /> */}
         </div>
       )}
     </main>

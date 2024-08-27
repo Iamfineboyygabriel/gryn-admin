@@ -39,7 +39,6 @@ const useToggleDropdown = () => {
     closeDropdown,
   };
 };
-
 export const Dropdown: React.FC<ToggleDropdownProps> = ({
   items,
   selectedItem,
@@ -81,20 +80,20 @@ export const Dropdown: React.FC<ToggleDropdownProps> = ({
       </label>
       <div className="relative mt-[10px]">
         <button
-          className={`border-border text-l flex w-full justify-between rounded-lg border-[2px] bg-inherit p-3 text-left font-medium`}
+          className={`border-border text-l items-center flex w-full justify-between rounded-lg border-[2px] bg-inherit p-3 text-left font-medium`}
           type="button"
           onClick={toggleDropdown}
           aria-haspopup="listbox"
           aria-expanded={isOpen}
         >
-          {selectedItem ? (
-            <p className="text-purple-deep">{selectedItem?.name}</p>
-          ) : (
-            <p className="items-center flex">
-              <p>Select {label?.toLowerCase()}</p>
-              <IoIosArrowDown className="ml-2" />
-            </p>
-          )}
+          <p
+            className={`text-purple-deep  ${!selectedItem && "text-gray-500"}`}
+          >
+            {selectedItem
+              ? selectedItem.name
+              : `Select ${label?.toLowerCase()}`}
+          </p>
+          <IoIosArrowDown className="ml-auto" />
         </button>
         {isOpen && (
           <div className="border-border absolute z-10 mt-2 max-h-[250px] w-full rounded-lg border-[2px] bg-white font-medium">
@@ -112,12 +111,7 @@ export const Dropdown: React.FC<ToggleDropdownProps> = ({
             )}
             {loading ? (
               <div className="flex items-center p-4">
-                <ReactLoading
-                  color="#1F141F"
-                  width={25}
-                  height={25}
-                  // type="spin"
-                />
+                <ReactLoading color="#1F141F" width={25} height={25} />
               </div>
             ) : (
               <ul

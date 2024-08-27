@@ -15,11 +15,28 @@ import {
 } from "../../../../../../../shared/redux/shared/slices/shareApplication.slices";
 import { toast } from "react-toastify";
 import ReactLoading from "react-loading";
+import { useNavigate } from "react-router";
+import Modal from "../../../../../../../shared/modal/Modal";
+import InvoiceSent from "../../../../../../../shared/modal/InvoiceSent";
+import { useAllDraftItems } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
+import { FaEye } from "react-icons/fa";
 
 type Status = DropdownItem;
 
 interface Item {
   name: string;
+}
+
+interface ProductsItems {
+  id: number;
+  productName: string;
+  quantity: number;
+  rate: number;
+  amount: number;
+  discount: number;
+  invoiceId: number | null;
+  isDraft: boolean;
+  createdAt: string;
 }
 
 interface InvoiceItem {
@@ -31,6 +48,8 @@ interface InvoiceItem {
 }
 
 const GenerateInvoice = () => {
+  const { useAllItems } = useAllDraftItems();
+
   const [status, setStatus] = useState<Status | null>(null);
   const [invoiceDate, setInvoiceDate] = useState<Date | null>(null);
   const [dueDate, setDueDate] = useState<Date | null>(null);
@@ -39,6 +58,14 @@ const GenerateInvoice = () => {
   const [draftLoading, setDraftLoading] = useState(false);
   const [choiceItem, setChoiceItem] = useState<Item | null>(null);
   const [items, setItems] = useState<InvoiceItem[]>([]);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [showExistingItemDropdown, setShowExistingItemDropdown] =
+    useState(false);
+  const [selectedExistingItem, setSelectedExistingItem] =
+    useState<ProductsItems | null>(null);
+
+  const handleOpenModal = () => setModalOpen(true);
+  const handleCloseModal = () => setModalOpen(false);
 
   const state: Status[] = [{ name: "OPEN" }, { name: "CLOSE" }];
 
@@ -52,19 +79,36 @@ const GenerateInvoice = () => {
       setStatus(item);
     }
   };
-
   const handleChoiceItem = (item: DropdownItem) => {
     const selectedItem = item as Item;
     if (selectedItem) {
       setChoiceItem(selectedItem);
       if (selectedItem.name === "Add New Item") {
+        setShowExistingItemDropdown(false);
         setItems([
           ...items,
           { productName: "", quantity: 0, rate: 0, amount: 0, discount: 0 },
         ]);
+      } else if (selectedItem.name === "Add Existing Item") {
+        setShowExistingItemDropdown(true);
       }
-      // Handle "Add Existing Item" logic later
     }
+  };
+
+  const handleExistingItemSelect = (item: ProductsItems) => {
+    setSelectedExistingItem(item);
+    setItems([
+      ...items,
+      {
+        productName: item.productName,
+        quantity: item.quantity,
+        rate: item.rate,
+        amount: item.amount,
+        discount: item.discount,
+      },
+    ]);
+    setShowExistingItemDropdown(false);
+    setChoiceItem(null);
   };
 
   const handleItemChange = (
@@ -78,14 +122,41 @@ const GenerateInvoice = () => {
     } else {
       newItems[index][field] = parseFloat(value) || 0;
     }
+
+    if (field === "quantity" || field === "rate") {
+      newItems[index].amount = newItems[index].quantity * newItems[index].rate;
+    }
+
     setItems(newItems);
+  };
+
+  const handleViewItemDetails = (index: number) => {
+    if (useAllItems && Array.isArray(useAllItems)) {
+      const item = useAllItems.find(
+        (i) => i.productName === items[index].productName
+      );
+      if (item) {
+        const newItems = [...items];
+        newItems[index] = {
+          productName: item.productName,
+          quantity: item.quantity,
+          rate: item.rate,
+          amount: item.amount,
+          discount: item.discount,
+        };
+        setItems(newItems);
+      }
+    }
   };
 
   const dispatch: AppDispatch = useAppDispatch();
 
-  const formatDate = (date: Date | null): string => {
+  const formatDate = (date: Date | null) => {
     if (!date) return "";
-    return date.toISOString().split(".")[0] + "Z";
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}T00:00:00Z`;
   };
 
   const submitInvoice = async (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -102,7 +173,7 @@ const GenerateInvoice = () => {
       };
 
       await dispatch(createInvoice(body)).unwrap();
-      toast.success("Invoice created successfully");
+      handleOpenModal();
     } catch (error: any) {
       toast.error(error.message);
     } finally {
@@ -124,7 +195,6 @@ const GenerateInvoice = () => {
       };
 
       await dispatch(createDraft(body)).unwrap();
-      toast.success("Draft saved successfully");
     } catch (error: any) {
       toast.error(error.message);
     } finally {
@@ -137,6 +207,11 @@ const GenerateInvoice = () => {
       ...items,
       { productName: "", quantity: 0, rate: 0, amount: 0, discount: 0 },
     ]);
+  };
+
+  const navigate = useNavigate();
+  const handleBackClick = () => {
+    navigate(-1);
   };
 
   return (
@@ -153,7 +228,9 @@ const GenerateInvoice = () => {
                 </span>
               </h1>
             </div>
-            <button.PrimaryButton className="btn-2">Back</button.PrimaryButton>
+            <button.PrimaryButton onClick={handleBackClick} className="btn-2">
+              Back
+            </button.PrimaryButton>
           </div>
         </header>
         <h1 className="font-semibold text-2xl">Generate Invoice</h1>
@@ -215,27 +292,30 @@ const GenerateInvoice = () => {
                   />
                 </div>
               </div>
-              <h1>Item</h1>
               <div>
                 <Dropdown
-                  label="Select Item"
+                  label="Item"
                   labelClassName="text-grey-primary"
-                  className="text-purple-deep w-full"
                   items={choice}
                   selectedItem={choiceItem}
                   onSelectItem={handleChoiceItem}
                 />
               </div>
 
+              {/* {showExistingItemDropdown && (
+                <Dropdown
+                  label="Select Existing Item"
+                  labelClassName="text-grey-primary"
+                />
+              )} */}
+
+              {useAllItems &&
+                Array.isArray(useAllItems) &&
+                useAllItems.length === 0 && <div>No existing items found</div>}
+
               {items.map((item, index) => (
                 <div key={index}>
-                  <div>
-                    <label
-                      htmlFor={`productName-${index}`}
-                      className="flex-start flex font-medium mb-2"
-                    >
-                      Item Name
-                    </label>
+                  <div className="flex items-center">
                     <input
                       id={`productName-${index}`}
                       name={`productName-${index}`}
@@ -247,6 +327,12 @@ const GenerateInvoice = () => {
                       placeholder="product name"
                       className="border-border w-full focus:border-border mt-1 rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
                     />
+                    <button
+                      onClick={() => handleViewItemDetails(index)}
+                      className="ml-2"
+                    >
+                      <FaEye />
+                    </button>
                   </div>
                   <div className="flex mt-[1em] gap-[1em]">
                     <div className="flex-1">
@@ -302,9 +388,7 @@ const GenerateInvoice = () => {
                         required
                         type="number"
                         value={item.amount}
-                        onChange={(e) =>
-                          handleItemChange(index, "amount", e.target.value)
-                        }
+                        readOnly
                         className="border-border w-[200px] focus:border-border mt-1 rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
                       />
                     </div>
@@ -376,6 +460,15 @@ const GenerateInvoice = () => {
           </div>
         </section>
       </div>
+      {isModalOpen && (
+        <Modal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          data-aos="zoom-in"
+        >
+          <InvoiceSent onClose={handleCloseModal} />
+        </Modal>
+      )}
     </main>
   );
 };

@@ -362,6 +362,42 @@ const createDraft = async (body: any) => {
   }
 };
 
+const getAllDraftItems = async () => {
+  const url = `${process.env.REACT_APP_API_URL}/invoice/draft/items`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "get",
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+const getAllInvoice = async () => {
+  const url = `${process.env.REACT_APP_API_URL}/invoice`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "get",
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
 const shareApplicationServices = {
   getUserProfile,
   uploadAvatar,
@@ -379,6 +415,8 @@ const shareApplicationServices = {
   getAllAgents,
   createInvoice,
   createDraft,
+  getAllDraftItems,
+  getAllInvoice,
 };
 
 export default shareApplicationServices;

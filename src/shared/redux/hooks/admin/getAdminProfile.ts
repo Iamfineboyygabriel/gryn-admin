@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../store";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   getAllApplication,
   getStats,
@@ -36,28 +36,15 @@ export const useStats = () => {
 
 export const useAllApplication = () => {
   const dispatch: AppDispatch = useDispatch();
-  const [loading, setLoading] = useState(false);
+  const applications = useSelector((state: any) => state.application.allApplication.data);
+  const loading = useSelector((state: any) => state.application.loading);
 
-  const applications = useSelector(
-    (state: any) => state.application?.allApplication?.data || []
+  const fetchApplications = useCallback(
+    (page: number, limit: number) => {
+      dispatch(getAllApplication({ page, limit }));
+    },
+    [dispatch]
   );
 
-  const userToken = useMemo(() => sessionStorage.getItem("userData"), []);
-
-  useEffect(() => {
-    if (userToken) {
-      setLoading(true);
-      dispatch(getAllApplication())
-        .unwrap()
-        .then(() => setLoading(false))
-        .catch((error: any) => {
-          dispatch(setMessage(error.message));
-          setLoading(false);
-        });
-    } else {
-      dispatch(setMessage("Token not found"));
-    }
-  }, [userToken, dispatch]);
-
-  return { applications, loading };
+  return { applications, loading, fetchApplications };
 };

@@ -1,3 +1,4 @@
+
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { setMessage } from "../../message.slices";
 import applicationServices from "../services/application.services";
@@ -17,9 +18,9 @@ export const getStats = createAsyncThunk("application/getStats", async () => {
 
 export const getAllApplication = createAsyncThunk(
   "application/getAllApplication",
-  async (_, thunkAPI) => {
+  async ({ page, limit }: { page: number; limit: number }, thunkAPI) => {
     try {
-      const data = await applicationServices.getAllApplication();
+      const data = await applicationServices.getAllApplication(page, limit);
       return data;
     } catch (error: any) {
       const message = error.message;
@@ -29,38 +30,63 @@ export const getAllApplication = createAsyncThunk(
   }
 );
 
+interface ApplicationState {
+  allApplication: {
+    data: {
+      applications: any[];
+    } | null;
+    totalItems: number;
+  };
+  loading: boolean;
+  getStats: null;
+}
+
+const initialState: ApplicationState = {
+  getStats: null,
+  allApplication: {
+    data: null,
+    totalItems: 0,
+  },
+  loading: false,
+};
+
 export const applicationSlice = createSlice({
   name: "application",
-  initialState: {
-    getStats: null,
-    allApplication: null,
-  },
+  initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(getStats.fulfilled, (state, action: PayloadAction<any>) => {
-      state.getStats = action.payload;
-    });
-    builder.addCase(getStats.rejected, (state, action) => {
-      state.getStats = null;
-      const errorMessage =
-        action.error.message || "Failed to fetch user stats.";
-      setMessage(errorMessage);
-    });
-
-    builder.addCase(
-      getAllApplication.fulfilled,
-      (state, action: PayloadAction<any>) => {
-        state.allApplication = action.payload;
-      }
-    );
-    builder.addCase(getAllApplication.rejected, (state, action) => {
-      state.allApplication = null;
-      const errorMessage =
-        action.error.message || "Failed to fetch all application";
-      setMessage(errorMessage);
-    });
+    builder
+      .addCase(getStats.fulfilled, (state, action: PayloadAction<any>) => {
+        state.getStats = action.payload;
+      })
+      .addCase(getStats.rejected, (state, action) => {
+        state.getStats = null;
+        const errorMessage =
+          action.error.message || "Failed to fetch user stats.";
+        setMessage(errorMessage);
+      })
+      .addCase(getAllApplication.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(
+        getAllApplication.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.allApplication.data = action.payload.data;
+          state.allApplication.totalItems = action.payload.totalItems;
+          state.loading = false;
+        }
+      )
+      .addCase(getAllApplication.rejected, (state, action) => {
+        state.allApplication = {
+          data: null,
+          totalItems: 0,
+        };
+        state.loading = false;
+        const errorMessage =
+          action.error.message || "Failed to fetch all applications";
+        setMessage(errorMessage);
+      });
   },
 });
 
-const { reducer } = applicationSlice;
-export default reducer;
+export default applicationSlice.reducer;

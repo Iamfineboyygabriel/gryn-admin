@@ -181,6 +181,34 @@ export const createDraft = createAsyncThunk(
   }
 );
 
+export const getAllDraftItems = createAsyncThunk(
+  "shareApplication/getAllDraftItems",
+  async (_, thunkAPI) => {
+    try {
+      const data = await shareApplicationServices.getAllDraftItems();
+      return data;
+    } catch (error: any) {
+      const message = error.message;
+      error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+export const getAllInvoice = createAsyncThunk(
+  "shareApplication/getAllInvoice",
+  async (_, thunkAPI) => {
+    try {
+      const data = await shareApplicationServices.getAllInvoice();
+      return data;
+    } catch (error: any) {
+      const message = error.message;
+      error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const shareApplicationSlice = createSlice({
   name: "shareApplication",
   initialState: {
@@ -196,6 +224,8 @@ export const shareApplicationSlice = createSlice({
     allAgents: null,
     registerInvoice: null,
     registerDraft: null,
+    allDraftItems: null,
+    allInvoice: null,
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -336,6 +366,30 @@ export const shareApplicationSlice = createSlice({
       state.registerDraft = null;
       const errorMessage =
         action.error.message || "Application creation failed.";
+      setMessage(errorMessage);
+    });
+
+    builder.addCase(
+      getAllDraftItems.fulfilled,
+      (state, action: PayloadAction<any>) => {
+        state.allDraftItems = action.payload;
+      }
+    );
+    builder.addCase(getAllDraftItems.rejected, (state, action) => {
+      state.allDraftItems = null;
+      const errorMessage = action.error.message || "Failed to fetch all agents";
+      setMessage(errorMessage);
+    });
+
+    builder.addCase(
+      getAllInvoice.fulfilled,
+      (state, action: PayloadAction<any>) => {
+        state.allInvoice = action.payload;
+      }
+    );
+    builder.addCase(getAllInvoice.rejected, (state, action) => {
+      state.allInvoice = null;
+      const errorMessage = action.error.message || "Failed to fetch all agents";
       setMessage(errorMessage);
     });
   },
