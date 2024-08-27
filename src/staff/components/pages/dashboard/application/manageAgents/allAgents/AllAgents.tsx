@@ -1,26 +1,45 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { FiSearch } from "react-icons/fi";
 import transaction from "../../../../../../../assets/svg/Transaction.svg";
 import { Link } from "react-router-dom";
-import { useAllAgents } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
-import DOMPurify from "dompurify";
 import CustomPagination from "../../../../../../../shared/utils/customPagination";
-import { usePagination } from "../../../../../../../shared/utils/paginationUtils";
+import DOMPurify from "dompurify";
+import { useAllAgent } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
+
+const SkeletonRow = () => (
+  <tr className="animate-pulse border-b border-gray-200">
+    {Array.from({ length: 5 }).map((_, index) => (
+      <td key={index} className="px-6 py-4">
+        <div className="h-4 bg-gray-200 rounded"></div>
+      </td>
+    ))}
+  </tr>
+);
 
 const AllAgents = () => {
-  const { useAllAgent } = useAllAgents();
-  const [searchQuery, setSearchQuery] = useState("");
-  const agentData = useAllAgent?.data || [];
+  const { useAgents, fetchAgents, loading } = useAllAgent();
 
-  const escapeRegExp = (string: any) => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const studentsData = useMemo(() => useAgents.data || [], [useAgents.data]);
+
+  useEffect(() => {
+    fetchAgents(page, itemsPerPage);
+  }, [fetchAgents, page, itemsPerPage]);
+
+  useEffect(() => {}, [studentsData]);
+
+  const escapeRegExp = (string: string) => {
     return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   };
 
-  const highlightText = (text: any, query: any) => {
+  const highlightText = (text: string, query: string) => {
     if (!query) return text;
     const escapedQuery = escapeRegExp(query);
     const parts = text.split(new RegExp(`(${escapedQuery})`, "gi"));
-    return parts.map((part: any, index: any) =>
+    return parts.map((part: string, index: number) =>
       part.toLowerCase() === query.toLowerCase() ? (
         <span key={index} style={{ backgroundColor: "yellow" }}>
           {DOMPurify.sanitize(part)}
@@ -31,20 +50,31 @@ const AllAgents = () => {
     );
   };
 
-  const filteredAgents = agentData.filter((agent: any) =>
-    agent.email.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredAgents = useMemo(
+    () =>
+      studentsData.filter((student: any) =>
+        student.email.toLowerCase().includes(searchQuery.toLowerCase())
+      ),
+    [studentsData, searchQuery]
   );
 
-  const itemsPerPage = 5;
-  const { currentPage, totalPages, visibleData, handlePageChange } =
-    usePagination(filteredAgents, itemsPerPage);
+  const visibleData = useMemo(() => {
+    return filteredAgents.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+  }, [filteredAgents, page, itemsPerPage]);
+
+  const handlePageChange = (
+    event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    setPage(value);
+  };
 
   const formatData = (data: any) => (data ? data : "-");
 
   return (
     <main>
-      <div className="relative mt-[2em]">
-        <div className="flex items-center w-64 rounded-full border-[1px] border-border bg-gray-100 dark:bg-gray-700">
+      <div className="relative">
+        <div className="flex items-center mt-3 w-64 rounded-full border-[1px] border-border bg-gray-100 dark:bg-gray-700">
           <input
             type="text"
             className="flex-grow rounded-full bg-transparent py-2 pl-4 pr-2 text-sm focus:border-grey-primary focus:outline-none"
@@ -54,8 +84,8 @@ const AllAgents = () => {
           <FiSearch className="mr-3 text-lg text-gray-500" />
         </div>
 
-        <table className="w-full mt-6 border-collapse">
-          <thead className="text-gray-500">
+        <table className="w-full mt-4 border-collapse">
+          <thead className="text-gray-500 border-b border-gray-200">
             <tr>
               <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
               <th className="px-6 py-3 text-left text-sm font-normal">
@@ -73,28 +103,40 @@ const AllAgents = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {visibleData.map((agent: any, index: number) => (
-              <tr key={agent.id} className="text-sm text-gray-700">
-                <td className="whitespace-nowrap px-6 py-4">
-                  {index + 1 + (currentPage - 1) * itemsPerPage}
-                </td>
-                <td className="py-[16px] gap-1 px-[24px]">
-                  {formatData(agent?.lastName)} {formatData(agent?.firstName)}
-                </td>
-                <td className="whitespace-nowrap px-6 py-4">
-                  {formatData(agent?.phoneNumber)}
-                </td>
-                <td className="whitespace-nowrap px-6 py-4">
-                  {highlightText(agent.email, searchQuery)}
-                </td>
-                <td className="whitespace-nowrap px-6 py-4">
-                  <Link to={`${agent.id}`} className="text-primary-700">
-                    View Application
-                  </Link>
-                </td>
-              </tr>
-            ))}
-            {filteredAgents.length === 0 && (
+            {loading ? (
+              Array.from({ length: itemsPerPage }).map((_, index) => (
+                <SkeletonRow key={index} />
+              ))
+            ) : visibleData.length > 0 ? (
+              visibleData.map((student: any, index: number) => (
+                <tr
+                  key={student.id}
+                  className="text-[14px] leading-[20px] text-[#101828]"
+                >
+                  <td className="py-[16px] px-[24px]">
+                    {(page - 1) * itemsPerPage + index + 1}
+                  </td>
+                  <td className="py-[16px] gap-1 px-[24px]">
+                    {formatData(student?.lastName)}{" "}
+                    {formatData(student?.firstName)}
+                  </td>
+                  <td className="py-[16px] px-[24px]">
+                    {formatData(student?.phoneNumber)}
+                  </td>
+                  <td className="py-[16px] px-[24px]">
+                    {highlightText(student.email, searchQuery)}
+                  </td>
+                  <td className="py-[16px] px-[24px]">
+                    <Link
+                      to={`/student/${student.id}`}
+                      className="text-primary-700 font-[600] flex items-center gap-[8px]"
+                    >
+                      View Application
+                    </Link>
+                  </td>
+                </tr>
+              ))
+            ) : (
               <tr>
                 <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
                   <div className="mt-[2em] flex flex-col items-center justify-center">
@@ -110,18 +152,13 @@ const AllAgents = () => {
         </table>
       </div>
 
-      {totalPages > 1 && (
-        <div className="mt-4 flex w-[60%] items-center justify-between">
-          <small>
-            Showing {visibleData.length} of {filteredAgents.length} results
-          </small>
-          {/* <CustomPagination
-            totalPages={totalPages}
-            currentPage={currentPage}
-            handlePageChange={handlePageChange}
-          /> */}
-        </div>
-      )}
+      <div className="mt-6 flex justify-center">
+        <CustomPagination
+          page={page}
+          onChange={handlePageChange}
+          hasMore={filteredAgents.length > 0}
+        />
+      </div>
     </main>
   );
 };

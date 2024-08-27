@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -211,7 +211,6 @@ export const useCountries = () => {
         setCountries(mappedCountries);
       } catch (error) {
         setError("Error fetching countries");
-        console.error("Error fetching countries:", error);
       } finally {
         setLoading(false);
       }
@@ -282,117 +281,67 @@ export const useTopUniversities = () => {
 
 export const useAllStudent = () => {
   const dispatch: AppDispatch = useDispatch();
-  const [loading, setLoading] = useState(false);
-
   const useAllStudents = useSelector(
-    (state: any) => state.shareApplication?.allStudents
+    (state: any) => state.shareApplication.allStudents
   );
-  const userToken = sessionStorage.getItem("userData");
+  const loading = useSelector((state: any) => state.shareApplication.loading);
 
-  useEffect(() => {
-    if (userToken) {
-      setLoading(true);
-      dispatch(getAllStudents())
-        .unwrap()
-        .then(() => setLoading(false))
-        .catch((error: any) => {
-          const errorMessage =
-            error.message || "Failed to fetch top universities";
-          dispatch(setMessage(errorMessage));
-          setLoading(false);
-        });
-    } else {
-      dispatch(setMessage("Token not found"));
-    }
-  }, [dispatch, userToken]);
+  const fetchApplications = useCallback(
+    (page: number, limit: number) => {
+      dispatch(getAllStudents({ page, limit }));
+    },
+    [dispatch]
+  );
 
-  return { useAllStudents, loading };
+  return { useAllStudents, fetchApplications, loading };
 };
 
-export const useAllAgents = () => {
+export const useAllAgent = () => {
   const dispatch: AppDispatch = useDispatch();
-  const [loading, setLoading] = useState(false);
+  const useAgents = useSelector(
+    (state: any) => state.shareApplication.allAgents
+  );
+  const loading = useSelector((state: any) => state.shareApplication.loading);
 
-  const useAllAgent = useSelector(
-    (state: any) => state.shareApplication?.allAgents
+  const fetchAgents = useCallback(
+    (page: number, limit: number) => {
+      dispatch(getAllAgents({ page, limit }));
+    },
+    [dispatch]
   );
 
-  const userToken = sessionStorage.getItem("userData");
-
-  useEffect(() => {
-    if (userToken) {
-      setLoading(true);
-      dispatch(getAllAgents())
-        .unwrap()
-        .then(() => setLoading(false))
-        .catch((error: any) => {
-          const errorMessage =
-            error.message || "Failed to fetch top universities";
-          dispatch(setMessage(errorMessage));
-          setLoading(false);
-        });
-    } else {
-      dispatch(setMessage("Token not found"));
-    }
-  }, [dispatch, userToken]);
-
-  return { useAllAgent, loading };
+  return { useAgents, loading, fetchAgents };
 };
-
 export const useAllDraftItems = () => {
   const dispatch: AppDispatch = useDispatch();
-  const [loading, setLoading] = useState(false);
-
-  const useAllItems = useSelector(
-    (state: any) => state.shareApplication?.allDraftItems
+  const draftItems = useSelector(
+    (state: any) => state.shareApplication.allDraftItems
   );
-  const userToken = sessionStorage.getItem("userData");
+  const loading = useSelector((state: any) => state.shareApplication.loading);
 
-  useEffect(() => {
-    if (userToken) {
-      setLoading(true);
-      dispatch(getAllDraftItems())
-        .unwrap()
-        .then(() => setLoading(false))
-        .catch((error: any) => {
-          const errorMessage =
-            error.message || "Failed to fetch top universities";
-          dispatch(setMessage(errorMessage));
-          setLoading(false);
-        });
-    } else {
-      dispatch(setMessage("Token not found"));
-    }
-  }, [dispatch, userToken]);
+  const fetchDraftItems = useCallback(
+    (page: number, limit: number) => {
+      dispatch(getAllDraftItems({ page, limit }));
+    },
+    [dispatch]
+  );
 
-  return { useAllItems, loading };
+  return { draftItems, fetchDraftItems, loading };
 };
 
-export const useAllInvoices = () => {
+export const useAllInvoice = () => {
   const dispatch: AppDispatch = useDispatch();
-  const [loading, setLoading] = useState(false);
-
-  const useAllInvoice = useSelector(
-    (state: any) => state.shareApplication?.allInvoice
+  const useInvoice = useSelector(
+    (state: any) => state.shareApplication?.allInvoice.data
   );
-  const userToken = sessionStorage.getItem("userData");
+  const loading = useSelector((state: any) => state.shareApplication.loading);
 
-  useEffect(() => {
-    if (userToken) {
-      setLoading(true);
-      dispatch(getAllInvoice())
-        .unwrap()
-        .then(() => setLoading(false))
-        .catch((error: any) => {
-          const errorMessage =
-            error.message || "Failed to fetch top universities";
-          dispatch(setMessage(errorMessage));
-          setLoading(false);
-        });
-    } else {
-      dispatch(setMessage("Token not found"));
-    }
-  }, [dispatch, userToken]);
+  const fetchInvoice = useCallback(
+    (page: number, limit: number) => {
+      dispatch(getAllInvoice({ page, limit }));
+    },
+    [dispatch]
+  );
 
-  return { useAllInvoice, loading };
+  return { useInvoice, loading, fetchInvoice };
 };

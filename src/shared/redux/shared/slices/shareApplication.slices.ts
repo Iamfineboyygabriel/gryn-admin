@@ -62,7 +62,7 @@ export const updateProfile = createAsyncThunk(
   }
 );
 export const updatePassword = createAsyncThunk(
-  "sharedApllication/updatePassword",
+  "shareApllication/updatePassword",
   async (body: any, thunkAPI) => {
     try {
       const data = await shareApplicationServices.updatePassword(body);
@@ -121,9 +121,9 @@ export const getTopUniversities = createAsyncThunk(
 
 export const getAllStudents = createAsyncThunk(
   "shareApplication/getAllStudents",
-  async (_, thunkAPI) => {
+  async ({ page, limit }: { page: number; limit: number }, thunkAPI) => {
     try {
-      const data = await shareApplicationServices.getAllStudents();
+      const data = await shareApplicationServices.getAllStudents(page, limit);
       return data;
     } catch (error: any) {
       const message = error.message;
@@ -132,12 +132,11 @@ export const getAllStudents = createAsyncThunk(
     }
   }
 );
-
 export const getAllAgents = createAsyncThunk(
   "shareApplication/getAllAgents",
-  async (_, thunkAPI) => {
+  async ({ page, limit }: { page: number; limit: number }, thunkAPI) => {
     try {
-      const data = await shareApplicationServices.getAllAgents();
+      const data = await shareApplicationServices.getAllAgents(page, limit);
       return data;
     } catch (error: any) {
       const message = error.message;
@@ -183,9 +182,10 @@ export const createDraft = createAsyncThunk(
 
 export const getAllDraftItems = createAsyncThunk(
   "shareApplication/getAllDraftItems",
-  async (_, thunkAPI) => {
+  async ({ page, limit }: { page: number; limit: number }, thunkAPI) => {
     try {
-      const data = await shareApplicationServices.getAllDraftItems();
+      const data = await shareApplicationServices.getAllDraftItems(page, limit);
+      console.log("Data", data);
       return data;
     } catch (error: any) {
       const message = error.message;
@@ -196,10 +196,11 @@ export const getAllDraftItems = createAsyncThunk(
 );
 
 export const getAllInvoice = createAsyncThunk(
-  "shareApplication/getAllInvoice",
-  async (_, thunkAPI) => {
+  "shareApplication/getAllAgents",
+  async ({ page, limit }: { page: number; limit: number }, thunkAPI) => {
     try {
-      const data = await shareApplicationServices.getAllInvoice();
+      const data = await shareApplicationServices.getAllInvoice(page, limit);
+      console.log("Data", data);
       return data;
     } catch (error: any) {
       const message = error.message;
@@ -208,190 +209,235 @@ export const getAllInvoice = createAsyncThunk(
     }
   }
 );
+interface ApplicationState {
+  allStudents: {
+    data: {
+      students: any[];
+    } | null;
+    totalItems: number;
+  };
+  loading: boolean;
+  userProfile: null;
+  currentUser: null;
+  avatarUrl: null;
+  updateProfile: null;
+  updatePassword: null;
+  registerVisaApplication: null;
+  topCountries: null;
+  topUniversities: null;
+  allAgents: {
+    data: {
+      agents: any[];
+    } | null;
+    totalItems: number;
+  };
+  registerInvoice: null;
+  registerDraft: null;
+  allDraftItems: {
+    data: {
+      draftsItems: any[];
+    } | null;
+    totalItems: number;
+  };
+  allInvoice: {
+    data: {
+      invoice: any[];
+    } | null;
+    totalItems: number;
+  };
+}
+
+const initialState: ApplicationState = {
+  userProfile: null,
+  currentUser: null,
+  avatarUrl: null,
+  updateProfile: null,
+  updatePassword: null,
+  registerVisaApplication: null,
+  topCountries: null,
+  topUniversities: null,
+  allStudents: {
+    data: null,
+    totalItems: 0,
+  },
+  loading: false,
+  allAgents: {
+    data: null,
+    totalItems: 0,
+  },
+  registerInvoice: null,
+  registerDraft: null,
+  allDraftItems: {
+    data: null,
+    totalItems: 0,
+  },
+  allInvoice: {
+    data: null,
+    totalItems: 0,
+  },
+};
 
 export const shareApplicationSlice = createSlice({
   name: "shareApplication",
-  initialState: {
-    userProfile: null,
-    currentUser: null,
-    avatarUrl: null,
-    updateProfile: null,
-    updatePassword: null,
-    registerVisaApplication: null,
-    topCountries: null,
-    topUniversities: null,
-    allStudents: null,
-    allAgents: null,
-    registerInvoice: null,
-    registerDraft: null,
-    allDraftItems: null,
-    allInvoice: null,
-  },
+  initialState,
+
   reducers: {},
+
   extraReducers: (builder) => {
-    builder.addCase(
-      getUserProfile.fulfilled,
-      (state, action: PayloadAction<any>) => {
-        state.userProfile = action.payload;
-      }
-    );
-    builder.addCase(getUserProfile.rejected, (state, action) => {
-      state.userProfile = null;
-      const errorMessage =
-        action.error.message || "Failed to fetch user profile.";
-      setMessage(errorMessage);
-    });
+    builder
+      .addCase(
+        getUserProfile.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.userProfile = action.payload;
+        }
+      )
+      .addCase(getUserProfile.rejected, (state, action) => {
+        state.userProfile = null;
+        const errorMessage =
+          action.error.message || "Failed to fetch user profile.";
+        setMessage(errorMessage);
+      })
 
-    builder.addCase(
-      getCurrentUser.fulfilled,
-      (state, action: PayloadAction<any>) => {
-        state.currentUser = action.payload;
-      }
-    );
-    builder.addCase(getCurrentUser.rejected, (state, action) => {
-      state.currentUser = null;
-      const errorMessage =
-        action.error.message || "Failed to fetch current user profile.";
-      setMessage(errorMessage);
-    });
+      .addCase(
+        getCurrentUser.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.currentUser = action.payload;
+        }
+      )
+      .addCase(getCurrentUser.rejected, (state, action) => {
+        state.currentUser = null;
+        const errorMessage =
+          action.error.message || "Failed to fetch current user profile.";
+        setMessage(errorMessage);
+      })
 
-    builder.addCase(uploadAvatar.fulfilled, (state, action) => {
-      state.avatarUrl = action.payload.data.publicURL;
-    });
+      .addCase(uploadAvatar.fulfilled, (state, action) => {
+        state.avatarUrl = action.payload.data.publicURL;
+      })
 
-    builder.addCase(
-      updateProfile.fulfilled,
-      (state, action: PayloadAction<any>) => {
+      .addCase(updateProfile.fulfilled, (state, action: PayloadAction<any>) => {
         state.updateProfile = action.payload;
-      }
-    );
-    builder.addCase(updateProfile.rejected, (state, action) => {
-      state.updateProfile = null;
-      const errorMessage =
-        action.error.message || "Failed to update user profile.";
-      setMessage(errorMessage);
-    });
+      })
+      .addCase(updateProfile.rejected, (state, action) => {
+        state.updateProfile = null;
+        const errorMessage =
+          action.error.message || "Failed to update user profile.";
+        setMessage(errorMessage);
+      })
 
-    builder.addCase(updatePassword.fulfilled, (state, action) => {
-      state.updatePassword = action.payload as null;
-    });
-    builder.addCase(updatePassword.rejected, (state) => {
-      state.updatePassword = null;
-    });
+      .addCase(updatePassword.fulfilled, (state, action) => {
+        state.updatePassword = action.payload as null;
+      })
+      .addCase(updatePassword.rejected, (state) => {
+        state.updatePassword = null;
+      })
 
-    builder.addCase(
-      createVisaApplication.fulfilled,
-      (state, action: PayloadAction<any>) => {
-        state.registerVisaApplication = action.payload;
-      }
-    );
-    builder.addCase(createVisaApplication.rejected, (state, action) => {
-      state.registerVisaApplication = null;
-      const errorMessage =
-        action.error.message || "Visa Application creation failed.";
-      setMessage(errorMessage);
-    });
+      .addCase(
+        createVisaApplication.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.registerVisaApplication = action.payload;
+        }
+      )
+      .addCase(createVisaApplication.rejected, (state, action) => {
+        state.registerVisaApplication = null;
+        const errorMessage =
+          action.error.message || "Visa Application creation failed.";
+        setMessage(errorMessage);
+      })
 
-    builder.addCase(
-      getTopCountries.fulfilled,
-      (state, action: PayloadAction<any>) => {
-        state.topCountries = action.payload;
-      }
-    );
-    builder.addCase(getTopCountries.rejected, (state, action) => {
-      state.topCountries = null;
-      const errorMessage =
-        action.error.message || "Failed to fetch top countries";
-      setMessage(errorMessage);
-    });
+      .addCase(
+        getTopCountries.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.topCountries = action.payload;
+        }
+      )
+      .addCase(getTopCountries.rejected, (state, action) => {
+        state.topCountries = null;
+        const errorMessage =
+          action.error.message || "Failed to fetch top countries";
+        setMessage(errorMessage);
+      })
 
-    builder.addCase(
-      getTopUniversities.fulfilled,
-      (state, action: PayloadAction<any>) => {
-        state.topUniversities = action.payload;
-      }
-    );
-    builder.addCase(getTopUniversities.rejected, (state, action) => {
-      state.topUniversities = null;
-      const errorMessage =
-        action.error.message || "Failed to fetch top universities.";
-      setMessage(errorMessage);
-    });
+      .addCase(
+        getTopUniversities.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.topUniversities = action.payload;
+        }
+      )
+      .addCase(getTopUniversities.rejected, (state, action) => {
+        state.topUniversities = null;
+        const errorMessage =
+          action.error.message || "Failed to fetch top universities.";
+        setMessage(errorMessage);
+      })
 
-    builder.addCase(
-      getAllStudents.fulfilled,
-      (state, action: PayloadAction<any>) => {
-        state.allStudents = action.payload;
-      }
-    );
-    builder.addCase(getAllStudents.rejected, (state, action) => {
-      state.allStudents = null;
-      const errorMessage =
-        action.error.message || "Failed to fetch all students";
-      setMessage(errorMessage);
-    });
+      .addCase(getAllStudents.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(
+        getAllStudents.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.allStudents.data = action.payload.data;
+          state.allStudents.totalItems = action.payload.totalItems;
+          state.loading = false;
+        }
+      )
 
-    builder.addCase(
-      getAllAgents.fulfilled,
-      (state, action: PayloadAction<any>) => {
-        state.allAgents = action.payload;
-      }
-    );
-    builder.addCase(getAllAgents.rejected, (state, action) => {
-      state.allAgents = null;
-      const errorMessage = action.error.message || "Failed to fetch all agents";
-      setMessage(errorMessage);
-    });
+      .addCase(getAllStudents.rejected, (state, action) => {
+        state.allStudents = {
+          data: null,
+          totalItems: 0,
+        };
+        const errorMessage =
+          action.error.message || "Failed to fetch all students.";
+        setMessage(errorMessage);
+      })
 
-    builder.addCase(
-      createInvoice.fulfilled,
-      (state, action: PayloadAction<any>) => {
+
+      .addCase(createInvoice.fulfilled, (state, action: PayloadAction<any>) => {
         state.registerInvoice = action.payload;
-      }
-    );
-    builder.addCase(createInvoice.rejected, (state, action) => {
-      state.registerInvoice = null;
-      const errorMessage =
-        action.error.message || "Application creation failed.";
-      setMessage(errorMessage);
-    });
+      })
+      .addCase(createInvoice.rejected, (state, action) => {
+        state.registerInvoice = null;
+        const errorMessage = action.error.message || "Invoice creation failed.";
+        setMessage(errorMessage);
+      })
 
-    builder.addCase(
-      createDraft.fulfilled,
-      (state, action: PayloadAction<any>) => {
+      .addCase(createDraft.fulfilled, (state, action: PayloadAction<any>) => {
         state.registerDraft = action.payload;
-      }
-    );
-    builder.addCase(createDraft.rejected, (state, action) => {
-      state.registerDraft = null;
-      const errorMessage =
-        action.error.message || "Application creation failed.";
-      setMessage(errorMessage);
-    });
+      })
+      .addCase(createDraft.rejected, (state, action) => {
+        state.registerDraft = null;
+        const errorMessage = action.error.message || "Draft creation failed.";
+        setMessage(errorMessage);
+      })
 
-    builder.addCase(
-      getAllDraftItems.fulfilled,
-      (state, action: PayloadAction<any>) => {
-        state.allDraftItems = action.payload;
-      }
-    );
-    builder.addCase(getAllDraftItems.rejected, (state, action) => {
-      state.allDraftItems = null;
-      const errorMessage = action.error.message || "Failed to fetch all agents";
-      setMessage(errorMessage);
-    });
+      .addCase(
+        getAllDraftItems.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.allDraftItems = action.payload;
+          state.allInvoice.totalItems = action.payload.totalItems;
+          state.loading = false;
+        }
+      )
+      .addCase(getAllDraftItems.rejected, (state, action) => {
+        state.allDraftItems = {
+          data: null,
+          totalItems: 0,
+        };
+      })
 
-    builder.addCase(
-      getAllInvoice.fulfilled,
-      (state, action: PayloadAction<any>) => {
+      .addCase(getAllInvoice.fulfilled, (state, action: PayloadAction<any>) => {
         state.allInvoice = action.payload;
-      }
-    );
-    builder.addCase(getAllInvoice.rejected, (state, action) => {
-      state.allInvoice = null;
-      const errorMessage = action.error.message || "Failed to fetch all agents";
-      setMessage(errorMessage);
-    });
+        state.allInvoice.totalItems = action.payload.totalItems;
+        state.loading = false;
+      })
+      .addCase(getAllInvoice.rejected, (state, action) => {
+        state.allInvoice = {
+          data: null,
+          totalItems: 0,
+        };
+      });
   },
 });
 

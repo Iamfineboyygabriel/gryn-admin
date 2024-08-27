@@ -296,8 +296,8 @@ const getTopUniversities = async () => {
   }
 };
 
-const getAllStudents = async () => {
-  const url = `${process.env.REACT_APP_API_URL}/admin/users/students`;
+const getAllStudents = async (page: number, limit: number) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/users/students?page=${page}&limit=${limit}`;
   try {
     const response = await axios({
       url,
@@ -310,12 +310,12 @@ const getAllStudents = async () => {
     }
     return response.data;
   } catch (error) {
-    handleApiError(error);
+    throw error;
   }
 };
 
-const getAllAgents = async () => {
-  const url = `${process.env.REACT_APP_API_URL}/admin/users/agents`;
+const getAllAgents = async (page: number, limit: number) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/users/agents?page=${page}&limit=${limit}`;
   try {
     const response = await axios({
       url,
@@ -328,7 +328,7 @@ const getAllAgents = async () => {
     }
     return response.data;
   } catch (error) {
-    handleApiError(error);
+    throw error;
   }
 };
 
@@ -362,8 +362,8 @@ const createDraft = async (body: any) => {
   }
 };
 
-const getAllDraftItems = async () => {
-  const url = `${process.env.REACT_APP_API_URL}/invoice/draft/items`;
+const getAllDraftItems = async (page: number, limit: number) => {
+  const url = `${process.env.REACT_APP_API_URL}/invoice/draft/items?page=${page}&limit=${limit}`;
   try {
     const response = await axios({
       url,
@@ -376,12 +376,12 @@ const getAllDraftItems = async () => {
     }
     return response.data;
   } catch (error) {
-    handleApiError(error);
+    throw error;
   }
 };
 
-const getAllInvoice = async () => {
-  const url = `${process.env.REACT_APP_API_URL}/invoice`;
+const getAllInvoice = async (page: number, limit: number) => {
+  const url = `${process.env.REACT_APP_API_URL}/invoice?page=${page}&limit=${limit}`;
   try {
     const response = await axios({
       url,
@@ -394,7 +394,7 @@ const getAllInvoice = async () => {
     }
     return response.data;
   } catch (error) {
-    handleApiError(error);
+    throw error;
   }
 };
 

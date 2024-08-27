@@ -6,6 +6,16 @@ import CustomPagination from "../../../../../../../shared/utils/customPagination
 import { FiSearch } from "react-icons/fi";
 import transaction from "../../../../../../../assets/svg/Transaction.svg";
 
+const SkeletonRow = () => (
+  <tr className="animate-pulse border-b border-gray-200">
+    {Array.from({ length: 9 }).map((_, index) => (
+      <td key={index} className="px-6 py-4">
+        <div className="h-4 bg-gray-200 rounded"></div>
+      </td>
+    ))}
+  </tr>
+);
+
 const AllApplication = () => {
   const { applications, loading, fetchApplications } = useAllApplication();
   const [page, setPage] = useState(1);
@@ -80,6 +90,16 @@ const AllApplication = () => {
   );
 
   const renderTableBody = useCallback(() => {
+    if (loading) {
+      return (
+        <>
+          {Array.from({ length: 10 }).map((_, index) => (
+            <SkeletonRow key={index} />
+          ))}
+        </>
+      );
+    }
+
     if (filteredAndSortedApplications.length > 0) {
       return filteredAndSortedApplications.map((item: any, index: number) => (
         <tr
@@ -114,9 +134,7 @@ const AllApplication = () => {
           <td className="whitespace-nowrap px-6 py-4">
             {formatData(item?.documents?.length)}
           </td>
-          <td className="whitespace-nowrap px-6 py-4">
-            {/* {item?.isAssigned ? formatData(item?.agentId) : "-"} */}-
-          </td>
+          <td className="whitespace-nowrap px-6 py-4">-</td>
           <td className="flex items-center whitespace-nowrap px-6 py-4">
             <button
               className={`mr-2 rounded-full px-3 py-2 text-white ${
@@ -156,6 +174,7 @@ const AllApplication = () => {
     highlightText,
     formatData,
     handleViewDetails,
+    loading,
   ]);
 
   const handleSort = (field: string) => {
@@ -209,52 +228,37 @@ const AllApplication = () => {
           </div>
         </div>
       </div>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <>
-          <table className="w-full mt-[2em] border-collapse">
-            <thead className="text-gray-500 border-b border-gray-200">
-              <tr>
-                <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
-                <th className="whitespace-nowrap px-6 py-3 text-left text-sm font-normal">
-                  Full Name
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-normal">
-                  Phone
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-normal">
-                  Email
-                </th>
-                <th className="px-6 py-3 whitespace-nowrap text-left text-sm font-normal">
-                  Degree Type
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-normal">
-                  Course
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-normal">
-                  Documents
-                </th>
-                <th className="px-6 py-3 text-left whitespace-nowrap text-sm font-normal">
-                  Assigned Agent
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-normal">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>{renderTableBody()}</tbody>
-          </table>
-
-          <div className="mt-4 flex justify-center">
-            <CustomPagination
-              page={page}
-              onChange={handlePageChange}
-              hasMore={applications?.applications?.length > 0}
-            />
-          </div>
-        </>
-      )}
+      <table className="mt-4 w-full table-auto overflow-x-auto">
+        <thead>
+          <tr className="text-gray-700">
+            <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
+            <th className="whitespace-nowrap px-6 py-3 text-left text-sm font-normal">
+              Full Name
+            </th>
+            <th className="px-6 py-3 text-left text-sm font-normal">Phone</th>
+            <th className="px-6 py-3 text-left text-sm font-normal">Email</th>
+            <th className="px-6 py-3 whitespace-nowrap text-left text-sm font-normal">
+              Degree Type
+            </th>
+            <th className="px-6 py-3 text-left text-sm font-normal">Course</th>
+            <th className="px-6 py-3 text-left text-sm font-normal">
+              Documents
+            </th>
+            <th className="px-6 py-3 text-left whitespace-nowrap text-sm font-normal">
+              Assigned Agent
+            </th>
+            <th className="px-6 py-3 text-left text-sm font-normal">Actions</th>
+          </tr>
+        </thead>
+        <tbody>{renderTableBody()}</tbody>
+      </table>
+      <div className="mt-6 flex justify-center">
+        <CustomPagination
+          page={page}
+          onChange={handlePageChange}
+          hasMore={applications?.applications?.length > 0}
+        />
+      </div>
     </main>
   );
 };

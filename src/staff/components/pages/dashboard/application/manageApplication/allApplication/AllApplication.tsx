@@ -1,24 +1,71 @@
+import React, { useMemo, useState, useCallback, useEffect } from "react";
+import { useNavigate } from "react-router";
+import DOMPurify from "dompurify";
+import { useAllApplication } from "../../../../../../../shared/redux/hooks/admin/getAdminProfile";
+import CustomPagination from "../../../../../../../shared/utils/customPagination";
 import { FiSearch } from "react-icons/fi";
 import transaction from "../../../../../../../assets/svg/Transaction.svg";
-import { useAllApplication } from "../../../../../../../shared/redux/hooks/admin/getAdminProfile";
-import { usePagination } from "../../../../../../../shared/utils/paginationUtils";
-import CustomPagination from "../../../../../../../shared/utils/customPagination";
-import DOMPurify from "dompurify";
-import { useMemo, useState, useCallback } from "react";
-import { useNavigate } from "react-router";
+
+const SkeletonRow = () => (
+  <tr className="animate-pulse border-b border-gray-200">
+    {Array.from({ length: 9 }).map((_, index) => (
+      <td key={index} className="px-6 py-4">
+        <div className="h-4 bg-gray-200 rounded"></div>
+      </td>
+    ))}
+  </tr>
+);
 
 const AllApplication = () => {
+  const { applications, loading, fetchApplications } = useAllApplication();
+  const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortField, setSortField] = useState("lastName");
   const [sortOrder, setSortOrder] = useState("asc");
 
-  const { applications: applicationsData } = useAllApplication();
+  const itemsPerPage = 10;
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchApplications(page, itemsPerPage);
+  }, [fetchApplications, page, itemsPerPage]);
+
+  const handlePageChange = (
+    event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    setPage(value);
+  };
+
+  const filteredAndSortedApplications = useMemo(() => {
+    if (
+      !applications?.applications ||
+      !Array.isArray(applications.applications)
+    ) {
+      return [];
+    }
+
+    const filtered = applications.applications.filter((item: any) =>
+      `${item?.lastName || ""} ${item?.firstName || ""} ${
+        item?.middleName || ""
+      }`
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
+    );
+
+    return filtered.sort((a: any, b: any) => {
+      const aValue = (a[sortField as keyof typeof a] || "").toLowerCase();
+      const bValue = (b[sortField as keyof typeof b] || "").toLowerCase();
+      if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
+      if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
+      return 0;
+    });
+  }, [applications, searchTerm, sortField, sortOrder]);
 
   const handleViewDetails = useCallback(
     (applicationId: string) => {
       navigate(
-        `/staff/dashboard/application/all_application/view_application/${applicationId}`
+        `/admin/dashboard/application/all_application/view_application/${applicationId}`
       );
     },
     [navigate]
@@ -42,41 +89,25 @@ const AllApplication = () => {
     [searchTerm]
   );
 
-  const filteredAndSortedApplications = useMemo(() => {
-    const applications = applicationsData?.applications || [];
-
-    const filtered = applications.filter((item: any) =>
-      `${item?.lastName} ${item?.firstName} ${item?.middleName}`
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase())
-    );
-
-    const sorted = filtered.sort((a: any, b: any) => {
-      const aValue = a[sortField]?.toLowerCase() || "";
-      const bValue = b[sortField]?.toLowerCase() || "";
-      if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
-      if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
-      return 0;
-    });
-
-    return sorted;
-  }, [applicationsData, searchTerm, sortField, sortOrder]);
-
-  const handleSort = useCallback((field: string) => {
-    setSortField(field);
-    setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
-  }, []);
-
-  const itemsPerPage = 5;
-  const { currentPage, totalPages, visibleData, handlePageChange } =
-    usePagination(filteredAndSortedApplications, itemsPerPage);
-
   const renderTableBody = useCallback(() => {
-    if (visibleData.length > 0) {
-      return visibleData.map((item: any, index: number) => (
-        <tr key={index} className="text-sm text-gray-700 dark:text-white">
+    if (loading) {
+      return (
+        <>
+          {Array.from({ length: 10 }).map((_, index) => (
+            <SkeletonRow key={index} />
+          ))}
+        </>
+      );
+    }
+
+    if (filteredAndSortedApplications.length > 0) {
+      return filteredAndSortedApplications.map((item: any, index: number) => (
+        <tr
+          key={item.id}
+          className="text-sm text-gray-700 border-b border-gray-200 dark:text-white"
+        >
           <td className="whitespace-nowrap px-6 py-4">
-            {(currentPage - 1) * itemsPerPage + index + 1}
+            {(page - 1) * itemsPerPage + index + 1}
           </td>
           <td
             className="whitespace-nowrap px-6 py-4"
@@ -101,19 +132,17 @@ const AllApplication = () => {
             {formatData(item?.degree?.course)}
           </td>
           <td className="whitespace-nowrap px-6 py-4">
-            {formatData(item?.documents.length)}
+            {formatData(item?.documents?.length)}
           </td>
           <td className="whitespace-nowrap px-6 py-4">-</td>
           <td className="flex items-center whitespace-nowrap px-6 py-4">
-            {item?.status === "SUBMITTED" ? (
-              <button className="mr-2 rounded-full bg-yellow-500 px-3 py-2 text-white">
-                In Progress
-              </button>
-            ) : (
-              <button className="mr-2 rounded-full bg-green-500 px-3 py-2 text-white">
-                Completed
-              </button>
-            )}
+            <button
+              className={`mr-2 rounded-full px-3 py-2 text-white ${
+                item?.status === "SUBMITTED" ? "bg-yellow-500" : "bg-green-500"
+              }`}
+            >
+              {item?.status === "SUBMITTED" ? "In Progress" : "Completed"}
+            </button>
             <p
               onClick={() => handleViewDetails(item?.id)}
               className="cursor-pointer font-semibold text-primary-700"
@@ -130,7 +159,7 @@ const AllApplication = () => {
             <div className="mt-[2em] flex flex-col items-center justify-center">
               <img src={transaction} alt="No applications" />
               <p className="mt-2 text-sm text-gray-500 dark:text-white">
-                No Student.
+                No recent applications.
               </p>
             </div>
           </td>
@@ -138,14 +167,24 @@ const AllApplication = () => {
       );
     }
   }, [
-    visibleData,
-    currentPage,
+    filteredAndSortedApplications,
+    page,
     itemsPerPage,
     sanitizeHTML,
     highlightText,
     formatData,
     handleViewDetails,
+    loading,
   ]);
+
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
+    } else {
+      setSortField(field);
+      setSortOrder("asc");
+    }
+  };
 
   return (
     <main className="mt-[1.3em] h-auto w-full overflow-auto rounded-lg bg-white py-3 pb-[10em]">
@@ -169,8 +208,8 @@ const AllApplication = () => {
               Sort by Name
               {sortField === "lastName"
                 ? sortOrder === "asc"
-                  ? "▲"
-                  : "▼"
+                  ? " ▲"
+                  : " ▼"
                 : ""}
             </p>
           </div>
@@ -180,50 +219,46 @@ const AllApplication = () => {
           >
             <p className="whitespace-nowrap text-sm">
               Sort by Status
-              {sortField === "status" ? (sortOrder === "asc" ? "▲" : "▼") : ""}
+              {sortField === "status"
+                ? sortOrder === "asc"
+                  ? " ▲"
+                  : " ▼"
+                : ""}
             </p>
           </div>
         </div>
       </div>
-      <table className="w-full mt-[2em] border-collapse">
-        <thead className="text-gray-500 border-b border-gray-200">
-          <tr>
+      <table className="mt-4 w-full table-auto overflow-x-auto">
+        <thead>
+          <tr className="text-gray-700">
             <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
             <th className="whitespace-nowrap px-6 py-3 text-left text-sm font-normal">
               Full Name
             </th>
-            <th className="whitespace-nowrap px-6 py-3 text-left text-sm font-normal">
-              Phone Number
+            <th className="px-6 py-3 text-left text-sm font-normal">Phone</th>
+            <th className="px-6 py-3 text-left text-sm font-normal">Email</th>
+            <th className="px-6 py-3 whitespace-nowrap text-left text-sm font-normal">
+              Degree Type
             </th>
-            <th className="whitespace-nowrap px-6 py-3 text-left text-sm font-normal">
-              Email Address
-            </th>
-            <th className="px-6 py-3 text-left text-sm font-normal">Degree</th>
             <th className="px-6 py-3 text-left text-sm font-normal">Course</th>
             <th className="px-6 py-3 text-left text-sm font-normal">
-              Uploaded Documents
+              Documents
             </th>
-            <th className="whitespace-nowrap px-6 py-3 text-left text-sm font-normal">
-              Assigned to
+            <th className="px-6 py-3 text-left whitespace-nowrap text-sm font-normal">
+              Assigned Agent
             </th>
-            <th className="px-6 py-3 text-left text-sm font-normal">Action</th>
+            <th className="px-6 py-3 text-left text-sm font-normal">Actions</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-200">{renderTableBody()}</tbody>
+        <tbody>{renderTableBody()}</tbody>
       </table>
-      {totalPages > 1 && (
-        <div className="mt-4 flex w-[60%] items-center justify-between">
-          <small>
-            Showing {visibleData.length} of
-            {filteredAndSortedApplications.length} results
-          </small>
-          <CustomPagination
-            totalPages={totalPages}
-            currentPage={currentPage}
-            handlePageChange={handlePageChange}
-          />
-        </div>
-      )}
+      <div className="mt-6 flex justify-center">
+        <CustomPagination
+          page={page}
+          onChange={handlePageChange}
+          hasMore={applications?.applications?.length > 0}
+        />
+      </div>
     </main>
   );
 };

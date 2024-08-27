@@ -1,18 +1,34 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import { useAllDraftItems } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
 import eyeImg from "../../../../../../../assets/svg/eyeImg.svg";
 import online from "../../../../../../../assets/svg/online.svg";
 import DOMPurify from "dompurify";
-import { usePagination } from "../../../../../../../shared/utils/paginationUtils";
 import transaction from "../../../../../../../assets/svg/Transaction.svg";
 import CustomPagination from "../../../../../../../shared/utils/customPagination";
+import { formatDateTime } from "../../../../../../../shared/utils/dateFormat";
 
-const AllDrafts = () => {
+const SkeletonRow = () => (
+  <tr className="animate-pulse border-b border-gray-200">
+    {Array.from({ length: 5 }).map((_, index) => (
+      <td key={index} className="px-6 py-4">
+        <div className="h-4 bg-gray-200 rounded"></div>
+      </td>
+    ))}
+  </tr>
+);
+
+const AllDrafts: React.FC = () => {
+  const { draftItems, fetchDraftItems, loading } = useAllDraftItems();
   const [searchQuery, setSearchQuery] = useState("");
-  const { useAllItems } = useAllDraftItems();
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 8; 
 
-  const drafts = useAllItems?.data || [];
+  const draftData = useMemo(() => draftItems?.data || [], [draftItems]);
+
+  useEffect(() => {
+    fetchDraftItems(page, itemsPerPage);
+  }, [fetchDraftItems, page, itemsPerPage]);
 
   const escapeRegExp = (string: string) => {
     return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -22,7 +38,7 @@ const AllDrafts = () => {
     if (!query) return text;
     const escapedQuery = escapeRegExp(query);
     const parts = text.split(new RegExp(`(${escapedQuery})`, "gi"));
-    return parts.map((part, index) =>
+    return parts.map((part: string, index: number) =>
       part.toLowerCase() === query.toLowerCase() ? (
         <span key={index} style={{ backgroundColor: "yellow" }}>
           {DOMPurify.sanitize(part)}
@@ -33,13 +49,24 @@ const AllDrafts = () => {
     );
   };
 
-  const filteredDrafts = drafts.filter((item: any) =>
-    item.productName.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredDrafts = useMemo(
+    () =>
+      draftData.filter((item: any) =>
+        item.productName.toLowerCase().includes(searchQuery.toLowerCase())
+      ),
+    [draftData, searchQuery]
   );
 
-  const itemsPerPage = 3;
-  const { currentPage, totalPages, visibleData, handlePageChange } =
-    usePagination(filteredDrafts, itemsPerPage);
+  const visibleData = useMemo(() => {
+    return filteredDrafts.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+  }, [filteredDrafts, page, itemsPerPage]);
+
+  const handlePageChange = (
+    event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    setPage(value);
+  };
 
   return (
     <main>
@@ -50,13 +77,17 @@ const AllDrafts = () => {
         <input
           type="text"
           className="flex-grow rounded-full bg-transparent py-2 pl-4 pr-2 text-sm focus:border-grey-primary focus:outline-none"
-          placeholder="Search"
+          placeholder="Search by Product Name"
           onChange={(e) => setSearchQuery(e.target.value)}
         />
         <FiSearch className="mr-3 text-lg text-gray-500" />
       </div>
       <section>
-        {visibleData.length > 0 ? (
+        {loading ? (
+          Array.from({ length: itemsPerPage }).map((_, index) => (
+            <SkeletonRow key={index} />
+          ))
+        ) : visibleData.length > 0 ? (
           visibleData.map((draft: any) => (
             <div
               key={draft.id}
@@ -66,7 +97,7 @@ const AllDrafts = () => {
                 <h1 className="font-semibold text-lg">
                   {highlightText(draft.productName, searchQuery)}
                 </h1>
-                <small>{new Date(draft.createdAt).toLocaleString()}</small>
+                <small>{formatDateTime(draft.createdAt)}</small>
               </div>
               <div className="flex gap-[2em] items-center">
                 <img src={eyeImg} alt="View" />
@@ -84,18 +115,13 @@ const AllDrafts = () => {
         )}
       </section>
 
-      {totalPages > 1 && (
-        <div className="mt-4 flex w-[60%] items-center justify-between">
-          <small>
-            Showing {visibleData.length} of {filteredDrafts.length} results
-          </small>
-          <CustomPagination
-            totalPages={totalPages}
-            currentPage={currentPage}
-            handlePageChange={handlePageChange}
-          />
-        </div>
-      )}
+      <div className="mt-6 flex justify-center">
+        <CustomPagination
+          page={page}
+          onChange={handlePageChange}
+          hasMore={filteredDrafts.length > itemsPerPage}
+        />
+      </div>
     </main>
   );
 };
