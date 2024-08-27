@@ -1,40 +1,44 @@
-const Data = [
-  {
-    label: "Total Number of",
-    p: "Applications",
-    figure: "35",
-  },
-  {
-    label: "Number of Completed",
-    p: "Application",
-    figure: "20",
-  },
-  {
-    label: "Number of Pending",
-    p: "Applications",
-    figure: "15",
-  },
-  {
-    label: "Number of",
-    p: "Agents",
-    figure: "15",
-  },
-];
+import { useStats } from "../../../../../shared/redux/hooks/admin/getAdminProfile";
 
 const Counts = () => {
+  const { getApplicationStats } = useStats();
+
+  const Data = [
+    {
+      label: "Total Number of Applications",
+      figure: getApplicationStats?.data?.size ?? 0,
+      detail: "See Application",
+    },
+    {
+      label: "Number of Completed Applications",
+      figure: getApplicationStats?.data?.completed ?? 0,
+      detail: "See Completed Applications",
+    },
+    {
+      label: "Number of Pending Applications",
+      figure: getApplicationStats?.data?.pending ?? 0,
+      detail: "See Pending Applications",
+    },
+
+    {
+      label: "Number of Agents",
+      figure: getApplicationStats?.data?.numberOfAgent ?? 0,
+      detail: "See All Agents",
+    },
+  ];
   return (
-    <main>
+    <main className="font-outfit">
       <div className="flex justify-between gap-3 rounded-lg font-medium text-grey-primary">
         {Data.map((text, index) => (
           <div
             key={index}
-            className="w-full rounded-lg bg-purple-white px-[20px] py-[1.5em] transition-colors duration-300 hover:bg-primary-700 hover:text-white dark:bg-gray-700"
+            className="w-full rounded-lg flex flex-col bg-purple-white  hover:bg-primary-700 justify-between hover:text-white gap-[1em] text-grey-primary px-[20px] py-[1.5em]"
           >
-            <header>
-              <h1>{text.label}</h1>
-              <h1>{text.p}</h1>
-            </header>
-            <h1 className="mt-[1.5em] text-2xl">{text.figure}</h1>
+            <div>
+              <h1 className="mb-2">{text.label}</h1>
+              <h1 className="text-2xl">{text.figure}</h1>
+            </div>
+            <p className="text-sm">{text.detail}</p>
           </div>
         ))}
       </div>

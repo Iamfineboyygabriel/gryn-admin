@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { FiSearch } from "react-icons/fi";
 import transaction from "../../../../../../../assets/svg/Transaction.svg";
 import { Link } from "react-router-dom";
@@ -26,25 +26,42 @@ const SkeletonRow: React.FC = () => (
 
 const AllStudents: React.FC = () => {
   const { useAllStudents, fetchApplications, loading } = useAllStudent();
-
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [page, setPage] = useState<number>(1);
   const itemsPerPage = 10;
 
   useEffect(() => {
     fetchApplications(page, itemsPerPage);
-  }, [page, fetchApplications]);
+  }, [fetchApplications, page, itemsPerPage]);
 
-  const studentsData: Student[] = useAllStudents.data || [];
+  const filteredStudents = useMemo(() => {
+    if (!useAllStudents.data || !Array.isArray(useAllStudents.data)) {
+      return [];
+    }
+    return useAllStudents.data.filter((student) =>
+      student.email.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [useAllStudents.data, searchQuery]);
 
-  const escapeRegExp = (string: string): string => {
-    return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  };
+  const isCurrentPageEmpty = filteredStudents.length === 0;
 
-  const highlightText = (text: string, query: string): React.ReactNode => {
+  const visibleData = useMemo(() => {
+    const startIndex = (page - 1) * itemsPerPage;
+    return filteredStudents.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredStudents, page, itemsPerPage]);
+
+  const handlePageChange = useCallback((
+    event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    setPage(value);
+  }, []);
+
+  const formatData = useCallback((data: string | undefined): string => (data ? data : "-"), []);
+
+  const highlightText = useCallback((text: string, query: string): React.ReactNode => {
     if (!query) return text;
-    const escapedQuery = escapeRegExp(query);
-    const parts = text.split(new RegExp(`(${escapedQuery})`, "gi"));
+    const parts = text.split(new RegExp(`(${query})`, "gi"));
     return parts.map((part, index) =>
       part.toLowerCase() === query.toLowerCase() ? (
         <span key={index} style={{ backgroundColor: "yellow" }}>
@@ -54,25 +71,58 @@ const AllStudents: React.FC = () => {
         part
       )
     );
-  };
+  }, []);
 
-  const filteredStudents = studentsData.filter((student) =>
-    student.email.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const renderTableBody = useCallback(() => {
+    if (loading) {
+      return Array.from({ length: itemsPerPage }).map((_, index) => (
+        <SkeletonRow key={index} />
+      ));
+    }
 
-  const visibleData = filteredStudents.slice(
-    (page - 1) * itemsPerPage,
-    page * itemsPerPage
-  );
-
-  const handlePageChange = (
-    event: React.ChangeEvent<unknown>,
-    value: number
-  ) => {
-    setPage(value); 
-  };
-
-  const formatData = (data: string | undefined): string => (data ? data : "-");
+    if (visibleData.length > 0) {
+      return visibleData.map((student, index) => (
+        <tr
+          key={student.id}
+          className="text-[14px] leading-[20px] text-[#101828]"
+        >
+          <td className="py-[16px] px-[24px]">
+            {(page - 1) * itemsPerPage + index + 1}
+          </td>
+          <td className="py-[16px] gap-1 px-[24px]">
+            {formatData(student?.lastName)} {formatData(student?.firstName)}
+          </td>
+          <td className="py-[16px] px-[24px]">
+            {formatData(student?.phoneNumber)}
+          </td>
+          <td className="py-[16px] px-[24px]">
+            {highlightText(student.email, searchQuery)}
+          </td>
+          <td className="py-[16px] px-[24px]">
+            <Link
+              to={`/student/${student.id}`}
+              className="text-primary-700 font-[600] flex items-center gap-[8px]"
+            >
+              View Application
+            </Link>
+          </td>
+        </tr>
+      ));
+    } else {
+      return (
+        <tr>
+          <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+            <div className="mt-[2em] flex flex-col items-center justify-center">
+              <img src={transaction} alt="No applications" />
+              <p className="mt-2 text-sm text-gray-500 dark:text-white">
+                No recent applications.
+              </p>
+            </div>
+          </td>
+        </tr>
+      );
+    }
+  }, [loading, visibleData, page, itemsPerPage, formatData, highlightText, searchQuery]);
 
   return (
     <main>
@@ -106,62 +156,20 @@ const AllStudents: React.FC = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {loading ? (
-              Array.from({ length: itemsPerPage }).map((_, index) => (
-                <SkeletonRow key={index} />
-              ))
-            ) : visibleData.length > 0 ? (
-              visibleData.map((student, index) => (
-                <tr
-                  key={student.id}
-                  className="text-[14px] leading-[20px] text-[#101828]"
-                >
-                  <td className="py-[16px] px-[24px]">
-                    {(page - 1) * itemsPerPage + index + 1}
-                  </td>
-                  <td className="py-[16px] gap-1 px-[24px]">
-                    {formatData(student?.lastName)}{" "}
-                    {formatData(student?.firstName)}
-                  </td>
-                  <td className="py-[16px] px-[24px]">
-                    {formatData(student?.phoneNumber)}
-                  </td>
-                  <td className="py-[16px] px-[24px]">
-                    {highlightText(student.email, searchQuery)}
-                  </td>
-                  <td className="py-[16px] px-[24px]">
-                    <Link
-                      to={`/student/${student.id}`}
-                      className="text-primary-700 font-[600] flex items-center gap-[8px]"
-                    >
-                      View Application
-                    </Link>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
-                  <div className="mt-[2em] flex flex-col items-center justify-center">
-                    <img src={transaction} alt="No applications" />
-                    <p className="mt-2 text-sm text-gray-500 dark:text-white">
-                      No recent applications.
-                    </p>
-                  </div>
-                </td>
-              </tr>
-            )}
+            {renderTableBody()}
           </tbody>
         </table>
       </div>
 
-      <div className="mt-[3em] flex justify-center">
-        <CustomPagination
-          page={page}
-          onChange={handlePageChange}
-          hasMore={filteredStudents.length > 0}
-        />
-      </div>
+      {!loading && (
+        <div className="mt-6 flex justify-center">
+          <CustomPagination
+            page={page}
+            onChange={handlePageChange}
+            isCurrentPageEmpty={isCurrentPageEmpty}
+          />
+        </div>
+      )}
     </main>
   );
 };

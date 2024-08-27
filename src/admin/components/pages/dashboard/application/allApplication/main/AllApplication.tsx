@@ -61,6 +61,7 @@ const AllApplication = () => {
       return 0;
     });
   }, [applications, searchTerm, sortField, sortOrder]);
+  const isCurrentPageEmpty = filteredAndSortedApplications.length === 0;
 
   const handleViewDetails = useCallback(
     (applicationId: string) => {
@@ -252,13 +253,15 @@ const AllApplication = () => {
         </thead>
         <tbody>{renderTableBody()}</tbody>
       </table>
-      <div className="mt-6 flex justify-center">
-        <CustomPagination
-          page={page}
-          onChange={handlePageChange}
-          hasMore={applications?.applications?.length > 0}
-        />
-      </div>
+      {!loading && (
+        <div className="mt-6 flex justify-center">
+          <CustomPagination
+            page={page}
+            onChange={handlePageChange}
+            isCurrentPageEmpty={isCurrentPageEmpty}
+          />
+        </div>
+      )}
     </main>
   );
 };

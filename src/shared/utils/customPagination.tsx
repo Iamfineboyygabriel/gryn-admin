@@ -4,19 +4,27 @@ import { Pagination } from "@mui/material";
 interface CustomPaginationProps {
   page: number;
   onChange: (event: React.ChangeEvent<unknown>, value: number) => void;
-  hasMore: boolean;
+  isCurrentPageEmpty: boolean;
 }
 
 const CustomPagination: React.FC<CustomPaginationProps> = ({
   page,
-  hasMore,
   onChange,
+  isCurrentPageEmpty
 }) => {
+  const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    // Prevent going forward if the current page is empty
+    if (value > page && isCurrentPageEmpty) {
+      return;
+    }
+    onChange(event, value);
+  };
+
   return (
     <Pagination
       page={page}
-      count={hasMore ? page + 1 : page}
-      onChange={onChange}
+      count={isCurrentPageEmpty ? page : page + 1}
+      onChange={handleChange}
       color="primary"
       siblingCount={1}
       boundaryCount={1}

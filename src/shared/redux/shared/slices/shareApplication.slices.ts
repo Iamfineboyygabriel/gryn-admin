@@ -13,6 +13,7 @@ export const getUserProfile = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const data = await shareApplicationServices.getUserProfile();
+      console.log("data", data);
       return data;
     } catch (error: any) {
       const message = error.message;
@@ -132,6 +133,7 @@ export const getAllStudents = createAsyncThunk(
     }
   }
 );
+
 export const getAllAgents = createAsyncThunk(
   "shareApplication/getAllAgents",
   async ({ page, limit }: { page: number; limit: number }, thunkAPI) => {
@@ -209,6 +211,7 @@ export const getAllInvoice = createAsyncThunk(
     }
   }
 );
+
 interface ApplicationState {
   allStudents: {
     data: {
@@ -392,7 +395,6 @@ export const shareApplicationSlice = createSlice({
           action.error.message || "Failed to fetch all students.";
         setMessage(errorMessage);
       })
-
 
       .addCase(createInvoice.fulfilled, (state, action: PayloadAction<any>) => {
         state.registerInvoice = action.payload;
