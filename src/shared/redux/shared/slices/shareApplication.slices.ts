@@ -8,12 +8,33 @@ interface UpdateProfile {
   lastName?: string;
 }
 
+interface CreateApplicationBody {
+  firstName?: string;
+  lastName?: string;
+  middleName?: string;
+  email?: string;
+  phoneNumber?: string;
+  dateOfBirth?: string;
+  address?: string;
+  state?: string;
+  localGovtArea?: string;
+  country: CustomCountry | null;
+  internationalPassportNumber?: string;
+  degreeType?: string;
+  course?: string;
+  university?: string;
+}
+
+type CustomCountry = {
+  cca2: string;
+  name: string;
+};
+
 export const getUserProfile = createAsyncThunk(
   "shareApplication/getProfile",
   async (_, thunkAPI) => {
     try {
       const data = await shareApplicationServices.getUserProfile();
-      console.log("data", data);
       return data;
     } catch (error: any) {
       const message = error.message;
@@ -76,7 +97,7 @@ export const updatePassword = createAsyncThunk(
 );
 
 export const createVisaApplication = createAsyncThunk(
-  "sharedApllication/createApplication",
+  "sharedApllication/createVisaApplication",
   async (body: any, thunkAPI) => {
     try {
       const data = await shareApplicationServices.createVisaApplication(body);
@@ -187,7 +208,6 @@ export const getAllDraftItems = createAsyncThunk(
   async ({ page, limit }: { page: number; limit: number }, thunkAPI) => {
     try {
       const data = await shareApplicationServices.getAllDraftItems(page, limit);
-      console.log("Data", data);
       return data;
     } catch (error: any) {
       const message = error.message;
@@ -198,16 +218,49 @@ export const getAllDraftItems = createAsyncThunk(
 );
 
 export const getAllInvoice = createAsyncThunk(
-  "shareApplication/getAllAgents",
+  "shareApplication/getAllInvoice",
   async ({ page, limit }: { page: number; limit: number }, thunkAPI) => {
     try {
       const data = await shareApplicationServices.getAllInvoice(page, limit);
-      console.log("Data", data);
       return data;
     } catch (error: any) {
       const message = error.message;
       error.toString();
       return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+export const createApplication = createAsyncThunk(
+  "shareApplication/createApplication",
+  async (body: CreateApplicationBody, thunkAPI) => {
+    try {
+      const data = await shareApplicationServices.createApplication(body);
+      return data;
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message ||
+        error.message ||
+        "Something went wrong!";
+      thunkAPI.dispatch(setMessage(message));
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+export const getAllVisaApplication = createAsyncThunk(
+  "shareApplication/getAllVisaApplication",
+  async ({ page, limit }: { page: number; limit: number }, thunkAPI) => {
+    try {
+      const data = await shareApplicationServices.getAllVisaApplication(
+        page,
+        limit
+      );
+      console.log("Thunk result:", data);
+      return data;
+    } catch (error: any) {
+      console.error("Thunk Error:", error);
+      return thunkAPI.rejectWithValue(error.message || "An error occurred");
     }
   }
 );
@@ -248,6 +301,13 @@ interface ApplicationState {
     } | null;
     totalItems: number;
   };
+  registerApplication: null;
+  registerVisaAppliction: null;
+  allVisa: {
+    data: any[] | null;
+    totalItems: number;
+    loading: boolean;
+  };
 }
 
 const initialState: ApplicationState = {
@@ -277,6 +337,13 @@ const initialState: ApplicationState = {
   allInvoice: {
     data: null,
     totalItems: 0,
+  },
+  registerApplication: null,
+  registerVisaAppliction: null,
+  allVisa: {
+    data: null,
+    totalItems: 0,
+    loading: false,
   },
 };
 
@@ -396,6 +463,25 @@ export const shareApplicationSlice = createSlice({
         setMessage(errorMessage);
       })
 
+      .addCase(getAllAgents.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getAllAgents.fulfilled, (state, action: PayloadAction<any>) => {
+        state.allAgents.data = action.payload.data;
+        state.allAgents.totalItems = action.payload.totalItems;
+        state.loading = false;
+      })
+
+      .addCase(getAllAgents.rejected, (state, action) => {
+        state.allAgents = {
+          data: null,
+          totalItems: 0,
+        };
+        const errorMessage =
+          action.error.message || "Failed to fetch all agents.";
+        setMessage(errorMessage);
+      })
+
       .addCase(createInvoice.fulfilled, (state, action: PayloadAction<any>) => {
         state.registerInvoice = action.payload;
       })
@@ -439,6 +525,34 @@ export const shareApplicationSlice = createSlice({
           data: null,
           totalItems: 0,
         };
+      })
+
+      .addCase(
+        createApplication.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.registerApplication = action.payload;
+        }
+      )
+      .addCase(createApplication.rejected, (state, action) => {
+        state.registerApplication = null;
+        const errorMessage =
+          action.error.message || "Application creation failed.";
+        setMessage(errorMessage);
+      })
+      .addCase(getAllVisaApplication.pending, (state) => {
+        state.allVisa.loading = true;
+        state.allVisa.data = null;
+        state.allVisa.totalItems = 0;
+      })
+      .addCase(getAllVisaApplication.fulfilled, (state, action) => {
+        state.allVisa.data = action.payload.data;
+        state.allVisa.totalItems = action.payload.totalItems;
+        state.allVisa.loading = false;
+      })
+      .addCase(getAllVisaApplication.rejected, (state, action) => {
+        state.allVisa.loading = false;
+        state.allVisa.data = null;
+        state.allVisa.totalItems = 0;
       });
   },
 });

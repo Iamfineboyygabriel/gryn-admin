@@ -22,7 +22,7 @@ const AllDrafts: React.FC = () => {
   const { draftItems, fetchDraftItems, loading } = useAllDraftItems();
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
-  const itemsPerPage = 8; 
+  const itemsPerPage = 8;
 
   const draftData = useMemo(() => draftItems?.data || [], [draftItems]);
 
@@ -60,6 +60,7 @@ const AllDrafts: React.FC = () => {
   const visibleData = useMemo(() => {
     return filteredDrafts.slice((page - 1) * itemsPerPage, page * itemsPerPage);
   }, [filteredDrafts, page, itemsPerPage]);
+  const isCurrentPageEmpty = filteredDrafts.length === 0;
 
   const handlePageChange = (
     event: React.ChangeEvent<unknown>,
@@ -69,7 +70,7 @@ const AllDrafts: React.FC = () => {
   };
 
   return (
-    <main>
+    <main className="font-outfit">
       <header className="flex justify-between">
         <h1 className="font-semibold text-xl">Drafts</h1>
       </header>
@@ -115,13 +116,15 @@ const AllDrafts: React.FC = () => {
         )}
       </section>
 
-      <div className="mt-6 flex justify-center">
-        <CustomPagination
-          page={page}
-          onChange={handlePageChange}
-          hasMore={filteredDrafts.length > itemsPerPage}
-        />
-      </div>
+      {!loading && (
+        <div className="mt-6 flex justify-center">
+          <CustomPagination
+            page={page}
+            onChange={handlePageChange}
+            isCurrentPageEmpty={isCurrentPageEmpty}
+          />
+        </div>
+      )}
     </main>
   );
 };

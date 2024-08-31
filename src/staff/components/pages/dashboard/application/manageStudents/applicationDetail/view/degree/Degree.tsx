@@ -1,10 +1,31 @@
-const Degree = () => {
+import { useEffect, useState } from "react";
+import { useApplicationDetails } from "../../../../../../../../../shared/redux/hooks/shared/getUserProfile";
+
+const Degree = ({ applicationId }: any) => {
+  const { applicationDetails, loading: applicationLoading } =
+    useApplicationDetails(applicationId);
+  const [country, setCountry] = useState("");
+  const [university, setUniversity] = useState("");
+  const [degreeType, setDegreeType] = useState("");
+  const [course, setCourse] = useState("");
+
+  useEffect(() => {
+    if (applicationDetails?.data) {
+      setCountry(applicationDetails?.data?.degree?.country || "");
+      setUniversity(applicationDetails?.data?.degree?.university || "");
+      setDegreeType(applicationDetails?.data?.degree?.degreeType || "");
+      setCourse(applicationDetails.data?.degree?.course || "");
+    }
+  }, [applicationDetails]);
+
   return (
     <main className="font-outfit">
       <header>
         <h2 className="text-xl font-semibold dark:text-white">Degree</h2>
       </header>
-
+      {applicationLoading && (
+        <small className="mt-2 block">please wait...</small>
+      )}
       <div className="mt-[2em] flex flex-col gap-[1.5em]">
         <div className="flex w-[40%] flex-col gap-[1.2em]">
           <div className="w-full">
@@ -14,6 +35,8 @@ const Degree = () => {
             <input
               id="country"
               name="country"
+              value={country}
+              readOnly
               className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none dark:text-white"
             />
           </div>
@@ -24,6 +47,8 @@ const Degree = () => {
             <input
               id="university"
               name="university"
+              value={university}
+              readOnly
               className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none dark:text-white"
             />
           </div>
@@ -38,6 +63,8 @@ const Degree = () => {
               id="degree"
               name="degree"
               type="text"
+              value={degreeType}
+              readOnly
               className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none dark:border-none dark:bg-gray-700 dark:text-white"
             />
           </div>
@@ -52,6 +79,8 @@ const Degree = () => {
               id="course"
               name="course"
               type="text"
+              value={course}
+              readOnly
               className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none dark:border-none dark:bg-gray-700 dark:text-white"
             />
           </div>

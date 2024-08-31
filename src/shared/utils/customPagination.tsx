@@ -13,7 +13,6 @@ const CustomPagination: React.FC<CustomPaginationProps> = ({
   isCurrentPageEmpty
 }) => {
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
-    // Prevent going forward if the current page is empty
     if (value > page && isCurrentPageEmpty) {
       return;
     }

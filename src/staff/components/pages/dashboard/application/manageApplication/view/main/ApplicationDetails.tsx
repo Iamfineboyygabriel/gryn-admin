@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import PersonalDetails from "../personalDeatils/PersonalDetails";
 import Degree from "../degree/Degree";
 import UploadedDocument from "../upload/UploadedDocuments";
@@ -8,6 +8,7 @@ import upload from "../../../../../../../../assets/svg/Upload.svg";
 
 const ViewApplication = () => {
   const [activeLink, setActiveLink] = useState("personalDetails");
+  const { applicationId } = useParams();
 
   const navigate = useNavigate();
 
@@ -29,10 +30,7 @@ const ViewApplication = () => {
                 </span>
               </h1>
             </div>
-            <button.PrimaryButton
-              onClick={handleBackClick}
-              className="gap-2 rounded-lg bg-purple-pink p-[12px] font-medium text-primary-700"
-            >
+            <button.PrimaryButton onClick={handleBackClick} className="btn-2">
               Back
             </button.PrimaryButton>
           </div>
@@ -79,8 +77,12 @@ const ViewApplication = () => {
             </div>
           </nav>
           <section className="mt-8">
-            {activeLink === "personalDetails" && <PersonalDetails />}
-            {activeLink === "degree" && <Degree />}
+            {activeLink === "personalDetails" && (
+              <PersonalDetails applicationId={applicationId} />
+            )}
+            {activeLink === "degree" && (
+              <Degree applicationId={applicationId} />
+            )}
             {activeLink === "uploadedDocument" && <UploadedDocument />}
           </section>
         </div>

@@ -1,20 +1,42 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import PersonalDetails from "../personalDeatils/PersonalDetails";
+import { useApplicationDetails } from "../../../../../../../../../shared/redux/hooks/shared/getUserProfile";
 import Degree from "../degree/Degree";
 import UploadedDocument from "../upload/UploadedDocuments";
 import { button } from "../../../../../../../../../shared/buttons/Button";
 import upload from "../../../../../../../../../assets/svg/Upload.svg";
+import Loading from "../../../../../../../../../shared/loading/Loading";
+import Error from "../../../../../../../../../shared/error/Error";
 
 const ViewApplication = () => {
   const [activeLink, setActiveLink] = useState("personalDetails");
 
   const navigate = useNavigate();
 
-  const handleBackClick = async () => {
+  const { applicationId } = useParams<{ applicationId: any }>();
+
+  const { applicationDetails, loading, error } = useApplicationDetails(
+    applicationId && applicationId.trim() !== "" ? applicationId : null
+  );
+
+  const handleBackClick = () => {
     navigate(-1);
   };
 
+  if (loading)
+    return (
+      <div>
+        <Loading />
+      </div>
+    );
+  if (error)
+    return (
+      <div>
+        <Error error={error} />
+      </div>
+    );
+  if (!applicationDetails) return <div>No data available</div>;
   return (
     <main className="font-outfit">
       <h1 className="text-2xl font-bold">Application</h1>
@@ -29,10 +51,7 @@ const ViewApplication = () => {
                 </span>
               </h1>
             </div>
-            <button.PrimaryButton
-              onClick={handleBackClick}
-              className="gap-2 rounded-lg bg-purple-pink p-[12px] font-medium text-primary-700"
-            >
+            <button.PrimaryButton onClick={handleBackClick} className="btn-2">
               Back
             </button.PrimaryButton>
           </div>
@@ -79,8 +98,12 @@ const ViewApplication = () => {
             </div>
           </nav>
           <section className="mt-8">
-            {activeLink === "personalDetails" && <PersonalDetails />}
-            {activeLink === "degree" && <Degree />}
+            {activeLink === "personalDetails" && (
+              <PersonalDetails applicationId={applicationId} />
+            )}
+            {activeLink === "degree" && (
+              <Degree applicationId={applicationId} />
+            )}
             {activeLink === "uploadedDocument" && <UploadedDocument />}
           </section>
         </div>

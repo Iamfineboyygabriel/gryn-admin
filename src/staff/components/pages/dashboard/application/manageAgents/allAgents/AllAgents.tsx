@@ -18,18 +18,16 @@ const SkeletonRow = () => (
 
 const AllAgents = () => {
   const { useAgents, fetchAgents, loading } = useAllAgent();
-
+  const agentData = useMemo(() => useAgents.data || [], [useAgents.data]);
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
   const itemsPerPage = 10;
-
-  const studentsData = useMemo(() => useAgents.data || [], [useAgents.data]);
 
   useEffect(() => {
     fetchAgents(page, itemsPerPage);
   }, [fetchAgents, page, itemsPerPage]);
 
-  useEffect(() => {}, [studentsData]);
+  useEffect(() => {}, [agentData]);
 
   const escapeRegExp = (string: string) => {
     return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -52,15 +50,24 @@ const AllAgents = () => {
 
   const filteredAgents = useMemo(
     () =>
-      studentsData.filter((student: any) =>
-        student.email.toLowerCase().includes(searchQuery.toLowerCase())
-      ),
-    [studentsData, searchQuery]
+      agentData.filter((agent: any) => {
+        const firstNameMatches = agent.profile.firstName
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
+        const lastNameMatches = agent.profile.lastName
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
+
+        return firstNameMatches || lastNameMatches;
+      }),
+    [agentData, searchQuery]
   );
 
-  const visibleData = useMemo(() => {
-    return filteredAgents.slice((page - 1) * itemsPerPage, page * itemsPerPage);
-  }, [filteredAgents, page, itemsPerPage]);
+  const totalPages = Math.ceil(filteredAgents.length / itemsPerPage);
+
+  const isCurrentPageEmpty = page > totalPages;
+
+  const visibleData = filteredAgents;
 
   const handlePageChange = (
     event: React.ChangeEvent<unknown>,
@@ -108,27 +115,27 @@ const AllAgents = () => {
                 <SkeletonRow key={index} />
               ))
             ) : visibleData.length > 0 ? (
-              visibleData.map((student: any, index: number) => (
+              visibleData.map((agent: any, index: number) => (
                 <tr
-                  key={student.id}
-                  className="text-[14px] leading-[20px] text-[#101828]"
+                  key={agent.id}
+                  className="text-[14px] leading-[20px] text-grey-primary font-medium"
                 >
                   <td className="py-[16px] px-[24px]">
                     {(page - 1) * itemsPerPage + index + 1}
                   </td>
                   <td className="py-[16px] gap-1 px-[24px]">
-                    {formatData(student?.lastName)}{" "}
-                    {formatData(student?.firstName)}
+                    {highlightText(agent?.profile?.lastName, searchQuery)}
+                    {highlightText(agent?.profile?.firstName, searchQuery)}
                   </td>
                   <td className="py-[16px] px-[24px]">
-                    {formatData(student?.phoneNumber)}
+                    {formatData(agent?.phoneNumber)}
                   </td>
                   <td className="py-[16px] px-[24px]">
-                    {highlightText(student.email, searchQuery)}
+                    {formatData(agent?.email)}
                   </td>
                   <td className="py-[16px] px-[24px]">
                     <Link
-                      to={`/student/${student.id}`}
+                      to={`/agent/${agent.id}`}
                       className="text-primary-700 font-[600] flex items-center gap-[8px]"
                     >
                       View Application
@@ -142,7 +149,7 @@ const AllAgents = () => {
                   <div className="mt-[2em] flex flex-col items-center justify-center">
                     <img src={transaction} alt="No applications" />
                     <p className="mt-2 text-sm text-gray-500 dark:text-white">
-                      No recent applications.
+                      No Agents.
                     </p>
                   </div>
                 </td>
@@ -152,13 +159,15 @@ const AllAgents = () => {
         </table>
       </div>
 
-      <div className="mt-6 flex justify-center">
-        <CustomPagination
-          page={page}
-          onChange={handlePageChange}
-          hasMore={filteredAgents.length > 0}
-        />
-      </div>
+      {!loading && filteredAgents.length > 0 && (
+        <div className="mt-6 flex justify-center">
+          <CustomPagination
+            page={page}
+            onChange={handlePageChange}
+            isCurrentPageEmpty={isCurrentPageEmpty}
+          />
+        </div>
+      )}
     </main>
   );
 };

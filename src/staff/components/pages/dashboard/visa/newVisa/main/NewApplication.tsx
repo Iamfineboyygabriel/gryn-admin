@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { button } from "../../../../../../../shared/buttons/Button";
 import VisaStepIndicator from "../../../../../../../shared/visaStepIndicator/VisaStepIndicator";
 import { useNavigate } from "react-router";
@@ -33,13 +33,17 @@ const NewApplication = () => {
     }
   };
 
-  const handleNextClick = (data?: { newApplicationId?: string }) => {
-    if (currentStep < 3) {
-      setCurrentStep(currentStep + 1);
-      setCompletedSteps([...completedSteps, currentStep]);
-    }
+  const handleNextClick = (data?: { newApplicationId?: string; moveToStepThree?: boolean }) => {
     if (data?.newApplicationId) {
       setApplicationId(data.newApplicationId);
+    }
+
+    if (data?.moveToStepThree) {
+      setCurrentStep(3);
+      setCompletedSteps([1, 2]);
+    } else if (currentStep < 3) {
+      setCurrentStep(currentStep + 1);
+      setCompletedSteps([...completedSteps, currentStep]);
     }
   };
 
@@ -87,7 +91,7 @@ const NewApplication = () => {
           )}
           {currentStep === 2 && (
             <StepTwo
-              onNext={(data: any) => handleNextClick(data)}
+              onNext={handleNextClick}
               applicationId={applicationId}
               stepOneData={stepOneData}
             />

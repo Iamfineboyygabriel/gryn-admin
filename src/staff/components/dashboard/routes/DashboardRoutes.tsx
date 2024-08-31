@@ -28,7 +28,7 @@ const DashboardRoutes = () => {
         <Route path="messages" element={<Messaging />} />
         <Route path="settings" element={<Settings />} />
         <Route
-          path="/application/manage_application/view_application"
+          path="/application/manage_application/view_application/:applicationId"
           element={<ViewApplication />}
         />
 
@@ -37,11 +37,11 @@ const DashboardRoutes = () => {
           element={<NewStudent />}
         />
         <Route
-          path="/application/manage_student/application_details"
+          path="/application/manage_student/application_details/:studentId"
           element={<ApplicationDetails />}
         />
         <Route
-          path="/application/manage_student/view_Application"
+          path="/application/manage_student/view_Application/:applicationId"
           element={<ViewStudentApplication />}
         />
 

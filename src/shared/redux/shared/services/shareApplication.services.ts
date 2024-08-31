@@ -4,7 +4,10 @@ import authHeader from "../../headers";
 const API_URL_UPLOAD_AVATAR =
   process.env.REACT_APP_API_URL + "/media/upload-avatar";
 
-const API_URL_CREATE_APPLICATION = process.env.REACT_APP_API_URL + "/visa";
+const API_URL_CREATE_APPLICATION =
+  process.env.REACT_APP_API_URL + "/admin/application";
+
+const API_URL_CREATE_VISA_APPLICATION = process.env.REACT_APP_API_URL + "/visa";
 
 const API_URL_CREATE_INVOICE = process.env.REACT_APP_API_URL + "/invoice";
 
@@ -42,6 +45,28 @@ interface UpdateDegree {
   degreeType?: string;
   course?: string;
 }
+
+interface CreateApplicationBody {
+  firstName?: string;
+  lastName?: string;
+  middleName?: string;
+  email?: string;
+  phoneNumber?: string;
+  dateOfBirth?: string;
+  address?: string;
+  state?: string;
+  localGovtArea?: string;
+  country: CustomCountry | null;
+  internationalPassportNumber?: string;
+  degreeType?: string;
+  course?: string;
+  university?: string;
+}
+
+type CustomCountry = {
+  cca2: string;
+  name: string;
+};
 
 const handleApiError = (error: any) => {
   if (!error.response) {
@@ -231,7 +256,7 @@ export const updateApplicationDocument = async (
 const createVisaApplication = async (body: any) => {
   try {
     const token = sessionStorage.getItem("userData");
-    const response = await axios.post(API_URL_CREATE_APPLICATION, body, {
+    const response = await axios.post(API_URL_CREATE_VISA_APPLICATION, body, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
@@ -398,6 +423,80 @@ const getAllInvoice = async (page: number, limit: number) => {
   }
 };
 
+export const getSingleStudentApplication = async (endpoint: any) => {
+  const url = `${process.env.REACT_APP_API_URL}${endpoint}`;
+  try {
+    const response = await axios.get(url, {
+      headers: authHeader(),
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error: any) {
+    if (!error.response) {
+      throw new Error("Network Error: Please check your internet connection.");
+    }
+    throw error.response.data;
+  }
+};
+
+const createApplication = async (body: CreateApplicationBody) => {
+  try {
+    const token = sessionStorage.getItem("userData");
+    const response = await axios.post(API_URL_CREATE_APPLICATION, body, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error: any) {
+    if (!error.response) {
+      throw new Error("Network Error: Please check your internet connection.");
+    }
+    throw new Error(error.response.data.message || "An error occurred.");
+  }
+};
+
+const getStudentUniversities = async () => {
+  const url = `${process.env.REACT_APP_API_URL}/application/student/university`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "get",
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message || "Failed to fetch universities"
+    );
+  }
+};
+
+export const getAllVisaApplication = async (page: number, limit: number) => {
+  console.log("Starting API call to getAllVisaApplication");
+  const url = `${process.env.REACT_APP_API_URL}/visa?page=${page}&limit=${limit}`;
+  try {
+    console.log("API URL:", url);
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "get",
+    });
+    return {
+      data: response.data,
+      totalItems: response.data.length,
+    };
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error;
+  }
+};
+
 const shareApplicationServices = {
   getUserProfile,
   uploadAvatar,
@@ -417,6 +516,10 @@ const shareApplicationServices = {
   createDraft,
   getAllDraftItems,
   getAllInvoice,
+  getSingleStudentApplication,
+  createApplication,
+  getStudentUniversities,
+  getAllVisaApplication,
 };
 
 export default shareApplicationServices;

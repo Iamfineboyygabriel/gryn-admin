@@ -29,10 +29,7 @@ const ViewDetails = () => {
                 </span>
               </h1>
             </div>
-            <button.PrimaryButton
-              onClick={handleBackClick}
-              className="gap-2 rounded-lg bg-purple-pink p-[12px] font-medium text-primary-700"
-            >
+            <button.PrimaryButton onClick={handleBackClick} className="btn-2">
               Back
             </button.PrimaryButton>
           </div>

@@ -10,7 +10,7 @@ import plus from "../../../../../../../assets/svg/plus.svg";
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
-    {Array.from({ length: 5 }).map((_, index) => (
+    {Array.from({ length: 9 }).map((_, index) => (
       <td key={index} className="px-6 py-4">
         <div className="h-4 bg-gray-200 rounded"></div>
       </td>
@@ -22,15 +22,13 @@ const AllInvoices = () => {
   const { useInvoice, fetchInvoice, loading } = useAllInvoice();
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
-  const itemsPerPage = 8;
+  const itemsPerPage = 10;
 
   const invoiceData = useMemo(() => useInvoice || [], [useInvoice]);
 
   useEffect(() => {
     fetchInvoice(page, itemsPerPage);
   }, [fetchInvoice, page, itemsPerPage]);
-
-  useEffect(() => {}, [invoiceData]);
 
   const escapeRegExp = (string: string) => {
     return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -40,7 +38,7 @@ const AllInvoices = () => {
     if (!query) return text;
     const escapedQuery = escapeRegExp(query);
     const parts = text.split(new RegExp(`(${escapedQuery})`, "gi"));
-    return parts.map((part: string, index: number) =>
+    return parts.map((part, index) =>
       part.toLowerCase() === query.toLowerCase() ? (
         <span key={index} style={{ backgroundColor: "yellow" }}>
           {DOMPurify.sanitize(part)}
@@ -53,40 +51,43 @@ const AllInvoices = () => {
 
   const filteredInvoice = useMemo(
     () =>
-      (invoiceData || []).filter((student: any) =>
-        (student?.email || "").toLowerCase().includes(searchQuery.toLowerCase())
+      (invoiceData || []).filter(
+        (invoice: any) =>
+          (invoice?.invoiceNumber || "")
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          invoice.item.some((item: any) =>
+            (item?.productName || "")
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase())
+          )
       ),
     [invoiceData, searchQuery]
   );
 
-  const visibleData = useMemo(() => {
-    return filteredInvoice.slice(
-      (page - 1) * itemsPerPage,
-      page * itemsPerPage
-    );
-  }, [filteredInvoice, page, itemsPerPage]);
+  const totalPages = Math.ceil(filteredInvoice.length / itemsPerPage);
+  const isCurrentPageEmpty = page > totalPages;
 
-  const handlePageChange = (
-    event: React.ChangeEvent<unknown>,
-    value: number
-  ) => {
+  const visibleData = filteredInvoice;
+
+  const handlePageChange = (event: any, value: any) => {
     setPage(value);
   };
 
-  const formatData = (data: any) => (data ? data : "-");
+  const formatData = (data: any) => (data != null ? data : "-");
 
   return (
-    <main>
+    <main className="font-outfit">
       <div className="relative">
         <header>
           <div className="flex justify-between items-center">
             <div className="flex flex-col gap-[1.5em]">
               <h1 className="font-semibold text-lg">All Invoices</h1>
-              <div className="flex items-center w-64 rounded-full border-[1px] border-border bg-gray-100 dark:bg-gray-700">
+              <div className="flex items-center w-68 rounded-full border-[1px] border-border bg-gray-100 dark:bg-gray-700">
                 <input
                   type="text"
-                  className="flex-grow rounded-full bg-transparent py-2 pl-4 pr-2 text-sm focus:border-grey-primary focus:outline-none"
-                  placeholder="Search"
+                  className="flex-grow rounded-full bg-transparent py-2 pl-5 pr-2 text-sm focus:border-grey-primary focus:outline-none"
+                  placeholder="Search by Product Name or Invoice Number"
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
                 <FiSearch className="mr-3 text-lg text-gray-500" />
@@ -137,57 +138,56 @@ const AllInvoices = () => {
                 <SkeletonRow key={index} />
               ))
             ) : visibleData.length > 0 ? (
-              visibleData.map((item: any, index: number) => (
-                <tr
-                  key={item.id}
-                  className="text-[14px] leading-[20px] text-[#101828]"
-                >
-                  <td className="py-[16px] px-[24px]">
-                    {(page - 1) * itemsPerPage + index + 1}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4">
-                    {highlightText(formatData(item.invoiceNumber), searchQuery)}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4">
-                    {highlightText(formatData(item.productName), searchQuery)}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4">
-                    {formatData(item.quantity)}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4">
-                    {formatData(item.rate)}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4">
-                    {formatData(item.amount)}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4">
-                    {formatData(
-                      new Date(item.invoiceDate).toLocaleDateString()
-                    )}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4">
-                    {formatData(new Date(item.dueDate).toLocaleDateString())}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4">
-                    {formatData(item.status)}
-                  </td>
-                  <td className="py-[16px] whitespace-nowrap px-[24px]">
-                    <Link
-                      to={`/student/${item.id}`}
-                      className="text-primary-700 font-[600] flex items-center gap-[8px]"
-                    >
-                      View Application
-                    </Link>
-                  </td>
-                </tr>
-              ))
+              visibleData.flatMap((invoice: any, index: number) =>
+                invoice.item.map((item: any, itemIndex: number) => (
+                  <tr
+                    key={`${invoice.id}-${itemIndex}`}
+                    className="text-[14px] leading-[20px] text-grey-primary font-medium"
+                  >
+                    <td className="py-[16px] px-[24px]">
+                      {(page - 1) * itemsPerPage + index + 1}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4">
+                      {highlightText(
+                        formatData(invoice.invoiceNumber),
+                        searchQuery
+                      )}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4">
+                      {highlightText(formatData(item.productName), searchQuery)}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4">
+                      {formatData(item.quantity)}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4">
+                      {formatData(item.rate)}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4">
+                      {formatData(item.amount)}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4">
+                      {formatData(
+                        new Date(invoice.invoiceDate).toLocaleDateString()
+                      )}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4">
+                      {formatData(
+                        new Date(invoice.dueDate).toLocaleDateString()
+                      )}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4">
+                      {formatData(invoice.status)}
+                    </td>
+                  </tr>
+                ))
+              )
             ) : (
               <tr>
-                <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+                <td colSpan={9} className="px-6 py-4 text-center text-gray-500">
                   <div className="mt-[2em] flex flex-col items-center justify-center">
-                    <img src={transaction} alt="No applications" />
+                    <img src={transaction} alt="No invoices" />
                     <p className="mt-2 text-sm text-gray-500 dark:text-white">
-                      No recent applications.
+                      No invoices found.
                     </p>
                   </div>
                 </td>
@@ -201,7 +201,7 @@ const AllInvoices = () => {
         <CustomPagination
           page={page}
           onChange={handlePageChange}
-          hasMore={filteredInvoice.length > 0}
+          isCurrentPageEmpty={isCurrentPageEmpty}
         />
       </div>
     </main>

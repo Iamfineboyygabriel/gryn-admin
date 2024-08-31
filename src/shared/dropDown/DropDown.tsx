@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { CgAsterisk } from "react-icons/cg";
 import { IoIosArrowDown } from "react-icons/io";
 import { FiSearch } from "react-icons/fi";
 import ReactLoading from "react-loading";
+import Flag from "react-world-flags";
 
 export interface DropdownItem {
   id?: number;
-  name?: string;
+  name?: string; 
+  [key: string]: any;
 }
 
 interface ToggleDropdownProps {
@@ -20,6 +22,7 @@ interface ToggleDropdownProps {
   className?: string;
   onChange?: (value: string) => void;
   loading?: boolean;
+  renderItem?: (item: DropdownItem) => React.ReactNode;
 }
 
 const useToggleDropdown = () => {
@@ -39,6 +42,7 @@ const useToggleDropdown = () => {
     closeDropdown,
   };
 };
+
 export const Dropdown: React.FC<ToggleDropdownProps> = ({
   items,
   selectedItem,
@@ -50,13 +54,20 @@ export const Dropdown: React.FC<ToggleDropdownProps> = ({
   labelClassName = "",
   onChange,
   loading = false,
+  renderItem,
 }) => {
   const { isOpen, toggleDropdown, closeDropdown } = useToggleDropdown();
   const [search, setSearch] = useState("");
 
-  const filteredItems = items?.filter((item) =>
-    item?.name?.toLowerCase().includes(search?.toLowerCase())
-  );
+  const sortedItems = useMemo(() => {
+    return [...items].sort((a, b) => (a.name ?? "").localeCompare(b.name ?? ""));
+  }, [items]);
+
+  const filteredItems = useMemo(() => {
+    return sortedItems.filter((item) =>
+      (item.name ?? "").toLowerCase().includes(search.toLowerCase())
+    );
+  }, [sortedItems, search]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
@@ -65,9 +76,22 @@ export const Dropdown: React.FC<ToggleDropdownProps> = ({
 
   const handleSelectItem = (item: DropdownItem) => {
     onSelectItem(item);
-    onChange?.(item?.name ?? "");
+    onChange?.(item.name ?? "");
     closeDropdown();
   };
+
+  const defaultRenderItem = (item: DropdownItem) => (
+    <div className="flex items-center">
+      {item.cca2 && (
+        <Flag
+          code={item.cca2}
+          alt={item.name ?? ""}
+          style={{ width: 24, height: 16, marginRight: 8 }}
+        />
+      )}
+      {item.name || "Unnamed Item"}
+    </div>
+  );
 
   return (
     <div className={`w-full font-outfit ${className}`}>
@@ -80,19 +104,17 @@ export const Dropdown: React.FC<ToggleDropdownProps> = ({
       </label>
       <div className="relative mt-[10px]">
         <button
-          className={`border-border text-l items-center flex w-full justify-between rounded-lg border-[2px] bg-inherit p-3 text-left font-medium`}
+          className={`border-border text-l flex w-full items-center justify-between rounded-lg border-[2px] bg-inherit p-3 text-left font-medium`}
           type="button"
           onClick={toggleDropdown}
           aria-haspopup="listbox"
           aria-expanded={isOpen}
         >
-          <p
-            className={`text-purple-deep  ${!selectedItem && "text-gray-500"}`}
-          >
-            {selectedItem
-              ? selectedItem.name
-              : `Select ${label?.toLowerCase()}`}
-          </p>
+          {selectedItem ? (
+            defaultRenderItem(selectedItem)
+          ) : (
+            <span className="text-gray-500">{label}</span>
+          )}
           <IoIosArrowDown className="ml-auto" />
         </button>
         {isOpen && (
@@ -119,16 +141,16 @@ export const Dropdown: React.FC<ToggleDropdownProps> = ({
                 role="listbox"
                 tabIndex={-1}
               >
-                {filteredItems?.length > 0 ? (
+                {filteredItems.length > 0 ? (
                   filteredItems.map((item, index) => (
                     <li
                       key={index}
                       className={`flex w-full cursor-pointer flex-col items-start bg-white p-3 hover:bg-gray-100 ${className}`}
                       role="option"
-                      aria-selected={selectedItem?.id === item?.id}
+                      aria-selected={selectedItem?.id === item.id}
                       onClick={() => handleSelectItem(item)}
                     >
-                      {item?.name}
+                      {renderItem ? renderItem(item) : defaultRenderItem(item)}
                     </li>
                   ))
                 ) : (

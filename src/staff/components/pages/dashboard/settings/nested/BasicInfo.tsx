@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import useUserProfile, {
   useCurrentUser,
 } from "../../../../../../shared/redux/hooks/shared/getUserProfile";
+import ConfirmDiscard from "../../../../../../shared/modal/ConfirmDiscard";
 
 const BasicInfo = () => {
   const { userProfile, updateUserProfile, uploadUserAvatar } = useUserProfile();
@@ -15,6 +16,7 @@ const BasicInfo = () => {
   const [avatarLoading, setAvatarLoading] = useState(false);
   const [lastName, setLastName] = useState(userProfile?.lastName || "");
   const [email, setEmail] = useState(userProfile?.email || "");
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
   const [editMode, setEditMode] = useState(false);
 
@@ -49,10 +51,22 @@ const BasicInfo = () => {
   };
 
   const handleDiscardChanges = () => {
+    if (editMode) {
+      setIsConfirmDialogOpen(true);
+    } else {
+      setFirstName(userProfile?.firstName || "");
+      setLastName(userProfile?.lastName || "");
+      setEmail(userProfile?.email || "");
+      setEditMode(false);
+    }
+  };
+
+  const confirmDiscardChanges = () => {
     setFirstName(userProfile?.firstName || "");
     setLastName(userProfile?.lastName || "");
     setEmail(userProfile?.email || "");
     setEditMode(false);
+    setIsConfirmDialogOpen(false);
   };
 
   return (
@@ -203,6 +217,14 @@ const BasicInfo = () => {
           </>
         )}
       </form>
+      <ConfirmDiscard
+        isOpen={isConfirmDialogOpen}
+        onRequestClose={() => setIsConfirmDialogOpen(false)}
+        onConfirm={confirmDiscardChanges}
+        title="Are you sure you want to discard changes?"
+        confirmLabel="Yes"
+        cancelLabel="No"
+      />
     </main>
   );
 };

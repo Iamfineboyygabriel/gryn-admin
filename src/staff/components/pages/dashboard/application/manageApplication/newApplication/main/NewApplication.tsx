@@ -89,10 +89,7 @@ const NewApplication = () => {
                 </span>
               </h1>
             </div>
-            <button.PrimaryButton
-              className="gap-2 rounded-lg bg-purple-pink p-[12px] font-medium text-primary-700"
-              onClick={handleBackClick}
-            >
+            <button.PrimaryButton className="btn-2" onClick={handleBackClick}>
               Back
             </button.PrimaryButton>
           </div>

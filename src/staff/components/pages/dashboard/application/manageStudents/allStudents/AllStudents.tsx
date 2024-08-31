@@ -1,15 +1,17 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { FiSearch } from "react-icons/fi";
 import transaction from "../../../../../../../assets/svg/Transaction.svg";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAllStudent } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
 import CustomPagination from "../../../../../../../shared/utils/customPagination";
 import DOMPurify from "dompurify";
 
 interface Student {
+  profile: {
+    firstName: string;
+    lastName: string;
+  };
   id: string;
-  firstName: string;
-  lastName: string;
   email: string;
   phoneNumber: string;
 }
@@ -28,50 +30,75 @@ const AllStudents: React.FC = () => {
   const { useAllStudents, fetchApplications, loading } = useAllStudent();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [page, setPage] = useState<number>(1);
+  const navigate = useNavigate("");
   const itemsPerPage = 10;
 
   useEffect(() => {
     fetchApplications(page, itemsPerPage);
   }, [fetchApplications, page, itemsPerPage]);
 
+  const studentsData = useMemo(() => {
+    const data =
+      useAllStudents?.data?.applications || useAllStudents?.data || [];
+    return Array.isArray(data) ? data : [];
+  }, [useAllStudents?.data]);
+
   const filteredStudents = useMemo(() => {
-    if (!useAllStudents.data || !Array.isArray(useAllStudents.data)) {
-      return [];
-    }
-    return useAllStudents.data.filter((student) =>
-      student.email.toLowerCase().includes(searchQuery.toLowerCase())
+    return studentsData.filter((student: Student) =>
+      `${student.profile.firstName} ${student.profile.lastName} ${student.email}`
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase())
     );
-  }, [useAllStudents.data, searchQuery]);
+  }, [studentsData, searchQuery]);
 
-  const isCurrentPageEmpty = filteredStudents.length === 0;
+  const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
+  const isCurrentPageEmpty = page > totalPages;
 
-  const visibleData = useMemo(() => {
+  const paginatedStudents = useMemo(() => {
     const startIndex = (page - 1) * itemsPerPage;
     return filteredStudents.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredStudents, page, itemsPerPage]);
 
-  const handlePageChange = useCallback((
-    event: React.ChangeEvent<unknown>,
-    value: number
-  ) => {
-    setPage(value);
-  }, []);
+  const handlePageChange = useCallback(
+    (event: React.ChangeEvent<unknown>, value: number) => {
+      setPage(value);
+    },
+    []
+  );
 
-  const formatData = useCallback((data: string | undefined): string => (data ? data : "-"), []);
+  const formatData = useCallback(
+    (data: string | undefined): string => (data ? data : "-"),
+    []
+  );
 
-  const highlightText = useCallback((text: string, query: string): React.ReactNode => {
-    if (!query) return text;
-    const parts = text.split(new RegExp(`(${query})`, "gi"));
-    return parts.map((part, index) =>
-      part.toLowerCase() === query.toLowerCase() ? (
-        <span key={index} style={{ backgroundColor: "yellow" }}>
-          {DOMPurify.sanitize(part)}
-        </span>
-      ) : (
-        part
-      )
-    );
-  }, []);
+  const highlightText = useCallback(
+    (text: string, query: string): React.ReactNode => {
+      if (!query) return text;
+      const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const parts = text.split(new RegExp(`(${escapedQuery})`, "gi"));
+      return parts.map((part, index) =>
+        part.toLowerCase() === query.toLowerCase() ? (
+          <span key={index} className="bg-yellow-300">
+            {DOMPurify.sanitize(part)}
+          </span>
+        ) : (
+          DOMPurify.sanitize(part)
+        )
+      );
+    },
+    []
+  );
+  const handleViewDetails = useCallback(
+    (studentId: string, firstName: string, lastName: string) => {
+      navigate(
+        `/staff/dashboard/application/manage_student/application_details/${studentId}`,
+        {
+          state: { firstName, lastName },
+        }
+      );
+    },
+    [navigate]
+  );
 
   const renderTableBody = useCallback(() => {
     if (loading) {
@@ -80,31 +107,42 @@ const AllStudents: React.FC = () => {
       ));
     }
 
-    if (visibleData.length > 0) {
-      return visibleData.map((student, index) => (
+    if (paginatedStudents.length > 0) {
+      return paginatedStudents.map((student: Student, index: number) => (
         <tr
           key={student.id}
-          className="text-[14px] leading-[20px] text-[#101828]"
+          className="text-[14px] leading-[20px] text-grey-primary font-medium"
         >
           <td className="py-[16px] px-[24px]">
             {(page - 1) * itemsPerPage + index + 1}
           </td>
           <td className="py-[16px] gap-1 px-[24px]">
-            {formatData(student?.lastName)} {formatData(student?.firstName)}
+            {highlightText(
+              `${formatData(student.profile.lastName)} ${formatData(
+                student.profile.firstName
+              )}`,
+              searchQuery
+            )}
           </td>
           <td className="py-[16px] px-[24px]">
-            {formatData(student?.phoneNumber)}
+            {highlightText(formatData(student.phoneNumber), searchQuery)}
           </td>
           <td className="py-[16px] px-[24px]">
             {highlightText(student.email, searchQuery)}
           </td>
           <td className="py-[16px] px-[24px]">
-            <Link
-              to={`/student/${student.id}`}
-              className="text-primary-700 font-[600] flex items-center gap-[8px]"
+            <p
+              onClick={() =>
+                handleViewDetails(
+                  student?.id,
+                  student?.profile.firstName,
+                  student?.profile.lastName
+                )
+              }
+              className="text-primary-700 cursor-pointer font-[600] flex items-center gap-[8px]"
             >
               View Application
-            </Link>
+            </p>
           </td>
         </tr>
       ));
@@ -122,7 +160,24 @@ const AllStudents: React.FC = () => {
         </tr>
       );
     }
-  }, [loading, visibleData, page, itemsPerPage, formatData, highlightText, searchQuery]);
+  }, [
+    loading,
+    paginatedStudents,
+    page,
+    handleViewDetails,
+    itemsPerPage,
+    formatData,
+    highlightText,
+    searchQuery,
+  ]);
+
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchQuery(e.target.value);
+      setPage(1);
+    },
+    []
+  );
 
   return (
     <main>
@@ -132,7 +187,8 @@ const AllStudents: React.FC = () => {
             type="text"
             className="flex-grow rounded-full bg-transparent py-2 pl-4 pr-2 text-sm focus:border-grey-primary focus:outline-none"
             placeholder="Search"
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchQuery}
+            onChange={handleSearchChange}
           />
           <FiSearch className="mr-3 text-lg text-gray-500" />
         </div>
@@ -161,7 +217,7 @@ const AllStudents: React.FC = () => {
         </table>
       </div>
 
-      {!loading && (
+      {!loading && filteredStudents.length > 0 && (
         <div className="mt-6 flex justify-center">
           <CustomPagination
             page={page}

@@ -1,12 +1,14 @@
 import React from "react";
-import { formatDate } from "../../../../shared/utils/dateFormat";
-import userIcon from "../../../../assets/png/avatar.png";
+import userIcon from "../../../../assets/avatar.png";
 import gryn_index_logo from "../../../../assets/svg/Gryn_Index _logo.svg";
 import { IoIosNotifications } from "react-icons/io";
+import { formatDate } from "../../../../shared/utils/dateFormat";
+import useUserProfile from "../../../../shared/redux/hooks/shared/getUserProfile";
 
 const Header: React.FC = () => {
   const today = new Date();
   const formattedDate = formatDate(today);
+  const { userProfile } = useUserProfile();
 
   return (
     <header className="bg-white p-2 font-outfit text-grey dark:bg-gray-800 dark:text-white">
@@ -35,15 +37,18 @@ const Header: React.FC = () => {
           <div className="flex items-center gap-2">
             <div className="relative h-12 w-12 cursor-pointer overflow-hidden rounded-full bg-gray-200">
               <img
-                src={userIcon}
+                src={userProfile?.avatar?.publicURL || userIcon}
                 alt="profile"
                 className="rounded-full object-cover"
               />
             </div>
-              <p>
-                Agba Dealer
-              </p>
-              </div>
+
+            <p>
+              {userProfile
+                ? `${userProfile?.lastName} ${userProfile?.firstName} `
+                : ""}
+            </p>
+          </div>
         </nav>
       </div>
     </header>

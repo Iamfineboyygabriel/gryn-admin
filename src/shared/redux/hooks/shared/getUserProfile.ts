@@ -6,6 +6,7 @@ import {
   getAllDraftItems,
   getAllInvoice,
   getAllStudents,
+  getAllVisaApplication,
   getCurrentUser,
   getTopCountries,
   getTopUniversities,
@@ -15,7 +16,10 @@ import {
 } from "../../shared/slices/shareApplication.slices";
 import { AppDispatch } from "../../store";
 import { setMessage } from "../../message.slices";
-import { getStudentApplication } from "../../shared/services/shareApplication.services";
+import {
+  getSingleStudentApplication,
+  getStudentApplication,
+} from "../../shared/services/shareApplication.services";
 import { useQuery } from "react-query";
 
 interface UpdateProfile {
@@ -73,6 +77,10 @@ export interface ApplicationDetails {
 interface Country {
   name: string;
   cca2: string;
+}
+
+interface State {
+  name: string;
 }
 
 export const useUserProfile = () => {
@@ -178,7 +186,7 @@ export const useApplicationDetails = (applicationId: string) => {
       if (!applicationId) {
         throw new Error("No application ID provided");
       }
-      const endpoint = `/application/${applicationId}`;
+      const endpoint = `/admin/application/${applicationId}`;
       return await getStudentApplication(endpoint);
     },
     {
@@ -220,6 +228,36 @@ export const useCountries = () => {
   }, []);
 
   return { countries, loading, error };
+};
+
+export const useStates = () => {
+  const [states, setStates] = useState<State[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchStates = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          "https://nga-states-lga.onrender.com/fetch"
+        );
+        if (!response.ok) throw new Error("Network response was not ok");
+        const data = await response.json();
+        setStates(data);
+      } catch (error) {
+        setError("Error fetching states");
+        console.error("Error fetching states:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStates();
+  }, []);
+
+  return { states, loading, error };
 };
 
 export const useTopCountries = () => {
@@ -299,8 +337,10 @@ export const useAllStudent = () => {
 export const useAllAgent = () => {
   const dispatch: AppDispatch = useDispatch();
   const useAgents = useSelector(
-    (state: any) => state.shareApplication.allAgents
+    (state: any) => state.shareApplication?.allAgents.data
   );
+  console.log("agent hook", useAgents);
+
   const loading = useSelector((state: any) => state.shareApplication.loading);
 
   const fetchAgents = useCallback(
@@ -344,4 +384,49 @@ export const useAllInvoice = () => {
   );
 
   return { useInvoice, loading, fetchInvoice };
+};
+
+export const useSingleStudentApplication = (studentId?: string) => {
+  const dispatch = useDispatch();
+
+  const { data, isLoading, error } = useQuery(
+    ["applicationDetails", studentId],
+    async () => {
+      if (!studentId) {
+        throw new Error("No student ID provided");
+      }
+      const endpoint = `/admin/application/student/${studentId}`;
+      const response = await getSingleStudentApplication(endpoint);
+      return response.data;
+    },
+    {
+      enabled: !!studentId,
+      onError: (error: any) => {
+        dispatch(setMessage(error.message));
+      },
+    }
+  );
+
+  return { applicationDetails: data, loading: isLoading, error };
+};
+export const useAllVisa = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const allVisa = useSelector((state: any) => state.shareApplication.allVisa.data);
+  console.log("allV", allVisa);
+  const error = useSelector((state: any) => state.shareApplication.error);
+
+  const fetchVisa = useCallback(
+    (page: number, limit: number) => {
+      dispatch(getAllVisaApplication({ page, limit }));
+    },
+    [dispatch]
+  );
+
+  return {
+    visaData: allVisa.data,
+    totalItems: allVisa.totalItems,
+    loading: allVisa.loading,
+    error,
+    fetchVisa,
+  };
 };
