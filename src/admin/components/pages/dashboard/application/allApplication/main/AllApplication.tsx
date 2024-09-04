@@ -61,6 +61,8 @@ const AllApplication = () => {
       return 0;
     });
   }, [applications, searchTerm, sortField, sortOrder]);
+
+  
   const isCurrentPageEmpty = filteredAndSortedApplications.length === 0;
 
   const handleViewDetails = useCallback(

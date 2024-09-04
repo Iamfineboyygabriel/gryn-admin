@@ -347,6 +347,7 @@ const getAllAgents = async (page: number, limit: number) => {
       headers: authHeader(),
       method: "get",
     });
+    console.log("Res", response);
     const token = response?.data?.data?.tokens?.accessToken;
     if (token) {
       sessionStorage.setItem("userData", token);
@@ -478,21 +479,42 @@ const getStudentUniversities = async () => {
 };
 
 export const getAllVisaApplication = async (page: number, limit: number) => {
-  console.log("Starting API call to getAllVisaApplication");
   const url = `${process.env.REACT_APP_API_URL}/visa?page=${page}&limit=${limit}`;
   try {
-    console.log("API URL:", url);
     const response = await axios({
       url,
       headers: authHeader(),
       method: "get",
     });
-    return {
-      data: response.data,
-      totalItems: response.data.length,
-    };
+
+    if (response.data && Array.isArray(response.data.data)) {
+      return {
+        data: response.data.data,
+        totalItems: response.data.totalItems || response.data.data.length,
+      };
+    } else {
+      throw new Error("Unexpected response structure");
+    }
   } catch (error) {
-    console.error("API Error:", error);
+    throw error;
+  }
+};
+
+const getAllPendingAgents = async (page: number, limit: number) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/users/pending/agents?page=${page}&limit=${limit}`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "get",
+    });
+    console.log("pending agents", response);
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
     throw error;
   }
 };
@@ -520,6 +542,7 @@ const shareApplicationServices = {
   createApplication,
   getStudentUniversities,
   getAllVisaApplication,
+  getAllPendingAgents,
 };
 
 export default shareApplicationServices;

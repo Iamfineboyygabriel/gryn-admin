@@ -1,11 +1,35 @@
-// import dayjs from "dayjs";
-// import { useApplicationDetails } from "../../../../../../../../../shared/redux/hooks/shared/getUserProfile";
+import React from "react";
+import dayjs from "dayjs";
+import { useApplicationDetails } from "../../../../../../../../../shared/redux/hooks/shared/getUserProfile";
 
-const PersonalDetails = ({ applicationId }: any) => {
-  // const { applicationDetails, loading: applicationLoading } =
-  //   useApplicationDetails(applicationId);
+const SkeletonField = () => (
+  <div className="animate-pulse">
+    <div className="h-4 w-1/4 bg-gray-200 rounded mb-2"></div>
+    <div className="h-10 bg-gray-200 rounded"></div>
+  </div>
+);
 
-  // const [loading, setLoading] = useState(false);
+const PersonalDetails: React.FC<{ applicationId: any }> = ({
+  applicationId,
+}) => {
+  const { applicationDetails, loading } = useApplicationDetails(applicationId);
+
+  const renderField = (label: string, value: string | undefined) => (
+    <div className="w-full">
+      <label className="flex-start flex font-medium dark:text-white">
+        {label}
+      </label>
+      {loading ? (
+        <SkeletonField />
+      ) : (
+        <input
+          value={value || ""}
+          readOnly
+          className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none dark:text-white"
+        />
+      )}
+    </div>
+  );
 
   return (
     <main className="font-outfit">
@@ -14,156 +38,34 @@ const PersonalDetails = ({ applicationId }: any) => {
           Personal Details
         </h2>
       </header>
-      {/* {applicationLoading && (
-        <small className="mt-2 block">please wait...</small>
-      )} */}
       <form className="mt-[2em] w-[77%] dark:text-white">
         <div className="flex flex-row gap-[3em]">
-          <div className="w-full">
-            <label htmlFor="firstName" className="flex-start flex font-medium">
-              First Name
-            </label>
-            <input
-              id="firstName"
-              name="firstName"
-              // value={firstName}
-              readOnly
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
-            />
-          </div>
-
-          <div className="w-full">
-            <label htmlFor="lastName" className="flex-start flex font-medium">
-              Last Name
-            </label>
-            <input
-              id="lastName"
-              name="lastName"
-              type="text"
-              // value={lastName}
-              readOnly
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
-            />
-          </div>
+          {renderField("First Name", applicationDetails?.data?.firstName)}
+          {renderField("Last Name", applicationDetails?.data?.lastName)}
         </div>
-
         <div className="mt-[1em] flex flex-row gap-[3em]">
-          <div className="w-full">
-            <label htmlFor="middleName" className="flex-start flex font-medium">
-              Middle Name
-              <span className="ml-2 font-normal text-grey">(Optional)</span>
-            </label>
-            <input
-              id="middleName"
-              name="middleName"
-              // value={middleName}
-              readOnly
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none dark:text-white"
-            />
-          </div>
-          <div className="w-full">
-            <label
-              htmlFor="phoneNumber"
-              className="flex-start flex font-medium"
-            >
-              PhoneNumber
-            </label>
-            <input
-              id="phoneNumber"
-              name="phoneNumber"
-              type="phoneNumber"
-              // value={phoneNumber}
-              readOnly
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
-            />
-          </div>
+          {renderField("Middle Name", applicationDetails?.data?.middleName)}
+          {renderField("Phone Number", applicationDetails?.data?.phoneNumber)}
         </div>
-
         <div className="mt-[1em] flex flex-row gap-[3em]">
-          <div className="w-full">
-            <label htmlFor="firstName" className="flex-start flex font-medium">
-              Date of Birth
-            </label>
-            <input
-              id="dateOfBirth"
-              name="dateOfBirth"
-              type="dateOfBirth"
-              readOnly
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
-            />
-          </div>
-          <div className="w-full">
-            <label htmlFor="lastName" className="flex-start flex font-medium">
-              Address
-            </label>
-            <input
-              id="lastName"
-              name="lastName"
-              type="text"
-              // value={address}
-              readOnly
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
-            />
-          </div>
+          {renderField(
+            "Date of Birth",
+            applicationDetails?.data?.dateOfBirth
+              ? dayjs(applicationDetails.data.dateOfBirth).format("YYYY-MM-DD")
+              : ""
+          )}
+          {renderField("Address", applicationDetails?.data?.address)}
         </div>
-
         <div className="mt-[1em] flex flex-row gap-[3em]">
-          <div className="w-full">
-            <label htmlFor="lga" className="flex-start flex font-medium">
-              L.G.A
-            </label>
-            <input
-              id="lga"
-              name="lga"
-              readOnly
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
-            />
-          </div>
-
-          <div className="relative w-full">
-            <label htmlFor="state" className="flex-start flex font-medium">
-              State
-            </label>
-            <input
-              id="state"
-              name="state"
-              // value={state}
-              readOnly
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
-            />
-          </div>
+          {renderField("L.G.A", applicationDetails?.data?.localGovtArea)}
+          {renderField("State", applicationDetails?.data?.state)}
         </div>
-
         <div className="mt-[1em] flex flex-row gap-[3em]">
-          <div className="w-full">
-            <label htmlFor="country" className="flex-start flex font-medium">
-              Country
-            </label>
-            <input
-              id="country"
-              name="country"
-              type="text"
-              // value={country}
-              readOnly
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
-            />
-          </div>
-
-          <div className="w-full">
-            <label
-              htmlFor="internationalPassportNumber"
-              className="flex-start flex font-medium"
-            >
-              International Passport Number
-            </label>
-            <input
-              id="internationalPassportNumber"
-              name="internationalPassportNumber"
-              type="text"
-              readOnly
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
-            />
-          </div>
+          {renderField("Country", applicationDetails?.data?.country)}
+          {renderField(
+            "International Passport Number",
+            applicationDetails?.data?.internationalPassportNumber
+          )}
         </div>
       </form>
     </main>

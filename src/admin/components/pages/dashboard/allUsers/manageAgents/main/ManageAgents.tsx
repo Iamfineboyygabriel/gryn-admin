@@ -5,6 +5,8 @@ import { Link } from "react-router-dom";
 import CustomPagination from "../../../../../../../shared/utils/customPagination";
 import DOMPurify from "dompurify";
 import { useAllAgent } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
+import { button } from "../../../../../../../shared/buttons/Button";
+import plus from "../../../../../../../assets/svg/plus.svg";
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -16,8 +18,9 @@ const SkeletonRow = () => (
   </tr>
 );
 
-const AllAgents = () => {
+const ManageAgents = () => {
   const { useAgents, fetchAgents, loading } = useAllAgent();
+  console.log("aaa", useAgents);
   const agentData = useMemo(() => useAgents?.data || [], [useAgents?.data]);
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
@@ -48,20 +51,22 @@ const AllAgents = () => {
     );
   };
 
-  const filteredAgents = useMemo(
-    () =>
-      agentData.filter((agent: any) => {
-        const firstNameMatches = agent.profile.firstName
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase());
-        const lastNameMatches = agent.profile.lastName
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase());
+  // const filteredAgents = useMemo(
+  //   () =>
+  //     agentData.filter((agent: any) => {
+  //       const firstNameMatches = agent.profile.firstName
+  //         .toLowerCase()
+  //         .includes(searchQuery.toLowerCase());
+  //       const lastNameMatches = agent.profile.lastName
+  //         .toLowerCase()
+  //         .includes(searchQuery.toLowerCase());
 
-        return firstNameMatches || lastNameMatches;
-      }),
-    [agentData, searchQuery]
-  );
+  //       return firstNameMatches || lastNameMatches;
+  //     }),
+  //   [agentData, searchQuery]
+  // );
+
+  const filteredAgents = agentData;
 
   const totalPages = Math.ceil(filteredAgents.length / itemsPerPage);
 
@@ -81,6 +86,25 @@ const AllAgents = () => {
   return (
     <main>
       <div className="relative">
+      <header className="flex items-center justify-between">
+          <h1 className="font-medium text-xl">All Agents</h1>
+          <div className="flex gap-2">
+            <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-[#9747FF] px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
+              <img src={plus} alt="plus" />
+              Assign Student
+            </button.PrimaryButton>
+            <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-primary-200 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
+              <img src={plus} alt="plus" />
+              Update Application
+            </button.PrimaryButton>
+            <Link to="/admin/dashboard/application/manage_application/new_application">
+              <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-primary-700 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
+                <img src={plus} alt="plus" />
+                New Agent
+              </button.PrimaryButton>
+            </Link>
+          </div>
+        </header>
         <div className="flex items-center mt-3 w-64 rounded-full border-[1px] border-border bg-gray-100 dark:bg-gray-700">
           <input
             type="text"
@@ -172,4 +196,4 @@ const AllAgents = () => {
   );
 };
 
-export default AllAgents;
+export default ManageAgents;

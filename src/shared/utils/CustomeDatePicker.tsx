@@ -21,7 +21,7 @@ const CustomDatePicker = ({ selected, onChange, className = "" }: any) => {
   ];
 
   const defaultClassName =
-    "w-[27em] cursor-pointer rounded-lg border-2 px-2 py-[14px] text-sm font-medium placeholder-black focus:outline-none dark:bg-inherit dark:text-white dark:placeholder:text-white";
+    "w-[27em] cursor-pointer rounded-lg border-[1px] px-2 py-[14px] text-sm font-medium placeholder-black focus:outline-none dark:bg-inherit dark:text-white dark:placeholder:text-white";
   const combinedClassName = `${defaultClassName} ${className}`.trim();
 
   return (

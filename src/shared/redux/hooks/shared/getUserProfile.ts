@@ -5,6 +5,7 @@ import {
   getAllAgents,
   getAllDraftItems,
   getAllInvoice,
+  getAllPendingAgents,
   getAllStudents,
   getAllVisaApplication,
   getCurrentUser,
@@ -409,10 +410,10 @@ export const useSingleStudentApplication = (studentId?: string) => {
 
   return { applicationDetails: data, loading: isLoading, error };
 };
+
 export const useAllVisa = () => {
   const dispatch: AppDispatch = useDispatch();
-  const allVisa = useSelector((state: any) => state.shareApplication.allVisa.data);
-  console.log("allV", allVisa);
+  const allVisa = useSelector((state: any) => state.shareApplication.allVisa);
   const error = useSelector((state: any) => state.shareApplication.error);
 
   const fetchVisa = useCallback(
@@ -422,6 +423,12 @@ export const useAllVisa = () => {
     [dispatch]
   );
 
+  useEffect(() => {
+    if (allVisa.data === null && !allVisa.loading) {
+      fetchVisa(1, 10);
+    }
+  }, [allVisa, allVisa.loading, fetchVisa]);
+
   return {
     visaData: allVisa.data,
     totalItems: allVisa.totalItems,
@@ -429,4 +436,21 @@ export const useAllVisa = () => {
     error,
     fetchVisa,
   };
+};
+
+export const useAllPendingAgents = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const useAllPending = useSelector(
+    (state: any) => state.shareApplication.pendingAgents
+  );
+  console.log("usePend", useAllPending);
+
+  const fetchAgents = useCallback(
+    (page: number, limit: number) => {
+      dispatch(getAllPendingAgents({ page, limit }));
+    },
+    [dispatch]
+  );
+
+  return { useAllPending, fetchAgents };
 };

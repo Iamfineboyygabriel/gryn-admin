@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { FiSearch } from "react-icons/fi";
 import transaction from "../../../../../../../assets/svg/Transaction.svg";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAllStudent } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
 import CustomPagination from "../../../../../../../shared/utils/customPagination";
+import { button } from "../../../../../../../shared/buttons/Button";
+import plus from "../../../../../../../assets/svg/plus.svg";
 import DOMPurify from "dompurify";
 
 interface Student {
@@ -54,12 +56,12 @@ const AllStudents: React.FC = () => {
   const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
   const isCurrentPageEmpty = page > totalPages;
 
-  const paginatedStudents = useMemo(() => {
-    const startIndex = (page - 1) * itemsPerPage;
-    return filteredStudents.slice(startIndex, startIndex + itemsPerPage);
-  }, [filteredStudents, page, itemsPerPage]);
+  // const paginatedStudents = useMemo(() => {
+  //   const startIndex = (page - 1) * itemsPerPage;
+  //   return filteredStudents.slice(startIndex, startIndex + itemsPerPage);
+  // }, [filteredStudents, page, itemsPerPage]);
 
-  // const paginatedStudents = filteredStudents;
+  const paginatedStudents = filteredStudents;
 
   const handlePageChange = useCallback(
     (event: React.ChangeEvent<unknown>, value: number) => {
@@ -184,7 +186,26 @@ const AllStudents: React.FC = () => {
   return (
     <main>
       <div className="relative">
-        <div className="flex items-center w-64 rounded-full border-[1px] border-border bg-gray-100 dark:bg-gray-700">
+        <header className="flex items-center justify-between">
+          <h1 className="font-medium text-xl">All Students</h1>
+          <div className="flex gap-2">
+            <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-[#9747FF] px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
+              <img src={plus} alt="plus" />
+              Assign Student
+            </button.PrimaryButton>
+            <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-primary-200 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
+              <img src={plus} alt="plus" />
+              Update Application
+            </button.PrimaryButton>
+            <Link to="/admin/dashboard/application/manage_application/new_application">
+              <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-primary-700 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
+                <img src={plus} alt="plus" />
+                New Student
+              </button.PrimaryButton>
+            </Link>
+          </div>
+        </header>
+        <div className="flex items-center w-64 mt-[1em] rounded-full border-[1px] border-border bg-gray-100 dark:bg-gray-700">
           <input
             type="text"
             className="flex-grow rounded-full bg-transparent py-2 pl-4 pr-2 text-sm focus:border-grey-primary focus:outline-none"

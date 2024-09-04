@@ -103,11 +103,7 @@ export const createVisaApplication = createAsyncThunk(
       const data = await shareApplicationServices.createVisaApplication(body);
       return data;
     } catch (error: any) {
-      const message =
-        error?.response?.data?.message ||
-        error.message ||
-        "Something went wrong!";
-      thunkAPI.dispatch(setMessage(message));
+      const message = error;
       return thunkAPI.rejectWithValue(message);
     }
   }
@@ -160,6 +156,7 @@ export const getAllAgents = createAsyncThunk(
   async ({ page, limit }: { page: number; limit: number }, thunkAPI) => {
     try {
       const data = await shareApplicationServices.getAllAgents(page, limit);
+      console.log("Ddd", data);
       return data;
     } catch (error: any) {
       const message = error.message;
@@ -247,20 +244,31 @@ export const createApplication = createAsyncThunk(
     }
   }
 );
-
 export const getAllVisaApplication = createAsyncThunk(
   "shareApplication/getAllVisaApplication",
   async ({ page, limit }: { page: number; limit: number }, thunkAPI) => {
     try {
-      const data = await shareApplicationServices.getAllVisaApplication(
+      return await shareApplicationServices.getAllVisaApplication(page, limit);
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.message || "An error occurred");
+    }
+  }
+);
+
+export const getAllPendingAgents = createAsyncThunk(
+  "shareApplication/getAllPendingAgents",
+  async ({ page, limit }: { page: number; limit: number }, thunkAPI) => {
+    try {
+      const data = await shareApplicationServices.getAllPendingAgents(
         page,
         limit
       );
-      console.log("Thunk result:", data);
+      console.log("Data", data);
       return data;
     } catch (error: any) {
-      console.error("Thunk Error:", error);
-      return thunkAPI.rejectWithValue(error.message || "An error occurred");
+      const message = error.message;
+      error.toString();
+      return thunkAPI.rejectWithValue(message);
     }
   }
 );
@@ -308,6 +316,12 @@ interface ApplicationState {
     totalItems: number;
     loading: boolean;
   };
+  pendingAgents: {
+    data: {
+      pendingAgents: any[];
+    } | null;
+    totalItems: number;
+  };
 }
 
 const initialState: ApplicationState = {
@@ -344,6 +358,10 @@ const initialState: ApplicationState = {
     data: null,
     totalItems: 0,
     loading: false,
+  },
+  pendingAgents: {
+    data: null,
+    totalItems: 0,
   },
 };
 
@@ -545,14 +563,42 @@ export const shareApplicationSlice = createSlice({
         state.allVisa.totalItems = 0;
       })
       .addCase(getAllVisaApplication.fulfilled, (state, action) => {
-        state.allVisa.data = action.payload.data;
-        state.allVisa.totalItems = action.payload.totalItems;
+        if (action.payload && action.payload.data) {
+          state.allVisa.data = action.payload.data;
+          state.allVisa.totalItems = action.payload.totalItems;
+        } else {
+          state.allVisa.data = null;
+          state.allVisa.totalItems = 0;
+        }
         state.allVisa.loading = false;
       })
       .addCase(getAllVisaApplication.rejected, (state, action) => {
         state.allVisa.loading = false;
         state.allVisa.data = null;
         state.allVisa.totalItems = 0;
+      })
+
+      .addCase(getAllPendingAgents.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(
+        getAllPendingAgents.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          console.log("steee", action.payload);
+          state.pendingAgents.data = action.payload.data;
+          state.pendingAgents.totalItems = action.payload.totalItems;
+          state.loading = false;
+        }
+      )
+
+      .addCase(getAllPendingAgents.rejected, (state, action) => {
+        state.pendingAgents = {
+          data: null,
+          totalItems: 0,
+        };
+        const errorMessage =
+          action.error.message || "Failed to fetch all students.";
+        setMessage(errorMessage);
       });
   },
 });

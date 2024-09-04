@@ -1,81 +1,50 @@
-// import { useApplicationDetails } from "../../../../../../../../../shared/redux/hooks/shared/getUserProfile";
+import React from "react";
+import { useApplicationDetails } from "../../../../../../../../../shared/redux/hooks/shared/getUserProfile";
 
-const Degree = ({ applicationId }: any) => {
-  // const { applicationDetails, loading: applicationLoading } =
-  //   useApplicationDetails(applicationId);
+const SkeletonField = () => (
+  <div className="animate-pulse">
+    <div className="h-4 w-1/4 bg-gray-200 rounded mb-2"></div>
+    <div className="h-10 bg-gray-200 rounded"></div>
+  </div>
+);
+
+const Degree: React.FC<{ applicationId: any }> = ({ applicationId }) => {
+  const { applicationDetails, loading } = useApplicationDetails(applicationId);
+
+  const renderField = (label: string, value: string | undefined) => (
+    <div className="w-full">
+      <label className="flex-start flex font-medium dark:text-white">
+        {label}
+      </label>
+      {loading ? (
+        <SkeletonField />
+      ) : (
+        <input
+          value={value || ""}
+          readOnly
+          className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none dark:text-white"
+        />
+      )}
+    </div>
+  );
 
   return (
     <main className="font-outfit">
       <header>
         <h2 className="text-xl font-semibold dark:text-white">Degree</h2>
       </header>
-      {/* {applicationLoading && (
-        <small className="mt-2 block">please wait...</small>
-      )} */}
       <div className="mt-[2em] flex flex-col gap-[1.5em]">
         <div className="flex w-[40%] flex-col gap-[1.2em]">
-          <div className="w-full">
-            <label
-              htmlFor="country"
-              className="flex-start flex font-medium dark:text-white"
-            >
-              Country
-            </label>
-            <input
-              id="country"
-              name="country"
-              // value={country}
-              readOnly
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none dark:text-white"
-            />
-          </div>
-          <div className="w-full">
-            <label
-              htmlFor="university"
-              className="flex-start flex font-medium dark:text-white"
-            >
-              University
-            </label>
-            <input
-              id="university"
-              name="university"
-              // value={university}
-              readOnly
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none dark:text-white"
-            />
-          </div>
-          <div className="w-full">
-            <label
-              htmlFor="degree"
-              className="flex-start flex font-medium text-black dark:text-white"
-            >
-              What do you want to study abroad
-            </label>
-            <input
-              id="degree"
-              name="degree"
-              type="text"
-              // value={degreeType}
-              readOnly
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none dark:border-none dark:bg-gray-700 dark:text-white"
-            />
-          </div>
-          <div className="w-full">
-            <label
-              htmlFor="course"
-              className="flex-start flex font-medium dark:text-white"
-            >
-              Course
-            </label>
-            <input
-              id="course"
-              name="course"
-              type="text"
-              // value={course}
-              readOnly
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none dark:border-none dark:bg-gray-700 dark:text-white"
-            />
-          </div>
+          {renderField("Country", applicationDetails?.data?.degree?.country)}
+          {renderField(
+            "University",
+            applicationDetails?.data?.degree?.university
+          )}
+          {renderField(
+            "What do you want to study abroad",
+            applicationDetails?.data?.degree?.degreeType
+          )}
+          {renderField("Course", applicationDetails?.data?.degree?.course)}
         </div>
       </div>
     </main>

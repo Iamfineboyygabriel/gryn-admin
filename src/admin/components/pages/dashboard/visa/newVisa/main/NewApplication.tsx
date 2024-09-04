@@ -1,53 +1,26 @@
-import { useState } from "react";
-import { useNavigate } from "react-router";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import StepIndicator from "../../../../../../../shared/stepIndicator/StepIndicator";
 import StepOne from "../stepOne/StepOne";
 import StepTwo from "../stepTwo/StepTwo";
 import StepThree from "../stepThree/StepThree";
 import { button } from "../../../../../../../shared/buttons/Button";
 
-type CustomCountry = {
-  cca2: string;
-  name: string;
-};
-
 const NewApplication = () => {
-  const [currentStep, setCurrentStep] = useState<number>(1);
+  const [currentStep, setCurrentStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
-  const [selectedDegree, setSelectedDegree] = useState<string | null>(null);
   const [applicationId, setApplicationId] = useState<string | null>(null);
 
-  const [stepOneData, setStepOneData] = useState<{
-    firstName: string;
-    lastName: string;
-    middleName: string;
-    dateOfBirth: string;
-    address: string;
-    email: string;
-    state: string;
-    localGovtArea: string;
-    country: CustomCountry | null;
-    internationalPassportNumber: string;
-    phoneNumber: string;
-    selectedDate: string;
-  }>({
+  const [stepOneData, setStepOneData] = useState({
     firstName: "",
     lastName: "",
-    middleName: "",
-    dateOfBirth: "",
-    address: "",
     email: "",
-    state: "",
-    localGovtArea: "",
-    country: null,
-    internationalPassportNumber: "",
-    phoneNumber: "",
-    selectedDate: "",
+    otherName: "",
   });
 
   const navigate = useNavigate();
 
-  const handleBackClick = async () => {
+  const handleBackClick = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     } else {
@@ -55,15 +28,10 @@ const NewApplication = () => {
     }
   };
 
-  const handleNextClick = (data?: {
-    newApplicationId?: string;
-    selectedDegree?: string;
-  }) => {
+  const handleNextClick = (data?: { newApplicationId?: string }) => {
     if (data?.newApplicationId) {
       setApplicationId(data.newApplicationId);
-    }
-    if (data?.selectedDegree) {
-      setSelectedDegree(data.selectedDegree);
+      console.log("Extracted applicationId:", data.newApplicationId);
     }
 
     if (!completedSteps.includes(currentStep)) {
@@ -103,42 +71,15 @@ const NewApplication = () => {
         <div className="mt-[2em]">
           {currentStep === 1 && (
             <StepOne
-              onNext={(data: {
-                firstName: string;
-                lastName: string;
-                middleName: string;
-                dateOfBirth: string;
-                address: string;
-                email: string;
-                state: string;
-                localGovtArea: string;
-                country: CustomCountry | null;
-                internationalPassportNumber: string;
-                phoneNumber: string;
-                selectedDate: string;
-              }) => {
-                setStepOneData({
-                  firstName: data.firstName,
-                  lastName: data.lastName,
-                  middleName: data.middleName,
-                  dateOfBirth: data.dateOfBirth,
-                  address: data.address,
-                  email: data.email,
-                  state: data.state,
-                  localGovtArea: data.localGovtArea,
-                  country: data.country,
-                  internationalPassportNumber: data.internationalPassportNumber,
-                  phoneNumber: data.phoneNumber,
-                  selectedDate: data.selectedDate,
-                });
+              onNext={(data: any) => {
+                setStepOneData(data);
                 handleNextClick();
               }}
             />
           )}
           {currentStep === 2 && (
             <StepTwo
-              onNext={(data) => handleNextClick(data)}
-              setSelectedDegree={setSelectedDegree}
+              onNext={(data: any) => handleNextClick(data)}
               applicationId={applicationId}
               stepOneData={stepOneData}
             />
@@ -147,7 +88,6 @@ const NewApplication = () => {
             <StepThree
               onNext={handleNextClick}
               onPrevious={handleBackClick}
-              selectedDegree={selectedDegree}
               applicationId={applicationId}
             />
           )}

@@ -14,6 +14,8 @@ import reportAcive from "../assets/svg/InactiveReport.svg";
 import report from "../assets/svg/ActiveRepor.svg";
 import visaActive from "../assets/svg/activevisa.svg";
 import visa from "../assets/svg/inactivevisa.svg";
+import activeUser from "../assets/svg/activeUser.svg";
+import inActiveUser from "../assets/svg/inActiveUser.svg";
 
 export const staffSidebarLinks = [
   {
@@ -84,6 +86,20 @@ export const adminSideBarLinks = [
     text: "Application",
     to: "/admin/dashboard/application",
     pathsToCheck: ["/admin/dashboard/application"],
+  },
+  {
+    img: visa,
+    imgActive: visaActive,
+    text: "Visa Application",
+    to: "/admin/dashboard/visa",
+    pathsToCheck: ["/admin/dashboard/visa"],
+  },
+  {
+    img: inActiveUser,
+    imgActive: activeUser,
+    text: "All Users",
+    to: "/admin/dashboard/all_users",
+    pathsToCheck: ["/admin/dashboard/all_users"],
   },
   {
     img: payment,

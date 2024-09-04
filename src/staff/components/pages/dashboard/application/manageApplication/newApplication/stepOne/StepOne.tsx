@@ -14,7 +14,7 @@ import { formatDateApplication } from "../../../../../../../../shared/utils/date
 
 interface Country {
   name: string;
-  cca2: string ;
+  cca2: string;
 }
 
 const StepOne = ({ onNext }: any) => {
@@ -43,17 +43,7 @@ const StepOne = ({ onNext }: any) => {
   };
 
   const areFieldsFilled = () => {
-    return (
-      firstName &&
-      lastName &&
-      dateOfBirth &&
-      address &&
-      localGovtArea &&
-      state &&
-      country &&
-      phoneNumber &&
-      internationalPassportNumber
-    );
+    return dateOfBirth && state && country;
   };
 
   const submitApplication: React.FormEventHandler<HTMLFormElement> = async (
@@ -80,7 +70,6 @@ const StepOne = ({ onNext }: any) => {
         country: country ? country.name : null,
         internationalPassportNumber,
       };
-      console.log("body", body);
       onNext(body);
       setLoading(false);
     }, 3000);
@@ -113,8 +102,6 @@ const StepOne = ({ onNext }: any) => {
     setCountry({ name: item.name, cca2: item.cca2 });
   };
 
-
-
   return (
     <main className="font-outfit">
       <header>
@@ -135,6 +122,8 @@ const StepOne = ({ onNext }: any) => {
             <input
               id="firstName"
               name="firstName"
+              required
+              disabled={loading}
               onChange={(e) => setFirstName(e.target.value)}
               className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
             />
@@ -148,6 +137,8 @@ const StepOne = ({ onNext }: any) => {
               id="lastName"
               name="lastName"
               type="text"
+              required
+              disabled={loading}
               onChange={(e) => setLastName(e.target.value)}
               className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
             />
@@ -163,6 +154,7 @@ const StepOne = ({ onNext }: any) => {
             <input
               id="middleName"
               name="middleName"
+              disabled={loading}
               onChange={(e) => setMiddleName(e.target.value)}
               className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none dark:text-white"
             />
@@ -179,6 +171,8 @@ const StepOne = ({ onNext }: any) => {
               id="phoneNumber"
               name="phoneNumber"
               type="text"
+              required
+              disabled={loading}
               onChange={(e) => setPhoneNumber(e.target.value)}
               className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
             />
@@ -208,6 +202,8 @@ const StepOne = ({ onNext }: any) => {
               id="address"
               name="address"
               type="text"
+              required
+              disabled={loading}
               onChange={(e) => setAddress(e.target.value)}
               className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
             />
@@ -226,6 +222,8 @@ const StepOne = ({ onNext }: any) => {
             <input
               id="localGovtArea"
               name="localGovtArea"
+              required
+              disabled={loading}
               onChange={(e) => setLocalGovtArea(e.target.value)}
               className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
             />
@@ -275,6 +273,8 @@ const StepOne = ({ onNext }: any) => {
               id="passportNumber"
               name="passportNumber"
               type="text"
+              required
+              disabled={loading}
               onChange={(e) => setInternationalPassportNumber(e.target.value)}
               className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
             />

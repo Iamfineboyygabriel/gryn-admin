@@ -9,8 +9,8 @@ const Sidebar = () => {
   const navigate = useNavigate();
 
   return (
-    <aside className="flex h-screen w-[13em] flex-col bg-white font-outfit dark:bg-gray-800">
-      <nav className="flex flex-grow flex-col px-5">
+    <aside className="flex h-screen w-[14em] flex-col bg-white font-outfit dark:bg-gray-800">
+      <nav className="flex flex-grow flex-col px-4">
         {adminSideBarLinks?.map((link: any, index: any) => {
           const isActive = link.pathsToCheck.some((path: any) =>
             location.pathname.startsWith(path)
@@ -20,7 +20,7 @@ const Sidebar = () => {
             <Link
               key={index}
               to={link.to}
-              className={`flex items-center px-4 py-3 text-lg hover:bg-purple-white dark:hover:bg-gray-700 ${
+              className={`flex items-center px-3 py-2 text-lg hover:bg-purple-white dark:hover:bg-gray-700 ${
                 isActive
                   ? "bg-purple-white text-lg font-medium text-primary-700 dark:bg-gray-700 dark:text-white"
                   : "text-gray-500"
@@ -35,11 +35,11 @@ const Sidebar = () => {
             </Link>
           );
         })}
-        <div className="mt-[4em] flex flex-col items-center justify-center rounded-lg bg-purple-deep px-3 py-4 dark:bg-gray-700">
-          <img src={logout} alt="logout_image" className="mt-[1em] w-[4em]" />
+        <div className="mt-[1.5em] flex flex-col items-center justify-center rounded-lg bg-purple-deep px-3 py-4 dark:bg-gray-700">
+          <img src={logout} alt="logout_image" className="mt-6 w-[4em]" />
           <button.PrimaryButton
             onClick={() => handleLogout(navigate)}
-            className="mt-[1em] rounded-lg btn-auth px-[2.5em] py-[10px] font-medium text-white"
+            className="btn-auth mt-[1em] rounded-lg px-[2.5em] py-[10px] font-medium text-white"
           >
             Log Out
           </button.PrimaryButton>

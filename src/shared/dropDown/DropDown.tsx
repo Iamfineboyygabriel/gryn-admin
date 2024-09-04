@@ -104,7 +104,7 @@ export const Dropdown: React.FC<ToggleDropdownProps> = ({
       </label>
       <div className="relative mt-[10px]">
         <button
-          className={`border-border text-l flex w-full items-center justify-between rounded-lg border-[2px] bg-inherit p-3 text-left font-medium`}
+          className={`border-border text-l flex w-full items-center justify-between rounded-lg border-[1px] bg-inherit p-3 text-left font-medium`}
           type="button"
           onClick={toggleDropdown}
           aria-haspopup="listbox"

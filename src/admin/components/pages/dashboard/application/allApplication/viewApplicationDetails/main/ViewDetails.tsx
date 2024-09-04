@@ -6,9 +6,10 @@ import UploadedDocument from "../view/uploadedDocuments/UploadedDocuments";
 import { button } from "../../../../../../../../shared/buttons/Button";
 import upload from "../../../../../../../../assets/svg/Upload.svg";
 
-const ViewDetails = () => {
+const ViewApplication = () => {
   const [activeLink, setActiveLink] = useState("personalDetails");
   const { applicationId } = useParams();
+
   const navigate = useNavigate();
 
   const handleBackClick = async () => {
@@ -82,9 +83,7 @@ const ViewDetails = () => {
             {activeLink === "degree" && (
               <Degree applicationId={applicationId} />
             )}
-            {activeLink === "uploadedDocument" && (
-              <UploadedDocument applicationId={applicationId} />
-            )}
+            {activeLink === "uploadedDocument" && <UploadedDocument />}
           </section>
         </div>
       </div>
@@ -92,4 +91,4 @@ const ViewDetails = () => {
   );
 };
 
-export default ViewDetails;
+export default ViewApplication;

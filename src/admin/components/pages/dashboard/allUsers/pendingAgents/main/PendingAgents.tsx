@@ -4,7 +4,9 @@ import transaction from "../../../../../../../assets/svg/Transaction.svg";
 import { Link } from "react-router-dom";
 import CustomPagination from "../../../../../../../shared/utils/customPagination";
 import DOMPurify from "dompurify";
-import { useAllAgent } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
+import { useAllPendingAgents } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
+import { button } from "../../../../../../../shared/buttons/Button";
+import plus from "../../../../../../../assets/svg/plus.svg";
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -16,9 +18,8 @@ const SkeletonRow = () => (
   </tr>
 );
 
-const AllAgents = () => {
-  const { useAgents, fetchAgents, loading } = useAllAgent();
-  const agentData = useMemo(() => useAgents?.data || [], [useAgents?.data]);
+const PendingAgents = () => {
+  const { data, loading, error, fetchAgents } = useAllPendingAgents();
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
   const itemsPerPage = 10;
@@ -26,8 +27,6 @@ const AllAgents = () => {
   useEffect(() => {
     fetchAgents(page, itemsPerPage);
   }, [fetchAgents, page, itemsPerPage]);
-
-  useEffect(() => {}, [agentData]);
 
   const escapeRegExp = (string: string) => {
     return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -48,26 +47,24 @@ const AllAgents = () => {
     );
   };
 
-  const filteredAgents = useMemo(
-    () =>
-      agentData.filter((agent: any) => {
-        const firstNameMatches = agent.profile.firstName
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase());
-        const lastNameMatches = agent.profile.lastName
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase());
-
-        return firstNameMatches || lastNameMatches;
-      }),
-    [agentData, searchQuery]
-  );
+  const filteredAgents = useMemo(() => {
+    return (data || []).filter((agent: any) => {
+      const fullName =
+        `${agent.profile.firstName} ${agent.profile.lastName}`.toLowerCase();
+      return (
+        fullName.includes(searchQuery.toLowerCase()) ||
+        agent.email.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    });
+  }, [data, searchQuery]);
 
   const totalPages = Math.ceil(filteredAgents.length / itemsPerPage);
-
   const isCurrentPageEmpty = page > totalPages;
 
-  const visibleData = filteredAgents;
+  const visibleData = useMemo(() => {
+    const startIndex = (page - 1) * itemsPerPage;
+    return filteredAgents.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredAgents, page, itemsPerPage]);
 
   const handlePageChange = (
     event: React.ChangeEvent<unknown>,
@@ -78,9 +75,28 @@ const AllAgents = () => {
 
   const formatData = (data: any) => (data ? data : "-");
 
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
   return (
     <main>
       <div className="relative">
+        <header className="flex items-center justify-between">
+          <h1 className="font-medium text-xl">Pending Agents</h1>
+          <div className="flex gap-2">
+            <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-primary-200 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
+              <img src={plus} alt="plus" />
+              Update Agent
+            </button.PrimaryButton>
+            <Link to="/admin/dashboard/application/manage_application/new_application">
+              <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-primary-700 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
+                <img src={plus} alt="plus" />
+                New Agent
+              </button.PrimaryButton>
+            </Link>
+          </div>
+        </header>
         <div className="flex items-center mt-3 w-64 rounded-full border-[1px] border-border bg-gray-100 dark:bg-gray-700">
           <input
             type="text"
@@ -124,14 +140,16 @@ const AllAgents = () => {
                     {(page - 1) * itemsPerPage + index + 1}
                   </td>
                   <td className="py-[16px] gap-1 px-[24px]">
-                    {highlightText(agent?.profile?.lastName, searchQuery)}
-                    {highlightText(agent?.profile?.firstName, searchQuery)}
+                    {highlightText(
+                      `${agent.profile.firstName} ${agent.profile.lastName}`,
+                      searchQuery
+                    )}
                   </td>
                   <td className="py-[16px] px-[24px]">
-                    {formatData(agent?.phoneNumber)}
+                    {formatData(agent.phoneNumber)}
                   </td>
                   <td className="py-[16px] px-[24px]">
-                    {formatData(agent?.email)}
+                    {formatData(agent.email)}
                   </td>
                   <td className="py-[16px] px-[24px]">
                     <Link
@@ -172,4 +190,4 @@ const AllAgents = () => {
   );
 };
 
-export default AllAgents;
+export default PendingAgents;

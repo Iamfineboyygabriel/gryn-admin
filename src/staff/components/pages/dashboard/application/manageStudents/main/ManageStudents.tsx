@@ -14,7 +14,7 @@ const ManageStudents = () => {
 
   return (
     <main className="font-outfit">
-      <header className="flex justify-between">
+      <header className="flex items-center justify-between">
         <h1 className="font-medium text-xl">All Students</h1>
         <div className="flex gap-2">
           <button.PrimaryButton
