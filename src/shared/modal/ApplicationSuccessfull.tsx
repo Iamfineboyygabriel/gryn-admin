@@ -8,7 +8,7 @@ const InvoiceSent = ({ onClose }: any) => {
       <div className="m-auto w-[24em] py-[2em] text-center">
         <img src={Success} alt="success_img" className="m-auto" />
         <header className="mt-[2em] flex flex-col">
-          <h1 className="text-2xl font-semibold">Application Creaed</h1>
+          <h1 className="text-2xl font-semibold">Application Created</h1>
         </header>
         <article>
           <div className="mt-[1.5em] text-sm font-light text-center tracking-wide text-grey dark:text-white">

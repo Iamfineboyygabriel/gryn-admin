@@ -440,9 +440,9 @@ export const useAllVisa = () => {
 
 export const useAllPendingAgents = () => {
   const dispatch: AppDispatch = useDispatch();
-  const useAllPending = useSelector(
-    (state: any) => state.shareApplication.pendingAgents
-  );
+  const useAllPending = useSelector((state: any) => state.shareApplication.pendingAgents);
+  const loading = useSelector((state: any) => state.shareApplication.loading); 
+  
   console.log("usePend", useAllPending);
 
   const fetchAgents = useCallback(
@@ -452,5 +452,5 @@ export const useAllPendingAgents = () => {
     [dispatch]
   );
 
-  return { useAllPending, fetchAgents };
+  return { useAllPending, loading, fetchAgents };
 };

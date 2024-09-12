@@ -83,7 +83,7 @@ const ViewApplication = () => {
             {activeLink === "degree" && (
               <Degree applicationId={applicationId} />
             )}
-            {activeLink === "uploadedDocument" && <UploadedDocument />}
+            {activeLink === "uploadedDocument" && <UploadedDocument applicationId={applicationId}/>}
           </section>
         </div>
       </div>

@@ -29,7 +29,7 @@ export const login = createAsyncThunk<LoginResponse, LoginPayload>(
       const data = await sharedLandingServices.loginUser(body);
       return data;
     } catch (error: any) {
-      const message = error.response?.data?.message || "Something went wrong";
+      const message = error.response.message || "Something went wrong";
       thunkAPI.dispatch(setMessage(message));
       return thunkAPI.rejectWithValue(message);
     }

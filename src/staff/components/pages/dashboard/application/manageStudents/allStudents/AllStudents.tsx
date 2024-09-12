@@ -30,7 +30,7 @@ const AllStudents: React.FC = () => {
   const { useAllStudents, fetchApplications, loading } = useAllStudent();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [page, setPage] = useState<number>(1);
-  const navigate = useNavigate("");
+  const navigate = useNavigate();
   const itemsPerPage = 10;
 
   useEffect(() => {

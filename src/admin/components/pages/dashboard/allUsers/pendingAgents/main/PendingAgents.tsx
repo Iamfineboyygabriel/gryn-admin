@@ -19,7 +19,7 @@ const SkeletonRow = () => (
 );
 
 const PendingAgents = () => {
-  const { data, loading, error, fetchAgents } = useAllPendingAgents();
+  const { useAllPending, loading,  fetchAgents } = useAllPendingAgents();
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
   const itemsPerPage = 10;
@@ -48,7 +48,7 @@ const PendingAgents = () => {
   };
 
   const filteredAgents = useMemo(() => {
-    return (data || []).filter((agent: any) => {
+    return (useAllPending || []).filter((agent: any) => {
       const fullName =
         `${agent.profile.firstName} ${agent.profile.lastName}`.toLowerCase();
       return (
@@ -56,7 +56,7 @@ const PendingAgents = () => {
         agent.email.toLowerCase().includes(searchQuery.toLowerCase())
       );
     });
-  }, [data, searchQuery]);
+  }, [useAllPending, searchQuery]);
 
   const totalPages = Math.ceil(filteredAgents.length / itemsPerPage);
   const isCurrentPageEmpty = page > totalPages;
@@ -75,9 +75,9 @@ const PendingAgents = () => {
 
   const formatData = (data: any) => (data ? data : "-");
 
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
+  // if (error) {
+  //   return <div>Error: {error.message}</div>;
+  // }
 
   return (
     <main>

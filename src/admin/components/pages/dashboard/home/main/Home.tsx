@@ -1,6 +1,8 @@
 import MostApplied from "../../../../../../shared/mostApplied/MostApplied";
 import Counts from "../Counts";
 import TopPeople from "../topPeople/TopPeople";
+import ApexChart from "../../../../../../shared/chart/ApexChart";
+import Status from "../Status/Status"
 
 const Home = () => {
   return (
@@ -10,6 +12,8 @@ const Home = () => {
         <Counts />
         <TopPeople />
         <MostApplied />
+        <ApexChart/>
+        <Status/>
       </div>
     </div>
   );

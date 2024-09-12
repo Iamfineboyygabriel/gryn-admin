@@ -72,7 +72,6 @@ const StepOne = ({ onNext }: any) => {
         country: country ? country.name : null,
         internationalPassportNumber,
       };
-      console.log("body", body);
       onNext(body);
       setLoading(false);
     }, 3000);

@@ -10,11 +10,11 @@ const Application = () => {
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Application</h1>
           <div className="flex gap-[1em]">
-            <button.PrimaryButton className="flex gap-2 bg-approve rounded-full px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300 hover:bg-primary-700 hover:text-white">
+            <button.PrimaryButton className="flex gap-2 bg-approve rounded-full px-[1.5em] py-[8px] font-medium text-white">
               <img src={plus} alt="cross" />
               Direct Application
             </button.PrimaryButton>
-            <button.PrimaryButton className="flex gap-2 bg-pink-primary rounded-full px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300 hover:bg-primary-700 hover:text-white">
+            <button.PrimaryButton className="flex gap-2 bg-pink-primary rounded-full px-[1.5em] py-[8px] font-medium text-white">
               <img src={plus} alt="cross" />
               Update Application
             </button.PrimaryButton>
