@@ -345,6 +345,19 @@ export const updateAgentCreated = createAsyncThunk(
   },
 );
 
+export const findStudentByEmailUniversityDegree = createAsyncThunk(
+  "shareApllication/findStudentByEmailUniversityDegree",
+  async (body: any, thunkAPI) => {
+    try {
+      const data = await shareApplicationServices.findStudentByEmailUniversityDegree(body);
+      return data;
+    } catch (error: any) {
+      const message = error;
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 interface ApplicationState {
   userProfile: null;
   currentUser: null;
@@ -364,6 +377,7 @@ interface ApplicationState {
   updateAgent:null,
   student: null;
   agent:null,
+  findByAll:null,
   allStudents: {
     data: {
       students: any[];
@@ -419,6 +433,7 @@ const initialState: ApplicationState = {
   updateAgent: null,
   student: null,
   agent:null,
+  findByAll:null,
   allStudents: {
     data: null,
     totalItems: 0,
@@ -765,7 +780,20 @@ export const shareApplicationSlice = createSlice({
         state.loading = false;
         state.updateAgent = null;
         state.error = action.payload as string || "Failed to update user profile.";
-      });
+      })
+
+      .addCase(findStudentByEmailUniversityDegree.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.findByAll = action.payload;
+        }
+      )
+      .addCase(findStudentByEmailUniversityDegree.rejected, (state, action) => {
+        state.findByAll = null;
+        const errorMessage =
+          action.error.message || "failed to find student by email university and degree";
+        setMessage(errorMessage);
+      })
+
   },
 });
 

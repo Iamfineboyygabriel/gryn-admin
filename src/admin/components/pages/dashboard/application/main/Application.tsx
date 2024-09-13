@@ -5,12 +5,18 @@ import DirectApplication from "../../../../../../shared/modal/DirectApplication"
 import Modal from "../../../../../../shared/modal/Modal";
 import { button } from "../../../../../../shared/buttons/Button";
 import plus from "../../../../../../assets/svg/plus.svg";
+import FindStudentByAll from "../modal/FindStudentByAll";
 
 const Application = () => {
   const [isModalOpen, setModalOpen] = useState(false);
+  const [isFindByModalOpen, setIsFindByModalOpen] = useState(false);
+
 
   const handleOpenModal = async () => setModalOpen(true);
   const handleCloseModal = () => setModalOpen(false);
+
+  const handleFindByAllOpen = async () => setIsFindByModalOpen(true);
+  const handleFindByAllClose = () => setIsFindByModalOpen(false);
 
   return (
     <main className="font-outfit">
@@ -22,7 +28,7 @@ const Application = () => {
               <img src={plus} alt="cross" />
               Direct Application
             </button.PrimaryButton>
-            <button.PrimaryButton className="flex gap-2 bg-pink-primary rounded-full px-[1.5em] py-[8px] font-medium text-white">
+            <button.PrimaryButton onClick={handleFindByAllOpen} className="flex gap-2 bg-pink-primary rounded-full px-[1.5em] py-[8px] font-medium text-white">
               <img src={plus} alt="cross" />
               Update Application
             </button.PrimaryButton>
@@ -43,6 +49,15 @@ const Application = () => {
             data-aos="zoom-in"
           >
             <DirectApplication/>
+          </Modal>
+        )}
+         {isFindByModalOpen && (
+          <Modal
+            isOpen={isFindByModalOpen}
+            onClose={handleFindByAllClose}
+            data-aos="zoom-in"
+          >
+            <FindStudentByAll/>
           </Modal>
         )}
             </main>

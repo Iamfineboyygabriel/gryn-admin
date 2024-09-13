@@ -17,6 +17,8 @@ const API_URL_CREATE_STUDENT = process.env.REACT_APP_API_URL + "/admin/users/stu
 
 const API_URL_CREATE_AGENT = process.env.REACT_APP_API_URL + "/admin/users/agent";
 
+const API_URL_FINDSTUDENTBY_EMAIL_UNIVERSITY_DEGREE = process.env.REACT_APP_API_URL + "/admin/application/byNameUniversityAndDegree";
+
 interface UpdateProfile {
   email?: string;
   firstName?: string;
@@ -617,6 +619,19 @@ const updateAgentCreated = async (body: UpdateStudentBody, userId: string) => {
   }
 };
 
+const findStudentByEmailUniversityDegree = async (body: any) => {
+  try {
+    const token = sessionStorage.getItem("userData");
+    const response = await axios.post(API_URL_FINDSTUDENTBY_EMAIL_UNIVERSITY_DEGREE, body, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error: any) {
+    handleApiError(error);
+  }
+};
+
+
 const shareApplicationServices = {
   getUserProfile,
   uploadAvatar,
@@ -647,6 +662,7 @@ const shareApplicationServices = {
   createAgent,
   updateAgentCreated,
   findAgentByEmail,
+  findStudentByEmailUniversityDegree ,
 };
 
 export default shareApplicationServices;
