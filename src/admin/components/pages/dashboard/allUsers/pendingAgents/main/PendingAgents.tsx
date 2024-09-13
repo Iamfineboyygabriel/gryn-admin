@@ -122,7 +122,7 @@ const PendingAgents = () => {
           />
           <td className="py-[16px] px-[24px]">
             <Link
-              to={`/agent/${agent.id}`}
+              to={`/admin/dashboard/all_users/approve_agents/${agent.email}`}
               className="text-primary-700 font-[600] flex items-center gap-[8px]"
             >
               View Application

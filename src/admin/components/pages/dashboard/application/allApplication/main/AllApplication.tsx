@@ -204,7 +204,7 @@ const AllApplication: React.FC = () => {
             </p>
           </div>
           <div
-            className="flex cursor-pointer items-center bg-gray-100 px-3 py-2"
+            className="flex cursor-pointer items-center bg-gray-100 px-3  py-2"
             onClick={() => handleSort("status")}
           >
             <p className="whitespace-nowrap text-sm">

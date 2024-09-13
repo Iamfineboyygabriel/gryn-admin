@@ -12,6 +12,8 @@ import CreateStudent from "../../pages/dashboard/allUsers/manageStudents/createS
 import UpdateStudent from "../../pages/dashboard/allUsers/manageStudents/updateStudent/UpdateStudent";
 import CreateAgent from "../../pages/dashboard/allUsers/manageAgents/createAgent/CreateAgent";
 import UpdateAgent from "../../pages/dashboard/allUsers/manageAgents/updateAgent/UpdateAgent";
+import UpdateApplication from "../../pages/dashboard/application/updateApplication/main/UpdateApplication";
+import ApprovePendingAgent from "../../pages/dashboard/allUsers/pendingAgents/approvePendingAgent/main/ApprovePendingAgent";
 
 const DashboardRoutes = () => {
   return (
@@ -23,12 +25,17 @@ const DashboardRoutes = () => {
           path="/application/all_application/view_application/:applicationId"
           element={<ViewApplicationDetails />}
         />
-
         <Route
           path="/application/new_application"
           element={<NewApplication />}
         />
 
+         <Route
+          path="/application/update_application"
+          element={<UpdateApplication />}
+        />
+
+        
         <Route path="/visa" element={<Visa />} />
         <Route path="/visa/new_application" element={<NewVisaApplication />} />
 
@@ -49,6 +56,15 @@ const DashboardRoutes = () => {
           <Route
           path="/all_users/update_agent"
           element={<UpdateAgent />}
+        />
+           <Route
+          path="/all_users/approve_agent"
+          element={<UpdateAgent />}
+        />
+
+         <Route
+          path="/all_users/approve_agents/:email"
+          element={<ApprovePendingAgent />}
         />
         
        <Route path="settings" element={<Settings />} />
