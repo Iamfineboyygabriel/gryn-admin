@@ -2,17 +2,19 @@ import { Link } from "react-router-dom";
 import { button } from "../../shared/buttons/Button";
 import Success from "../../assets/svg/ResetPassword.svg";
 
-const InvoiceSent = ({ onClose }: any) => {
+const StudentUpdated = ({ onClose }: any) => {
   return (
     <main className="px-[5em] font-outfit">
       <div className="m-auto w-[24em] py-[2em] text-center">
         <img src={Success} alt="success_img" className="m-auto" />
         <header className="mt-[2em] flex flex-col">
-          <h1 className="text-2xl font-semibold">Application Created</h1>
+          <h1 className="text-2xl font-semibold">Student User Created</h1>
         </header>
         <article>
-          <div className="mt-[1.5em] text-sm font-light text-center tracking-wide text-grey dark:text-white">
-            <p>you have Created an Application successfully</p>
+          <div className="mt-[1em] text-sm font-light text-center flex flex-col gap-[5px] tracking-wide text-grey">
+            <p>you have Created a student and an account</p>
+            <p>Creation link has been sent to</p>
+            <p className="font-semibold text-black">tundegabriel999@gmail.com</p>
           </div>
         </article>
         <Link to="/admin/dashboard/home">
@@ -25,4 +27,4 @@ const InvoiceSent = ({ onClose }: any) => {
   );
 };
 
-export default InvoiceSent;
+export default StudentUpdated;

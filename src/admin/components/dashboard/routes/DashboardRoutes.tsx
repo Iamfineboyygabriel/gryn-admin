@@ -8,6 +8,8 @@ import Settings from "../../pages/dashboard/settings/Settings";
 import Visa from "../../pages/dashboard/visa/main/Visa";
 import NewVisaApplication from "../../pages/dashboard/visa/newVisa/main/NewApplication";
 import AllUsers from "../../pages/dashboard/allUsers/main/AllUsers";
+import CreateStudent from "../../pages/dashboard/allUsers/manageStudents/createStudent/CreateStudent";
+import UpdateStudent from "../../pages/dashboard/allUsers/manageStudents/updateStudent/UpdateStudent";
 
 const DashboardRoutes = () => {
   return (
@@ -27,8 +29,18 @@ const DashboardRoutes = () => {
 
         <Route path="/visa" element={<Visa />} />
         <Route path="/visa/new_application" element={<NewVisaApplication />} />
+
         <Route path="all_users" element={<AllUsers />} />
-        <Route path="settings" element={<Settings />} />
+        <Route
+          path="/all_users/create_student"
+          element={<CreateStudent />}
+        />
+         <Route
+          path="/all_users/update_student"
+          element={<UpdateStudent />}
+        />
+      
+       <Route path="settings" element={<Settings />} />
       </Routes>
     </DashboardLayout>
   );

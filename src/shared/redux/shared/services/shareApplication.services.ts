@@ -13,6 +13,8 @@ const API_URL_CREATE_INVOICE = process.env.REACT_APP_API_URL + "/invoice";
 
 const API_URL_CREATE_DRAFT = process.env.REACT_APP_API_URL + "/invoice/draft";
 
+const API_URL_CREATE_STUDENT = process.env.REACT_APP_API_URL + "/admin/users/student";
+
 interface UpdateProfile {
   email?: string;
   firstName?: string;
@@ -67,6 +69,13 @@ type CustomCountry = {
   cca2: string;
   name: string;
 };
+
+interface UpdateStudentBody {
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  middleName?:string;
+}
 
 const handleApiError = (error: any) => {
   if (!error.response) {
@@ -260,11 +269,8 @@ const createVisaApplication = async (body: any) => {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
-  } catch (error: any) {
-    if (!error.response) {
-      throw new Error("Network Error: Please check your internet connection.");
-    }
-    throw new Error(error.response.data.message || "An error occurred.");
+  }catch (error: any) {
+    handleApiError(error);
   }
 };
 
@@ -339,15 +345,14 @@ const getAllStudents = async (page: number, limit: number) => {
   }
 };
 
-const getAllAgents = async (page: number, limit: number) => {
-  const url = `${process.env.REACT_APP_API_URL}/admin/users/agents?page=${page}&limit=${limit}`;
+const getAllAgents = async (page: number, limit: number, search: string = '') => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/users/agents?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
   try {
     const response = await axios({
       url,
       headers: authHeader(),
       method: "get",
     });
-    console.log("Res", response);
     const token = response?.data?.data?.tokens?.accessToken;
     if (token) {
       sessionStorage.setItem("userData", token);
@@ -358,6 +363,8 @@ const getAllAgents = async (page: number, limit: number) => {
   }
 };
 
+
+
 const createInvoice = async (body: any) => {
   try {
     const token = sessionStorage.getItem("userData");
@@ -366,10 +373,7 @@ const createInvoice = async (body: any) => {
     });
     return response.data;
   } catch (error: any) {
-    if (!error.response) {
-      throw new Error("Network Error: Please check your internet connection.");
-    }
-    throw new Error(error.response.data.message || "An error occurred.");
+    handleApiError(error);
   }
 };
 
@@ -381,10 +385,7 @@ const createDraft = async (body: any) => {
     });
     return response.data;
   } catch (error: any) {
-    if (!error.response) {
-      throw new Error("Network Error: Please check your internet connection.");
-    }
-    throw new Error(error.response.data.message || "An error occurred.");
+    handleApiError(error);
   }
 };
 
@@ -478,37 +479,14 @@ const getStudentUniversities = async () => {
   }
 };
 
-export const getAllVisaApplication = async (page: number, limit: number) => {
-  const url = `${process.env.REACT_APP_API_URL}/visa?page=${page}&limit=${limit}`;
+const getAllVisaApplication = async (page: number, limit: number, search: string = '') => {
+  const url = `${process.env.REACT_APP_API_URL}/visa?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
   try {
     const response = await axios({
       url,
       headers: authHeader(),
       method: "get",
     });
-
-    if (response.data && Array.isArray(response.data.data)) {
-      return {
-        data: response.data.data,
-        totalItems: response.data.totalItems || response.data.data.length,
-      };
-    } else {
-      throw new Error("Unexpected response structure");
-    }
-  } catch (error) {
-    throw error;
-  }
-};
-
-const getAllPendingAgents = async (page: number, limit: number) => {
-  const url = `${process.env.REACT_APP_API_URL}/admin/users/pending/agents?page=${page}&limit=${limit}`;
-  try {
-    const response = await axios({
-      url,
-      headers: authHeader(),
-      method: "get",
-    });
-    console.log("pending agents", response);
     const token = response?.data?.data?.tokens?.accessToken;
     if (token) {
       sessionStorage.setItem("userData", token);
@@ -516,6 +494,75 @@ const getAllPendingAgents = async (page: number, limit: number) => {
     return response.data;
   } catch (error) {
     throw error;
+  }
+};
+
+const getAllPendingAgents = async (page: number, limit: number, search: string = '') => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/users/pending/agents?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "get",
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const createStudent = async (body: any) => {
+  try {
+    const token = sessionStorage.getItem("userData");
+    const response = await axios.post(API_URL_CREATE_STUDENT, body, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error: any) {
+    handleApiError(error);
+  }
+};
+
+
+const findStudentByEmail = async (email: string) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/users/students/email`;
+  try {
+    const response = await axios({
+      url,
+      method: "get",
+      headers: authHeader(),
+      params: { email }, 
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const updateStudentCreated = async (body: UpdateStudentBody, userId: string) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/users/students/${userId}`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "patch",
+      data: body,
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw handleApiError(error);
   }
 };
 
@@ -543,6 +590,9 @@ const shareApplicationServices = {
   getStudentUniversities,
   getAllVisaApplication,
   getAllPendingAgents,
+  createStudent,
+  findStudentByEmail,
+  updateStudentCreated,
 };
 
 export default shareApplicationServices;

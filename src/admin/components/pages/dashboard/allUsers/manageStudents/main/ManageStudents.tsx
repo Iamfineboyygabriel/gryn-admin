@@ -7,6 +7,8 @@ import CustomPagination from "../../../../../../../shared/utils/customPagination
 import { button } from "../../../../../../../shared/buttons/Button";
 import plus from "../../../../../../../assets/svg/plus.svg";
 import DOMPurify from "dompurify";
+import Modal from "../../../../../../../shared/modal/Modal";
+import FindStudentByEmail from "../../../../../../../shared/modal/FindStudentByEmail";
 
 interface Student {
   profile: {
@@ -32,6 +34,12 @@ const AllStudents: React.FC = () => {
   const { useAllStudents, fetchApplications, loading } = useAllStudent();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [page, setPage] = useState<number>(1);
+
+  const [isModalOpen, setModalOpen] = useState(false);
+
+  const handleOpenModal = () => setModalOpen(true);
+  const handleCloseModal = () => setModalOpen(false);
+
   const navigate = useNavigate();
   const itemsPerPage = 10;
 
@@ -56,10 +64,6 @@ const AllStudents: React.FC = () => {
   const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
   const isCurrentPageEmpty = page > totalPages;
 
-  // const paginatedStudents = useMemo(() => {
-  //   const startIndex = (page - 1) * itemsPerPage;
-  //   return filteredStudents.slice(startIndex, startIndex + itemsPerPage);
-  // }, [filteredStudents, page, itemsPerPage]);
 
   const paginatedStudents = filteredStudents;
 
@@ -157,7 +161,7 @@ const AllStudents: React.FC = () => {
             <div className="mt-[2em] flex flex-col items-center justify-center">
               <img src={transaction} alt="No applications" />
               <p className="mt-2 text-sm text-gray-500 dark:text-white">
-                No recent applications.
+                No student available.
               </p>
             </div>
           </td>
@@ -193,11 +197,11 @@ const AllStudents: React.FC = () => {
               <img src={plus} alt="plus" />
               Assign Student
             </button.PrimaryButton>
-            <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-primary-200 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
+            <button.PrimaryButton onClick={handleOpenModal} className="mt-[1em] flex gap-2 rounded-full bg-primary-200 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
               <img src={plus} alt="plus" />
-              Update Application
+              Update Student
             </button.PrimaryButton>
-            <Link to="/admin/dashboard/application/manage_application/new_application">
+            <Link to="/admin/dashboard/all_users/create_student">
               <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-primary-700 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
                 <img src={plus} alt="plus" />
                 New Student
@@ -248,6 +252,11 @@ const AllStudents: React.FC = () => {
             isCurrentPageEmpty={isCurrentPageEmpty}
           />
         </div>
+      )}
+         {isModalOpen && (
+        <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
+          <FindStudentByEmail onClose={handleCloseModal} />
+        </Modal>
       )}
     </main>
   );

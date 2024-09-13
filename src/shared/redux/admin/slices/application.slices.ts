@@ -1,4 +1,3 @@
-
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { setMessage } from "../../message.slices";
 import applicationServices from "../services/application.services";
@@ -18,42 +17,48 @@ export const getStats = createAsyncThunk("application/getStats", async () => {
 
 export const getAllApplication = createAsyncThunk(
   "application/getAllApplication",
-  async ({ page, limit }: { page: number; limit: number }, thunkAPI) => {
-    try {
-      const data = await applicationServices.getAllApplication(page, limit);
-      return data;
-    } catch (error: any) {
-      const message = error.message;
-      error.toString();
-      return thunkAPI.rejectWithValue(message);
-    }
+  async ({ page, limit, search }: { page: number; limit: number; search: string }) => {
+    const response = await applicationServices.getAllApplication(page, limit, search);
+    return {
+      applications: response.data.applications,
+      totalPages: response.data.totalPages,
+      currentPage: page
+    };
   }
 );
 
 interface ApplicationState {
   allApplication: {
-    data: {
-      applications: any[];
-    } | null;
-    totalItems: number;
+    applications: any[];
+    totalPages: number;
+    currentPage: number;
   };
-  loading: boolean;
   getStats: null;
+  loading: boolean;
+  error: string | null;
+  searchTerm: string;
 }
 
 const initialState: ApplicationState = {
   getStats: null,
   allApplication: {
-    data: null,
-    totalItems: 0,
+    applications: [],
+    totalPages: 0,
+    currentPage: 1,
   },
   loading: false,
+  error: null,
+  searchTerm: '',
 };
 
 export const applicationSlice = createSlice({
   name: "application",
   initialState,
-  reducers: {},
+  reducers: {
+    setSearchTerm: (state, action: PayloadAction<string>) => {
+      state.searchTerm = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getStats.fulfilled, (state, action: PayloadAction<any>) => {
@@ -67,26 +72,22 @@ export const applicationSlice = createSlice({
       })
       .addCase(getAllApplication.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
-      .addCase(
-        getAllApplication.fulfilled,
-        (state, action: PayloadAction<any>) => {
-          state.allApplication.data = action.payload.data;
-          state.allApplication.totalItems = action.payload.totalItems;
-          state.loading = false;
-        }
-      )
-      .addCase(getAllApplication.rejected, (state, action) => {
-        state.allApplication = {
-          data: null,
-          totalItems: 0,
-        };
+      .addCase(getAllApplication.fulfilled, (state, action: PayloadAction<{
+        applications: any[];
+        totalPages: number;
+        currentPage: number;
+      }>) => {
         state.loading = false;
-        const errorMessage =
-          action.error.message || "Failed to fetch all applications";
-        setMessage(errorMessage);
+        state.allApplication = action.payload;
+      })
+      .addCase(getAllApplication.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch applications";
       });
   },
 });
 
+export const { setSearchTerm } = applicationSlice.actions;
 export default applicationSlice.reducer;

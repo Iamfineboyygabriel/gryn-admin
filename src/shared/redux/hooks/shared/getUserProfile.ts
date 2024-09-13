@@ -22,6 +22,7 @@ import {
   getStudentApplication,
 } from "../../shared/services/shareApplication.services";
 import { useQuery } from "react-query";
+import { setSearchTerm } from "../../admin/slices/application.slices";
 
 interface UpdateProfile {
   email?: string;
@@ -337,22 +338,31 @@ export const useAllStudent = () => {
 
 export const useAllAgent = () => {
   const dispatch: AppDispatch = useDispatch();
-  const useAgents = useSelector(
-    (state: any) => state.shareApplication?.allAgents.data
-  );
-  console.log("agent hook", useAgents);
-
-  const loading = useSelector((state: any) => state.shareApplication.loading);
+  const agents = useSelector((state: any) => state?.shareApplication?.allAgents?.agents || []);
+  console.log("agents",agents)
+  const totalPages = useSelector((state: any) => state?.shareApplication?.allAgents?.totalPages || 0);
+  const currentPage = useSelector((state: any) => state?.shareApplication?.allAgents?.currentPage || 1);
+  const loading = useSelector((state: any) => state?.shareApplication?.loading || false);
+  const error = useSelector((state: any) => state?.shareApplication?.error || null);
+  const searchTerm = useSelector((state: any) => state?.shareApplication?.searchTerm || '');
 
   const fetchAgents = useCallback(
     (page: number, limit: number) => {
-      dispatch(getAllAgents({ page, limit }));
+      dispatch(getAllAgents({ page, limit, search: searchTerm || '' }));
+    },
+    [dispatch, searchTerm]
+  );
+
+  const updateSearchTerm = useCallback(
+    (term: string) => {
+      dispatch(setSearchTerm(term));
     },
     [dispatch]
   );
 
-  return { useAgents, loading, fetchAgents };
+  return { agents, totalPages, currentPage, loading, error, searchTerm, fetchAgents, updateSearchTerm };
 };
+
 export const useAllDraftItems = () => {
   const dispatch: AppDispatch = useDispatch();
   const draftItems = useSelector(
@@ -411,46 +421,55 @@ export const useSingleStudentApplication = (studentId?: string) => {
   return { applicationDetails: data, loading: isLoading, error };
 };
 
+
 export const useAllVisa = () => {
   const dispatch: AppDispatch = useDispatch();
-  const allVisa = useSelector((state: any) => state.shareApplication.allVisa);
-  const error = useSelector((state: any) => state.shareApplication.error);
+  const visa = useSelector((state: any) => state?.shareApplication?.allVisa?.visas || []);
+  const totalPages = useSelector((state: any) => state?.shareApplication?.allVisa?.totalPages || 0);
+  const currentPage = useSelector((state: any) => state?.shareApplication?.allVisa?.currentPage || 1);
+  const loading = useSelector((state: any) => state?.shareApplication?.loading || false);
+  const error = useSelector((state: any) => state?.shareApplication?.error || null);
+  const searchTerm = useSelector((state: any) => state?.shareApplication?.searchTerm || '');
 
-  const fetchVisa = useCallback(
+  const fetchApplications = useCallback(
     (page: number, limit: number) => {
-      dispatch(getAllVisaApplication({ page, limit }));
+      dispatch(getAllVisaApplication({ page, limit, search: searchTerm || '' }));
+    },
+    [dispatch, searchTerm]
+  );
+
+  const updateSearchTerm = useCallback(
+    (term: string) => {
+      dispatch(setSearchTerm(term));
     },
     [dispatch]
   );
 
-  useEffect(() => {
-    if (allVisa.data === null && !allVisa.loading) {
-      fetchVisa(1, 10);
-    }
-  }, [allVisa, allVisa.loading, fetchVisa]);
-
-  return {
-    visaData: allVisa.data,
-    totalItems: allVisa.totalItems,
-    loading: allVisa.loading,
-    error,
-    fetchVisa,
-  };
+  return { visa, totalPages, currentPage, loading, error, searchTerm, fetchApplications, updateSearchTerm };
 };
 
 export const useAllPendingAgents = () => {
   const dispatch: AppDispatch = useDispatch();
-  const useAllPending = useSelector((state: any) => state.shareApplication.pendingAgents);
-  const loading = useSelector((state: any) => state.shareApplication.loading); 
-  
-  console.log("usePend", useAllPending);
+  const agents = useSelector((state: any) => state?.shareApplication?.allPendingAgents?.allPending || []);
+  const totalPages = useSelector((state: any) => state?.shareApplication?.allPendingAgents?.totalPages || 0);
+  const currentPage = useSelector((state: any) => state?.shareApplication?.allPendingAgents?.currentPage || 1);
+  const loading = useSelector((state: any) => state?.shareApplication?.loading || false);
+  const error = useSelector((state: any) => state?.shareApplication?.error || null);
+  const searchTerm = useSelector((state: any) => state?.shareApplication?.searchTerm || '');
 
   const fetchAgents = useCallback(
     (page: number, limit: number) => {
-      dispatch(getAllPendingAgents({ page, limit }));
+      dispatch(getAllPendingAgents({ page, limit, search: searchTerm || '' }));
+    },
+    [dispatch, searchTerm]
+  );
+
+  const updateSearchTerm = useCallback(
+    (term: string) => {
+      dispatch(setSearchTerm(term));
     },
     [dispatch]
   );
 
-  return { useAllPending, loading, fetchAgents };
+  return { agents, totalPages, currentPage, loading, error, searchTerm, fetchAgents, updateSearchTerm };
 };

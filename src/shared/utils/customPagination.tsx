@@ -5,12 +5,14 @@ interface CustomPaginationProps {
   page: number;
   onChange: (event: React.ChangeEvent<unknown>, value: number) => void;
   isCurrentPageEmpty: boolean;
+  count?: number;
 }
 
 const CustomPagination: React.FC<CustomPaginationProps> = ({
   page,
   onChange,
-  isCurrentPageEmpty
+  isCurrentPageEmpty,
+  count
 }) => {
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     if (value > page && isCurrentPageEmpty) {
@@ -21,12 +23,11 @@ const CustomPagination: React.FC<CustomPaginationProps> = ({
 
   return (
     <Pagination
+      count={count}
       page={page}
-      count={isCurrentPageEmpty ? page : page + 1}
       onChange={handleChange}
       color="primary"
-      siblingCount={1}
-      boundaryCount={1}
+      shape="rounded"
     />
   );
 };

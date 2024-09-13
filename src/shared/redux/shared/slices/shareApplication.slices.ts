@@ -30,6 +30,19 @@ type CustomCountry = {
   name: string;
 };
 
+interface UpdateStudentBody {
+  firstName: string;
+  lastName: string;
+  otherName?: string;
+  email: string;
+}
+
+interface UpdateStudentPayload {
+  body: UpdateStudentBody;
+  userId: string;
+}
+
+
 export const getUserProfile = createAsyncThunk(
   "shareApplication/getProfile",
   async (_, thunkAPI) => {
@@ -97,7 +110,7 @@ export const updatePassword = createAsyncThunk(
 );
 
 export const createVisaApplication = createAsyncThunk(
-  "sharedApllication/createVisaApplication",
+  "shareApllication/createVisaApplication",
   async (body: any, thunkAPI) => {
     try {
       const data = await shareApplicationServices.createVisaApplication(body);
@@ -153,18 +166,15 @@ export const getAllStudents = createAsyncThunk(
 
 export const getAllAgents = createAsyncThunk(
   "shareApplication/getAllAgents",
-  async ({ page, limit }: { page: number; limit: number }, thunkAPI) => {
-    try {
-      const data = await shareApplicationServices.getAllAgents(page, limit);
-      console.log("Ddd", data);
-      return data;
-    } catch (error: any) {
-      const message = error.message;
-      error.toString();
-      return thunkAPI.rejectWithValue(message);
-    }
-  }
-);
+   async ({ page, limit, search }: { page: number; limit: number; search: string }) => {
+     const response = await shareApplicationServices.getAllAgents(page, limit, search);
+     return {
+       agents: response.data,
+       totalPages: response.data.totalPages,
+       currentPage: page
+     };
+   }
+ );
 
 export const createInvoice = createAsyncThunk(
   "shareApplication/createInvoice",
@@ -244,43 +254,67 @@ export const createApplication = createAsyncThunk(
     }
   }
 );
+
 export const getAllVisaApplication = createAsyncThunk(
   "shareApplication/getAllVisaApplication",
-  async ({ page, limit }: { page: number; limit: number }, thunkAPI) => {
-    try {
-      return await shareApplicationServices.getAllVisaApplication(page, limit);
-    } catch (error: any) {
-      return thunkAPI.rejectWithValue(error.message || "An error occurred");
-    }
+  async ({ page, limit, search }: { page: number; limit: number; search: string }) => {
+    const response = await shareApplicationServices.getAllVisaApplication(page, limit, search);
+    return {
+      visas: response.data.applications,
+      totalPages: response.data.totalPages,
+      currentPage: page
+    };
   }
 );
 
 export const getAllPendingAgents = createAsyncThunk(
-  "shareApplication/getAllPendingAgents",
-  async ({ page, limit }: { page: number; limit: number }, thunkAPI) => {
+ "shareApplication/getAllPendingAgents",
+  async ({ page, limit, search }: { page: number; limit: number; search: string }) => {
+    const response = await shareApplicationServices.getAllPendingAgents(page, limit, search);
+    return {
+      allPending: response.data,
+      totalPages: response.data.totalPages,
+      currentPage: page
+    };
+  }
+);
+
+export const createStudent = createAsyncThunk(
+  "shareApllication/createStudent",
+  async (body: any, thunkAPI) => {
     try {
-      const data = await shareApplicationServices.getAllPendingAgents(
-        page,
-        limit
-      );
-      console.log("Data", data);
+      const data = await shareApplicationServices.createStudent(body);
       return data;
     } catch (error: any) {
-      const message = error.message;
-      error.toString();
+      const message = error;
       return thunkAPI.rejectWithValue(message);
     }
   }
 );
 
+export const findStudentByEmail = createAsyncThunk(
+  "shareApplication/findStudentByEmail",
+   async (email:string) => {
+     const response = await shareApplicationServices.findStudentByEmail(email);
+     return response.data
+   }
+ );
+
+
+ export const updateStudentCreated = createAsyncThunk(
+  "shareApplication/updateStudentCreated",
+  async ({ body, userId }: UpdateStudentPayload, thunkAPI) => {
+    try {
+      const data = await shareApplicationServices.updateStudentCreated(body, userId);
+      return data;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  },
+);
+
+
 interface ApplicationState {
-  allStudents: {
-    data: {
-      students: any[];
-    } | null;
-    totalItems: number;
-  };
-  loading: boolean;
   userProfile: null;
   currentUser: null;
   avatarUrl: null;
@@ -289,14 +323,19 @@ interface ApplicationState {
   registerVisaApplication: null;
   topCountries: null;
   topUniversities: null;
-  allAgents: {
+  registerInvoice: null;
+  registerDraft: null;
+  registerApplication: null;
+  registerVisaAppliction: null;
+  registerStudent:null;
+  updateStudent: null,
+  student: null;
+  allStudents: {
     data: {
-      agents: any[];
+      students: any[];
     } | null;
     totalItems: number;
   };
-  registerInvoice: null;
-  registerDraft: null;
   allDraftItems: {
     data: {
       draftsItems: any[];
@@ -309,19 +348,24 @@ interface ApplicationState {
     } | null;
     totalItems: number;
   };
-  registerApplication: null;
-  registerVisaAppliction: null;
+  allAgents: {
+    agents: any[]; 
+    totalPages: number;
+    currentPage: number;
+  };
   allVisa: {
-    data: any[] | null;
-    totalItems: number;
-    loading: boolean;
+    visas: any[];
+    totalPages: number;
+    currentPage: number;
   };
-  pendingAgents: {
-    data: {
-      pendingAgents: any[];
-    } | null;
-    totalItems: number;
+  allPendingAgents: {
+    allPending: any[]; 
+    totalPages: number;
+    currentPage: number;
   };
+  loading: boolean;
+  error: string | null;
+  searchTerm: string;
 }
 
 const initialState: ApplicationState = {
@@ -331,14 +375,14 @@ const initialState: ApplicationState = {
   updateProfile: null,
   updatePassword: null,
   registerVisaApplication: null,
+  registerStudent:null,
   topCountries: null,
   topUniversities: null,
+  registerApplication: null,
+  registerVisaAppliction: null,
+  updateStudent: null,
+  student: null,
   allStudents: {
-    data: null,
-    totalItems: 0,
-  },
-  loading: false,
-  allAgents: {
     data: null,
     totalItems: 0,
   },
@@ -352,17 +396,24 @@ const initialState: ApplicationState = {
     data: null,
     totalItems: 0,
   },
-  registerApplication: null,
-  registerVisaAppliction: null,
+   allAgents: {
+    agents: [],
+    totalPages: 0,
+    currentPage: 1,
+  },
   allVisa: {
-    data: null,
-    totalItems: 0,
-    loading: false,
+    visas: [],
+    totalPages: 0,
+    currentPage: 1,
   },
-  pendingAgents: {
-    data: null,
-    totalItems: 0,
+  allPendingAgents: {
+    allPending: [],
+    totalPages: 0,
+    currentPage: 1,
   },
+  loading: false,
+  error: null,
+  searchTerm: '',
 };
 
 export const shareApplicationSlice = createSlice({
@@ -481,23 +532,21 @@ export const shareApplicationSlice = createSlice({
         setMessage(errorMessage);
       })
 
-      .addCase(getAllAgents.pending, (state) => {
+     .addCase(getAllAgents.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
-      .addCase(getAllAgents.fulfilled, (state, action: PayloadAction<any>) => {
-        state.allAgents.data = action.payload.data;
-        state.allAgents.totalItems = action.payload.totalItems;
+      .addCase(getAllAgents.fulfilled, (state, action: PayloadAction<{
+        agents: any[];
+        totalPages: number;
+        currentPage: number;
+      }>) => {
         state.loading = false;
+        state.allAgents = action.payload;
       })
-
       .addCase(getAllAgents.rejected, (state, action) => {
-        state.allAgents = {
-          data: null,
-          totalItems: 0,
-        };
-        const errorMessage =
-          action.error.message || "Failed to fetch all agents.";
-        setMessage(errorMessage);
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch all agents";
       })
 
       .addCase(createInvoice.fulfilled, (state, action: PayloadAction<any>) => {
@@ -557,48 +606,84 @@ export const shareApplicationSlice = createSlice({
           action.error.message || "Application creation failed.";
         setMessage(errorMessage);
       })
+
+
       .addCase(getAllVisaApplication.pending, (state) => {
-        state.allVisa.loading = true;
-        state.allVisa.data = null;
-        state.allVisa.totalItems = 0;
+        state.loading = true;
+        state.error = null;
       })
-      .addCase(getAllVisaApplication.fulfilled, (state, action) => {
-        if (action.payload && action.payload.data) {
-          state.allVisa.data = action.payload.data;
-          state.allVisa.totalItems = action.payload.totalItems;
-        } else {
-          state.allVisa.data = null;
-          state.allVisa.totalItems = 0;
-        }
-        state.allVisa.loading = false;
+      .addCase(getAllVisaApplication.fulfilled, (state, action: PayloadAction<{
+        visas: any[];
+        totalPages: number;
+        currentPage: number;
+      }>) => {
+        state.loading = false;
+        state.allVisa = action.payload;
       })
       .addCase(getAllVisaApplication.rejected, (state, action) => {
-        state.allVisa.loading = false;
-        state.allVisa.data = null;
-        state.allVisa.totalItems = 0;
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch visa applications";
       })
 
-      .addCase(getAllPendingAgents.pending, (state) => {
+     .addCase(getAllPendingAgents.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
+      .addCase(getAllPendingAgents.fulfilled, (state, action: PayloadAction<{
+        allPending: any[];
+        totalPages: number;
+        currentPage: number;
+      }>) => {
+        state.loading = false;
+        state.allPendingAgents = action.payload;
+      })
+      .addCase(getAllPendingAgents.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch pending agents";
+      })
+
       .addCase(
-        getAllPendingAgents.fulfilled,
+        createStudent.fulfilled,
         (state, action: PayloadAction<any>) => {
-          console.log("steee", action.payload);
-          state.pendingAgents.data = action.payload.data;
-          state.pendingAgents.totalItems = action.payload.totalItems;
-          state.loading = false;
+          state.registerStudent = action.payload;
         }
       )
-
-      .addCase(getAllPendingAgents.rejected, (state, action) => {
-        state.pendingAgents = {
-          data: null,
-          totalItems: 0,
-        };
+      .addCase(createStudent.rejected, (state, action) => {
+        state.registerStudent = null;
         const errorMessage =
-          action.error.message || "Failed to fetch all students.";
+          action.error.message || "Student Application creation failed.";
         setMessage(errorMessage);
+      })
+
+       .addCase(findStudentByEmail.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(findStudentByEmail.fulfilled, (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.student = action.payload;
+      })
+      .addCase(findStudentByEmail.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to find student";
+      })
+
+      .addCase(updateStudentCreated.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        updateStudentCreated.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.loading = false;
+          state.updateStudent = action.payload;
+          state.error = null;
+        },
+      )
+      .addCase(updateStudentCreated.rejected, (state, action) => {
+        state.loading = false;
+        state.updateStudent = null;
+        state.error = action.payload as string || "Failed to update user profile.";
       });
   },
 });

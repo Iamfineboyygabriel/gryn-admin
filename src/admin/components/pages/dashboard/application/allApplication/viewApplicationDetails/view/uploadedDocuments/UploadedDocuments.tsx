@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import { button } from "../../../../../../../../../shared/buttons/Button";
-import ApplicationSummary from "../../../../../../../../../shared/modal/applicationSummaryModal/ApplicationSummary";
-import Modal from "../../../../../../../../../shared/modal/Modal";
 import { useApplicationDetails } from "../../../../../../../../../shared/redux/hooks/shared/getUserProfile"
-import fileImg from "../../../../../../../../../assets/svg/File.svg";
-import upload from "../../../../../../../../../assets/svg/Upload.svg"
-import eye from "../../../../../../../../../assets/svg/eyeImg.svg";
+import ApplicationSummary from "../../../../../../../../../shared/modal/applicationSummaryModal/ApplicationSummary";
 import DocumentPreviewModal from "../../../../../../../../../shared/modal/DocumentPreviewModal";
-
-
+import Modal from "../../../../../../../../../shared/modal/Modal";
+import { button } from "../../../../../../../../../shared/buttons/Button";
+import fileImg from "../../../../../../../../../assets/svg/File.svg";
+import eye from "../../../../../../../../../assets/svg/eyeImg.svg";
+import download from "../../../../../../../../../assets/svg/download.svg";
+import approve from "../../../../../../../../../assets/svg/Approved.svg";
+import reject from "../../../../../../../../../assets/svg/Rejected.svg";
 
 const SkeletonRow = () => (
   <div className="mb-4 animate-pulse space-y-4">
@@ -22,10 +22,7 @@ const UploadedDocuments = ({ applicationId }: any) => {
     useApplicationDetails(applicationId);
   const [files, setFiles] = useState<{ [key: string]: File | null }>({});
   const [fileNames, setFileNames] = useState<{ [key: string]: string }>({});
-  const [editMode, setEditMode] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewFileType, setPreviewFileType] = useState<string>("");
 
@@ -73,7 +70,6 @@ const UploadedDocuments = ({ applicationId }: any) => {
     );
   }
 
-  
   const getFileTypeFromUrl = (url: any) => {
     const segments = url.split("/");
     const fileExtension = segments.pop().split(".").pop();
@@ -108,8 +104,21 @@ const UploadedDocuments = ({ applicationId }: any) => {
     setPreviewFileType("");
   };
 
+  const handleDownload = (url: string, fileName: string) => {
+    fetch(url)
+      .then(response => response.blob())
+      .then(blob => {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      })
+      .catch(error => console.error('Download failed:', error));
+  };
 
-  return (
+ return (
     <main>
         {applicationLoading && (
         <small className="mt-2 block">Please wait...</small>
@@ -143,19 +152,30 @@ const UploadedDocuments = ({ applicationId }: any) => {
                   </label>
                   <div className="flex gap-[2px]">
                       <button
-                      // onClick={applicationDetails?.data.documents.publicUrl}
+                           onClick={() => handlePreview(doc?.publicURL)}
                           className="flex items-center gap-1 rounded-full bg-purple-white px-3 py-[5px] text-center font-medium text-[#660066]"
                           >
                             <img src={eye} alt="eye" />
                             <span className="mr-3">View</span>
                           </button>
                           <button
+                          onClick={() => handleDownload(doc?.publicURL, fileNames[doc?.documentType])}
                           className="flex items-center gap-1 rounded-full bg-purple-white px-3 py-[5px] text-center font-medium text-[#660066]"
                           >
-                            <img src={eye} alt="eye" />
+                            <img src={download} alt="download" />
                             <span className="mr-3">Download</span>
                           </button>
                    </div>
+                </div>
+                <div className="flex mt-[1em] gap-2 items-center">
+                  <button className="flex px-[1em] rounded-md font-medium bg-[#F3FBF5] text-approve py-[8px] items-center border border-approve gap-2">
+                    <img src={approve} alt="approve_icon" />
+                    <small>Approve</small>
+                  </button>
+                  <button className="flex items-center border rounded-md font-medium text-[#FC0E0E] px-[1em] py-[8px] border-[#FC0E0E] bg-[#FFF0F0] gap-2">
+                   <img src={reject} alt="reject_icon" />
+                   <small>Reject</small>
+                  </button>
                 </div>
               </div>
             ))}
@@ -175,14 +195,19 @@ const UploadedDocuments = ({ applicationId }: any) => {
         Submit Response
       </button.PrimaryButton>
       {isModalOpen && (
-        <Modal
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          data-aos="zoom-in"
-        >
-          <ApplicationSummary onClose={handleCloseModal} />
-        </Modal>
-      )}
+  <Modal
+    isOpen={isModalOpen}
+    onClose={handleCloseModal}
+    data-aos="zoom-in"
+  >
+    <ApplicationSummary 
+      onClose={handleCloseModal}
+      personalDetails={applicationDetails?.data}
+      degree={applicationDetails?.data?.degree}
+      documents={applicationDetails?.data?.documents}
+    />
+  </Modal>
+)}
     </main>
   );
 };

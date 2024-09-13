@@ -16,10 +16,8 @@ const SkeletonRow = () => (
   </tr>
 );
 
-const AllApplication = () => {
-  const { applications, loading, fetchApplications } = useAllApplication();
-  const [page, setPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState("");
+const AllApplication: React.FC = () => {
+  const { applications, totalPages, currentPage, loading, fetchApplications, searchTerm, updateSearchTerm } = useAllApplication();
   const [sortField, setSortField] = useState("lastName");
   const [sortOrder, setSortOrder] = useState("asc");
 
@@ -27,30 +25,22 @@ const AllApplication = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchApplications(page, itemsPerPage);
-  }, [fetchApplications, page, itemsPerPage]);
+    fetchApplications(currentPage, itemsPerPage);
+  }, [fetchApplications, currentPage, itemsPerPage]);
 
-  const handlePageChange = (
-    event: React.ChangeEvent<unknown>,
-    value: number
-  ) => {
-    setPage(value);
+  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    fetchApplications(value, itemsPerPage);
   };
 
   const filteredAndSortedApplications = useMemo(() => {
-    if (
-      !applications?.applications ||
-      !Array.isArray(applications.applications)
-    ) {
+    if (!applications || !Array.isArray(applications)) {
       return [];
     }
 
-    const filtered = applications.applications.filter((item: any) =>
-      `${item?.lastName || ""} ${item?.firstName || ""} ${
-        item?.middleName || ""
-      }`
+    const filtered = applications.filter((item: any) =>
+      `${item?.lastName || ""} ${item?.firstName || ""} ${item?.middleName || ""}`
         .toLowerCase()
-        .includes(searchTerm.toLowerCase())
+        .includes((searchTerm || '').toLowerCase())
     );
 
     return filtered.sort((a: any, b: any) => {
@@ -61,15 +51,12 @@ const AllApplication = () => {
       return 0;
     });
   }, [applications, searchTerm, sortField, sortOrder]);
-
   
   const isCurrentPageEmpty = filteredAndSortedApplications.length === 0;
 
   const handleViewDetails = useCallback(
     (applicationId: string) => {
-      navigate(
-        `/admin/dashboard/application/all_application/view_application/${applicationId}`
-      );
+      navigate(`/admin/dashboard/application/all_application/view_application/${applicationId}`);
     },
     [navigate]
   );
@@ -82,7 +69,7 @@ const AllApplication = () => {
 
   const highlightText = useCallback(
     (text: string) => {
-      if (!searchTerm.trim()) return text;
+      if (!searchTerm?.trim()) return text;
       const regex = new RegExp(`(${searchTerm})`, "gi");
       return text.replace(
         regex,
@@ -110,7 +97,7 @@ const AllApplication = () => {
           className="text-sm text-gray-700 border-b border-gray-200 dark:text-white"
         >
           <td className="whitespace-nowrap px-6 py-4">
-            {(page - 1) * itemsPerPage + index + 1}
+            {(currentPage - 1) * itemsPerPage + index + 1}
           </td>
           <td
             className="whitespace-nowrap px-6 py-4"
@@ -171,7 +158,7 @@ const AllApplication = () => {
     }
   }, [
     filteredAndSortedApplications,
-    page,
+    currentPage,
     itemsPerPage,
     sanitizeHTML,
     highlightText,
@@ -193,13 +180,13 @@ const AllApplication = () => {
     <main className="mt-[1.3em] h-auto w-full overflow-auto rounded-lg bg-white px-[1em] py-3 pb-[10em]">
       <div className="flex">
         <div className="flex items-center gap-[1em]">
-          <div className="relative w-full">
+        <div className="relative w-full">
             <input
               type="text"
               className="w-full rounded-full bg-gray-100 py-2 pl-2 pr-[3em] text-sm"
               placeholder="Search"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              value={searchTerm || ''}
+              onChange={(e) => updateSearchTerm(e.target.value)}
             />
             <FiSearch className="absolute right-[1em] top-1/2 -translate-y-1/2 transform text-lg text-gray-500" />
           </div>
@@ -255,12 +242,13 @@ const AllApplication = () => {
         </thead>
         <tbody>{renderTableBody()}</tbody>
       </table>
-      {!loading && (
+      {!loading && applications.length > 0 && (
         <div className="mt-6 flex justify-center">
           <CustomPagination
-            page={page}
+            page={currentPage}
             onChange={handlePageChange}
             isCurrentPageEmpty={isCurrentPageEmpty}
+            count={totalPages}
           />
         </div>
       )}

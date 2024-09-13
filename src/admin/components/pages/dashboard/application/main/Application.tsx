@@ -1,16 +1,24 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import AllApplication from "../allApplication/main/AllApplication";
+import DirectApplication from "../../../../../../shared/modal/DirectApplication";
+import Modal from "../../../../../../shared/modal/Modal";
 import { button } from "../../../../../../shared/buttons/Button";
 import plus from "../../../../../../assets/svg/plus.svg";
-import AllApplication from "../allApplication/main/AllApplication";
-import { Link } from "react-router-dom";
 
 const Application = () => {
+  const [isModalOpen, setModalOpen] = useState(false);
+
+  const handleOpenModal = async () => setModalOpen(true);
+  const handleCloseModal = () => setModalOpen(false);
+
   return (
     <main className="font-outfit">
       <header>
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Application</h1>
           <div className="flex gap-[1em]">
-            <button.PrimaryButton className="flex gap-2 bg-approve rounded-full px-[1.5em] py-[8px] font-medium text-white">
+            <button.PrimaryButton onClick={handleOpenModal} className="flex gap-2 bg-approve rounded-full px-[1.5em] py-[8px] font-medium text-white">
               <img src={plus} alt="cross" />
               Direct Application
             </button.PrimaryButton>
@@ -28,8 +36,17 @@ const Application = () => {
         </div>
       </header>
       <AllApplication />
-    </main>
-  );
-};
+      {isModalOpen && (
+          <Modal
+            isOpen={isModalOpen}
+            onClose={handleCloseModal}
+            data-aos="zoom-in"
+          >
+            <DirectApplication/>
+          </Modal>
+        )}
+            </main>
+          );
+        };
 
 export default Application;

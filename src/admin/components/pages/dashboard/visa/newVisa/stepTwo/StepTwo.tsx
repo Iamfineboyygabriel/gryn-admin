@@ -285,17 +285,17 @@
 // export default StepTwo;
 
 import { useRef, useState } from "react";
-import { button } from "../../../../../../../shared/buttons/Button";
-import { toast } from "react-toastify";
-import ReactLoading from "react-loading";
+import { AppDispatch } from "../../../../../../../shared/redux/store";
+import { createVisaApplication } from "../../../../../../../shared/redux/shared/slices/shareApplication.slices";
+import { useAppDispatch } from "../../../../../../../shared/redux/hooks/shared/reduxHooks";
 import CustomDatePicker from "../../../../../../../shared/utils/CustomeDatePicker";
 import { useCountries } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
-import { IoIosArrowDown } from "react-icons/io";
-import Flag from "react-world-flags";
 import useClickOutside from "../../../../../../../shared/utils/useClickOutside";
-import { AppDispatch } from "../../../../../../../shared/redux/store";
-import { useAppDispatch } from "../../../../../../../shared/redux/hooks/shared/reduxHooks";
-import { createVisaApplication } from "../../../../../../../shared/redux/shared/slices/shareApplication.slices";
+import { button } from "../../../../../../../shared/buttons/Button";
+import { IoIosArrowDown } from "react-icons/io";
+import ReactLoading from "react-loading";
+import Flag from "react-world-flags";
+import { toast } from "react-toastify";
 
 interface CreateApplicationBody {
   firstName: string;

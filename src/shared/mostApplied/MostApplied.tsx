@@ -1,10 +1,10 @@
 import React from "react";
-import ReactCountryFlag from "react-country-flag";
-import { countries } from "countries-list";
 import {
   useTopCountries,
   useTopUniversities,
 } from "../redux/hooks/shared/getUserProfile";
+import ReactCountryFlag from "react-country-flag";
+import { countries } from "countries-list";
 
 const getCountryCode = (countryName: any) => {
   const countryEntry = Object.entries(countries).find(

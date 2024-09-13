@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useMemo, useCallback, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import transaction from "../../../../../../../assets/svg/Transaction.svg";
 import { Link } from "react-router-dom";
@@ -19,69 +19,132 @@ const SkeletonRow = () => (
 );
 
 const ManageAgents = () => {
-  const { useAgents, fetchAgents, loading } = useAllAgent();
-  console.log("aaa", useAgents);
-  const agentData = useMemo(() => useAgents?.data || [], [useAgents?.data]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [page, setPage] = useState(1);
+  const { 
+    agents, 
+    totalPages, 
+    currentPage, 
+    loading, 
+    fetchAgents, 
+    searchTerm, 
+    updateSearchTerm 
+  } = useAllAgent();
+
+  const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
   const itemsPerPage = 10;
 
   useEffect(() => {
-    fetchAgents(page, itemsPerPage);
-  }, [fetchAgents, page, itemsPerPage]);
+    const delayDebounceFn = setTimeout(() => {
+      if (localSearchTerm !== searchTerm) {
+        updateSearchTerm(localSearchTerm);
+        fetchAgents(1, itemsPerPage);
+      }
+    }, 300);
 
-  useEffect(() => {}, [agentData]);
+    return () => clearTimeout(delayDebounceFn);
+  }, [localSearchTerm, updateSearchTerm, fetchAgents, itemsPerPage, searchTerm]);
 
-  const escapeRegExp = (string: string) => {
+  useEffect(() => {
+    fetchAgents(currentPage, itemsPerPage);
+  }, [fetchAgents, currentPage, itemsPerPage]);
+
+  const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, value: number) => {
+    fetchAgents(value, itemsPerPage);
+  }, [fetchAgents, itemsPerPage]);
+
+  const escapeRegExp = useCallback((string: string) => {
     return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  };
+  }, []);
 
-  const highlightText = (text: string, query: string) => {
+  const highlightText = useCallback((text: string, query: string) => {
     if (!query) return text;
     const escapedQuery = escapeRegExp(query);
-    const parts = text.split(new RegExp(`(${escapedQuery})`, "gi"));
-    return parts.map((part: string, index: number) =>
-      part.toLowerCase() === query.toLowerCase() ? (
-        <span key={index} style={{ backgroundColor: "yellow" }}>
-          {DOMPurify.sanitize(part)}
-        </span>
-      ) : (
-        part
-      )
+    const regex = new RegExp(`(${escapedQuery})`, "gi");
+    return text.replace(
+      regex,
+      (match: string) => `<mark class="bg-yellow-300">${match}</mark>`
     );
-  };
+  }, [escapeRegExp]);
 
-  // const filteredAgents = useMemo(
-  //   () =>
-  //     agentData.filter((agent: any) => {
-  //       const firstNameMatches = agent.profile.firstName
-  //         .toLowerCase()
-  //         .includes(searchQuery.toLowerCase());
-  //       const lastNameMatches = agent.profile.lastName
-  //         .toLowerCase()
-  //         .includes(searchQuery.toLowerCase());
+  const sanitizeHTML = useCallback((html: string) => {
+    return { __html: DOMPurify.sanitize(html) };
+  }, []);
 
-  //       return firstNameMatches || lastNameMatches;
-  //     }),
-  //   [agentData, searchQuery]
-  // );
+  const formatData = useCallback((data: any) => (data ? data : "-"), []);
 
-  const filteredAgents = agentData;
+  const filteredAgents = useMemo(() => {
+    return (agents || []).filter((agent: any) => {
+      const fullName = `${agent.profile.firstName} ${agent.profile.lastName}`.toLowerCase();
+      return (
+        fullName.includes(localSearchTerm.toLowerCase()) ||
+        agent.email.toLowerCase().includes(localSearchTerm.toLowerCase())
+      );
+    });
+  }, [agents, localSearchTerm]);
 
-  const totalPages = Math.ceil(filteredAgents.length / itemsPerPage);
+  const isCurrentPageEmpty = filteredAgents.length === 0;
 
-  const isCurrentPageEmpty = page > totalPages;
+  const renderTableBody = useCallback(() => {
+    if (loading) {
+      return Array.from({ length: itemsPerPage }).map((_, index) => (
+        <SkeletonRow key={index} />
+      ));
+    }
 
-  const visibleData = filteredAgents;
-
-  const handlePageChange = (
-    event: React.ChangeEvent<unknown>,
-    value: number
-  ) => {
-    setPage(value);
-  };
-
-  const formatData = (data: any) => (data ? data : "-");
+    if (filteredAgents.length > 0) {
+      return filteredAgents.map((agent: any, index: number) => (
+        <tr
+          key={agent.id}
+          className="text-[14px] leading-[20px] text-grey-primary font-medium"
+        >
+          <td className="py-[16px] px-[24px]">
+            {(currentPage - 1) * itemsPerPage + index + 1}
+          </td>
+          <td 
+            className="py-[16px] gap-1 px-[24px]"
+            dangerouslySetInnerHTML={sanitizeHTML(
+              highlightText(
+                `${agent.profile.firstName} ${agent.profile.lastName}`,
+                localSearchTerm
+              )
+            )}
+          />
+          <td className="py-[16px] px-[24px]">
+            {formatData(agent.phoneNumber)}
+          </td>
+          <td 
+            className="py-[16px] px-[24px]"
+            dangerouslySetInnerHTML={sanitizeHTML(
+              highlightText(
+                formatData(agent.email),
+                localSearchTerm
+              )
+            )}
+          />
+          <td className="py-[16px] px-[24px]">
+            <Link
+              to={`/agent/${agent.id}`}
+              className="text-primary-700 font-[600] flex items-center gap-[8px]"
+            >
+              View Application
+            </Link>
+          </td>
+        </tr>
+      ));
+    } else {
+      return (
+        <tr>
+          <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+            <div className="mt-[2em] flex flex-col items-center justify-center">
+              <img src={transaction} alt="No applications" />
+              <p className="mt-2 text-sm text-gray-500 dark:text-white">
+                No Agents.
+              </p>
+            </div>
+          </td>
+        </tr>
+      );
+    }
+  }, [loading, filteredAgents, currentPage, itemsPerPage, sanitizeHTML, highlightText, localSearchTerm, formatData]);
 
   return (
     <main>
@@ -110,7 +173,8 @@ const ManageAgents = () => {
             type="text"
             className="flex-grow rounded-full bg-transparent py-2 pl-4 pr-2 text-sm focus:border-grey-primary focus:outline-none"
             placeholder="Search"
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={localSearchTerm}
+            onChange={(e) => setLocalSearchTerm(e.target.value)}
           />
           <FiSearch className="mr-3 text-lg text-gray-500" />
         </div>
@@ -119,74 +183,21 @@ const ManageAgents = () => {
           <thead className="text-gray-500 border-b border-gray-200">
             <tr>
               <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
-              <th className="px-6 py-3 text-left text-sm font-normal">
-                Full Name
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-normal">
-                Phone Number
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-normal">
-                Email Address
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-normal">
-                Action
-              </th>
+              <th className="px-6 py-3 text-left text-sm font-normal">Full Name</th>
+              <th className="px-6 py-3 text-left text-sm font-normal">Phone Number</th>
+              <th className="px-6 py-3 text-left text-sm font-normal">Email Address</th>
+              <th className="px-6 py-3 text-left text-sm font-normal">Action</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
-            {loading ? (
-              Array.from({ length: itemsPerPage }).map((_, index) => (
-                <SkeletonRow key={index} />
-              ))
-            ) : visibleData.length > 0 ? (
-              visibleData.map((agent: any, index: number) => (
-                <tr
-                  key={agent.id}
-                  className="text-[14px] leading-[20px] text-grey-primary font-medium"
-                >
-                  <td className="py-[16px] px-[24px]">
-                    {(page - 1) * itemsPerPage + index + 1}
-                  </td>
-                  <td className="py-[16px] gap-1 px-[24px]">
-                    {highlightText(agent?.profile?.lastName, searchQuery)}
-                    {highlightText(agent?.profile?.firstName, searchQuery)}
-                  </td>
-                  <td className="py-[16px] px-[24px]">
-                    {formatData(agent?.phoneNumber)}
-                  </td>
-                  <td className="py-[16px] px-[24px]">
-                    {formatData(agent?.email)}
-                  </td>
-                  <td className="py-[16px] px-[24px]">
-                    <Link
-                      to={`/agent/${agent.id}`}
-                      className="text-primary-700 font-[600] flex items-center gap-[8px]"
-                    >
-                      View Application
-                    </Link>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
-                  <div className="mt-[2em] flex flex-col items-center justify-center">
-                    <img src={transaction} alt="No applications" />
-                    <p className="mt-2 text-sm text-gray-500 dark:text-white">
-                      No Agents.
-                    </p>
-                  </div>
-                </td>
-              </tr>
-            )}
-          </tbody>
+          <tbody>{renderTableBody()}</tbody>
         </table>
       </div>
 
-      {!loading && filteredAgents.length > 0 && (
+      {!loading && agents.length > 0 && (
         <div className="mt-6 flex justify-center">
           <CustomPagination
-            page={page}
+            page={currentPage}
+            count={totalPages}
             onChange={handlePageChange}
             isCurrentPageEmpty={isCurrentPageEmpty}
           />

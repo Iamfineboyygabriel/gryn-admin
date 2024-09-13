@@ -13,8 +13,8 @@ const getStats = async () => {
   });
 };
 
-const getAllApplication = async (page: number, limit: number) => {
-  const url = `${process.env.REACT_APP_API_URL}/admin/application?page=${page}&limit=${limit}`;
+const getAllApplication = async (page: number, limit: number, search: string = '') => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/application?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
   try {
     const response = await axios({
       url,

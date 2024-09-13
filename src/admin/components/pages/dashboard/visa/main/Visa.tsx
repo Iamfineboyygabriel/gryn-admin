@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import plus from "../../../../../../assets/svg/plus.svg";
 import { Link } from "react-router-dom";
 import approved from "../../../../../../assets/svg/Approved.svg";
@@ -37,7 +37,7 @@ const SkeletonRow: React.FC = () => (
 );
 
 const Visa: React.FC = () => {
-  const { visaData, loading, totalItems, fetchVisa } = useAllVisa();
+  const { visa, loading,  totalPages, currentPage, fetchApplications, searchTerm, updateSearchTerm  } = useAllVisa();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewFileType, setPreviewFileType] = useState<string>("");
@@ -45,16 +45,16 @@ const Visa: React.FC = () => {
   const [page, setPage] = useState<number>(1);
   const itemsPerPage = 10;
 
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
   const isCurrentPageEmpty = page > totalPages;
 
-  const handlePageChange = useCallback(
-    (event: React.ChangeEvent<unknown>, value: number) => {
-      setPage(value);
-      fetchVisa(value, itemsPerPage);
-    },
-    [fetchVisa]
-  );
+  useEffect(() => {
+    fetchApplications(currentPage, itemsPerPage);
+  }, [fetchApplications, currentPage, itemsPerPage]);
+
+  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    fetchApplications(value, itemsPerPage);
+  };
+
 
   const highlightText = (text: string, query: string) => {
     if (!query) return text;
@@ -147,8 +147,8 @@ const Visa: React.FC = () => {
                 Array.from({ length: 5 }).map((_, index) => (
                   <SkeletonRow key={index} />
                 ))
-              ) : visaData && visaData.length > 0 ? (
-                visaData.map((item: VisaData, index: number) => (
+              ) : visa && visa.length > 0 ? (
+                visa.map((item: VisaData, index: number) => (
                   <tr
                     key={index}
                     className="text-sm font-medium text-grey-primary dark:text-white"
@@ -208,13 +208,14 @@ const Visa: React.FC = () => {
             </tbody>
           </table>
         </section>
-        {!loading && visaData && visaData.length > 0 && (
+        {!loading && visa && visa.length > 0 && (
           <div className="mt-6 flex justify-center">
-            <CustomPagination
-              page={page}
-              onChange={handlePageChange}
-              isCurrentPageEmpty={isCurrentPageEmpty}
-            />
+           <CustomPagination
+            page={currentPage}
+            onChange={handlePageChange}
+            isCurrentPageEmpty={isCurrentPageEmpty}
+            count={totalPages}
+          />
           </div>
         )}
       </div>
