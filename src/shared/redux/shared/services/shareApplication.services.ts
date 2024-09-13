@@ -15,6 +15,8 @@ const API_URL_CREATE_DRAFT = process.env.REACT_APP_API_URL + "/invoice/draft";
 
 const API_URL_CREATE_STUDENT = process.env.REACT_APP_API_URL + "/admin/users/student";
 
+const API_URL_CREATE_AGENT = process.env.REACT_APP_API_URL + "/admin/users/agent";
+
 interface UpdateProfile {
   email?: string;
   firstName?: string;
@@ -71,10 +73,9 @@ type CustomCountry = {
 };
 
 interface UpdateStudentBody {
-  email?: string;
   firstName?: string;
   lastName?: string;
-  middleName?:string;
+  // middleName?:string;
 }
 
 const handleApiError = (error: any) => {
@@ -527,6 +528,17 @@ const createStudent = async (body: any) => {
   }
 };
 
+const createAgent = async (body: any) => {
+  try {
+    const token = sessionStorage.getItem("userData");
+    const response = await axios.post(API_URL_CREATE_AGENT, body, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error: any) {
+    handleApiError(error);
+  }
+};
 
 const findStudentByEmail = async (email: string) => {
   const url = `${process.env.REACT_APP_API_URL}/admin/users/students/email`;
@@ -547,8 +559,47 @@ const findStudentByEmail = async (email: string) => {
   }
 };
 
+const findAgentByEmail = async (email: string) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/users/agent/email`;
+  try {
+    const response = await axios({
+      url,
+      method: "get",
+      headers: authHeader(),
+      params: { email }, 
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
 const updateStudentCreated = async (body: UpdateStudentBody, userId: string) => {
   const url = `${process.env.REACT_APP_API_URL}/admin/users/students/${userId}`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "patch",
+      data: body,
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw handleApiError(error);
+  }
+};
+
+const updateAgentCreated = async (body: UpdateStudentBody, userId: string) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/users/agent/${userId}`;
   try {
     const response = await axios({
       url,
@@ -593,6 +644,9 @@ const shareApplicationServices = {
   createStudent,
   findStudentByEmail,
   updateStudentCreated,
+  createAgent,
+  updateAgentCreated,
+  findAgentByEmail,
 };
 
 export default shareApplicationServices;

@@ -33,8 +33,7 @@ type CustomCountry = {
 interface UpdateStudentBody {
   firstName: string;
   lastName: string;
-  otherName?: string;
-  email: string;
+  // otherName?: string;
 }
 
 interface UpdateStudentPayload {
@@ -292,10 +291,31 @@ export const createStudent = createAsyncThunk(
   }
 );
 
+export const createAgent = createAsyncThunk(
+  "shareApllication/createAgent",
+  async (body: any, thunkAPI) => {
+    try {
+      const data = await shareApplicationServices.createAgent(body);
+      return data;
+    } catch (error: any) {
+      const message = error;
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const findStudentByEmail = createAsyncThunk(
   "shareApplication/findStudentByEmail",
    async (email:string) => {
      const response = await shareApplicationServices.findStudentByEmail(email);
+     return response.data
+   }
+ );
+
+ export const findAgentByEmail = createAsyncThunk(
+  "shareApplication/findAgentByEmail",
+   async (email:string) => {
+     const response = await shareApplicationServices.findAgentByEmail(email);
      return response.data
    }
  );
@@ -313,6 +333,17 @@ export const findStudentByEmail = createAsyncThunk(
   },
 );
 
+export const updateAgentCreated = createAsyncThunk(
+  "shareApplication/updateAgentCreated",
+  async ({ body, userId }: UpdateStudentPayload, thunkAPI) => {
+    try {
+      const data = await shareApplicationServices.updateAgentCreated(body, userId);
+      return data;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  },
+);
 
 interface ApplicationState {
   userProfile: null;
@@ -328,8 +359,11 @@ interface ApplicationState {
   registerApplication: null;
   registerVisaAppliction: null;
   registerStudent:null;
+  registerAgent:null,
   updateStudent: null,
+  updateAgent:null,
   student: null;
+  agent:null,
   allStudents: {
     data: {
       students: any[];
@@ -376,12 +410,15 @@ const initialState: ApplicationState = {
   updatePassword: null,
   registerVisaApplication: null,
   registerStudent:null,
+  registerAgent:null,
   topCountries: null,
   topUniversities: null,
   registerApplication: null,
   registerVisaAppliction: null,
   updateStudent: null,
+  updateAgent: null,
   student: null,
+  agent:null,
   allStudents: {
     data: null,
     totalItems: 0,
@@ -655,6 +692,19 @@ export const shareApplicationSlice = createSlice({
         setMessage(errorMessage);
       })
 
+      .addCase(
+        createAgent.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.registerAgent = action.payload;
+        }
+      )
+      .addCase(createAgent.rejected, (state, action) => {
+        state.registerAgent = null;
+        const errorMessage =
+          action.error.message || "Agent Application creation failed.";
+        setMessage(errorMessage);
+      })
+
        .addCase(findStudentByEmail.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -666,6 +716,19 @@ export const shareApplicationSlice = createSlice({
       .addCase(findStudentByEmail.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to find student";
+      })
+
+      .addCase(findAgentByEmail.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(findAgentByEmail.fulfilled, (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.agent = action.payload;
+      })
+      .addCase(findAgentByEmail.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to find agent";
       })
 
       .addCase(updateStudentCreated.pending, (state) => {
@@ -683,6 +746,24 @@ export const shareApplicationSlice = createSlice({
       .addCase(updateStudentCreated.rejected, (state, action) => {
         state.loading = false;
         state.updateStudent = null;
+        state.error = action.payload as string || "Failed to update user profile.";
+      })
+
+      .addCase(updateAgentCreated.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        updateAgentCreated.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.loading = false;
+          state.updateAgent = action.payload;
+          state.error = null;
+        },
+      )
+      .addCase(updateAgentCreated.rejected, (state, action) => {
+        state.loading = false;
+        state.updateAgent = null;
         state.error = action.payload as string || "Failed to update user profile.";
       });
   },

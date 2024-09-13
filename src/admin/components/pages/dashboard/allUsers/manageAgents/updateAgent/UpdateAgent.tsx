@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AppDispatch } from '../../../../../../../shared/redux/store';
-import { updateStudentCreated } from '../../../../../../../shared/redux/shared/slices/shareApplication.slices';
-import { button } from "../../../../../../../shared/buttons/Button";
+import { updateAgentCreated } from '../../../../../../../shared/redux/shared/slices/shareApplication.slices';
 import { useAppDispatch } from '../../../../../../../shared/redux/hooks/shared/reduxHooks';
 import Modal from '../../../../../../../shared/modal/Modal';
-import StudentUpdated from '../../../../../../../shared/modal/StudentUpdated';
+import AgentUpdated from '../../../../../../../shared/modal/AgentUpdated';
+import { button } from "../../../../../../../shared/buttons/Button";
 import { CgAsterisk } from "react-icons/cg";
 import ReactLoading from 'react-loading';
 import { toast } from 'react-toastify';
 
 
-interface StudentData {
+interface AgentData {
   id: string;
   email: string;
   profile: {
@@ -27,23 +27,23 @@ interface StudentData {
   };
 }
 
-const UpdateStudent: React.FC = () => {
+const UpdateAgent: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch: AppDispatch = useAppDispatch();
-  const studentData = location.state?.studentData as StudentData;
+  const agentData = location.state?.agentData as AgentData;
 
-  const [firstName, setFirstName] = useState(studentData?.profile?.firstName || '');
-  const [lastName, setLastName] = useState(studentData?.profile?.lastName || '');
+  const [firstName, setFirstName] = useState(agentData?.profile?.firstName || '');
+  const [lastName, setLastName] = useState(agentData?.profile?.lastName || '');
   const [otherName, setOtherName] = useState('');
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
-    if (!studentData) {
+    if (!agentData) {
       navigate('/admin/dashboard/all_users');
     }
-  }, [studentData, navigate]);
+  }, [agentData, navigate]);
 
   const handleBackClick = () => navigate(-1);
   const handleOpenModal = () => setModalOpen(true);
@@ -59,7 +59,7 @@ const UpdateStudent: React.FC = () => {
         lastName,
         // otherName,
       };
-      await dispatch(updateStudentCreated({ body, userId: studentData.profile.userId })).unwrap();
+      await dispatch(updateAgentCreated({ body, userId: agentData.profile.userId })).unwrap();
       handleOpenModal();
     } catch (error: any) {
       toast.error(error || 'An error occurred while updating the student');
@@ -68,7 +68,7 @@ const UpdateStudent: React.FC = () => {
     }
   };
 
-  if (!studentData) {
+  if (!agentData) {
     return null;
   }
 
@@ -155,7 +155,7 @@ const UpdateStudent: React.FC = () => {
                 name="email"
                 type="email"
                 required
-                value={studentData?.email || ""}
+                value={agentData?.email || ""}
                 readOnly
                 className="border-border cursor-not-allowed focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
               />
@@ -184,11 +184,11 @@ const UpdateStudent: React.FC = () => {
       </div>
       {isModalOpen && (
         <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
-          <StudentUpdated onClose={handleCloseModal} />
+          <AgentUpdated onClose={handleCloseModal} />
         </Modal>
       )}
     </main>
   );
 };
 
-export default UpdateStudent;
+export default UpdateAgent;
