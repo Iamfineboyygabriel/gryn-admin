@@ -42,6 +42,11 @@ interface UpdateStudentPayload {
 }
 
 
+interface UpdateDocumentPayload {
+  remark:any;
+  id: string;
+}
+
 export const getUserProfile = createAsyncThunk(
   "shareApplication/getProfile",
   async (_, thunkAPI) => {
@@ -358,6 +363,18 @@ export const findStudentByEmailUniversityDegree = createAsyncThunk(
   }
 );
 
+export const updateDocumentStatus = createAsyncThunk(
+  "shareApplication/updateDocumentStatus",
+  async ({ id, remark }: UpdateDocumentPayload, thunkAPI) => {
+    try {
+      const data = await shareApplicationServices.updateDocumentStatus(id, remark);
+      return data;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
 interface ApplicationState {
   userProfile: null;
   currentUser: null;
@@ -375,6 +392,7 @@ interface ApplicationState {
   registerAgent:null,
   updateStudent: null,
   updateAgent:null,
+  updateDocStatus:null,
   student: null;
   agent:null,
   findByAll:null,
@@ -431,6 +449,7 @@ const initialState: ApplicationState = {
   registerVisaAppliction: null,
   updateStudent: null,
   updateAgent: null,
+  updateDocStatus:null,
   student: null,
   agent:null,
   findByAll:null,
@@ -792,6 +811,25 @@ export const shareApplicationSlice = createSlice({
         const errorMessage =
           action.error.message || "failed to find student by email university and degree";
         setMessage(errorMessage);
+      })
+
+
+      .addCase(updateDocumentStatus.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        updateDocumentStatus.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.loading = false;
+          state.updateDocStatus = action.payload;
+          state.error = null;
+        },
+      )
+      .addCase(updateDocumentStatus.rejected, (state, action) => {
+        state.loading = false;
+        state.updateDocStatus = null;
+        state.error = action.payload as string || "Failed to update user document status.";
       })
 
   },

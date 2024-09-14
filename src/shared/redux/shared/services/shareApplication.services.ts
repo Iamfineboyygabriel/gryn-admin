@@ -653,6 +653,24 @@ export const updateStudentApplication = async (
   }
 };
 
+export const updateDocumentStatus = async (id: string, remark: string) => {
+  const url = `${process.env.REACT_APP_API_URL}/media/document/${id}?remark=${remark}`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "patch",
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 
 const shareApplicationServices = {
   getUserProfile,
@@ -686,6 +704,7 @@ const shareApplicationServices = {
   findAgentByEmail,
   findStudentByEmailUniversityDegree ,
   updateStudentApplication,
+  updateDocumentStatus
 };
 
 export default shareApplicationServices;
