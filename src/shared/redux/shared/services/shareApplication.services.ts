@@ -671,6 +671,42 @@ export const updateDocumentStatus = async (id: string, remark: string) => {
   }
 };
 
+export const approveAgent = async (userID: string) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/users/approve/agent/${userID}`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "patch",
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw handleApiError(error);
+  }
+};
+
+export const rejectAgent = async (userID: string) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/users/reject/agent/${userID}`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "patch",
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw handleApiError(error);
+  }
+};
+
 
 const shareApplicationServices = {
   getUserProfile,
@@ -704,7 +740,9 @@ const shareApplicationServices = {
   findAgentByEmail,
   findStudentByEmailUniversityDegree ,
   updateStudentApplication,
-  updateDocumentStatus
+  updateDocumentStatus,
+  approveAgent,
+  rejectAgent,
 };
 
 export default shareApplicationServices;

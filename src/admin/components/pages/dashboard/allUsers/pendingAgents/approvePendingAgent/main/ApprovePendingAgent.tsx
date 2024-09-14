@@ -96,7 +96,7 @@ const ApprovePendingAgent = () => {
               <BankDetails  agentData={agent} loading={loading}/>
             )}
             {activeLink === "uploadedDocument" && agent && (
-              <UploadedDocuments  agentData={agent} loading={loading}/>
+              <UploadedDocuments  agentData={agent} />
             )}
           </section>
         </div>

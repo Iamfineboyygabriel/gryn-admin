@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import ReactLoading from "react-loading";
 import { button } from "../../../../../../../../shared/buttons/Button";
 import fileImg from "../../../../../../../../assets/svg/File.svg";
 import eye from "../../../../../../../../assets/svg/eyeImg.svg";
@@ -8,10 +9,11 @@ import approve from "../../../../../../../../assets/svg/Approved.svg";
 import reject from "../../../../../../../../assets/svg/Rejected.svg";
 import DocumentPreviewModal from "../../../../../../../../shared/modal/DocumentPreviewModal";
 import Modal from "../../../../../../../../shared/modal/Modal";
-import ApplicationSummary from "../../../../../../../../shared/modal/applicationSummaryModal/ApplicationSummary";
 import { AppDispatch, RootState } from "../../../../../../../../shared/redux/store";
 import { useAppDispatch } from "../../../../../../../../shared/redux/hooks/shared/reduxHooks";
 import { updateDocumentStatus } from "../../../../../../../../shared/redux/shared/slices/shareApplication.slices";
+import { approveAgent, rejectAgent } from "../../../../../../../../shared/redux/shared/services/shareApplication.services";
+import ApplicationSummary from "../../../../../../../../shared/modal/applicationSummaryModal/ApplicationSummary";
 
 interface Document {
   id: string;
@@ -27,14 +29,24 @@ interface UpdateDocStatus {
   remark: 'APPROVED' | 'REJECTED' | 'PENDING';
 }
 
-interface UploadedDocumentsProps {
-  agentData: {
-    agentRegistrationDoc: Document[]; 
-  } | null;
-  loading: boolean;
+interface AgentData {
+  agentRegistrationDoc: Document[];
+  id: string;
 }
 
-const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({ agentData, loading }) => {
+interface UploadedDocumentsProps {
+  agentData: AgentData | null;
+}
+
+type ActionType = 'approve' | 'reject';
+
+interface LoadingStatus {
+  [key: string]: {
+    [key in ActionType]: boolean;
+  };
+}
+
+const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({ agentData }) => {
   const dispatch: AppDispatch = useAppDispatch();
   const { updateDocStatus, error } = useSelector((state: RootState) => state.shareApplication) as { 
     updateDocStatus: UpdateDocStatus | null; 
@@ -45,7 +57,8 @@ const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({ agentData, loadin
   const [previewFileType, setPreviewFileType] = useState<string>("");
   const [isModalOpen, setModalOpen] = useState(false);
   const [documents, setDocuments] = useState<Document[]>(agentData?.agentRegistrationDoc || []);
-  const [loadingStatus, setLoadingStatus] = useState<{ [key: string]: boolean }>({});
+  const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>({});
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     if (updateDocStatus) {
@@ -60,7 +73,7 @@ const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({ agentData, loadin
   const handleOpenModal = () => setModalOpen(true);
   const handleCloseModal = () => setModalOpen(false);
 
-  const getFileTypeFromUrl = (url: string) => {
+  const getFileTypeFromUrl = (url: string): string => {
     const segments = url.split("/");
     const fileExtension = segments[segments.length - 1].split(".").pop()?.toLowerCase();
     switch (fileExtension) {
@@ -106,7 +119,12 @@ const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({ agentData, loadin
   };
 
   const handleStatusUpdate = async (id: string, remark: 'APPROVED' | 'REJECTED') => {
-    setLoadingStatus((prev) => ({ ...prev, [id]: true }));
+    const action: ActionType = remark.toLowerCase() as ActionType;
+    setLoadingStatus((prev) => ({
+      ...prev,
+      [id]: { ...prev[id], [action]: true }
+    }));
+    setErrors((prev) => ({ ...prev, [id]: '' }));
   
     try {
       const response = await dispatch(updateDocumentStatus({ id, remark }));
@@ -117,39 +135,94 @@ const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({ agentData, loadin
             doc.id === id ? { ...doc, status: remark, remark: remark } : doc
           )
         );
-      } else if (error) {
-        console.error('Failed to update document status:', error);
+      } else {
+        throw new Error('Failed to update document status');
       }
     } catch (error) {
       console.error('Failed to update document status:', error);
+      setErrors((prev) => ({ ...prev, [id]: 'Failed to update status. Please try again.' }));
     } finally {
-      setLoadingStatus((prev) => ({ ...prev, [id]: false }));
+      setLoadingStatus((prev) => ({
+        ...prev,
+        [id]: { ...prev[id], [action]: false }
+      }));
     }
   };
-  
-  const SkeletonRow = () => (
-    <div className="mb-4 animate-pulse space-y-4">
-      <div className="h-4 w-1/4 rounded bg-gray-200"></div>
-      <div className="h-12 w-full rounded bg-gray-200"></div>
-    </div>
-  );
 
-  if (loading) {
+  const handleAgentApproval = async (approve: boolean) => {
+    if (!agentData?.id) {
+      console.error('Agent ID is missing');
+      return;
+    }
+
+    try {
+      if (approve) {
+        await approveAgent(agentData.id);
+      } else {
+        await rejectAgent(agentData.id);
+      }
+      // handleCloseModal();
+      // // You might want to add some feedback to the user here
+    } catch (error) {
+      console.error('Failed to approve/reject agent:', error);
+      // Handle error (e.g., show error message)
+    }
+  };
+
+  const renderActionButton = (doc: Document, action: 'APPROVED' | 'REJECTED') => {
+    const actionType: ActionType = action.toLowerCase() as ActionType;
+    const isLoading = loadingStatus[doc.id]?.[actionType] || false;
+    const isCurrentStatus = doc.status === action;
+    const isPending = doc.status === 'PENDING';
+
+    let buttonClass = "flex px-[1em] rounded-md font-medium py-[8px] items-center border gap-2 ";
+    let buttonContent;
+
+    if (action === 'APPROVED') {
+      buttonClass += isCurrentStatus
+        ? "bg-[#F3FBF5] text-approve border-approve"
+        : isPending
+        ? "bg-[#F3FBF5] text-approve border-approve"
+        : "bg-gray-200 text-gray-600 border-gray-300";
+      buttonContent = (
+        <>
+          {(isCurrentStatus || isPending) && <img src={approve} alt="approve_icon" />}
+          <small>{isCurrentStatus ? 'Approved' : 'Approve'}</small>
+        </>
+      );
+    } else {
+      buttonClass += isCurrentStatus
+        ? "bg-[#FEEEEE] text-red-500 border-reject"
+        : isPending
+        ? "bg-[#FEEEEE] text-reject border-reject"
+        : "bg-gray-200 text-gray-600 border-gray-300";
+      buttonContent = (
+        <>
+          {(isCurrentStatus || isPending) && <img src={reject} alt="reject_icon" />}
+          <small>{isCurrentStatus ? 'Rejected' : 'Reject'}</small>
+        </>
+      );
+    }
+
     return (
-      <main className="font-outfit">
-        <header>
-          <h2 className="text-xl font-semibold dark:text-white">
-            Uploaded Documents
-          </h2>
-        </header>
-        <div className="mt-[2em] grid w-[85%] grid-cols-2 gap-10">
-          {Array.from({ length: 4 }).map((_, index) => (
-            <SkeletonRow key={index} />
-          ))}
-        </div>
-      </main>
+      <div className="flex flex-col items-start">
+        {errors[doc.id] && (
+          <small className="text-red-500 mb-1">{errors[doc.id]}</small>
+        )}
+        <button
+          className={buttonClass}
+          onClick={() => handleStatusUpdate(doc.id, action)}
+          disabled={isLoading || isCurrentStatus}
+        >
+          {isLoading ? (
+            <ReactLoading color="#FFFFFF" width={25} height={25} type="spin" />
+          ) : (
+            buttonContent
+          )}
+        </button>
+      </div>
     );
-  }
+  };
 
   if (!documents.length) {
     return <div>No documents found.</div>;
@@ -198,33 +271,8 @@ const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({ agentData, loadin
                 </div>
               </div>
               <div className="flex mt-[1em] gap-2 items-center">
-                <button
-                  className={`flex px-[1em] rounded-md font-medium py-[8px] items-center border gap-2 ${
-                    doc.status === 'PENDING' || doc.status === 'REJECTED'
-                      ? 'bg-[#F3FBF5] text-approve border-approve'
-                      : 'bg-gray-200 text-gray-600 border-gray-300'
-                  }`}
-                  onClick={() => handleStatusUpdate(doc.id, 'APPROVED')}
-                  disabled={loadingStatus[doc.id]}
-                >
-                  <img src={approve} alt="approve_icon" />
-                  <small>{doc.status === 'APPROVED' ? 'Approved' : 'Approve'}</small>
-                  {loadingStatus[doc.id] && doc.status === 'PENDING' && <span className="ml-2">...</span>}
-                </button>
-
-                <button
-                  className={`flex items-center border rounded-md font-medium py-[8px] px-[1em] gap-2 ${
-                    doc.status === 'PENDING' || doc.status === 'APPROVED'
-                      ? 'bg-[#FEEEEE] text-reject border-reject'
-                      : 'bg-gray-200 text-gray-600 border-gray-300'
-                  }`}
-                  onClick={() => handleStatusUpdate(doc.id, 'REJECTED')}
-                  disabled={loadingStatus[doc.id]}
-                >
-                  <img src={reject} alt="reject_icon" />
-                  <small>{doc.status === 'REJECTED' ? 'Rejected' : 'Reject'}</small>
-                  {loadingStatus[doc.id] && doc.status === 'PENDING' && <span className="ml-2">...</span>}
-                </button>
+                {renderActionButton(doc, 'APPROVED')}
+                {renderActionButton(doc, 'REJECTED')}
               </div>
             </div>
           ))}
@@ -250,9 +298,9 @@ const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({ agentData, loadin
         >
           <ApplicationSummary
             onClose={handleCloseModal}
-            personalDetails={agentData}
-            degree={agentData}
             documents={documents}
+            onApprove={() => handleAgentApproval(true)}
+            onReject={() => handleAgentApproval(false)}
           />
         </Modal>
       )}

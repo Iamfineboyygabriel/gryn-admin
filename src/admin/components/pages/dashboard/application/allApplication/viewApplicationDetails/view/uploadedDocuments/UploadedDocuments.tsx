@@ -200,12 +200,12 @@ const UploadedDocuments = ({ applicationId }: any) => {
     onClose={handleCloseModal}
     data-aos="zoom-in"
   >
-    <ApplicationSummary 
+    {/* <ApplicationSummary 
       onClose={handleCloseModal}
       personalDetails={applicationDetails?.data}
       degree={applicationDetails?.data?.degree}
       documents={applicationDetails?.data?.documents}
-    />
+    /> */}
   </Modal>
 )}
     </main>

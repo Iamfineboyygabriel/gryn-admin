@@ -23,7 +23,7 @@ const UploadedDocuments = () => {
           onClose={handleCloseModal}
           data-aos="zoom-in"
         >
-          <ApplicationSummary onClose={handleCloseModal} />
+          {/* <ApplicationSummary onClose={handleCloseModal} /> */}
         </Modal>
       )}
     </main>
