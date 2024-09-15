@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { setMessage } from "../../message.slices";
 import shareApplicationServices from "../services/shareApplication.services";
+import { RootState } from "../../store";
 
 interface UpdateProfile {
   email?: string;
@@ -25,6 +26,21 @@ interface CreateApplicationBody {
   university?: string;
 }
 
+
+interface CreateVisaApplicationBody {
+  firstName: string;
+  lastName: string;
+  otherName?: string;
+  email: string;
+  passportNumber: string;
+  issuedDate: string;
+  expiryDate: string;
+  destination: string | null;
+  agentEmail: string;
+  schoolName: string;
+}
+
+
 type CustomCountry = {
   cca2: string;
   name: string;
@@ -41,6 +57,15 @@ interface UpdateStudentPayload {
   userId: string;
 }
 
+interface UpdateBankDetailsBody {
+  bankCode?: string;
+  accountName?: string;
+  accountNumber?:string;
+}
+
+interface UpdateBankDetailsPayload {
+  body: UpdateBankDetailsBody;
+}
 
 interface UpdateDocumentPayload {
   remark:any;
@@ -113,18 +138,22 @@ export const updatePassword = createAsyncThunk(
   }
 );
 
+
 export const createVisaApplication = createAsyncThunk(
-  "shareApllication/createVisaApplication",
-  async (body: any, thunkAPI) => {
+  "shareApplication/createVisaApplication",
+  async (body: CreateVisaApplicationBody, thunkAPI) => {
     try {
-      const data = await shareApplicationServices.createVisaApplication(body);
-      return data;
+      const response = await shareApplicationServices.createVisaApplication(body);
+      console.log('slices response', response);
+      return response; 
     } catch (error: any) {
-      const message = error;
+      console.log("slices error", error);
+      const message = error.response?.data?.message || "Something went wrong!";
       return thunkAPI.rejectWithValue(message);
     }
   }
 );
+
 
 export const getTopCountries = createAsyncThunk(
   "shareApplication/getTopCountries",
@@ -263,8 +292,9 @@ export const getAllVisaApplication = createAsyncThunk(
   "shareApplication/getAllVisaApplication",
   async ({ page, limit, search }: { page: number; limit: number; search: string }) => {
     const response = await shareApplicationServices.getAllVisaApplication(page, limit, search);
+    console.log("Response",response)
     return {
-      visas: response.data.applications,
+      visas: response.data,
       totalPages: response.data.totalPages,
       currentPage: page
     };
@@ -350,6 +380,18 @@ export const updateAgentCreated = createAsyncThunk(
   },
 );
 
+export const updateAgentBankDetails = createAsyncThunk(
+  "shareApplication/updateAgentBankDetails",
+  async ({ body }: UpdateBankDetailsPayload, thunkAPI) => {
+    try {
+      const data = await shareApplicationServices.updateAgentBankDetails(body);
+      return data;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  },
+);
+
 export const findStudentByEmailUniversityDegree = createAsyncThunk(
   "shareApllication/findStudentByEmailUniversityDegree",
   async (body: any, thunkAPI) => {
@@ -381,18 +423,18 @@ interface ApplicationState {
   avatarUrl: null;
   updateProfile: null;
   updatePassword: null;
-  registerVisaApplication: null;
   topCountries: null;
   topUniversities: null;
   registerInvoice: null;
   registerDraft: null;
   registerApplication: null;
-  registerVisaAppliction: null;
+  registerVisaApplication: any | null;
   registerStudent:null;
   registerAgent:null,
   updateStudent: null,
   updateAgent:null,
   updateDocStatus:null,
+  updateBankDetails:null,
   student: null;
   agent:null,
   findByAll:null,
@@ -440,16 +482,16 @@ const initialState: ApplicationState = {
   avatarUrl: null,
   updateProfile: null,
   updatePassword: null,
-  registerVisaApplication: null,
   registerStudent:null,
   registerAgent:null,
   topCountries: null,
   topUniversities: null,
   registerApplication: null,
-  registerVisaAppliction: null,
+  registerVisaApplication: null,
   updateStudent: null,
   updateAgent: null,
   updateDocStatus:null,
+  updateBankDetails:null,
   student: null,
   agent:null,
   findByAll:null,
@@ -542,17 +584,20 @@ export const shareApplicationSlice = createSlice({
         state.updatePassword = null;
       })
 
-      .addCase(
-        createVisaApplication.fulfilled,
-        (state, action: PayloadAction<any>) => {
-          state.registerVisaApplication = action.payload;
-        }
-      )
+      .addCase(createVisaApplication.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createVisaApplication.fulfilled, (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.registerVisaApplication = action.payload;
+        console.log("action.payload",action.payload)
+        state.error = null;
+      })
       .addCase(createVisaApplication.rejected, (state, action) => {
+        state.loading = false;
         state.registerVisaApplication = null;
-        const errorMessage =
-          action.error.message || "Visa Application creation failed.";
-        setMessage(errorMessage);
+        state.error = action.payload as string || "An error occurred";
       })
 
       .addCase(
@@ -795,11 +840,30 @@ export const shareApplicationSlice = createSlice({
           state.error = null;
         },
       )
+      .addCase(updateAgentBankDetails.rejected, (state, action) => {
+        state.loading = false;
+        state.updateBankDetails = null;
+        state.error = action.payload as string || "Failed to update user profile.";
+      })
+
+      .addCase(updateAgentBankDetails.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        updateAgentBankDetails.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.loading = false;
+          state.updateBankDetails = action.payload;
+          state.error = null;
+        },
+      )
       .addCase(updateAgentCreated.rejected, (state, action) => {
         state.loading = false;
         state.updateAgent = null;
         state.error = action.payload as string || "Failed to update user profile.";
       })
+
 
       .addCase(findStudentByEmailUniversityDegree.fulfilled,
         (state, action: PayloadAction<any>) => {
@@ -834,6 +898,12 @@ export const shareApplicationSlice = createSlice({
 
   },
 });
+
+
+// Selectors
+export const selectVisaApplicationLoading = (state: RootState) => state.shareApplication.loading;
+export const selectVisaApplicationError = (state: RootState) => state.shareApplication.error;
+export const selectVisaApplicationData = (state: RootState) => state.shareApplication.registerVisaApplication;
 
 const { reducer } = shareApplicationSlice;
 export default reducer;

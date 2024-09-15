@@ -1,14 +1,13 @@
 import React, { useCallback, useEffect, useState } from "react";
 import plus from "../../../../../../assets/svg/plus.svg";
 import { Link } from "react-router-dom";
-import approved from "../../../../../../assets/svg/Approved.svg";
-import rejected from "../../../../../../assets/svg/Rejected.svg";
-import pending from "../../../../../../assets/svg/Pending.svg";
 import transaction from "../../../../../../assets/svg/Transaction.svg";
 import DocumentPreviewModal from "../../../../../../shared/modal/DocumentPreviewModal";
 import { useAllVisa } from "../../../../../../shared/redux/hooks/shared/getUserProfile";
 import { FiSearch } from "react-icons/fi";
 import CustomPagination from "../../../../../../shared/utils/customPagination";
+import eye from "../../../../../../assets/svg/eyeImg.svg";
+
 
 const escapeRegExp = (str: any) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -24,6 +23,10 @@ interface VisaData {
   };
   destination: string;
   issuedDate: string;
+  document: Array<{
+    documentType: string;
+    publicURL: string;
+  }>;
 }
 
 const SkeletonRow: React.FC = () => (
@@ -37,15 +40,50 @@ const SkeletonRow: React.FC = () => (
 );
 
 const Visa: React.FC = () => {
-  const { visa, loading,  totalPages, currentPage, fetchApplications, searchTerm, updateSearchTerm  } = useAllVisa();
+  const { visa, loading, totalPages, currentPage, fetchApplications, searchTerm, updateSearchTerm } = useAllVisa();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewFileType, setPreviewFileType] = useState<string>("");
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState<number>(1);
   const itemsPerPage = 10;
 
   const isCurrentPageEmpty = page > totalPages;
+
+  const getFileTypeFromUrl = (url: string) => {
+    const segments = url.split("/");
+    const fileExtension = segments.pop()?.split(".").pop();
+    switch (fileExtension) {
+      case "pdf":
+        return "application/pdf";
+      case "jpg":
+      case "jpeg":
+        return "image/jpeg";
+      case "png":
+        return "image/png";
+      case "gif":
+        return "image/gif";
+      default:
+        return "application/octet-stream";
+    }
+  };
+
+  const handlePreview = (url: string) => {
+    const fileType = getFileTypeFromUrl(url);
+    if (fileType === "application/pdf") {
+      url += "&viewer=pdf";
+    }
+    setPreviewUrl(url);
+    setPreviewFileType(fileType);
+    setIsPreviewOpen(true);
+  };
+   
+  const closePreviewModal = () => {
+    setIsPreviewOpen(false);
+    setPreviewUrl(null);
+    setPreviewFileType("");
+  };
 
   useEffect(() => {
     fetchApplications(currentPage, itemsPerPage);
@@ -54,7 +92,6 @@ const Visa: React.FC = () => {
   const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
     fetchApplications(value, itemsPerPage);
   };
-
 
   const highlightText = (text: string, query: string) => {
     if (!query) return text;
@@ -71,17 +108,24 @@ const Visa: React.FC = () => {
     );
   };
 
-  const getStatusClassAndIcon = (status: string) => {
-    switch (status) {
-      case "APPROVED":
-        return { class: "text-green-500", icon: approved };
-      case "REJECTED":
-        return { class: "text-red-500", icon: rejected };
-      case "PENDING":
-        return { class: "text-yellow-500", icon: pending };
-      default:
-        return { class: "text-gray-500", icon: undefined };
+  const renderPaymentStatus = (documents: Array<{documentType: string; publicURL: string}>, type: string) => {
+    const document = documents.find(doc => doc.documentType === type);
+    if (document) {
+      return (
+        <div className="flex items-center">
+          <span className="mr-3">Paid</span>
+           <button
+            type="button"
+            className="flex items-center gap-1 rounded-full bg-purple-white px-3 py-[4px] text-center font-medium text-[#660066] dark:bg-gray-600 dark:text-white"
+            onClick={() => handlePreview(document.publicURL)}
+          >
+            <img src={eye} alt="eye" />
+            <span className="mr-6">View</span>
+          </button>
+        </div>
+      );
     }
+    return "-";
   };
 
   return (
@@ -172,16 +216,22 @@ const Visa: React.FC = () => {
                     <td className="whitespace-nowrap px-6 py-4">
                       {highlightText(item.destination || "-", searchQuery)}
                     </td>
-                    <td className="whitespace-nowrap px-6 py-4">-</td>
-                    <td className="whitespace-nowrap px-6 py-4">-</td>
-                    <td className="whitespace-nowrap px-6 py-4">-</td>
+                    <td className="whitespace-nowrap px-6 py-4">
+                      {renderPaymentStatus(item.document, "SERVICE_CHARGE")}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4">
+                      {renderPaymentStatus(item.document, "IHS")}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4">
+                      {renderPaymentStatus(item.document, "VISA_FEE")}
+                    </td>
                     <td className="whitespace-nowrap px-6 py-4">
                       {highlightText(item.issuedDate || "-", searchQuery)}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
                       <Link
                         to="#"
-                        className="font-medium text-primary-700 underline dark:text-gray-500"
+                        className="font-medium text-primary-700 dark:text-gray-500"
                       >
                         View Details
                       </Link>
@@ -221,8 +271,8 @@ const Visa: React.FC = () => {
       </div>
 
       <DocumentPreviewModal
-        isOpen={isModalOpen}
-        onRequestClose={() => setIsModalOpen(false)}
+        isOpen={isPreviewOpen}
+        onRequestClose={closePreviewModal}
         previewUrl={previewUrl}
         previewFileType={previewFileType}
       />

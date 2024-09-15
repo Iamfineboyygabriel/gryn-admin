@@ -1,22 +1,37 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import StepIndicator from "../../../../../../../shared/stepIndicator/StepIndicator";
-import StepOne from "../stepOne/StepOne";
-import StepTwo from "../stepTwo/StepTwo";
-import StepThree from "../stepThree/StepThree";
-import { button } from "../../../../../../../shared/buttons/Button";
+import  { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import StepIndicator from "../../../shared/stepIndicator/StepIndicator";
+import { button } from "../../../shared/buttons/Button";
+import PersonalDetails from "../personalDetails/PersonalDetails";
+import UploadedRegistrationDocument from "../uploadedRegistrationDoc.tsx/UploadedRegistrationDocument";
+import BankDetails from "../bankDetails/BankDetails";
 
-const NewApplication = () => {
+interface AgentData {
+  phoneNumber: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  middleName: string;
+  userId: string;
+  bankAccounts: Array<{
+    bankCode: string;
+    accountName: string;
+    accountNumber: string;
+  }>;
+  profile: {
+    firstName: string;
+    lastName: string;
+    userId: string;
+    [key: string]: any; 
+  };
+}
+
+const UpdateAgent = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState<number[]>([]);
   const [applicationId, setApplicationId] = useState<string | null>(null);
-
-  const [stepOneData, setStepOneData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    otherName: "",
-  });
+  const location = useLocation();
+  const agentData: AgentData = location.state?.agentData;  
 
   const navigate = useNavigate();
 
@@ -38,7 +53,7 @@ const NewApplication = () => {
     }
 
     if (currentStep < 3) {
-      setCurrentStep(prevStep => prevStep + 1);
+      setCurrentStep(currentStep + 1);
     } else {
       navigate("/student/dashboard/application/application_successful");
     }
@@ -52,9 +67,9 @@ const NewApplication = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="font-medium dark:text-gray-700">
-                Manage Application /
+                Update Agent /
                 <span className="ml-1 font-medium text-primary-700 dark:text-white">
-                  New Application
+                  View Application
                 </span>
               </h1>
             </div>
@@ -63,41 +78,31 @@ const NewApplication = () => {
             </button.PrimaryButton>
           </div>
         </header>
-        <StepIndicator
-          currentStep={currentStep}
-          completedSteps={completedSteps}
-          customLabels={["Personal Details","Destination Details","Upload Document"]}
-        />
+        <StepIndicator customLabels={["Personal Details", "Bank Details", "Uploaded Document"]}  currentStep={currentStep} completedSteps={completedSteps} />
         <div className="mt-[2em]">
           {currentStep === 1 && (
-            <StepOne
-              onNext={(data:any) => {
-                setStepOneData(data);
-                handleNextClick();
-              }}
+            <PersonalDetails
+              agentData={agentData}  
+              onNext={handleNextClick}
             />
           )}
           {currentStep === 2 && (
-            <StepTwo
-              onNext={(data) => {
-                console.log("StepTwo onNext called with data:", data);
-                handleNextClick(data);
-              }}
-              applicationId={applicationId}
-              stepOneData={stepOneData}
+            <BankDetails
+              agentData={agentData}
+              onNext={ handleNextClick}
             />
           )}
-          {currentStep === 3 && (
-            <StepThree
+          {/* {currentStep === 3 && (
+            <UploadedRegistrationDocument
               onNext={handleNextClick}
               onPrevious={handleBackClick}
               applicationId={applicationId}
             />
-          )}
+          )} */}
         </div>
       </div>
     </main>
   );
 };
 
-export default NewApplication;
+export default UpdateAgent;

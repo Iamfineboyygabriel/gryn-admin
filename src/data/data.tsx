@@ -218,4 +218,7 @@ export enum DocumentType {
   "REFLETTER" = "REFLETTER",
   "IDCARD" = "IDCARD",
   "CACDOC" = "CACDOC",
+  "IHS" = "IHS",
+  "VISA_FEE" = "VISA_FEE",
+  "OTHER_PAYMENT" = "OTHER_PAYMENT"
 }

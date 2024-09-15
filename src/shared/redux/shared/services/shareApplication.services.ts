@@ -69,6 +69,19 @@ interface CreateApplicationBody {
   university?: string;
 }
 
+interface CreateVisaApplicationBody {
+  firstName: string;
+  lastName: string;
+  otherName?: string;
+  email: string;
+  passportNumber: string;
+  issuedDate: string;
+  expiryDate: string;
+  destination: string | null;
+  agentEmail: string;
+  schoolName: string;
+}
+
 type CustomCountry = {
   cca2: string;
   name: string;
@@ -78,6 +91,12 @@ interface UpdateStudentBody {
   firstName?: string;
   lastName?: string;
   // middleName?:string;
+}
+
+interface UpdateBankDetailsBody {
+  bankCode?: string;
+  accountName?: string;
+  accountNumber?:string;
 }
 
 const handleApiError = (error: any) => {
@@ -265,15 +284,20 @@ export const updateApplicationDocument = async (
   }
 };
 
-const createVisaApplication = async (body: any) => {
+const createVisaApplication = async (body: CreateVisaApplicationBody) => {
   try {
     const token = sessionStorage.getItem("userData");
     const response = await axios.post(API_URL_CREATE_VISA_APPLICATION, body, {
       headers: { Authorization: `Bearer ${token}` },
     });
+    console.log("services",response)
     return response.data;
-  }catch (error: any) {
-    handleApiError(error);
+  } catch (error: any) {
+    console.log("services error",error)
+    if (!error.response) {
+      throw new Error("Network Error: Please check your internet connection.");
+    }
+    throw new Error(error.response.data.message || "An error occurred.");
   }
 };
 
@@ -619,6 +643,25 @@ const updateAgentCreated = async (body: UpdateStudentBody, userId: string) => {
   }
 };
 
+const updateAgentBankDetails = async (body: UpdateBankDetailsBody) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/users/bank_details`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "patch",
+      data: body,
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw handleApiError(error);
+  }
+};
+
 const findStudentByEmailUniversityDegree = async (body: any) => {
   try {
     const token = sessionStorage.getItem("userData");
@@ -707,6 +750,19 @@ export const rejectAgent = async (userID: string) => {
   }
 };
 
+export async function uploadVisaApplicationDocument(endpoint: string, body: FormData) {
+  const url = `${process.env.REACT_APP_API_URL}${endpoint}`;
+  try {
+    const token = sessionStorage.getItem("userData");
+    const headers = {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
+    const response = await axios.post(url, body, { headers });
+    return response.data;
+  } catch (error: any) {
+    handleApiError(error);
+  }
+}
 
 const shareApplicationServices = {
   getUserProfile,
@@ -743,6 +799,8 @@ const shareApplicationServices = {
   updateDocumentStatus,
   approveAgent,
   rejectAgent,
+  updateAgentBankDetails,
+  uploadVisaApplicationDocument,
 };
 
 export default shareApplicationServices;

@@ -7,6 +7,8 @@ import DOMPurify from "dompurify";
 import { useAllPendingAgents } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
 import { button } from "../../../../../../../shared/buttons/Button";
 import plus from "../../../../../../../assets/svg/plus.svg";
+import Modal from "../../../../../../../shared/modal/Modal";
+import FindAgentByEmail from "../../../../../../../shared/modal/FindAgentByEmail";
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -31,6 +33,13 @@ const PendingAgents = () => {
 
   const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
   const itemsPerPage = 10;
+
+    
+  const [isModalOpen, setModalOpen] = useState(false);
+
+  const handleOpenModal = () => setModalOpen(true);
+  const handleCloseModal = () => setModalOpen(false);
+
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -94,7 +103,7 @@ const PendingAgents = () => {
       return filteredAgents.map((agent: any, index: number) => (
         <tr
           key={agent.id}
-          className="text-[14px] leading-[20px] text-grey-primary font-medium"
+          className="text-[14px] border-b border-gray-200 leading-[20px] text-grey-primary font-medium"
         >
           <td className="py-[16px] px-[24px]">
             {(currentPage - 1) * itemsPerPage + index + 1}
@@ -152,11 +161,11 @@ const PendingAgents = () => {
         <header className="flex items-center justify-between">
           <h1 className="font-medium text-xl">Pending Agents</h1>
           <div className="flex gap-2">
-            <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-primary-200 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
+            <button.PrimaryButton onClick={handleOpenModal} className="mt-[1em] flex gap-2 rounded-full bg-primary-200 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
               <img src={plus} alt="plus" />
               Update Agent
             </button.PrimaryButton>
-            <Link to="/admin/dashboard/application/manage_application/new_application">
+            <Link to="/admin/dashboard/all_users/create_agent">
               <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-primary-700 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
                 <img src={plus} alt="plus" />
                 New Agent
@@ -198,6 +207,11 @@ const PendingAgents = () => {
             isCurrentPageEmpty={isCurrentPageEmpty}
           />
         </div>
+      )}
+         {isModalOpen && (
+        <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
+          <FindAgentByEmail  onClose={handleCloseModal} />
+        </Modal>
       )}
     </main>
   );

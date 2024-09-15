@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import ReactLoading from "react-loading";
+import { AppDispatch, RootState } from "../../../../../../../../shared/redux/store";
+import { updateDocumentStatus } from "../../../../../../../../shared/redux/shared/slices/shareApplication.slices";
+import { approveAgent, rejectAgent } from "../../../../../../../../shared/redux/shared/services/shareApplication.services";
+import { useAppDispatch } from "../../../../../../../../shared/redux/hooks/shared/reduxHooks";
 import { button } from "../../../../../../../../shared/buttons/Button";
+import ApplicationSummary from "../../../../../../../../shared/modal/applicationSummaryModal/ApplicationSummary";
+import DocumentPreviewModal from "../../../../../../../../shared/modal/DocumentPreviewModal";
+import Modal from "../../../../../../../../shared/modal/Modal";
 import fileImg from "../../../../../../../../assets/svg/File.svg";
 import eye from "../../../../../../../../assets/svg/eyeImg.svg";
 import download from "../../../../../../../../assets/svg/download.svg";
 import approve from "../../../../../../../../assets/svg/Approved.svg";
 import reject from "../../../../../../../../assets/svg/Rejected.svg";
-import DocumentPreviewModal from "../../../../../../../../shared/modal/DocumentPreviewModal";
-import Modal from "../../../../../../../../shared/modal/Modal";
-import { AppDispatch, RootState } from "../../../../../../../../shared/redux/store";
-import { useAppDispatch } from "../../../../../../../../shared/redux/hooks/shared/reduxHooks";
-import { updateDocumentStatus } from "../../../../../../../../shared/redux/shared/slices/shareApplication.slices";
-import { approveAgent, rejectAgent } from "../../../../../../../../shared/redux/shared/services/shareApplication.services";
-import ApplicationSummary from "../../../../../../../../shared/modal/applicationSummaryModal/ApplicationSummary";
+import ReactLoading from "react-loading";
+
 
 interface Document {
   id: string;
@@ -59,6 +60,7 @@ const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({ agentData }) => {
   const [documents, setDocuments] = useState<Document[]>(agentData?.agentRegistrationDoc || []);
   const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>({});
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const loading = useSelector((state: any) => state?.shareApplication?.loading || false);
 
   useEffect(() => {
     if (updateDocStatus) {
@@ -161,8 +163,6 @@ const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({ agentData }) => {
       } else {
         await rejectAgent(agentData.id);
       }
-      // handleCloseModal();
-      // // You might want to add some feedback to the user here
     } catch (error) {
       console.error('Failed to approve/reject agent:', error);
       // Handle error (e.g., show error message)
@@ -225,7 +225,7 @@ const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({ agentData }) => {
   };
 
   if (!documents.length) {
-    return <div>No documents found.</div>;
+    return <div className="text-red-500">No documents found 📜.</div>;
   }
 
   return (
@@ -301,6 +301,7 @@ const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({ agentData }) => {
             documents={documents}
             onApprove={() => handleAgentApproval(true)}
             onReject={() => handleAgentApproval(false)}
+            approvalType="agent"
           />
         </Modal>
       )}

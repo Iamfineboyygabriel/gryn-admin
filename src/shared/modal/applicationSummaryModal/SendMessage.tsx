@@ -1,6 +1,28 @@
+import React, { useState } from 'react';
+import ReactLoading from "react-loading";
 import { button } from "../../buttons/Button";
 
-const SendMessage = ({ onClose, onSubmit }: any) => {
+interface SendMessageProps {
+  onClose: () => void;
+  onSubmit: () => void;
+}
+
+const SendMessage: React.FC<SendMessageProps> = ({ onClose, onSubmit }) => {
+  const [loading, setLoading] = useState(false);
+  const [header, setHeader] = useState('');
+  const [description, setDescription] = useState('');
+
+  const handleSubmit = async () => {
+    setLoading(true);
+    try {
+      await onSubmit();
+    } catch (error) {
+      console.error('Failed to send message:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <main className="px-[4em] font-outfit">
       <div className="m-auto w-[26em]">
@@ -32,6 +54,8 @@ const SendMessage = ({ onClose, onSubmit }: any) => {
               type="text"
               id="header"
               className="mt-[1em] w-full items-center gap-3 rounded-lg border-2 bg-grey-light px-4 py-3 font-medium"
+              value={header}
+              onChange={(e) => setHeader(e.target.value)}
             />
           </div>
           <div>
@@ -41,6 +65,8 @@ const SendMessage = ({ onClose, onSubmit }: any) => {
             <textarea
               id="description"
               className="mt-[1em] h-32 w-full items-center gap-3 rounded-lg border-2 bg-inherit px-4 py-3 font-medium"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
             ></textarea>
           </div>
 
@@ -48,14 +74,25 @@ const SendMessage = ({ onClose, onSubmit }: any) => {
             <button.PrimaryButton
               className="rounded-full bg-error px-[3em] py-[8px] text-center font-medium text-white"
               onClick={onClose}
+              disabled={loading}
             >
               Back
             </button.PrimaryButton>
             <button.PrimaryButton
               className="rounded-full bg-linear-gradient px-[2em] py-[8px] text-center font-medium text-white"
-              onClick={onSubmit}
+              onClick={handleSubmit}
+              disabled={loading}
             >
-              Submit Response
+              {loading ? (
+                <ReactLoading
+                  color="#FFFFFF"
+                  width={25}
+                  height={25}
+                  type="spin"
+                />
+              ) : (
+                "Submit Response"
+              )}
             </button.PrimaryButton>
           </div>
         </div>

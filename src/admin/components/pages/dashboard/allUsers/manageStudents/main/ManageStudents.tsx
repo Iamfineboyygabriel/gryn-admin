@@ -99,7 +99,7 @@ const AllStudents: React.FC = () => {
   const handleViewDetails = useCallback(
     (studentId: string, firstName: string, lastName: string) => {
       navigate(
-        `/staff/dashboard/application/manage_student/application_details/${studentId}`,
+        `/admin/dashboard/all_users/student_applications/${studentId}`,
         {
           state: { firstName, lastName },
         }

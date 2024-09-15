@@ -36,7 +36,7 @@ export interface ApplicationDetails {
   message: string;
   data: {
     email: string;
-    id: number;
+    id: string;
     phoneNumber: string;
     firstName: string;
     lastName: string;
@@ -62,7 +62,7 @@ export interface ApplicationDetails {
       updatedAt: string;
     };
     documents: {
-      id: number;
+      id: string;
       name: string;
       publicURL: string;
       documentType: string;
@@ -72,6 +72,8 @@ export interface ApplicationDetails {
       agentId: null;
       createdAt: string;
       updatedAt: string;
+      remark: string;
+      status: 'PENDING' | 'APPROVED' | 'REJECTED';
     }[];
   };
 }
@@ -339,7 +341,6 @@ export const useAllStudent = () => {
 export const useAllAgent = () => {
   const dispatch: AppDispatch = useDispatch();
   const agents = useSelector((state: any) => state?.shareApplication?.allAgents?.agents || []);
-  console.log("agents",agents)
   const totalPages = useSelector((state: any) => state?.shareApplication?.allAgents?.totalPages || 0);
   const currentPage = useSelector((state: any) => state?.shareApplication?.allAgents?.currentPage || 1);
   const loading = useSelector((state: any) => state?.shareApplication?.loading || false);

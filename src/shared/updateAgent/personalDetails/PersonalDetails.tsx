@@ -1,43 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { AppDispatch } from '../../../../../../../shared/redux/store';
-import { updateAgentCreated } from '../../../../../../../shared/redux/shared/slices/shareApplication.slices';
-import { useAppDispatch } from '../../../../../../../shared/redux/hooks/shared/reduxHooks';
-import Modal from '../../../../../../../shared/modal/Modal';
-import AgentUpdated from '../../../../../../../shared/modal/AgentUpdated';
-import { button } from "../../../../../../../shared/buttons/Button";
+import { AppDispatch } from '../../../shared/redux/store';
+import { updateAgentCreated } from '../../../shared/redux/shared/slices/shareApplication.slices';
+import { useAppDispatch } from '../../../shared/redux/hooks/shared/reduxHooks';
+import { button } from "../../../shared/buttons/Button";
 import { CgAsterisk } from "react-icons/cg";
 import ReactLoading from 'react-loading';
 import { toast } from 'react-toastify';
 
-
 interface AgentData {
-  id: string;
-  email: string;
   profile: {
-    id: number;
-    email: string;
     firstName: string;
     lastName: string;
-    gender: string | null;
     userId: string;
-    designation: string | null;
-    createdAt: string;
-    updatedAt: string;
+    [key: string]: any; 
   };
+  email: string;
 }
 
-const UpdateAgent: React.FC = () => {
-  const location = useLocation();
+interface PersonalDetailsProps {
+  agentData: AgentData;
+  onNext: (data?: { newApplicationId?: string }) => void;
+}
+
+const PersonalDetails: React.FC<PersonalDetailsProps> = ({ onNext, agentData }) => {
   const navigate = useNavigate();
   const dispatch: AppDispatch = useAppDispatch();
-  const agentData = location.state?.agentData as AgentData;
-
   const [firstName, setFirstName] = useState(agentData?.profile?.firstName || '');
   const [lastName, setLastName] = useState(agentData?.profile?.lastName || '');
   const [otherName, setOtherName] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isModalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     if (!agentData) {
@@ -45,9 +37,6 @@ const UpdateAgent: React.FC = () => {
     }
   }, [agentData, navigate]);
 
-  const handleBackClick = () => navigate(-1);
-  const handleOpenModal = () => setModalOpen(true);
-  const handleCloseModal = () => setModalOpen(false);
 
   const submitApplication = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -57,10 +46,9 @@ const UpdateAgent: React.FC = () => {
       const body = {
         firstName,
         lastName,
-        // otherName,
       };
       await dispatch(updateAgentCreated({ body, userId: agentData.profile.userId })).unwrap();
-      handleOpenModal();
+     onNext()
     } catch (error: any) {
       toast.error(error || 'An error occurred while updating the student');
     } finally {
@@ -74,26 +62,12 @@ const UpdateAgent: React.FC = () => {
 
   return (
     <main className="font-outfit">
-      <h1 className="text-2xl font-bold">Application</h1>
-      <div className="mt-[1em] h-auto w-full overflow-auto rounded-lg bg-white px-[2em] py-3 pb-[10em] dark:bg-gray-800">
-        <header>
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="font-medium dark:text-gray-700">
-                Manage Students /
-                <span className="ml-1 font-medium text-primary-700 dark:text-white">
-                  Update Student
-                </span>
-              </h1>
-            </div>
-            <button.PrimaryButton className="btn-2" onClick={handleBackClick}>
-              Back
-            </button.PrimaryButton>
-          </div>
-        </header>
-        <header>
-          <h1 className="text-2xl mt-[1.5em] font-bold">Personal Details</h1>
-        </header>
+      <div className="h-auto w-full overflow-auto rounded-lg bg-white py-3 pb-[10em] dark:bg-gray-800">
+      <header>
+        <h2 className="text-xl font-semibold dark:text-white">
+          Personal Details
+        </h2>
+      </header>
         <form
           className="mt-[1.5em] w-[77%] dark:text-white"
           onSubmit={submitApplication}
@@ -176,19 +150,14 @@ const UpdateAgent: React.FC = () => {
                   type="spin"
                 />
               ) : (
-                'Update Details'
+                'Update Application'
               )}
             </button.PrimaryButton>
           </div>
         </form>
       </div>
-      {isModalOpen && (
-        <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
-          <AgentUpdated onClose={handleCloseModal} />
-        </Modal>
-      )}
     </main>
   );
 };
 
-export default UpdateAgent;
+export default PersonalDetails;

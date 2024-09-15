@@ -6,7 +6,12 @@ import { CgAsterisk } from "react-icons/cg";
 import { findAgentByEmail } from "../redux/shared/slices/shareApplication.slices";
 import ReactLoading from 'react-loading';
 
-const FindAgentByEmail: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+interface FindAgentByEmailProps {
+  onClose: () => void;
+  redirect?: string;  
+}
+
+const FindAgentByEmail: React.FC<FindAgentByEmailProps> = ({ onClose, redirect }) => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -19,7 +24,8 @@ const FindAgentByEmail: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     try {
       const response = await dispatch(findAgentByEmail(email) as any);
       onClose();
-      navigate("/admin/dashboard/all_users/update_agent", {
+
+      navigate(redirect || "/admin/dashboard/all_users/update_agent", {
         state: { agentData: response.payload }
       });
     } catch (err) {
@@ -33,8 +39,8 @@ const FindAgentByEmail: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     <main className="px-[5em] font-outfit">
       <div className="m-auto w-[24em] py-[2em] text-center">
         <header className="flex gap-2 flex-col">
-          <h1 className="text-2xl font-semibold">Agents</h1>
-          <p className="font-light">Enter the details of the agent</p>
+          <h1 className="text-2xl font-bold">Agent Application</h1>
+          <p className="font-light">Enter the details of the Agent</p>
         </header>
         <form onSubmit={handleSubmit}>
           <article>
