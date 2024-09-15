@@ -242,7 +242,7 @@ const AllApplication: React.FC = () => {
         </thead>
         <tbody>{renderTableBody()}</tbody>
       </table>
-      {!loading && applications.length > 0 && (
+      {!loading && applications?.length > 0 && (
         <div className="mt-6 flex justify-center">
           <CustomPagination
             page={currentPage}

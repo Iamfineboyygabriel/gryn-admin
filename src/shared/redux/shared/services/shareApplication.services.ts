@@ -290,7 +290,6 @@ const createVisaApplication = async (body: CreateVisaApplicationBody) => {
     const response = await axios.post(API_URL_CREATE_VISA_APPLICATION, body, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    console.log("services",response)
     return response.data;
   } catch (error: any) {
     console.log("services error",error)

@@ -144,7 +144,6 @@ export const createVisaApplication = createAsyncThunk(
   async (body: CreateVisaApplicationBody, thunkAPI) => {
     try {
       const response = await shareApplicationServices.createVisaApplication(body);
-      console.log('slices response', response);
       return response; 
     } catch (error: any) {
       console.log("slices error", error);

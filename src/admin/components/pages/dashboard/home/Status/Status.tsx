@@ -2,6 +2,7 @@ import { useCallback, useMemo } from "react";
 import { useAllApplication } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
 import transaction from "../../../../../../assets/svg/Transaction.svg";
 import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -103,7 +104,9 @@ const Status = () => {
               <h1 className="text-lg font-bold text-grey-primary">
                 Recent Application
               </h1>
+              <Link to="/admin/dashboard/application">
               <p className="font-medium text-primary-700">See All</p>
+              </Link>
             </div>
             <table className="min-w-full text-left">
               <thead className="border-b border-gray-200 text-gray-500 dark:text-white">

@@ -99,6 +99,12 @@ const AllStudentApplications: React.FC = () => {
       <div className="bottom-0 left-0 right-0 top-0 m-auto flex h-screen flex-col items-center justify-center text-center">
         <img src={noData} alt="No data" />
         <p className="mt-[1em]">No data available</p>
+        <button
+        className="btn-2 mt-[2em] gap-2 p-[12px]"
+        onClick={handleBackClick}
+      >
+        Back
+      </button>
       </div>
     );
   }
