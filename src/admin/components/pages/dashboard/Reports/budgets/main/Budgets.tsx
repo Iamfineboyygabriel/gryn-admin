@@ -1,7 +1,9 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FiSearch } from "react-icons/fi";
 import { useBudgetFetch } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
 import noData from "../../../../../../../assets/svg/Transaction.svg";
+import { button } from "../../../../../../../shared/buttons/Button";
+import plus from "../../../../../../../assets/svg/plus.svg";
 
 const SkeletonRow = () => (
     <tr className="animate-pulse border-b border-gray-200">
@@ -103,12 +105,18 @@ const Budgets: React.FC = () => {
                 </p>
               </button>
             </div>
+            <Link to="/admin/dashboard/reports/new_budgets">
+              <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-primary-700 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
+                <img src={plus} alt="plus" />
+                 New Budget
+              </button.PrimaryButton>
+            </Link>
           </div>
         </section>
         <div className="mt-8 overflow-x-auto">
           <table className="w-full border-collapse">
             <thead className="text-gray-500">
-              <tr>
+              <tr className="divide-y divide-gray-200">
                 <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
                 <th className="px-6 py-3 text-left text-sm font-normal">
                   Amount
@@ -124,9 +132,6 @@ const Budgets: React.FC = () => {
                 </th>
                 <th className="px-6 py-3 text-left text-sm font-normal">
                   Status
-                </th>
-                <th className="px-6 py-3 text-left  text-sm font-normal">
-                Action
                 </th>
               </tr>
             </thead>
@@ -147,7 +152,19 @@ const Budgets: React.FC = () => {
                       : '-'}
                       </td>
                       <td className="px-3 py-2 text-sm">{budget?.location || '-'}</td>
-                      <td className="px-3 py-2 text-sm">{budget?.updatedAt || '-'}</td>
+                      <td className="px-3 py-2 text-sm">-</td>
+                      <td className="px-3 py-2 text-sm">
+                        {budget?.updatedAt 
+                            ? new Date(budget?.updatedAt).toLocaleString('en-GB', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
+                                hour: 'numeric',
+                                minute: 'numeric',
+                                hour12: true
+                            }).replace(',', '').toLowerCase() 
+                            : '-'}
+                        </td>
                         <td className="px-3 py-2">
                         <span
                         className={`rounded-full px-3 py-1 text-white text-sm ${getStatusColor(
@@ -157,14 +174,6 @@ const Budgets: React.FC = () => {
                         {budget?.status || '-'}
                         </span>
                     </td>
-                      <td className="whitespace-nowrap px-6 py-4">
-                        <button
-                          type="button"
-                          className="text-primary-700 hover:underline"
-                        >
-                          View Details
-                        </button>
-                      </td>
                     </tr>
                   )
                 )

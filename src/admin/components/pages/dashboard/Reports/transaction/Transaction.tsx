@@ -47,7 +47,6 @@ const Transaction = () => {
                 <th className="px-3 py-2 text-left text-sm font-normal">Amount</th>
                 <th className="px-3 py-2 text-left text-sm font-normal">Location</th>
                 <th className="px-3 py-2 text-left text-sm font-normal">Status</th>
-                <th className="px-3 py-2 text-left text-sm font-normal">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -55,7 +54,7 @@ const Transaction = () => {
                 <tr className="border-b border-gray-200" key={budget?.id}>
                   <td className="px-3 py-2 text-sm">{index + 1}</td>
                   <td className="px-3 py-2 text-sm">
-                    {budget.BudgetItem.length > 0
+                    {budget?.BudgetItem?.length > 0
                       ? `NGN ${budget?.BudgetItem[0]?.amount}` 
                       : '-'}
                   </td>
@@ -69,7 +68,6 @@ const Transaction = () => {
                       {budget?.status || '-'}
                     </span>
                   </td>
-                  <td className="px-6 py-2 text-sm">-</td>
                 </tr>
               ))}
             </tbody>
