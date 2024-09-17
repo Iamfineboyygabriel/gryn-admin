@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import {
   getAllAgents,
+  getAllBudget,
   getAllDraftItems,
   getAllInvoice,
   getAllPendingAgents,
@@ -20,9 +21,11 @@ import { setMessage } from "../../message.slices";
 import {
   getSingleStudentApplication,
   getStudentApplication,
+  getVisaApplicationDetails,
 } from "../../shared/services/shareApplication.services";
 import { useQuery } from "react-query";
-import { setSearchTerm } from "../../admin/slices/application.slices";
+import { getAllAdminForSuperAdmin, setSearchTerm } from "../../admin/slices/application.slices";
+import { useAppSelector } from "./reduxHooks";
 
 interface UpdateProfile {
   email?: string;
@@ -77,6 +80,48 @@ export interface ApplicationDetails {
     }[];
   };
 }
+
+export interface VisaApplicationDetails {
+  status: number;
+  message: string;
+  data: {
+    email: string;
+    otherName:string;
+    id: string;
+    phoneNumber: string;
+    firstName: string;
+    lastName: string;
+    middleName: string;
+    localGovtArea: string;
+    issuedDate:string;
+    expiryDate:string;
+    document: {
+      id: string;
+      name: string;
+      publicURL: string;
+      documentType: string;
+      uploadType: string;
+      applicationId: number;
+      agentId: null;
+      remark: string;
+      status: 'PENDING' | 'APPROVED' | 'REJECTED';
+    }[];
+    agent:{
+      profile:{
+        email:string;
+      }
+    }
+    destination:string;
+    schoolName:string;
+    state: string;
+    country: string;
+    passportNumber:string;
+    userId: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+}
+
 
 interface Country {
   name: string;
@@ -473,4 +518,95 @@ export const useAllPendingAgents = () => {
   );
 
   return { agents, totalPages, currentPage, loading, error, searchTerm, fetchAgents, updateSearchTerm };
+};
+
+
+export const useVisaApplicationDetails = (applicationId: string) => {
+  const dispatch = useDispatch();
+
+  const {
+    data: applicationDetails,
+    isLoading: loading,
+    error,
+  } = useQuery<VisaApplicationDetails, Error>(
+    ["applicationDetails", applicationId],
+    async () => {
+      if (!applicationId) {
+        throw new Error("No application ID provided");
+      }
+      const endpoint = `/visa/${applicationId}`;
+      return await getVisaApplicationDetails(endpoint);
+    },
+    {
+      enabled: !!applicationId,
+      onError: (error) => {
+        dispatch(setMessage(error.message));
+      },
+    }
+  );
+
+  return { applicationDetails, loading, error };
+};
+
+
+export const useAllAdminForSuperAdmin = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const adminData = useSelector((state: any) => state.application);
+  console.log("admindd",adminData)
+  const loading = useSelector((state: any) => state.application.loading);
+  const error = useSelector((state: any) => state.application.error);
+  const searchTerm = useSelector((state: any) => state.application.searchTerm);
+
+  const fetchAdmin = useCallback(
+    (page: number, limit: number) => {
+      dispatch(getAllAdminForSuperAdmin({ page, limit, search: searchTerm }));
+    },
+    [dispatch, searchTerm]
+  );
+
+  const updateSearchTerm = useCallback(
+    (term: string) => {
+      dispatch(setSearchTerm(term));
+    },
+    [dispatch]
+  );
+
+  return {
+    admin: adminData,
+    // totalPages: adminData.totalPages,
+    // currentPage: adminData.currentPage,
+    loading,
+    error,
+    searchTerm,
+    fetchAdmin,
+    updateSearchTerm
+  };
+};
+
+export const useBudgetFetch = (initialPage = 1, initialLimit = 10) => {
+  const dispatch: AppDispatch = useDispatch();
+  const { allBudgets, loading, error, sort, status, month, search } = useAppSelector(
+    (state:any) => state.shareApplication
+  );
+  const [page, setPage] = useState(initialPage);
+  const [limit, setLimit] = useState(initialLimit);
+
+  const fetchBudgets = () => {
+    dispatch(getAllBudget({ page, limit, sort, status, month, search }));
+  };
+
+  useEffect(() => {
+    fetchBudgets();
+  }, [page, limit, sort, status, month, search]);
+
+  return {
+    budgets: allBudgets,
+    // totalPages: allBudgets,
+    // currentPage: allBudgets,
+    loading,
+    error,
+    setPage,
+    setLimit,
+    refetch: fetchBudgets,
+  };
 };

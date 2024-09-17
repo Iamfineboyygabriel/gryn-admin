@@ -1,20 +1,19 @@
 import  { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useApplicationDetails } from "../../../../../../../../shared/redux/hooks/shared/getUserProfile";
-import { approveAgent, rejectAgent } from "../../../../../../../../shared/redux/shared/services/shareApplication.services";
-import { updateDocumentStatus } from "../../../../../../../../shared/redux/shared/slices/shareApplication.slices";
-import { button } from "../../../../../../../../shared/buttons/Button";
-import eye from "../../../../../../../../assets/svg/eyeImg.svg";
-import fileImg from "../../../../../../../../assets/svg/File.svg";
-import download from "../../../../../../../../assets/svg/download.svg";
-import approve from "../../../../../../../../assets/svg/Approved.svg";
-import reject from "../../../../../../../../assets/svg/Rejected.svg";
+import { AppDispatch } from "../../../../../../../shared/redux/store";
+import { updateDocumentStatus } from "../../../../../../../shared/redux/shared/slices/shareApplication.slices";
+import { useVisaApplicationDetails } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
+import { useAppDispatch } from "../../../../../../../shared/redux/hooks/shared/reduxHooks";
+import StudentApplicationSummary from "../../../../../../../shared/modal/applicationSummaryModal/StudentApplicationSummary";
+import Modal from "../../../../../../../shared/modal/Modal";
+import DocumentPreviewModal from "../../../../../../../shared/modal/DocumentPreviewModal";
+import { button } from "../../../../../../../shared/buttons/Button";
+import eye from "../../../../../../../assets/svg/eyeImg.svg";
+import fileImg from "../../../../../../../assets/svg/File.svg";
+import download from "../../../../../../../assets/svg/download.svg";
+import approve from "../../../../../../../assets/svg/Approved.svg";
+import reject from "../../../../../../../assets/svg/Rejected.svg";
 import ReactLoading from "react-loading";
-import StudentApplicationSummary from "../../../../../../../../shared/modal/applicationSummaryModal/StudentApplicationSummary";
-import { AppDispatch } from "../../../../../../../../shared/redux/store";
-import { useAppDispatch } from "../../../../../../../../shared/redux/hooks/shared/reduxHooks";
-import DocumentPreviewModal from "../../../../../../../../shared/modal/DocumentPreviewModal";
-import Modal from "../../../../../../../../shared/modal/Modal";
 
 interface Document {
   id: string;
@@ -47,8 +46,8 @@ const SkeletonRow = () => (
 
 const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
   const dispatch:AppDispatch = useAppDispatch();
-  const { applicationDetails, loading: applicationLoading } = useApplicationDetails(applicationId);
-  const { updateDocStatus, error } = useSelector((state: any) => state.shareApplication);
+  const { applicationDetails, loading: applicationLoading } = useVisaApplicationDetails(applicationId);
+  const { updateDocStatus } = useSelector((state: any) => state.shareApplication);
   
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -59,8 +58,8 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
-    if (applicationDetails?.data?.documents) {
-      setDocuments(applicationDetails.data.documents);
+    if (applicationDetails?.data?.document) {
+      setDocuments(applicationDetails.data.document);
     }
   }, [applicationDetails]);
 
@@ -150,25 +149,6 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
         ...prev,
         [id]: { ...prev[id], [action]: false }
       }));
-    }
-  };
-
-  const handleAgentApproval = async (approve: boolean) => {
-    if (!applicationId) {
-      console.error('Application ID is missing');
-      return;
-    }
-
-    try {
-      if (approve) {
-        await approveAgent(applicationId);
-      } else {
-        await rejectAgent(applicationId);
-      }
-      // You might want to update the application status here or refresh the data
-    } catch (error) {
-      console.error('Failed to approve/reject agent:', error);
-      // Handle error (e.g., show error message)
     }
   };
 

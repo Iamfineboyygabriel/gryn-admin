@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import plus from "../../../../../../assets/svg/plus.svg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import transaction from "../../../../../../assets/svg/Transaction.svg";
 import DocumentPreviewModal from "../../../../../../shared/modal/DocumentPreviewModal";
 import { useAllVisa } from "../../../../../../shared/redux/hooks/shared/getUserProfile";
@@ -9,12 +9,13 @@ import CustomPagination from "../../../../../../shared/utils/customPagination";
 import eye from "../../../../../../assets/svg/eyeImg.svg";
 
 
-const escapeRegExp = (str: any) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+// const escapeRegExp = (str: any) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 interface VisaData {
   lastName: string;
   firstName: string;
   schoolName: string;
+  id:string;
   agent: {
     profile: {
       lastName: string;
@@ -41,13 +42,13 @@ const SkeletonRow: React.FC = () => (
 
 const Visa: React.FC = () => {
   const { visa, loading, totalPages, currentPage, fetchApplications, searchTerm, updateSearchTerm } = useAllVisa();
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewFileType, setPreviewFileType] = useState<string>("");
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState<number>(1);
   const itemsPerPage = 10;
+  const navigate = useNavigate()
 
   const isCurrentPageEmpty = page > totalPages;
 
@@ -107,6 +108,14 @@ const Visa: React.FC = () => {
       )
     );
   };
+
+  const handleViewDetails = useCallback(
+    (applicationId: string) => {
+      navigate(`/admin/dashboard/visa/view_visa_application/${applicationId}`);
+    },
+    [navigate]
+  );
+
 
   const renderPaymentStatus = (documents: Array<{documentType: string; publicURL: string}>, type: string) => {
     const document = documents.find(doc => doc.documentType === type);
@@ -229,13 +238,13 @@ const Visa: React.FC = () => {
                       {highlightText(item.issuedDate || "-", searchQuery)}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
-                      <Link
-                        to="#"
-                        className="font-medium text-primary-700 dark:text-gray-500"
-                      >
-                        View Details
-                      </Link>
-                    </td>
+                    <button
+                      onClick={() => handleViewDetails(item.id)}
+                      className="font-medium text-primary-700 dark:text-gray-500"
+                    >
+                      View Details
+                    </button>
+                  </td>
                   </tr>
                 ))
               ) : (

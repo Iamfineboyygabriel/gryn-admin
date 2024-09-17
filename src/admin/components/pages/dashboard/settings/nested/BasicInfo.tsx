@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import useUserProfile, {
   useCurrentUser,
 } from "../../../../../../shared/redux/hooks/shared/getUserProfile";
+import ConfirmDiscard from "../../../../../../shared/modal/ConfirmDiscard";
 
 const BasicInfo = () => {
   const { userProfile, updateUserProfile, uploadUserAvatar } = useUserProfile();
@@ -17,6 +18,8 @@ const BasicInfo = () => {
   const [email, setEmail] = useState(userProfile?.email || "");
 
   const [editMode, setEditMode] = useState(false);
+  
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
   const handleFileChange = async (event: any) => {
     const selectedFile = event.target.files[0];
@@ -49,11 +52,24 @@ const BasicInfo = () => {
   };
 
   const handleDiscardChanges = () => {
+    if (editMode) {
+      setIsConfirmDialogOpen(true);
+    } else {
+      setFirstName(userProfile?.firstName || "");
+      setLastName(userProfile?.lastName || "");
+      setEmail(userProfile?.email || "");
+      setEditMode(false);
+    }
+  };
+
+  const confirmDiscardChanges = () => {
     setFirstName(userProfile?.firstName || "");
     setLastName(userProfile?.lastName || "");
     setEmail(userProfile?.email || "");
     setEditMode(false);
+    setIsConfirmDialogOpen(false);
   };
+
 
   return (
     <main className="font-outfit">
@@ -171,8 +187,7 @@ const BasicInfo = () => {
             Edit Details
           </button.PrimaryButton>
         )}
-
-        {editMode && (
+       {editMode && (
           <>
             <button.PrimaryButton
               className="m-auto mt-[5em] w-[18%] gap-2 rounded-full bg-linear-gradient py-[12px] text-center text-lg font-medium text-white"
@@ -203,6 +218,14 @@ const BasicInfo = () => {
           </>
         )}
       </form>
+      <ConfirmDiscard
+        isOpen={isConfirmDialogOpen}
+        onRequestClose={() => setIsConfirmDialogOpen(false)}
+        onConfirm={confirmDiscardChanges}
+        title="Are you sure you want to discard changes?"
+        confirmLabel="Yes"
+        cancelLabel="No"
+      />
     </main>
   );
 };

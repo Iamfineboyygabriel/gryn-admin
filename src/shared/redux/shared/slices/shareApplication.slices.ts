@@ -72,6 +72,22 @@ interface UpdateDocumentPayload {
   id: string;
 }
 
+interface BudgetData {
+  allBudgets: any[];
+  totalPages: number;
+  currentPage: number;
+}
+
+
+interface BudgetParams {
+  page: number;
+  limit: number;
+  status?: string;
+  search?: string;
+  month?: string;
+  sort?: string;
+}
+
 export const getUserProfile = createAsyncThunk(
   "shareApplication/getProfile",
   async (_, thunkAPI) => {
@@ -416,6 +432,19 @@ export const updateDocumentStatus = createAsyncThunk(
   }
 );
 
+export const getAllBudget = createAsyncThunk(
+  'shareApplication/getAllBudget',
+  async (params: BudgetParams, thunkAPI) => {
+    try {
+      const data = await shareApplicationServices.getAllBudget(params);
+      return data;
+    } catch (error: any) {
+      const message = error.message || error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 interface ApplicationState {
   userProfile: null;
   currentUser: null;
@@ -470,8 +499,13 @@ interface ApplicationState {
     totalPages: number;
     currentPage: number;
   };
+  allBudgets: BudgetData;
   loading: boolean;
   error: string | null;
+  sort: string | null;
+  status: string | null;
+  month: string | null;
+  search: string;
   searchTerm: string;
 }
 
@@ -523,16 +557,39 @@ const initialState: ApplicationState = {
     totalPages: 0,
     currentPage: 1,
   },
+  allBudgets: {
+    allBudgets: [],
+    totalPages: 0,
+    currentPage: 0,
+  },
   loading: false,
   error: null,
-  searchTerm: '',
+  sort: null,
+  status: null,
+  month: null,
+  search: '',
+  searchTerm: "",
 };
+
 
 export const shareApplicationSlice = createSlice({
   name: "shareApplication",
   initialState,
 
-  reducers: {},
+  reducers: {
+    setSort: (state, action: PayloadAction<string | null>) => {
+      state.sort = action.payload;
+    },
+    setStatus: (state, action: PayloadAction<string | null>) => {
+      state.status = action.payload;
+    },
+    setMonth: (state, action: PayloadAction<string | null>) => {
+      state.month = action.payload;
+    },
+    setSearch: (state, action: PayloadAction<string>) => {
+      state.search = action.payload;
+    },
+  },
 
   extraReducers: (builder) => {
     builder
@@ -894,15 +951,28 @@ export const shareApplicationSlice = createSlice({
         state.updateDocStatus = null;
         state.error = action.payload as string || "Failed to update user document status.";
       })
-
+     
+      .addCase(getAllBudget.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllBudget.fulfilled, (state, action: PayloadAction<BudgetData>) => {
+        state.loading = false;
+        state.allBudgets = action.payload;
+      })
+      .addCase(getAllBudget.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
   },
 });
 
 
-// Selectors
+
 export const selectVisaApplicationLoading = (state: RootState) => state.shareApplication.loading;
 export const selectVisaApplicationError = (state: RootState) => state.shareApplication.error;
 export const selectVisaApplicationData = (state: RootState) => state.shareApplication.registerVisaApplication;
 
+export const { setSort, setStatus, setMonth, setSearch } = shareApplicationSlice.actions;
 const { reducer } = shareApplicationSlice;
 export default reducer;

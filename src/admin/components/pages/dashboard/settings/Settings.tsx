@@ -1,9 +1,15 @@
-import { useState } from "react";
+import React, { useState, useMemo } from "react";
 import BasicInfo from "./nested/BasicInfo";
 import Password from "./nested/Password";
+import AdminManagement from "./superAdmin/adminManagement/main/AdminManagement";
+import RoleManagement from "./superAdmin/roleManagement/main/RoleManagement";
+import { useCurrentUser } from "../../../../../shared/redux/hooks/shared/getUserProfile";
 
 const Settings = () => {
   const [activeLink, setActiveLink] = useState("basicInfo");
+  const { userDetails } = useCurrentUser();
+
+  const isSuperAdmin = useMemo(() => userDetails?.data?.role === "SUPER_ADMIN", [userDetails]);
 
   return (
     <main className="font-outfit">
@@ -24,11 +30,29 @@ const Settings = () => {
               >
                 Password
               </div>
+              {isSuperAdmin && (
+                <>
+                  <div
+                    className={`cursor-pointer py-3 ${activeLink === "adminManagement" ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700 dark:text-white" : "text-lg font-light text-gray-500"}`}
+                    onClick={() => setActiveLink("adminManagement")}
+                  >
+                    Admin Management
+                  </div>
+                  <div
+                    className={`cursor-pointer py-3 ${activeLink === "roleManagement" ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700 dark:text-white" : "text-lg font-light text-gray-500"}`}
+                    onClick={() => setActiveLink("roleManagement")}
+                  >
+                    Role Management
+                  </div>
+                </>
+              )}
             </div>
           </nav>
           <section className="mt-8">
             {activeLink === "basicInfo" && <BasicInfo />}
             {activeLink === "password" && <Password />}
+            {isSuperAdmin && activeLink === "adminManagement" && <AdminManagement />}
+            {isSuperAdmin && activeLink === "roleManagement" && <RoleManagement />}
           </section>
         </div>
       </div>

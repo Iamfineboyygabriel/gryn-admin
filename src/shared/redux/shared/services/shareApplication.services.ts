@@ -99,6 +99,15 @@ interface UpdateBankDetailsBody {
   accountNumber?:string;
 }
 
+interface BudgetParams {
+  page: number;
+  limit: number;
+  status?: string;
+  search?: string;
+  month?: string;
+  sort?: string;
+}
+
 const handleApiError = (error: any) => {
   if (!error.response) {
     throw new Error("Network Error: Please check your internet connection.");
@@ -215,6 +224,23 @@ export const getStudentApplication = async (endpoint: any) => {
     handleApiError(error);
   }
 };
+
+export const getVisaApplicationDetails = async (endpoint: any) => {
+  const url = `${process.env.REACT_APP_API_URL}${endpoint}`;
+  try {
+    const response = await axios.get(url, {
+      headers: authHeader(),
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error: any) {
+    handleApiError(error);
+  }
+};
+
 
 export const updateApplication = async (
   id: string,
@@ -450,6 +476,7 @@ const getAllInvoice = async (page: number, limit: number) => {
     throw error;
   }
 };
+
 
 export const getSingleStudentApplication = async (endpoint: any) => {
   const url = `${process.env.REACT_APP_API_URL}${endpoint}`;
@@ -763,6 +790,40 @@ export async function uploadVisaApplicationDocument(endpoint: string, body: Form
   }
 }
 
+const getAllBudget = async ({
+  page,
+  limit,
+  status = '',
+  search = '',
+  month = '',
+  sort = ''
+}: BudgetParams) => {
+  const url = new URL(`${process.env.REACT_APP_API_URL}/budget`);
+  url.searchParams.append('page', page.toString());
+  url.searchParams.append('limit', limit.toString());
+  if (status) url.searchParams.append('status', status);
+  if (search) url.searchParams.append('search', search);
+  if (month) url.searchParams.append('month', month);
+  if (sort) url.searchParams.append('sort', sort);
+
+  try {
+    const response = await axios({
+      url: url.toString(),
+      headers: authHeader(),
+      method: 'get',
+    });
+
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem('userData', token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
 const shareApplicationServices = {
   getUserProfile,
   uploadAvatar,
@@ -800,6 +861,8 @@ const shareApplicationServices = {
   rejectAgent,
   updateAgentBankDetails,
   uploadVisaApplicationDocument,
+  getVisaApplicationDetails,
+  getAllBudget,
 };
 
 export default shareApplicationServices;

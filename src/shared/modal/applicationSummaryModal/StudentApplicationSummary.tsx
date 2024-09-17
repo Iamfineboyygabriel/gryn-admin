@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { button } from "../../buttons/Button";
-import ApprovalSuccess from "../ApprovalSuccess";
 import MessageSent from "../applicationSummaryModal/Success";
 import SendMessage from "./SendMessage";
 import approve from "../../../assets/svg/Approved.svg";
 import reject from "../../../assets/svg/Rejected.svg";
 import { LuEye } from "react-icons/lu";
-import ReactLoading from "react-loading";
 
 interface Document {
   id: string;
@@ -15,65 +13,28 @@ interface Document {
   status?: 'APPROVED' | 'REJECTED' | 'PENDING';
 }
 
-interface ApplicationSummaryProps {
+interface StudentApplicationSummaryProps {
   onClose: () => void;
   documents: Document[];
-  onApprove: () => Promise<void>;
-  onReject: () => Promise<void>;
-  approvalType: 'agent' | 'student';
 }
 
-const ApplicationSummary: React.FC<ApplicationSummaryProps> = ({
+const StudentApplicationSummary: React.FC<StudentApplicationSummaryProps> = ({
   onClose,
   documents,
-  onApprove,
-  onReject,
-  approvalType
 }) => {
   const [expandedDocuments, setExpandedDocuments] = useState<string[]>([]);
-  const [approveLoading, setApproveLoading] = useState(false);
-  const [declineLoading, setDeclineLoading] = useState(false);
-  const [showApprovalSuccess, setShowApprovalSuccess] = useState(false);
   const [showSendMessage, setShowSendMessage] = useState(false);
   const [showMessageSent, setShowMessageSent] = useState(false);
-  const [isDocumentsVisible, setIsDocumentsVisible] = useState(false); 
-
-  const toggleDocumentsVisibility = () => {
-    setIsDocumentsVisible(!isDocumentsVisible); 
-  };
-
-  const handleApprove = async () => {
-    setApproveLoading(true);
-    try {
-      await onApprove();
-      setShowApprovalSuccess(true);
-    } catch (error) {
-      console.error('Approval failed:', error);
-    } finally {
-      setApproveLoading(false);
-    }
-  };
-
-  const handleDecline = async () => {
-    setDeclineLoading(true);
-    try {
-      await onReject();
-      setShowSendMessage(true);
-    } catch (error) {
-      console.error('Decline failed:', error);
-    } finally {
-      setDeclineLoading(false);
-    }
-  };
+  const [showDocuments, setShowDocuments] = useState(false);
 
   const handleSendMessageSubmit = () => {
     setShowSendMessage(false);
     setShowMessageSent(true);
   };
 
-  if (showApprovalSuccess) {
-    return <ApprovalSuccess onClose={onClose} approvalType={approvalType} />;
-  }
+  const allDocumentsApproved = documents.every(
+    (doc) => doc.status === 'APPROVED'
+  );
 
   if (showSendMessage) {
     return <SendMessage onClose={() => setShowSendMessage(false)} onSubmit={handleSendMessageSubmit} />;
@@ -103,27 +64,30 @@ const ApplicationSummary: React.FC<ApplicationSummaryProps> = ({
           <div className="h-auto w-full gap-3 rounded-lg border-2 bg-grey-light px-4 py-3 font-medium">
             <button
               className="flex w-full items-center justify-between gap-3 rounded-lg border-2 bg-grey-light px-4 py-3 font-medium"
-              onClick={toggleDocumentsVisibility} 
+              onClick={() => setShowDocuments(!showDocuments)}
             >
               <p>Uploaded Documents</p>
               <LuEye className="text-primary-700" size={20} />
             </button>
-
-            {isDocumentsVisible && (
+            {showDocuments && (
               <div
-              style={{ maxHeight: '200px' }} 
-               className="mt-[1em] flex flex-col gap-[1em]">
+                className="mt-[1em] flex flex-col gap-[1em] overflow-y-auto" 
+                style={{ maxHeight: '200px' }} 
+              >
                 {documents.map((doc: Document, index: number) => (
-                  <div key={index} className="flex w-full items-center justify-between rounded-lg border-2 bg-white px-4 py-3 text-sm">
+                  <div
+                    key={index}
+                    className="flex w-full items-center justify-between rounded-lg border-2 bg-white px-4 py-3 text-sm"
+                  >
                     <div className="flex items-center gap-3">
                       <p>{doc.documentType}</p>
                     </div>
-                    <img 
-                      src={doc.status === 'APPROVED' ? approve : reject} 
-                      alt={doc.status?.toLowerCase() || 'pending'} 
+                    <img
+                      src={doc.status === 'APPROVED' ? approve : reject}
+                      alt={doc.status?.toLowerCase() || 'pending'}
                     />
-                    {expandedDocuments.includes(doc.id) && (
-                      <p className="mt-2">{doc.name}</p>
+                    {expandedDocuments.includes(doc?.id) && (
+                      <p className="mt-2">{doc?.name}</p>
                     )}
                   </div>
                 ))}
@@ -132,36 +96,16 @@ const ApplicationSummary: React.FC<ApplicationSummaryProps> = ({
           </div>
           <div className="flex justify-between gap-4">
             <button.PrimaryButton
+              onClick={onClose}
               className="rounded-full cursor-pointer bg-error px-[3em] py-[8px] text-center font-medium text-white"
-              onClick={handleDecline}
-              disabled={declineLoading || approveLoading}
             >
-              {declineLoading ? (
-                <ReactLoading
-                  color="#FFFFFF"
-                  width={25}
-                  height={25}
-                  type="spin"
-                />
-              ) : (
-                "Decline"
-              )}
+              Cancel
             </button.PrimaryButton>
             <button.PrimaryButton
-              onClick={handleApprove}
+              onClick={() => setShowSendMessage(true)}
               className="rounded-full cursor-pointer bg-linear-gradient px-[4em] py-[8px] text-center font-medium text-white"
-              disabled={approveLoading || declineLoading}
             >
-              {approveLoading ? (
-                <ReactLoading
-                  color="#FFFFFF"
-                  width={25}
-                  height={25}
-                  type="spin"
-                />
-              ) : (
-                "Approve"
-              )}
+              {allDocumentsApproved ? 'Submit Response' : 'Continue'}
             </button.PrimaryButton>
           </div>
         </div>
@@ -170,4 +114,4 @@ const ApplicationSummary: React.FC<ApplicationSummaryProps> = ({
   );
 };
 
-export default ApplicationSummary;
+export default StudentApplicationSummary;

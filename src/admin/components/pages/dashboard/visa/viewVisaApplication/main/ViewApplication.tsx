@@ -1,42 +1,21 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import PersonalDetails from "../allStudentApplications/personalDeatils/PersonalDetails";
-import Degree from "../allStudentApplications/degree/Degree";
-import UploadedDocument from "../allStudentApplications/upload/UploadedDocuments";
+import PersonalDetails from "../personalDetails/PersonalDetails";
 import { button } from "../../../../../../../shared/buttons/Button";
 import upload from "../../../../../../../assets/svg/Upload.svg";
-import Loading from "../../../../../../../shared/loading/Loading";
-import Error from "../../../../../../../shared/error/Error";
-import { useApplicationDetails } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
+import DestinationDetails from "../destinationDetails/DestinationDetails";
+import UploadedDocuments from "../uploadedDocuments/UploadedDocuments";
 
 const ViewApplication = () => {
   const [activeLink, setActiveLink] = useState("personalDetails");
+  const { applicationId } = useParams();
 
   const navigate = useNavigate();
 
-  const { applicationId } = useParams<{ applicationId: any }>();
-
-  const { applicationDetails, loading, error } = useApplicationDetails(
-    applicationId && applicationId.trim() !== "" ? applicationId : null
-  );
-
-  const handleBackClick = () => {
+  const handleBackClick = async () => {
     navigate(-1);
   };
 
-  if (loading)
-    return (
-      <div>
-        <Loading />
-      </div>
-    );
-  if (error)
-    return (
-      <div>
-        <Error error={error} />
-      </div>
-    );
-  if (!applicationDetails) return <div>No data available</div>;
   return (
     <main className="font-outfit">
       <h1 className="text-2xl font-bold">Application</h1>
@@ -72,13 +51,13 @@ const ViewApplication = () => {
                 </div>
                 <div
                   className={`cursor-pointer py-3 ${
-                    activeLink === "degree"
+                    activeLink === "destinationDetails"
                       ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700"
                       : "text-lg font-light text-gray-500"
                   }`}
-                  onClick={() => setActiveLink("degree")}
+                  onClick={() => setActiveLink("destinationDetails")}
                 >
-                  Degree
+                  Destination Details
                 </div>
                 <div
                   className={`cursor-pointer py-3 ${
@@ -101,10 +80,10 @@ const ViewApplication = () => {
             {activeLink === "personalDetails" && (
               <PersonalDetails applicationId={applicationId} />
             )}
-            {activeLink === "degree" && (
-              <Degree applicationId={applicationId} />
+            {activeLink === "destinationDetails" && (
+              <DestinationDetails applicationId={applicationId} />
             )}
-            {activeLink === "uploadedDocument" && <UploadedDocument applicationId={applicationId}/>}
+            {activeLink === "uploadedDocument" && <UploadedDocuments applicationId={applicationId}/>}
           </section>
         </div>
       </div>

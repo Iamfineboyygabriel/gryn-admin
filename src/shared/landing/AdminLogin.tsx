@@ -41,21 +41,21 @@ const AdminLogin = () => {
   const loginUserData = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-
+  
       setLoading(true);
-
+  
       try {
         const response = await dispatch(login(formData)).unwrap();
-
+  
         const role = response?.data?.role;
-
-        if (role === "ADMIN") {
+  
+        if (role === "ADMIN" || role === "SUPER_ADMIN") {
           toast.success("Welcome");
           navigate(ROUTES.ADMIN_DASHBOARD);
         } else {
           toast.error("Invalid credentials");
         }
-      } catch (error:any) {
+      } catch (error: any) {
         if (error) {
           toast.error(error);
         } else {
@@ -67,6 +67,7 @@ const AdminLogin = () => {
     },
     [dispatch, formData, navigate]
   );
+  
 
   return (
     <main className="fixed flex min-h-screen w-full justify-between font-outfit">

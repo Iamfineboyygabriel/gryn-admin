@@ -39,7 +39,6 @@ const AssignAgent = () => {
  const location = useLocation();
  const navigate = useNavigate()
   const agentData: AgentData = location.state?.agentData;
-  console.log("agentdata",agentData)
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewFileType, setPreviewFileType] = useState<string>("");  

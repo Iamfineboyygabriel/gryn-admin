@@ -27,13 +27,31 @@ export const getAllApplication = createAsyncThunk(
   }
 );
 
+export const getAllAdminForSuperAdmin = createAsyncThunk(
+  "application/getAllAdminForSuperAdmin",
+  async ({ page, limit, search }: { page: number; limit: number; search: string }) => {
+    const response = await applicationServices.getAllAdminForSuperAdmin(page, limit, search);
+    console.log("ree",response)
+    return {
+      allAdmin: response.data, 
+      totalPages: response.data.totalPages,
+      currentPage: page
+    };
+  }
+);
+
 interface ApplicationState {
   allApplication: {
     applications: any[];
     totalPages: number;
     currentPage: number;
   };
-  getStats: null;
+  getStats: any;
+  allAdmin: {
+    admins: any; 
+    totalPages: number;
+    currentPage: number;
+  };
   loading: boolean;
   error: string | null;
   searchTerm: string;
@@ -41,6 +59,11 @@ interface ApplicationState {
 
 const initialState: ApplicationState = {
   getStats: null,
+  allAdmin: {
+    admins: null,
+    totalPages: 0,
+    currentPage: 1,
+  },
   allApplication: {
     applications: [],
     totalPages: 0,
@@ -66,8 +89,7 @@ export const applicationSlice = createSlice({
       })
       .addCase(getStats.rejected, (state, action) => {
         state.getStats = null;
-        const errorMessage =
-          action.error.message || "Failed to fetch user stats.";
+        const errorMessage = action.error.message || "Failed to fetch user stats.";
         setMessage(errorMessage);
       })
       .addCase(getAllApplication.pending, (state) => {
@@ -85,6 +107,26 @@ export const applicationSlice = createSlice({
       .addCase(getAllApplication.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to fetch applications";
+      })
+      .addCase(getAllAdminForSuperAdmin.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllAdminForSuperAdmin.fulfilled, (state, action: PayloadAction<{
+        allAdmin: any;
+        totalPages: number;
+        currentPage: number;
+      }>) => {
+        state.loading = false;
+        state.allAdmin = {
+          admins: action.payload.allAdmin,
+          totalPages: action.payload.totalPages,
+          currentPage: action.payload.currentPage
+        };
+      })
+      .addCase(getAllAdminForSuperAdmin.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch admin data";
       });
   },
 });

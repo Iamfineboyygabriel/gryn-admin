@@ -134,12 +134,12 @@ const ManageAgents = () => {
             )}
           />
           <td className="py-[16px] px-[24px]">
-            <Link
-              to={`/agent/${agent.id}`}
+            <p
+              // to={`/agent/${agent.id}`}
               className="text-primary-700 font-[600] flex items-center gap-[8px]"
             >
               View Application
-            </Link>
+            </p>
           </td>
         </tr>
       ));

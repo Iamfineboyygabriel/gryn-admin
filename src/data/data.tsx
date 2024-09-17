@@ -130,7 +130,11 @@ export const adminSideBarLinks = [
     imgActive: settingActive,
     text: "Settings",
     to: "/admin/dashboard/settings",
-    pathsToCheck: ["/admin/dashboard/settings"],
+    pathsToCheck: [
+      "/admin/dashboard/settings",
+      "/admin/dashboard/settings/admin_management",
+      "/admin/dashboard/settings/role_management"
+    ],
   },
 ];
 
