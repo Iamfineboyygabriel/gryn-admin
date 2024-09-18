@@ -26,7 +26,7 @@ const Status = () => {
   );
   
   const filteredAndSortedApplications = useMemo(() => {
-    if (!applications || !Array.isArray(applications)) {
+    if (!applications || !Array?.isArray(applications)) {
       return [];
     }
     return applications;
@@ -36,7 +36,7 @@ const Status = () => {
     if (loading) {
       return (
         <>
-          {Array.from({ length: 10 }).map((_, index) => (
+          {Array?.from({ length: 10 })?.map((_, index) => (
             <SkeletonRow key={index} />
           ))}
         </>
@@ -44,8 +44,8 @@ const Status = () => {
     }
     const formatData = (data: any) => (data ? data : "-");
 
-    if (filteredAndSortedApplications.length > 0) {
-      return filteredAndSortedApplications.map((item: any, index: number) => (
+    if (filteredAndSortedApplications?.length > 0) {
+      return filteredAndSortedApplications?.map((item: any, index: number) => (
         <tr
           key={item.id}
           className="text-sm text-gray-700 border-b border-gray-200 dark:text-white"

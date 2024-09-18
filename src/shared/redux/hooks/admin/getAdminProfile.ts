@@ -38,10 +38,10 @@ export const useStats = () => {
 
 export const useAllApplication = () => {
   const dispatch: AppDispatch = useDispatch();
-  const applications = useSelector((state: any) => state.application.allApplication.applications);
-  const totalPages = useSelector((state: any) => state.application.allApplication.totalPages);
-  const currentPage = useSelector((state: any) => state.application.allApplication.currentPage);
-  const loading = useSelector((state: any) => state.application.loading);
+  const applications = useSelector((state: any) => state?.application?.allApplication?.applications);
+  const totalPages = useSelector((state: any) => state?.application?.allApplication?.totalPages);
+  const currentPage = useSelector((state: any) => state?.application?.allApplication?.currentPage);
+  const loading = useSelector((state: any) => state?.application?.loading);
   const error = useSelector((state: any) => state.application.error);
   const searchTerm = useSelector((state: any) => state.application.searchTerm);
 

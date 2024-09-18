@@ -213,12 +213,12 @@ const StepThree = ({ applicationId }: any) => {
         </button.PrimaryButton>
       </form>
 
-    
+{/*     
         <VisaApplicationCreated
           isOpen={showVisaApplicationModal}
           onClose={() => setShowVisaApplicationModal(false)}
         />
- 
+  */}
     </main>
   );
 };
