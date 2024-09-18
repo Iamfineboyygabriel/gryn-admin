@@ -487,7 +487,7 @@ const GenerateInvoice = () => {
           onClose={handleCloseModal}
           data-aos="zoom-in"
         >
-          <InvoiceSent onClose={handleCloseModal} />
+          <InvoiceSent to="/staff/dashboard/home" onClose={handleCloseModal} />
         </Modal>
       )}
     </main>

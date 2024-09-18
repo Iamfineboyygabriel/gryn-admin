@@ -17,9 +17,7 @@ const SkeletonRow = () => (
 
 const Budgets: React.FC = () => {
     const { budgets,loading } = useBudgetFetch();
-    console.log("budgets",budgets)
     const navigate = useNavigate()
-
     const getStatusColor = (status: string) => {
         switch (status) {
           case "PAID":
@@ -116,7 +114,7 @@ const Budgets: React.FC = () => {
         <div className="mt-8 overflow-x-auto">
           <table className="w-full border-collapse">
             <thead className="text-gray-500">
-              <tr className="divide-y divide-gray-200">
+              <tr className="">
                 <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
                 <th className="px-6 py-3 text-left text-sm font-normal">
                   Amount

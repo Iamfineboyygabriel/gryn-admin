@@ -49,17 +49,18 @@ const AllStudents: React.FC = () => {
 
   const studentsData = useMemo(() => {
     const data =
-      useAllStudents?.data?.applications || useAllStudents?.data || [];
-    return Array.isArray(data) ? data : [];
-  }, [useAllStudents?.data]);
+      useAllStudents || [];
+    return Array?.isArray(data) ? data : [];
+  }, [useAllStudents]);
 
   const filteredStudents = useMemo(() => {
-    return studentsData.filter((student: Student) =>
-      `${student.profile.firstName} ${student.profile.lastName} ${student.email}`
+    return studentsData?.filter((student: Student) =>
+      `${student.profile.firstName} ${student?.profile?.lastName} ${student.email}`
         .toLowerCase()
         .includes(searchQuery.toLowerCase())
     );
   }, [studentsData, searchQuery]);
+  console.log("fff",filteredStudents)
 
   const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
   const isCurrentPageEmpty = page > totalPages;

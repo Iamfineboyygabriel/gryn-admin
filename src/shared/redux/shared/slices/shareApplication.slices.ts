@@ -203,6 +203,7 @@ export const getAllStudents = createAsyncThunk(
   async ({ page, limit }: { page: number; limit: number }, thunkAPI) => {
     try {
       const data = await shareApplicationServices.getAllStudents(page, limit);
+      console.log("dd",data)
       return data;
     } catch (error: any) {
       const message = error.message;
@@ -240,6 +241,24 @@ export const createInvoice = createAsyncThunk(
     }
   }
 );
+
+export const createBudget = createAsyncThunk(
+  "shareApplication/createBudget",
+  async (body: any, thunkAPI) => {
+    try {
+      const data = await shareApplicationServices.createBudget(body);
+      return data;
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message ||
+        error.message ||
+        "Something went wrong!";
+      thunkAPI.dispatch(setMessage(message));
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 
 export const createDraft = createAsyncThunk(
   "shareApplication/createDraft",
@@ -370,6 +389,13 @@ export const findStudentByEmail = createAsyncThunk(
    }
  );
 
+ export const findStaffByEmail = createAsyncThunk(
+  "shareApplication/findStaffByEmail",
+   async (email:string) => {
+     const response = await shareApplicationServices.findStaffByEmail(email);
+     return response.data
+   }
+ );
 
  export const updateStudentCreated = createAsyncThunk(
   "shareApplication/updateStudentCreated",
@@ -454,6 +480,7 @@ interface ApplicationState {
   topCountries: null;
   topUniversities: null;
   registerInvoice: null;
+  registerBudget: null;
   registerDraft: null;
   registerApplication: null;
   registerVisaApplication: any | null;
@@ -464,6 +491,7 @@ interface ApplicationState {
   updateDocStatus:null,
   updateBankDetails:null,
   student: null;
+  staff:null;
   agent:null,
   findByAll:null,
   allStudents: {
@@ -527,12 +555,14 @@ const initialState: ApplicationState = {
   updateBankDetails:null,
   student: null,
   agent:null,
+  staff:null,
   findByAll:null,
   allStudents: {
     data: null,
     totalItems: 0,
   },
   registerInvoice: null,
+  registerBudget: null,
   registerDraft: null,
   allDraftItems: {
     data: null,
@@ -688,7 +718,7 @@ export const shareApplicationSlice = createSlice({
       .addCase(
         getAllStudents.fulfilled,
         (state, action: PayloadAction<any>) => {
-          state.allStudents.data = action.payload.data;
+          state.allStudents = action.payload.data;
           state.allStudents.totalItems = action.payload.totalItems;
           state.loading = false;
         }
@@ -866,6 +896,19 @@ export const shareApplicationSlice = createSlice({
         state.error = action.error.message || "Failed to find agent";
       })
 
+      .addCase(findStaffByEmail.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(findStaffByEmail.fulfilled, (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.staff = action.payload;
+      })
+      .addCase(findStaffByEmail.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to find staff";
+      })
+
       .addCase(updateStudentCreated.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -963,7 +1006,18 @@ export const shareApplicationSlice = createSlice({
       .addCase(getAllBudget.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
-      });
+      })
+
+      .addCase(createBudget.fulfilled, (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.registerBudget = action.payload;
+      })
+      .addCase(createBudget.rejected, (state, action) => {
+        state.registerBudget = null;
+        const errorMessage = action.error.message || "Budget creation failed.";
+        setMessage(errorMessage);
+      })
+
   },
 });
 

@@ -11,6 +11,8 @@ const API_URL_CREATE_VISA_APPLICATION = process.env.REACT_APP_API_URL + "/visa";
 
 const API_URL_CREATE_INVOICE = process.env.REACT_APP_API_URL + "/invoice";
 
+const API_URL_CREATE_BUDGET = process.env.REACT_APP_API_URL + "/budget";
+
 const API_URL_CREATE_DRAFT = process.env.REACT_APP_API_URL + "/invoice/draft";
 
 const API_URL_CREATE_STUDENT = process.env.REACT_APP_API_URL + "/admin/users/student";
@@ -415,12 +417,22 @@ const getAllAgents = async (page: number, limit: number, search: string = '') =>
   }
 };
 
-
-
 const createInvoice = async (body: any) => {
   try {
     const token = sessionStorage.getItem("userData");
     const response = await axios.post(API_URL_CREATE_INVOICE, body, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error: any) {
+    handleApiError(error);
+  }
+};
+
+const createBudget = async (body: any) => {
+  try {
+    const token = sessionStorage.getItem("userData");
+    const response = await axios.post(API_URL_CREATE_BUDGET, body, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
@@ -630,6 +642,24 @@ const findAgentByEmail = async (email: string) => {
   }
 };
 
+const findStaffByEmail = async (email: string) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/users/staff/email`;
+  try {
+    const response = await axios({
+      url,
+      method: "get",
+      headers: authHeader(),
+      params: { email }, 
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 
 const updateStudentCreated = async (body: UpdateStudentBody, userId: string) => {
   const url = `${process.env.REACT_APP_API_URL}/admin/users/students/${userId}`;
@@ -863,6 +893,8 @@ const shareApplicationServices = {
   uploadVisaApplicationDocument,
   getVisaApplicationDetails,
   getAllBudget,
+  createBudget,
+  findStaffByEmail,
 };
 
 export default shareApplicationServices;

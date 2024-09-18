@@ -369,9 +369,10 @@ export const useTopUniversities = () => {
 export const useAllStudent = () => {
   const dispatch: AppDispatch = useDispatch();
   const useAllStudents = useSelector(
-    (state: any) => state.shareApplication.allStudents
+    (state: any) => state?.shareApplication?.allStudents
   );
-  const loading = useSelector((state: any) => state.shareApplication.loading);
+  console.log("all s",useAllStudents)
+  const loading = useSelector((state: any) => state?.shareApplication?.loading);
 
   const fetchApplications = useCallback(
     (page: number, limit: number) => {

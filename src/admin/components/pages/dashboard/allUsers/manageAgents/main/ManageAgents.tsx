@@ -44,7 +44,6 @@ const ManageAgents = () => {
   const handleAssignModal = () => setIsAssignModalOpen(true);
   const handleAssignModalClose = () => setIsAssignModalOpen(false);
 
-
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       if (localSearchTerm !== searchTerm) {
