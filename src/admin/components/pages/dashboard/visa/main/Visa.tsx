@@ -153,7 +153,7 @@ const Visa: React.FC = () => {
               <FiSearch className="absolute right-[1em] top-1/2 -translate-y-1/2 transform text-lg text-gray-500" />
             </div>
           </div>
-          <Link to="/staff/dashboard/visa/new_application">
+          <Link to="/admin/dashboard/visa/new_application">
             <button className="mt-4 flex gap-2 rounded-full bg-linear-gradient px-6 py-2 font-medium text-white transition-colors duration-300 hover:bg-primary-700 hover:text-white">
               <img src={plus} alt="cross" />
               New Application
