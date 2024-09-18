@@ -31,6 +31,12 @@ const MostApplied = () => {
               <p className="font-medium text-primary-700">See All</p>
             </div>
           </header>
+          <div>
+          </div>
+          <div className="flex mt-[1em] items-center justify-between">
+          <small className="font-medium">Country</small>
+          <small className="font-medium">No. of Students</small>
+          </div>
 
           {userTopCountries?.data?.length > 0 ? (
             <div className="mt-[1em] flex-grow">
@@ -91,6 +97,11 @@ const MostApplied = () => {
               <p className="font-medium text-primary-700">See All</p>
             </div>
           </header>
+
+          <div className="flex mt-[1em] items-center justify-between">
+          <small className="font-medium">Schools</small>
+          <small className="font-medium">No. of Applications</small>
+          </div>
 
           {userTopUniversities?.data?.length > 0 ? (
             <div className="mt-[1em] flex-grow">

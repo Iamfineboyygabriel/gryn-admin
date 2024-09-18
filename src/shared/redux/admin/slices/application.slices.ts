@@ -27,11 +27,22 @@ export const getAllApplication = createAsyncThunk(
   }
 );
 
+export const getAllPendingApplication = createAsyncThunk(
+  "application/getAllPendingApplication",
+  async ({ page, limit, search }: { page: number; limit: number; search: string }) => {
+    const response = await applicationServices.getAllPendingApplication(page, limit, search);
+    return {
+      applications: response.data,
+      totalPages: response.data.totalPages,
+      currentPage: page
+    };
+  }
+);
+
 export const getAllAdminForSuperAdmin = createAsyncThunk(
   "application/getAllAdminForSuperAdmin",
   async ({ page, limit, search }: { page: number; limit: number; search: string }) => {
     const response = await applicationServices.getAllAdminForSuperAdmin(page, limit, search);
-    console.log("ree",response)
     return {
       allAdmin: response.data, 
       totalPages: response.data.totalPages,
@@ -42,6 +53,11 @@ export const getAllAdminForSuperAdmin = createAsyncThunk(
 
 interface ApplicationState {
   allApplication: {
+    applications: any[];
+    totalPages: number;
+    currentPage: number;
+  };
+  allPendingApplication: {
     applications: any[];
     totalPages: number;
     currentPage: number;
@@ -65,6 +81,11 @@ const initialState: ApplicationState = {
     currentPage: 1,
   },
   allApplication: {
+    applications: [],
+    totalPages: 0,
+    currentPage: 1,
+  },
+  allPendingApplication: {
     applications: [],
     totalPages: 0,
     currentPage: 1,
@@ -108,6 +129,25 @@ export const applicationSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || "Failed to fetch applications";
       })
+
+      .addCase(getAllPendingApplication.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllPendingApplication.fulfilled, (state, action: PayloadAction<{
+        applications: any[];
+        totalPages: number;
+        currentPage: number;
+      }>) => {
+        state.loading = false;
+        state.allPendingApplication = action.payload;
+        console.log("aa",action.payload)
+      })
+      .addCase(getAllPendingApplication.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch pending applications";
+      })
+
       .addCase(getAllAdminForSuperAdmin.pending, (state) => {
         state.loading = true;
         state.error = null;

@@ -27,6 +27,20 @@ const getAllApplication = async (page: number, limit: number, search: string = '
   }
 };
 
+const getAllPendingApplication = async (page: number, limit: number, search: string = '') => {
+  const url = `${API_URL}/admin/application/pending?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
+  try {
+    const response = await axios.get(url, { headers: authHeader() });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const getAllAdminForSuperAdmin = async (page: number, limit: number, search: string = '') => {
   const url = `${API_URL}/admin/users/admin?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
   try {
@@ -46,6 +60,7 @@ const getAllAdminForSuperAdmin = async (page: number, limit: number, search: str
 const applicationServices = {
   getStats,
   getAllApplication,
+  getAllPendingApplication,
   getAllAdminForSuperAdmin,
 };
 

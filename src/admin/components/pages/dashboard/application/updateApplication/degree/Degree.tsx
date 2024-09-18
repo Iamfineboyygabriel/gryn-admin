@@ -7,7 +7,7 @@ import activeCertificate from "../../../../../../../assets/svg/ActiveCertificate
 import { AppDispatch } from "../../../../../../../shared/redux/store";
 import { useAppDispatch } from "../../../../../../../shared/redux/hooks/shared/reduxHooks";
 import { studentDegree } from "../../../../../../../data/data";
-
+import { updateStudentDegreeApplication } from "../../../../../../../shared/redux/shared/services/shareApplication.services";
 
 const Degree = ({
   onNext,
@@ -19,6 +19,7 @@ const Degree = ({
   applicationId: string | null;
   studentData:any
 }) => {
+  console.log("student data",studentData)
   const [university, setUniversity] = useState(studentData?.firstName || "");
   const [course, setCourse] = useState("");
   const [degreeType, setDegreeType] = useState<string | null>(null);
@@ -34,8 +35,8 @@ const Degree = ({
         degreeType,
         course,
       };
-    //   const response = await updateDegree(applicationId, body);
-    //   toast.success(response?.message);
+      // const response = await updateStudentDegreeApplication(applicationId, body);
+      // toast.success(response?.message);
     } catch (error) {
       toast.error("Failed to update degree");
     } finally {
@@ -131,6 +132,7 @@ const Degree = ({
         </div>
 
         <button.PrimaryButton
+        onClick={updateDetails}
           className="m-auto mt-[5em] w-[30%] justify-center gap-2 rounded-full bg-linear-gradient py-[11px] text-center font-medium text-white"
           type="submit"
           disabled={loading}

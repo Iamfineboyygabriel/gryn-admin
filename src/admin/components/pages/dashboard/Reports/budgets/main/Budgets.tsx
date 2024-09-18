@@ -113,7 +113,7 @@ const Budgets: React.FC = () => {
         </section>
         <div className="mt-8 overflow-x-auto">
           <table className="w-full border-collapse">
-            <thead className="text-gray-500">
+            <thead className="text-gray-500  border-gray-200 border-b">
               <tr className="">
                 <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
                 <th className="px-6 py-3 text-left text-sm font-normal">

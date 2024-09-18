@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { button } from "../../../../../../../../shared/buttons/Button";
 import { useLocation, useNavigate } from "react-router";
 import DocumentPreviewModal from "../../../../../../../../shared/modal/DocumentPreviewModal";
 import fileImg from "../../../../../../../../assets/svg/File.svg";
 import eye from "../../../../../../../../assets/svg/eyeImg.svg";
 import user from "../../../../../../../../assets/avatar.png";
+import Modal from "../../../../../../../../shared/modal/Modal";
+import FindStaffByEmail from "../../../../../../../../shared/modal/FindStaffByEmail";
 
 
 interface AgentData {
@@ -41,7 +43,13 @@ const AssignAgent = () => {
   const agentData: AgentData = location.state?.agentData;
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [previewFileType, setPreviewFileType] = useState<string>("");  
+  const [previewFileType, setPreviewFileType] = useState<string>(""); 
+  
+  
+  const [isModalOpen, setModalOpen] = useState(false);
+
+  const handleOpenModal = () => setModalOpen(true);
+  const handleCloseModal = () => setModalOpen(false);
 
   const handleBackClick = () => {
   navigate(-1);
@@ -248,6 +256,7 @@ const AssignAgent = () => {
                 </div>
         </section>
         <button.PrimaryButton
+        onClick={handleOpenModal}
         className="w-[23%] gap-2 rounded-full bg-linear-gradient py-[12px] text-center text-lg font-medium text-white"
       >
         Assign Staff
@@ -262,6 +271,11 @@ const AssignAgent = () => {
         previewUrl={previewUrl}
         previewFileType={previewFileType}
         />
+          {isModalOpen && (
+        <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
+          <FindStaffByEmail redirect="/admin/dashboard/all_users/assign_agent"  onClose={handleCloseModal} />
+        </Modal>
+      )}
     </main>
         );
         };

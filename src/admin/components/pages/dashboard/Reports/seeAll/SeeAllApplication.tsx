@@ -1,10 +1,11 @@
 import React, { useMemo, useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router";
 import DOMPurify from "dompurify";
-import { useAllApplication } from "../../../../../../../shared/redux/hooks/admin/getAdminProfile";
-import CustomPagination from "../../../../../../../shared/utils/customPagination";
 import { FiSearch } from "react-icons/fi";
-import transaction from "../../../../../../../assets/svg/Transaction.svg";
+import transaction from "../../../../../../assets/svg/Transaction.svg";
+import { useAllApplication } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
+import CustomPagination from "../../../../../../shared/utils/customPagination";
+import { button } from "../../../../../../shared/buttons/Button"
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -16,7 +17,7 @@ const SkeletonRow = () => (
   </tr>
 );
 
-const AllApplication: React.FC = () => {
+const SeeAllApplication: React.FC = () => {
   const { applications, totalPages, currentPage, loading, fetchApplications, searchTerm, updateSearchTerm } = useAllApplication();
   const [sortField, setSortField] = useState("lastName");
   const [sortOrder, setSortOrder] = useState("asc");
@@ -94,7 +95,7 @@ const AllApplication: React.FC = () => {
       return filteredAndSortedApplications.map((item: any, index: number) => (
         <tr
           key={item.id}
-          className="text-sm text-grey-primary font-medium border-b border-gray-200"
+          className="text-sm font-medium text-grey-primary border-b border-gray-200"
         >
           <td className="whitespace-nowrap px-6 py-4">
             {(currentPage - 1) * itemsPerPage + index + 1}
@@ -175,10 +176,32 @@ const AllApplication: React.FC = () => {
       setSortOrder("asc");
     }
   };
-
+  const handleBackClick = () => navigate(-1);
+ 
   return (
-    <main className="mt-[1.3em] font-outfit h-auto w-full overflow-auto rounded-lg bg-white px-[1em] py-3 pb-[10em]">
-      <div className="flex">
+    <main className="font-outfit">
+    <header>
+    <div className="flex items-center justify-between">
+     <h1 className="text-2xl font-bold">Application</h1>
+      </div>
+     </header>
+        <div className="mt-[1.3em] h-auto w-full overflow-auto rounded-lg bg-white px-[1em] py-3 pb-[10em]">
+     <header>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="font-medium dark:text-gray-700">
+                Reports /
+                <span className="ml-1 font-medium text-primary-700 dark:text-white">
+                  All Application
+                </span>
+              </h1>
+            </div>
+            <button.PrimaryButton className="btn-2" onClick={handleBackClick}>
+              Back
+            </button.PrimaryButton>
+          </div>
+        </header>
+      <div className="flex  mt-[1.2em]">
         <div className="flex items-center gap-[1em]">
         <div className="relative w-full">
             <input
@@ -218,9 +241,10 @@ const AllApplication: React.FC = () => {
           </div>
         </div>
       </div>
-      <table className="mt-4 w-full table-auto overflow-x-auto">
+      <div className="overflow-x-auto">
+      <table className="mt-4 w-full table-auto">
         <thead>
-          <tr className="text-gray-700  border-b border-gray-200">
+          <tr className="text-gray-700 border-b border-gray-200">
             <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
             <th className="whitespace-nowrap px-6 py-3 text-left text-sm font-normal">
               Full Name
@@ -242,6 +266,7 @@ const AllApplication: React.FC = () => {
         </thead>
         <tbody>{renderTableBody()}</tbody>
       </table>
+      </div>
       {!loading && applications?.length > 0 && (
         <div className="mt-6 flex justify-center">
           <CustomPagination
@@ -252,8 +277,10 @@ const AllApplication: React.FC = () => {
           />
         </div>
       )}
+    </div>
     </main>
+
   );
 };
 
-export default AllApplication;
+export default SeeAllApplication;

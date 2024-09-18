@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { button } from "../../../../../../../../shared/buttons/Button";
@@ -8,14 +8,21 @@ import BankDetails from "../bankDetails/BankDetails";
 import UploadedDocuments from "../uploadedDocuments/UploadedDocuments";
 import { findAgentByEmail } from "../../../../../../../../shared/redux/shared/slices/shareApplication.slices";
 import { AppDispatch, RootState } from "../../../../../../../../shared/redux/store";
+import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas";
 
 const ApprovePendingAgent = () => {
   const [activeLink, setActiveLink] = useState("personalDetails");
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState<boolean>(false);
   const { email } = useParams();
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
 
   const { agent, loading, error } = useSelector((state: RootState) => state.shareApplication);
+
+  const personalDetailsRef = useRef<HTMLDivElement>(null);
+  const bankDetailsRef = useRef<HTMLDivElement>(null);
+  const uploadedDocumentsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (email) {
@@ -27,6 +34,53 @@ const ApprovePendingAgent = () => {
     navigate(-1);
   };
 
+  const downloadPDF = async () => {
+    setIsGeneratingPDF(true);
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const components = [
+      { ref: personalDetailsRef, title: "Personal Details" },
+      { ref: bankDetailsRef, title: "Bank Details" },
+      { ref: uploadedDocumentsRef, title: "Uploaded Documents" },
+    ];
+
+    try {
+      for (let i = 0; i < components.length; i++) {
+        const { ref, title } = components[i];
+        const content = ref.current;
+        if (content) {
+          content.style.display = 'block';
+
+          const canvas = await html2canvas(content, {
+            scale: 2,
+            logging: false, 
+            useCORS: true 
+          });
+
+          const imgData = canvas.toDataURL('image/jpeg', 0.95);
+
+          if (i !== 0) {
+            pdf.addPage();
+          }
+
+          pdf.setFontSize(16);
+          pdf.text(title, 20, 20);
+
+          const imgWidth = 170;
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          pdf.addImage(imgData, 'JPEG', 20, 30, imgWidth, imgHeight);
+
+          content.style.display = i === 0 ? 'block' : 'none';
+        }
+      }
+
+      pdf.save('agent_application.pdf');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('An error occurred while generating the PDF. Please try again.');
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
 
   return (
     <main className="font-outfit">
@@ -82,22 +136,31 @@ const ApprovePendingAgent = () => {
                   Uploaded Documents
                 </div>
               </div>
-              <button.PrimaryButton className="ml-[3em] flex items-center gap-2 rounded-full bg-primary-200 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300 hover:bg-primary-700 hover:text-white">
+              <button.PrimaryButton 
+                onClick={downloadPDF}
+                className="ml-[3em] flex items-center gap-2 rounded-full bg-primary-200 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300"
+              >
                 <img src={upload} alt="upload" />
-                Download Application
+                {isGeneratingPDF ? 'Generating PDF...' : 'Download Application'}
               </button.PrimaryButton>
             </div>
           </nav>
           <section className="mt-8">
-            {activeLink === "personalDetails" && agent && (
-              <PersonalDetails agentData={agent} loading={loading} />
-            )}
-            {activeLink === "bankDetails" && agent && (
-              <BankDetails  agentData={agent} loading={loading}/>
-            )}
-            {activeLink === "uploadedDocument" && agent && (
-              <UploadedDocuments  agentData={agent} />
-            )}
+            <div ref={personalDetailsRef} style={{display: activeLink === "personalDetails" ? "block" : "none"}}>
+              {activeLink === "personalDetails" && agent && (
+                <PersonalDetails agentData={agent} loading={loading} />
+              )}
+            </div>
+            <div ref={bankDetailsRef} style={{display: activeLink === "bankDetails" ? "block" : "none"}}>
+              {activeLink === "bankDetails" && agent && (
+                <BankDetails agentData={agent} loading={loading}/>
+              )}
+            </div>
+            <div ref={uploadedDocumentsRef} style={{display: activeLink === "uploadedDocument" ? "block" : "none"}}>
+              {activeLink === "uploadedDocument" && agent && (
+                <UploadedDocuments agentData={agent} />
+              )}
+            </div>
           </section>
         </div>
       </div>

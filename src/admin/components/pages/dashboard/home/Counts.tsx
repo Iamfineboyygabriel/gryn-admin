@@ -1,4 +1,6 @@
+import { Link } from "react-router-dom";
 import { useStats } from "../../../../../shared/redux/hooks/admin/getAdminProfile";
+import { IoIosArrowForward } from "react-icons/io";
 
 const Counts = () => {
   const { getApplicationStats } = useStats();
@@ -8,21 +10,25 @@ const Counts = () => {
       label: "Total Number of Applications",
       figure: getApplicationStats?.data?.size ?? 0,
       detail: "See Application",
+      to: "/admin/dashboard/reports/all_application"
     },
     {
       label: "Number of Pending Applications",
       figure: getApplicationStats?.data?.pending ?? 0,
       detail: "See Pending Applications",
+      to:"/admin/dashboard/reports/all_pending_applications"
     },
     {
       label: "Number of Completed Applications",
       figure: getApplicationStats?.data?.completed ?? 0,
       detail: "See Completed Applications",
+      to:"/admin/dashboard/reports/all_completed_application"
     },
     {
       label: "Number of Agents",
       figure: getApplicationStats?.data?.numberOfAgent ?? 0,
       detail: "See All Agents",
+      to: "/admin/dashboard/reports/all_agents"
     },
   ];
 
@@ -55,7 +61,12 @@ const Counts = () => {
               <h1 className="mb-2">{text.label}</h1>
               <h1 className="text-2xl">{text.figure}</h1>
             </div>
-            <p className="text-sm">{text.detail}</p>
+            <div className="flex justify-between items-center">
+              <p className="text-sm">{text.detail}</p>
+              <Link to={text.to}>
+                <IoIosArrowForward className="cursor-pointer" />
+              </Link>
+            </div>
           </div>
         ))}
       </div>

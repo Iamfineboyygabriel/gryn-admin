@@ -163,7 +163,7 @@ const Visa: React.FC = () => {
 
         <section className="overflow-auto py-6">
           <table className="w-full border-collapse mt-4">
-            <thead className="border-b border-gray-200 text-gray-500 dark:text-white">
+            <thead className="border-b border-gray-200 text-gray-500">
               <tr>
                 <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
                 <th className="px-6 py-3 whitespace-nowrap text-left text-sm font-normal">
@@ -204,7 +204,7 @@ const Visa: React.FC = () => {
                 visa.map((item: VisaData, index: number) => (
                   <tr
                     key={index}
-                    className="text-sm font-medium text-grey-primary dark:text-white"
+                    className="text-sm font-medium text-grey-primary font-outfit"
                   >
                     <td className="whitespace-nowrap px-6 py-4">{index + 1}</td>
                     <td className="whitespace-nowrap gap-2 px-6 py-4">

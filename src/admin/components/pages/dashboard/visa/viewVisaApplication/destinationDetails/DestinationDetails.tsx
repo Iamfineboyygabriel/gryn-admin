@@ -12,7 +12,6 @@ const DestinationDetails: React.FC<{ applicationId: any }> = ({
   applicationId,
 }) => {
   const { applicationDetails, loading } = useVisaApplicationDetails(applicationId);
-  console.log("application details",applicationDetails)
 
   const renderField = (label: string, value: string | undefined) => (
     <div className="w-full">

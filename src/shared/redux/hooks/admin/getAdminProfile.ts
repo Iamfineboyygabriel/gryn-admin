@@ -3,6 +3,7 @@ import { AppDispatch } from "../../store";
 import { useCallback, useEffect, useState } from "react";
 import {
   getAllApplication,
+  getAllPendingApplication,
   getStats,
   setSearchTerm,
 } from "../../admin/slices/application.slices";
@@ -35,7 +36,6 @@ export const useStats = () => {
   return { getApplicationStats, loading };
 };
 
-
 export const useAllApplication = () => {
   const dispatch: AppDispatch = useDispatch();
   const applications = useSelector((state: any) => state?.application?.allApplication?.applications);
@@ -48,6 +48,33 @@ export const useAllApplication = () => {
   const fetchApplications = useCallback(
     (page: number, limit: number) => {
       dispatch(getAllApplication({ page, limit, search: searchTerm || '' }));
+    },
+    [dispatch, searchTerm]
+  );
+
+  const updateSearchTerm = useCallback(
+    (term: string) => {
+      dispatch(setSearchTerm(term));
+    },
+    [dispatch]
+  );
+
+  return { applications, totalPages, currentPage, loading, error, searchTerm, fetchApplications, updateSearchTerm };
+};
+
+
+export const useAllPendingApplication = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const applications = useSelector((state: any) => state?.application?.allPendingApplication.applications);
+  const totalPages = useSelector((state: any) => state?.application?.allApplication?.totalPages);
+  const currentPage = useSelector((state: any) => state?.application?.allApplication?.currentPage);
+  const loading = useSelector((state: any) => state?.application?.loading);
+  const error = useSelector((state: any) => state.application.error);
+  const searchTerm = useSelector((state: any) => state.application.searchTerm);
+
+  const fetchApplications = useCallback(
+    (page: number, limit: number) => {
+      dispatch(getAllPendingApplication({ page, limit, search: searchTerm || '' }));
     },
     [dispatch, searchTerm]
   );

@@ -1,10 +1,11 @@
 import React, { useMemo, useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router";
 import DOMPurify from "dompurify";
-import { useAllApplication } from "../../../../../../../shared/redux/hooks/admin/getAdminProfile";
-import CustomPagination from "../../../../../../../shared/utils/customPagination";
 import { FiSearch } from "react-icons/fi";
-import transaction from "../../../../../../../assets/svg/Transaction.svg";
+import transaction from "../../../../../../assets/svg/Transaction.svg";
+import { useAllPendingApplication } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
+import CustomPagination from "../../../../../../shared/utils/customPagination";
+import { button } from "../../../../../../shared/buttons/Button"
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -16,8 +17,8 @@ const SkeletonRow = () => (
   </tr>
 );
 
-const AllApplication: React.FC = () => {
-  const { applications, totalPages, currentPage, loading, fetchApplications, searchTerm, updateSearchTerm } = useAllApplication();
+const SeeAllPendingApplication: React.FC = () => {
+  const { applications, totalPages, currentPage, loading, fetchApplications, searchTerm, updateSearchTerm } = useAllPendingApplication();
   const [sortField, setSortField] = useState("lastName");
   const [sortOrder, setSortOrder] = useState("asc");
 
@@ -94,7 +95,7 @@ const AllApplication: React.FC = () => {
       return filteredAndSortedApplications.map((item: any, index: number) => (
         <tr
           key={item.id}
-          className="text-sm text-grey-primary font-medium border-b border-gray-200"
+          className="text-sm font-medium text-grey-primary border-b border-gray-200"
         >
           <td className="whitespace-nowrap px-6 py-4">
             {(currentPage - 1) * itemsPerPage + index + 1}
@@ -115,16 +116,6 @@ const AllApplication: React.FC = () => {
           <td className="whitespace-nowrap px-6 py-4">
             {formatData(item?.email)}
           </td>
-          <td className="whitespace-nowrap px-6 py-4">
-            {formatData(item?.degree?.degreeType)}
-          </td>
-          <td className="whitespace-nowrap px-6 py-4">
-            {formatData(item?.degree?.course)}
-          </td>
-          <td className="whitespace-nowrap px-6 py-4">
-            {formatData(item?.documents?.length)}
-          </td>
-          <td className="whitespace-nowrap px-6 py-4">-</td>
           <td className="flex items-center whitespace-nowrap px-6 py-4">
             <button
               className={`mr-2 rounded-full px-3 py-2 text-white ${
@@ -175,10 +166,32 @@ const AllApplication: React.FC = () => {
       setSortOrder("asc");
     }
   };
-
+  const handleBackClick = () => navigate(-1);
+ 
   return (
-    <main className="mt-[1.3em] font-outfit h-auto w-full overflow-auto rounded-lg bg-white px-[1em] py-3 pb-[10em]">
-      <div className="flex">
+    <main>
+   <header>
+    <div className="flex items-center justify-between">
+      <h1 className="text-2xl font-bold">Application</h1>
+     </div>
+    </header>
+    <div className="mt-[1.3em] h-auto w-full overflow-auto rounded-lg bg-white px-[1em] py-3 pb-[10em]">
+    <header>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="font-medium dark:text-gray-700">
+                Reports /
+                <span className="ml-1 font-medium text-primary-700 dark:text-white">
+                  All Pending Applications
+                </span>
+              </h1>
+            </div>
+            <button.PrimaryButton className="btn-2" onClick={handleBackClick}>
+              Back
+            </button.PrimaryButton>
+          </div>
+        </header>
+      <div className="flex mt-[1.2em]">
         <div className="flex items-center gap-[1em]">
         <div className="relative w-full">
             <input
@@ -220,23 +233,13 @@ const AllApplication: React.FC = () => {
       </div>
       <table className="mt-4 w-full table-auto overflow-x-auto">
         <thead>
-          <tr className="text-gray-700  border-b border-gray-200">
+          <tr className="text-gray-700 border-b border-gray-200">
             <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
             <th className="whitespace-nowrap px-6 py-3 text-left text-sm font-normal">
               Full Name
             </th>
             <th className="px-6 py-3 text-left text-sm font-normal">Phone</th>
             <th className="px-6 py-3 text-left text-sm font-normal">Email</th>
-            <th className="px-6 py-3 whitespace-nowrap text-left text-sm font-normal">
-              Degree Type
-            </th>
-            <th className="px-6 py-3 text-left text-sm font-normal">Course</th>
-            <th className="px-6 py-3 text-left text-sm font-normal">
-              Documents
-            </th>
-            <th className="px-6 py-3 text-left whitespace-nowrap text-sm font-normal">
-              Assigned Agent
-            </th>
             <th className="px-6 py-3 text-left text-sm font-normal">Actions</th>
           </tr>
         </thead>
@@ -252,8 +255,10 @@ const AllApplication: React.FC = () => {
           />
         </div>
       )}
+    </div>
     </main>
+
   );
 };
 
-export default AllApplication;
+export default SeeAllPendingApplication;

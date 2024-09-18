@@ -50,8 +50,8 @@ interface UpdateApplication {
 interface UpdateDegree {
   country?: string;
   university?: string;
+  course?:string;
   degreeType?: string;
-  course?: string;
 }
 
 interface CreateApplicationBody {
@@ -735,6 +735,28 @@ export const updateStudentApplication = async (
   body: UpdateApplication,
 ) => {
   const url = `${process.env.REACT_APP_API_URL}/admin/application/${id}`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "patch",
+      data: body,
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateStudentDegreeApplication = async (
+  id: string,
+  body: UpdateDegree,
+) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/application/degree/${id}`;
   try {
     const response = await axios({
       url,

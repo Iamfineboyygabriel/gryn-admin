@@ -7,6 +7,7 @@ import VisaApplicationCreated from "../../../../../../../shared/modal/VisaApplic
 
 import { toast } from "react-toastify";
 import ReactLoading from "react-loading";
+import Modal from "../../../../../../../shared/modal/Modal";
 
 const StepThree = ({ applicationId }: any) => {
   useEffect(() => {
@@ -20,7 +21,8 @@ const StepThree = ({ applicationId }: any) => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [successes, setSuccesses] = useState<Record<string, boolean>>({});
-  const [showVisaApplicationModal, setShowVisaApplicationModal] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false);
+
 
   const handleBrowseFileClick = (inputId: string): void => {
     const inputElement = document.getElementById(inputId) as HTMLInputElement;
@@ -134,7 +136,7 @@ const StepThree = ({ applicationId }: any) => {
       );
   
       if (allSuccessful) {
-        setShowVisaApplicationModal(true);
+        setModalOpen(true);
       }
     } catch (error) {
       toast.error(
@@ -213,12 +215,14 @@ const StepThree = ({ applicationId }: any) => {
         </button.PrimaryButton>
       </form>
 
-{/*     
-        <VisaApplicationCreated
-          isOpen={showVisaApplicationModal}
-          onClose={() => setShowVisaApplicationModal(false)}
+     {isModalOpen && (
+        <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)} data-aos="zoom-in">
+          <VisaApplicationCreated
+          onClose={() => setModalOpen(false)}
+          to="/admin/dashboard/visa"
         />
-  */}
+        </Modal>
+      )}
     </main>
   );
 };

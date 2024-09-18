@@ -115,6 +115,9 @@ import Report from "../../pages/dashboard/Reports/main/Report"
 import { useCurrentUser } from "../../../../shared/redux/hooks/shared/getUserProfile";
 import Budgets from "../../pages/dashboard/Reports/budgets/main/Budgets";
 import NewBudgets from "../../pages/dashboard/Reports/budgets/newBudgets/NewBudgets";
+import SeeAllApplication from "../../pages/dashboard/Reports/seeAll/SeeAllApplication";
+import SeeAllPendingApplication from "../../pages/dashboard/Reports/seeAll/SeeAllPendingApplication";
+import SeeAllAgents from "../../pages/dashboard/Reports/seeAll/SeeAllAgents";
 
 const ProtectedSuperAdminRoute = ({ children }:any) => {
   const { userDetails } = useCurrentUser();
@@ -192,6 +195,9 @@ const DashboardRoutes = () => {
           <Route path="reports" element={<Report />} />
           <Route path="/reports/budgets" element={<Budgets />} />
           <Route path="/reports/new_budgets" element={<NewBudgets />} />
+          <Route path="/reports/All_Application" element={<SeeAllApplication />} />
+          <Route path="/reports/All_Pending_Applications" element={<SeeAllPendingApplication />} />
+          <Route path="/reports/All_Agents" element={<SeeAllAgents />} />
           <Route path="settings" element={<Settings />} />
 
        <Route path="settings/admin_management/*" element={

@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { button } from "../buttons/Button";
 import { CgAsterisk } from "react-icons/cg";
-import { findAgentByEmail, findStaffByEmail } from "../redux/shared/slices/shareApplication.slices";
+import { findStaffByEmail } from "../redux/shared/slices/shareApplication.slices";
 import ReactLoading from 'react-loading';
 
 interface FindStaffByEmailProps {
@@ -39,8 +39,8 @@ const FindStaffByEmail: React.FC<FindStaffByEmailProps> = ({ onClose, redirect }
     <main className="px-[5em] font-outfit">
       <div className="m-auto w-[24em] py-[2em] text-center">
         <header className="flex gap-2 flex-col">
-          <h1 className="text-2xl font-bold">Agent Application</h1>
-          <p className="font-light">Enter the details of the Agent</p>
+          <h1 className="text-2xl font-bold">Staff Details</h1>
+          <p className="font-light">Enter the details of the Staff</p>
         </header>
         <form onSubmit={handleSubmit}>
           <article>

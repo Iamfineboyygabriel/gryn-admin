@@ -75,6 +75,12 @@ const TopPeople = () => {
               <p className="font-medium text-primary-700">See All</p>
             </div>
           </header>
+
+          <div className="flex mt-[1em] justify-between">
+            <small>Name</small>
+            <small>Commission</small>
+          </div>
+
           <div className="mt-[1em] flex flex-col gap-[1.2em]">
             {schools.map((name, index) => (
               <div className="flex items-center justify-between" key={index}>

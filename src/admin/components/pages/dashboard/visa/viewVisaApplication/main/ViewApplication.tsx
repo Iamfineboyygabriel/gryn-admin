@@ -1,19 +1,73 @@
-import { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas";
 import PersonalDetails from "../personalDetails/PersonalDetails";
-import { button } from "../../../../../../../shared/buttons/Button";
-import upload from "../../../../../../../assets/svg/Upload.svg";
 import DestinationDetails from "../destinationDetails/DestinationDetails";
 import UploadedDocuments from "../uploadedDocuments/UploadedDocuments";
+import { button } from "../../../../../../../shared/buttons/Button";
+import upload from "../../../../../../../assets/svg/Upload.svg";
 
-const ViewApplication = () => {
-  const [activeLink, setActiveLink] = useState("personalDetails");
-  const { applicationId } = useParams();
-
+const ViewApplication: React.FC = () => {
+  const [activeLink, setActiveLink] = useState<string>("personalDetails");
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState<boolean>(false);
+  const { applicationId } = useParams<{ applicationId: string }>();
   const navigate = useNavigate();
 
-  const handleBackClick = async () => {
+  const personalDetailsRef = useRef<HTMLDivElement>(null);
+  const destinationDetailsRef = useRef<HTMLDivElement>(null);
+  const uploadedDocumentsRef = useRef<HTMLDivElement>(null);
+
+  const handleBackClick = () => {
     navigate(-1);
+  };
+
+  const downloadPDF = async () => {
+    setIsGeneratingPDF(true);
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const components = [
+      { ref: personalDetailsRef, title: "Personal Details" },
+      { ref: destinationDetailsRef, title: "Destination Details" },
+      { ref: uploadedDocumentsRef, title: "Uploaded Documents" },
+    ];
+
+    try {
+      for (let i = 0; i < components.length; i++) {
+        const { ref, title } = components[i];
+        const content = ref.current;
+        if (content) {
+          content.style.display = 'block';
+
+          const canvas = await html2canvas(content, {
+            scale: 2,
+            logging: false, 
+            useCORS: true 
+          });
+
+          const imgData = canvas.toDataURL('image/jpeg', 0.95); 
+
+          if (i !== 0) {
+            pdf.addPage();
+          }
+
+          pdf.setFontSize(16);
+          pdf.text(title, 20, 20);
+
+          const imgWidth = 170; 
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          pdf.addImage(imgData, 'JPEG', 20, 30, imgWidth, imgHeight);
+
+          content.style.display = i === 0 ? 'block' : 'none';
+        }
+      }
+
+      pdf.save('application.pdf');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('An error occurred while generating the PDF. Please try again.');
+    } finally {
+      setIsGeneratingPDF(false);
+    }
   };
 
   return (
@@ -43,7 +97,7 @@ const ViewApplication = () => {
                   className={`cursor-pointer py-3 ${
                     activeLink === "personalDetails"
                       ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700"
-                      : "text-lg font-light text-gray-500"
+                      : "text-lg font-medium text-gray-500"
                   }`}
                   onClick={() => setActiveLink("personalDetails")}
                 >
@@ -53,7 +107,7 @@ const ViewApplication = () => {
                   className={`cursor-pointer py-3 ${
                     activeLink === "destinationDetails"
                       ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700"
-                      : "text-lg font-light text-gray-500"
+                      : "text-lg font-medium text-gray-500"
                   }`}
                   onClick={() => setActiveLink("destinationDetails")}
                 >
@@ -63,27 +117,33 @@ const ViewApplication = () => {
                   className={`cursor-pointer py-3 ${
                     activeLink === "uploadedDocument"
                       ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700"
-                      : "text-lg font-light text-gray-500"
+                      : "text-lg font-medium text-gray-500"
                   }`}
                   onClick={() => setActiveLink("uploadedDocument")}
                 >
                   Uploaded Documents
                 </div>
               </div>
-              <button.PrimaryButton className=" ml-[3em] items-center gap-2 flex rounded-full bg-primary-200 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300 hover:bg-primary-700 hover:text-white">
+              <button.PrimaryButton 
+                onClick={downloadPDF}
+                disabled={isGeneratingPDF}
+                className="ml-[3em] items-center gap-2 flex rounded-full bg-primary-200 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300 hover:bg-primary-700 hover:text-white disabled:bg-gray-400 disabled:cursor-not-allowed"
+              >
                 <img src={upload} alt="upload" />
-                Download Application
+                {isGeneratingPDF ? 'Generating PDF...' : 'Download Application'}
               </button.PrimaryButton>
             </div>
           </nav>
           <section className="mt-8">
-            {activeLink === "personalDetails" && (
+            <div ref={personalDetailsRef} style={{display: activeLink === "personalDetails" ? "block" : "none"}}>
               <PersonalDetails applicationId={applicationId} />
-            )}
-            {activeLink === "destinationDetails" && (
+            </div>
+            <div ref={destinationDetailsRef} style={{display: activeLink === "destinationDetails" ? "block" : "none"}}>
               <DestinationDetails applicationId={applicationId} />
-            )}
-            {activeLink === "uploadedDocument" && <UploadedDocuments applicationId={applicationId}/>}
+            </div>
+            <div ref={uploadedDocumentsRef} style={{display: activeLink === "uploadedDocument" ? "block" : "none"}}>
+              <UploadedDocuments applicationId={applicationId}/>
+            </div>
           </section>
         </div>
       </div>

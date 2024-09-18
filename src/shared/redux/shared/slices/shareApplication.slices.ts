@@ -26,7 +26,6 @@ interface CreateApplicationBody {
   university?: string;
 }
 
-
 interface CreateVisaApplicationBody {
   firstName: string;
   lastName: string;
@@ -77,7 +76,6 @@ interface BudgetData {
   totalPages: number;
   currentPage: number;
 }
-
 
 interface BudgetParams {
   page: number;
