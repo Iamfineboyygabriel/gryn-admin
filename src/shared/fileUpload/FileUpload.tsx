@@ -36,7 +36,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
   error,
   success,
 }) => {
-  const MAX_FILE_NAME_LENGTH = 20;
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -44,14 +43,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
     const files = event.target.files;
     if (files && files.length > 0) {
       const selectedFile = files[0];
-
-      if (selectedFile.name.length > MAX_FILE_NAME_LENGTH) {
-        toast.error(
-          `File name too long. Maximum length is ${MAX_FILE_NAME_LENGTH} characters.`,
-        );
-        return;
-      }
-
       onFileChange(selectedFile, setFile);
     }
   };
@@ -87,18 +78,20 @@ const FileUpload: React.FC<FileUploadProps> = ({
         />
         <div className="flex flex-grow flex-col dark:text-white">
           {file ? (
-            <div className="flex items-center gap-2">
-              <img src={fileImg} alt="file_image" />
-              <div className="flex flex-col gap-2">
-                <p className="text-lg font-light">{file.name}</p>
-                <p className="text-xs text-gray-500 dark:text-white">
-                  {(file.size / 1024).toFixed(2)} KB
-                </p>
-              </div>
-              <button type="button" onClick={handlePreview} className="ml-2">
-                <AiOutlineEye />
-              </button>
+              <div className="flex items-center gap-2">
+            <img src={fileImg} alt="file_image" className="w-[18px]" />
+            <div className="flex flex-col gap-2 flex-grow">
+              <p className="text-lg font-light truncate max-w-[170px]">
+                {file.name}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-white">
+                {(file.size / 1024).toFixed(2)} KB
+              </p>
             </div>
+            <button type="button" onClick={handlePreview} className="mr-4">
+              <AiOutlineEye />
+            </button>
+          </div>
           ) : (
             <>
               <img src={fileImg} alt="file" className="mb-3 w-[18px]" />
