@@ -15,12 +15,38 @@ export const getStats = createAsyncThunk("application/getStats", async () => {
   }
 });
 
+export const getStaffDashboardStats = createAsyncThunk("application/getStaffDashboardStats", async () => {
+  try {
+    const data = await applicationServices.getStaffDashboardStats();
+    return data;
+  } catch (error: any) {
+    const message =
+      (error.response && error.response.data && error.response.data.message) ||
+      error.message ||
+      error.toString();
+    throw new Error(message);
+  }
+});
+
+
 export const getAllApplication = createAsyncThunk(
   "application/getAllApplication",
   async ({ page, limit, search }: { page: number; limit: number; search: string }) => {
     const response = await applicationServices.getAllApplication(page, limit, search);
     return {
       applications: response.data.applications,
+      totalPages: response.data.totalPages,
+      currentPage: page
+    };
+  }
+);
+
+export const getAllStudents = createAsyncThunk(
+  "application/getAllStudents",
+  async ({ page, limit, search }: { page: number; limit: number; search: string }) => {
+    const response = await applicationServices.getAllStudents(page, limit, search);
+    return {
+      students: response.data, 
       totalPages: response.data.totalPages,
       currentPage: page
     };
@@ -57,12 +83,18 @@ interface ApplicationState {
     totalPages: number;
     currentPage: number;
   };
+  allStudents: {
+    students: any[];
+    totalPages: number;
+    currentPage: number;
+  };
   allPendingApplication: {
     applications: any[];
     totalPages: number;
     currentPage: number;
   };
   getStats: any;
+  getStaffStats: any;
   allAdmin: {
     admins: any; 
     totalPages: number;
@@ -70,11 +102,15 @@ interface ApplicationState {
   };
   loading: boolean;
   error: string | null;
-  searchTerm: string;
+  allApplicationSearchTerm: string;
+  allStudentsSearchTerm: string;
+  allPendingApplicationSearchTerm: string;
+  allAdminSearchTerm: string;
 }
 
 const initialState: ApplicationState = {
   getStats: null,
+  getStaffStats: null,
   allAdmin: {
     admins: null,
     totalPages: 0,
@@ -85,6 +121,11 @@ const initialState: ApplicationState = {
     totalPages: 0,
     currentPage: 1,
   },
+  allStudents: {
+    students: [],
+    totalPages: 0,
+    currentPage: 1,
+  },
   allPendingApplication: {
     applications: [],
     totalPages: 0,
@@ -92,15 +133,27 @@ const initialState: ApplicationState = {
   },
   loading: false,
   error: null,
-  searchTerm: '',
+  allApplicationSearchTerm: '',
+  allStudentsSearchTerm: '',
+  allPendingApplicationSearchTerm: '',
+  allAdminSearchTerm: '',
 };
 
 export const applicationSlice = createSlice({
   name: "application",
   initialState,
   reducers: {
-    setSearchTerm: (state, action: PayloadAction<string>) => {
-      state.searchTerm = action.payload;
+    setAllApplicationSearchTerm: (state, action: PayloadAction<string>) => {
+      state.allApplicationSearchTerm = action.payload;
+    },
+    setAllStudentsSearchTerm: (state, action: PayloadAction<string>) => {
+      state.allStudentsSearchTerm = action.payload;
+    },
+    setAllPendingApplicationSearchTerm: (state, action: PayloadAction<string>) => {
+      state.allPendingApplicationSearchTerm = action.payload;
+    },
+    setAllAdminSearchTerm: (state, action: PayloadAction<string>) => {
+      state.allAdminSearchTerm = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -110,7 +163,15 @@ export const applicationSlice = createSlice({
       })
       .addCase(getStats.rejected, (state, action) => {
         state.getStats = null;
-        const errorMessage = action.error.message || "Failed to fetch user stats.";
+        const errorMessage = action.error.message || "Failed to fetch admin stats.";
+        setMessage(errorMessage);
+      })
+      .addCase(getStaffDashboardStats.fulfilled, (state, action: PayloadAction<any>) => {
+        state.getStaffStats = action.payload;
+      })
+      .addCase(getStaffDashboardStats.rejected, (state, action) => {
+        state.getStaffStats = null;
+        const errorMessage = action.error.message || "Failed to fetch staff stats.";
         setMessage(errorMessage);
       })
       .addCase(getAllApplication.pending, (state) => {
@@ -129,7 +190,26 @@ export const applicationSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || "Failed to fetch applications";
       })
-
+      .addCase(getAllStudents.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllStudents.fulfilled, (state, action: PayloadAction<{
+        students: any[];
+        totalPages: number;
+        currentPage: number;
+      }>) => {
+        state.loading = false;
+        state.allStudents = {
+          students: action.payload.students,
+          totalPages: action.payload.totalPages,
+          currentPage: action.payload.currentPage
+        };
+      })
+      .addCase(getAllStudents.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch all students";
+      })
       .addCase(getAllPendingApplication.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -141,13 +221,11 @@ export const applicationSlice = createSlice({
       }>) => {
         state.loading = false;
         state.allPendingApplication = action.payload;
-        console.log("aa",action.payload)
       })
       .addCase(getAllPendingApplication.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to fetch pending applications";
       })
-
       .addCase(getAllAdminForSuperAdmin.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -171,5 +249,11 @@ export const applicationSlice = createSlice({
   },
 });
 
-export const { setSearchTerm } = applicationSlice.actions;
+export const {
+  setAllApplicationSearchTerm,
+  setAllStudentsSearchTerm,
+  setAllPendingApplicationSearchTerm,
+  setAllAdminSearchTerm,
+} = applicationSlice.actions;
+
 export default applicationSlice.reducer;

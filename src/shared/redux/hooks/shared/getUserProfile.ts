@@ -7,12 +7,14 @@ import {
   getAllDraftItems,
   getAllInvoice,
   getAllPendingAgents,
-  getAllStudents,
   getAllVisaApplication,
   getCurrentUser,
   getTopCountries,
   getTopUniversities,
   getUserProfile,
+  setAllAgentSearchTerm,
+  setAllPendingAgentSearchTerm,
+  setAllVisaApplicationSearchTerm,
   updateProfile,
   uploadAvatar,
 } from "../../shared/slices/shareApplication.slices";
@@ -24,7 +26,7 @@ import {
   getVisaApplicationDetails,
 } from "../../shared/services/shareApplication.services";
 import { useQuery } from "react-query";
-import { getAllAdminForSuperAdmin, setSearchTerm } from "../../admin/slices/application.slices";
+import { getAllAdminForSuperAdmin } from "../../admin/slices/application.slices";
 import { useAppSelector } from "./reduxHooks";
 
 interface UpdateProfile {
@@ -366,24 +368,6 @@ export const useTopUniversities = () => {
   return { userTopUniversities, loading };
 };
 
-export const useAllStudent = () => {
-  const dispatch: AppDispatch = useDispatch();
-  const useAllStudents = useSelector(
-    (state: any) => state?.shareApplication?.allStudents
-  );
-  console.log("all s",useAllStudents)
-  const loading = useSelector((state: any) => state?.shareApplication?.loading);
-
-  const fetchApplications = useCallback(
-    (page: number, limit: number) => {
-      dispatch(getAllStudents({ page, limit }));
-    },
-    [dispatch]
-  );
-
-  return { useAllStudents, fetchApplications, loading };
-};
-
 export const useAllAgent = () => {
   const dispatch: AppDispatch = useDispatch();
   const agents = useSelector((state: any) => state?.shareApplication?.allAgents?.agents || []);
@@ -402,7 +386,7 @@ export const useAllAgent = () => {
 
   const updateSearchTerm = useCallback(
     (term: string) => {
-      dispatch(setSearchTerm(term));
+      dispatch(setAllAgentSearchTerm(term));
     },
     [dispatch]
   );
@@ -487,7 +471,7 @@ export const useAllVisa = () => {
 
   const updateSearchTerm = useCallback(
     (term: string) => {
-      dispatch(setSearchTerm(term));
+      dispatch(setAllVisaApplicationSearchTerm(term));
     },
     [dispatch]
   );
@@ -513,7 +497,7 @@ export const useAllPendingAgents = () => {
 
   const updateSearchTerm = useCallback(
     (term: string) => {
-      dispatch(setSearchTerm(term));
+      dispatch(setAllPendingAgentSearchTerm(term));
     },
     [dispatch]
   );
@@ -521,10 +505,8 @@ export const useAllPendingAgents = () => {
   return { agents, totalPages, currentPage, loading, error, searchTerm, fetchAgents, updateSearchTerm };
 };
 
-
 export const useVisaApplicationDetails = (applicationId: string) => {
   const dispatch = useDispatch();
-
   const {
     data: applicationDetails,
     isLoading: loading,
@@ -549,7 +531,6 @@ export const useVisaApplicationDetails = (applicationId: string) => {
   return { applicationDetails, loading, error };
 };
 
-
 export const useAllAdminForSuperAdmin = () => {
   const dispatch: AppDispatch = useDispatch();
   const adminData = useSelector((state: any) => state.application);
@@ -567,7 +548,7 @@ export const useAllAdminForSuperAdmin = () => {
 
   const updateSearchTerm = useCallback(
     (term: string) => {
-      dispatch(setSearchTerm(term));
+      // dispatch(setSearchTerm(term));
     },
     [dispatch]
   );

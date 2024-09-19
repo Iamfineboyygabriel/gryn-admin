@@ -28,9 +28,9 @@ const AllApplication: React.FC = () => {
     fetchApplications(currentPage, itemsPerPage);
   }, [fetchApplications, currentPage, itemsPerPage]);
 
-  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
-    fetchApplications(value, itemsPerPage);
-  };
+  const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, page: number) => {
+    fetchApplications(page, itemsPerPage);
+  }, [fetchApplications, itemsPerPage])
 
   const filteredAndSortedApplications = useMemo(() => {
     if (!applications || !Array.isArray(applications)) {
@@ -52,8 +52,6 @@ const AllApplication: React.FC = () => {
     });
   }, [applications, searchTerm, sortField, sortOrder]);
   
-  const isCurrentPageEmpty = filteredAndSortedApplications.length === 0;
-
   const handleViewDetails = useCallback(
     (applicationId: string) => {
       navigate(`/admin/dashboard/application/all_application/view_application/${applicationId}`);
@@ -244,12 +242,13 @@ const AllApplication: React.FC = () => {
       </table>
       {!loading && applications?.length > 0 && (
         <div className="mt-6 flex justify-center">
-          <CustomPagination
-            page={currentPage}
-            onChange={handlePageChange}
-            isCurrentPageEmpty={isCurrentPageEmpty}
-            count={totalPages}
+            <div className="mt-6 flex justify-center">
+            <CustomPagination
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            hasMore={applications.length === itemsPerPage}
           />
+        </div>
         </div>
       )}
     </main>

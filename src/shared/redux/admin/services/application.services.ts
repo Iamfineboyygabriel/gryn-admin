@@ -13,8 +13,32 @@ const getStats = async () => {
   }
 };
 
+const getStaffDashboardStats = async () => {
+  const url = `${API_URL}/admin/application/staff/dashboard-stats`;
+  try {
+    const response = await axios.get(url, { headers: authHeader() });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const getAllApplication = async (page: number, limit: number, search: string = '') => {
   const url = `${API_URL}/admin/application?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
+  try {
+    const response = await axios.get(url, { headers: authHeader() });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getAllStudents = async (page: number, limit: number, search: string = '') => {
+  const url = `${API_URL}/admin/users/students?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
   try {
     const response = await axios.get(url, { headers: authHeader() });
     const token = response?.data?.data?.tokens?.accessToken;
@@ -59,9 +83,11 @@ const getAllAdminForSuperAdmin = async (page: number, limit: number, search: str
 
 const applicationServices = {
   getStats,
+  getStaffDashboardStats,
   getAllApplication,
   getAllPendingApplication,
   getAllAdminForSuperAdmin,
+  getAllStudents,
 };
 
 export default applicationServices;

@@ -2,13 +2,13 @@ import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { FiSearch } from "react-icons/fi";
 import transaction from "../../../../../../../assets/svg/Transaction.svg";
 import { Link, useNavigate } from "react-router-dom";
-import { useAllStudent } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
 import CustomPagination from "../../../../../../../shared/utils/customPagination";
 import { button } from "../../../../../../../shared/buttons/Button";
 import plus from "../../../../../../../assets/svg/plus.svg";
 import DOMPurify from "dompurify";
 import Modal from "../../../../../../../shared/modal/Modal";
 import FindStudentByEmail from "../../../../../../../shared/modal/FindStudentByEmail";
+import { useAllStudents } from "../../../../../../../shared/redux/hooks/admin/getAdminProfile";
 
 interface Student {
   profile: {
@@ -31,11 +31,10 @@ const SkeletonRow: React.FC = () => (
 );
 
 const AllStudents: React.FC = () => {
-  const { useAllStudents, fetchApplications, loading } = useAllStudent();
-  const [searchQuery, setSearchQuery] = useState<string>("");
-  const [page, setPage] = useState<number>(1);
-
+  const { useAllStudent, totalPages, currentPage, loading, fetchApplications, searchTerm, updateSearchTerm } = useAllStudents();
+  console.log("uas",useAllStudents)
   const [isModalOpen, setModalOpen] = useState(false);
+  const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm || '');
 
   const handleOpenModal = () => setModalOpen(true);
   const handleCloseModal = () => setModalOpen(false);
@@ -44,59 +43,56 @@ const AllStudents: React.FC = () => {
   const itemsPerPage = 10;
 
   useEffect(() => {
-    fetchApplications(page, itemsPerPage);
-  }, [fetchApplications, page, itemsPerPage]);
+    fetchApplications(currentPage, itemsPerPage);
+  }, [fetchApplications, currentPage, itemsPerPage]);
+
+  useEffect(() => {
+    setLocalSearchTerm(searchTerm || '');
+  }, [searchTerm]);
 
   const studentsData = useMemo(() => {
-    const data =
-      useAllStudents || [];
-    return Array?.isArray(data) ? data : [];
-  }, [useAllStudents]);
+    const data = useAllStudent || [];
+    return Array.isArray(data) ? data : [];
+  }, [useAllStudent]);
 
   const filteredStudents = useMemo(() => {
-    return studentsData?.filter((student: Student) =>
-      `${student.profile.firstName} ${student?.profile?.lastName} ${student.email}`
+    return studentsData.filter((student: Student) =>
+      `${student.profile.firstName} ${student.profile.lastName} ${student.email}`
         .toLowerCase()
-        .includes(searchQuery.toLowerCase())
+        .includes(localSearchTerm.toLowerCase())
     );
-  }, [studentsData, searchQuery]);
-  console.log("fff",filteredStudents)
+  }, [studentsData, localSearchTerm]);
 
-  const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
-  const isCurrentPageEmpty = page > totalPages;
+  const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, page: number) => {
+    fetchApplications(page, itemsPerPage);
+  }, [fetchApplications, itemsPerPage]);
 
-
-  const paginatedStudents = filteredStudents;
-
-  const handlePageChange = useCallback(
-    (event: React.ChangeEvent<unknown>, value: number) => {
-      setPage(value);
-    },
-    []
-  );
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLocalSearchTerm(e.target.value);
+    updateSearchTerm(e.target.value);
+  };
 
   const formatData = useCallback(
     (data: string | undefined): string => (data ? data : "-"),
     []
   );
 
+  const sanitizeHTML = useCallback((html: string) => {
+    return { __html: DOMPurify.sanitize(html) };
+  }, []);
+
   const highlightText = useCallback(
-    (text: string, query: string): React.ReactNode => {
-      if (!query) return text;
-      const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      const parts = text.split(new RegExp(`(${escapedQuery})`, "gi"));
-      return parts.map((part, index) =>
-        part.toLowerCase() === query.toLowerCase() ? (
-          <span key={index} className="bg-yellow-300">
-            {DOMPurify.sanitize(part)}
-          </span>
-        ) : (
-          DOMPurify.sanitize(part)
-        )
+    (text: string) => {
+      if (!localSearchTerm.trim()) return text;
+      const regex = new RegExp(`(${localSearchTerm})`, "gi");
+      return text.replace(
+        regex,
+        (match: string) => `<mark class="bg-yellow-300">${match}</mark>`
       );
     },
-    []
+    [localSearchTerm]
   );
+
   const handleViewDetails = useCallback(
     (studentId: string, firstName: string, lastName: string) => {
       navigate(
@@ -116,29 +112,37 @@ const AllStudents: React.FC = () => {
       ));
     }
 
-    if (paginatedStudents.length > 0) {
-      return paginatedStudents.map((student: Student, index: number) => (
+    if (filteredStudents.length > 0) {
+      return filteredStudents.map((student: Student, index: number) => (
         <tr
           key={student.id}
           className="text-[14px] leading-[20px] text-grey-primary font-medium"
         >
           <td className="py-[16px] px-[24px]">
-            {(page - 1) * itemsPerPage + index + 1}
+            {(currentPage - 1) * itemsPerPage + index + 1}
           </td>
-          <td className="py-[16px] gap-1 px-[24px]">
-            {highlightText(
-              `${formatData(student.profile.lastName)} ${formatData(
-                student.profile.firstName
-              )}`,
-              searchQuery
+          <td 
+            className="py-[16px] gap-1 px-[24px]"
+            dangerouslySetInnerHTML={sanitizeHTML(
+              highlightText(
+                `${formatData(student.profile.lastName)} ${formatData(
+                  student.profile.firstName
+                )}`
+              )
             )}
-          </td>
-          <td className="py-[16px] px-[24px]">
-            {highlightText(formatData(student.phoneNumber), searchQuery)}
-          </td>
-          <td className="py-[16px] px-[24px]">
-            {highlightText(student.email, searchQuery)}
-          </td>
+          />
+          <td 
+            className="py-[16px] px-[24px]"
+            dangerouslySetInnerHTML={sanitizeHTML(
+              highlightText(formatData(student.phoneNumber))
+            )}
+          />
+          <td 
+            className="py-[16px] px-[24px]"
+            dangerouslySetInnerHTML={sanitizeHTML(
+              highlightText(student.email)
+            )}
+          />
           <td className="py-[16px] px-[24px]">
             <p
               onClick={() =>
@@ -171,22 +175,14 @@ const AllStudents: React.FC = () => {
     }
   }, [
     loading,
-    paginatedStudents,
-    page,
-    handleViewDetails,
+    filteredStudents,
+    currentPage,
     itemsPerPage,
-    formatData,
+    sanitizeHTML,
     highlightText,
-    searchQuery,
+    formatData,
+    handleViewDetails,
   ]);
-
-  const handleSearchChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchQuery(e.target.value);
-      setPage(1);
-    },
-    []
-  );
 
   return (
     <main>
@@ -215,7 +211,7 @@ const AllStudents: React.FC = () => {
             type="text"
             className="flex-grow rounded-full bg-transparent py-2 pl-4 pr-2 text-sm focus:border-grey-primary focus:outline-none"
             placeholder="Search"
-            value={searchQuery}
+            value={localSearchTerm}
             onChange={handleSearchChange}
           />
           <FiSearch className="mr-3 text-lg text-gray-500" />
@@ -245,16 +241,16 @@ const AllStudents: React.FC = () => {
         </table>
       </div>
 
-      {!loading && filteredStudents.length > 0 && (
+      {!loading && studentsData.length > 0 && (
         <div className="mt-6 flex justify-center">
-          <CustomPagination
-            page={page}
-            onChange={handlePageChange}
-            isCurrentPageEmpty={isCurrentPageEmpty}
+           <CustomPagination
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            hasMore={studentsData.length === itemsPerPage}
           />
         </div>
       )}
-         {isModalOpen && (
+      {isModalOpen && (
         <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
           <FindStudentByEmail onClose={handleCloseModal} />
         </Modal>

@@ -1,33 +1,27 @@
-import React from "react";
-import { Pagination } from "@mui/material";
+import React from 'react';
+import { Pagination, PaginationItem } from '@mui/material';
+import { IoIosArrowBack } from "react-icons/io";
+import { IoIosArrowForward } from "react-icons/io";
 
 interface CustomPaginationProps {
-  page: number;
-  onChange: (event: React.ChangeEvent<unknown>, value: number) => void;
-  isCurrentPageEmpty: boolean;
-  count?: number;
+  currentPage: number;
+  onPageChange: (event: React.ChangeEvent<unknown>, page: number) => void;
+  hasMore: boolean;
 }
 
-const CustomPagination: React.FC<CustomPaginationProps> = ({
-  page,
-  onChange,
-  isCurrentPageEmpty,
-  count
-}) => {
-  const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
-    if (value > page && isCurrentPageEmpty) {
-      return;
-    }
-    onChange(event, value);
-  };
-
+const CustomPagination: React.FC<CustomPaginationProps> = ({ currentPage, onPageChange, hasMore }) => {
   return (
     <Pagination
-      count={count}
-      page={page}
-      onChange={handleChange}
-      color="primary"
-      shape="rounded"
+      page={currentPage}
+      onChange={onPageChange}
+      count={hasMore ? currentPage + 1 : currentPage}
+      renderItem={(item) => (
+        <PaginationItem
+          components={{ previous: IoIosArrowBack, next: IoIosArrowForward }}
+          {...item}
+          disabled={item.type === 'previous' ? currentPage === 1 : !hasMore && item.type === 'next'}
+        />
+      )}
     />
   );
 };

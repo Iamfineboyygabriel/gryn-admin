@@ -196,21 +196,6 @@ export const getTopUniversities = createAsyncThunk(
   }
 );
 
-export const getAllStudents = createAsyncThunk(
-  "shareApplication/getAllStudents",
-  async ({ page, limit }: { page: number; limit: number }, thunkAPI) => {
-    try {
-      const data = await shareApplicationServices.getAllStudents(page, limit);
-      console.log("dd",data)
-      return data;
-    } catch (error: any) {
-      const message = error.message;
-      error.toString();
-      return thunkAPI.rejectWithValue(message);
-    }
-  }
-);
-
 export const getAllAgents = createAsyncThunk(
   "shareApplication/getAllAgents",
    async ({ page, limit, search }: { page: number; limit: number; search: string }) => {
@@ -324,7 +309,6 @@ export const getAllVisaApplication = createAsyncThunk(
   "shareApplication/getAllVisaApplication",
   async ({ page, limit, search }: { page: number; limit: number; search: string }) => {
     const response = await shareApplicationServices.getAllVisaApplication(page, limit, search);
-    console.log("Response",response)
     return {
       visas: response.data,
       totalPages: response.data.totalPages,
@@ -492,12 +476,6 @@ interface ApplicationState {
   staff:null;
   agent:null,
   findByAll:null,
-  allStudents: {
-    data: {
-      students: any[];
-    } | null;
-    totalItems: number;
-  };
   allDraftItems: {
     data: {
       draftsItems: any[];
@@ -533,6 +511,9 @@ interface ApplicationState {
   month: string | null;
   search: string;
   searchTerm: string;
+  allAgentSearchTerm: string;
+  allVisaApplicationSearchTerm: string;
+  allPendingAgentSearchTerm: string;
 }
 
 const initialState: ApplicationState = {
@@ -555,10 +536,6 @@ const initialState: ApplicationState = {
   agent:null,
   staff:null,
   findByAll:null,
-  allStudents: {
-    data: null,
-    totalItems: 0,
-  },
   registerInvoice: null,
   registerBudget: null,
   registerDraft: null,
@@ -597,6 +574,9 @@ const initialState: ApplicationState = {
   month: null,
   search: '',
   searchTerm: "",
+  allAgentSearchTerm: "",
+  allVisaApplicationSearchTerm: "",
+  allPendingAgentSearchTerm: "",
 };
 
 
@@ -616,6 +596,15 @@ export const shareApplicationSlice = createSlice({
     },
     setSearch: (state, action: PayloadAction<string>) => {
       state.search = action.payload;
+    },
+    setAllAgentSearchTerm: (state, action: PayloadAction<string>) => {
+      state.allAgentSearchTerm = action.payload;
+    },
+    setAllVisaApplicationSearchTerm: (state, action: PayloadAction<string>) => {
+      state.allVisaApplicationSearchTerm = action.payload;
+    },
+    setAllPendingAgentSearchTerm: (state, action: PayloadAction<string>) => {
+      state.allPendingAgentSearchTerm = action.payload;
     },
   },
 
@@ -707,28 +696,6 @@ export const shareApplicationSlice = createSlice({
         state.topUniversities = null;
         const errorMessage =
           action.error.message || "Failed to fetch top universities.";
-        setMessage(errorMessage);
-      })
-
-      .addCase(getAllStudents.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(
-        getAllStudents.fulfilled,
-        (state, action: PayloadAction<any>) => {
-          state.allStudents = action.payload.data;
-          state.allStudents.totalItems = action.payload.totalItems;
-          state.loading = false;
-        }
-      )
-
-      .addCase(getAllStudents.rejected, (state, action) => {
-        state.allStudents = {
-          data: null,
-          totalItems: 0,
-        };
-        const errorMessage =
-          action.error.message || "Failed to fetch all students.";
         setMessage(errorMessage);
       })
 
@@ -824,8 +791,8 @@ export const shareApplicationSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || "Failed to fetch visa applications";
       })
-
-     .addCase(getAllPendingAgents.pending, (state) => {
+    
+    .addCase(getAllPendingAgents.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
@@ -1020,11 +987,6 @@ export const shareApplicationSlice = createSlice({
 });
 
 
-
-export const selectVisaApplicationLoading = (state: RootState) => state.shareApplication.loading;
-export const selectVisaApplicationError = (state: RootState) => state.shareApplication.error;
-export const selectVisaApplicationData = (state: RootState) => state.shareApplication.registerVisaApplication;
-
-export const { setSort, setStatus, setMonth, setSearch } = shareApplicationSlice.actions;
+export const { setSort, setStatus, setMonth, setSearch, setAllAgentSearchTerm, setAllVisaApplicationSearchTerm, setAllPendingAgentSearchTerm } = shareApplicationSlice.actions;
 const { reducer } = shareApplicationSlice;
 export default reducer;

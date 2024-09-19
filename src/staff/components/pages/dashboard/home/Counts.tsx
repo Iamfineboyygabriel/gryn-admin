@@ -1,22 +1,22 @@
-import { useStats } from "../../../../../shared/redux/hooks/admin/getAdminProfile";
+import { useStaffStats } from "../../../../../shared/redux/hooks/staff/getStaffProfile";
 
 const Counts = () => {
-  const { getApplicationStats } = useStats();
-
+  const { getApplicationStats } = useStaffStats();
+  
   const Data = [
     {
       label: "Total Number of Applications",
-      figure: getApplicationStats?.data?.size ?? 0,
+      figure: getApplicationStats?.data?.numberOfApplications ?? 0,
       detail: "See Application",
     },
     {
       label: "Number of Completed Applications",
-      figure: getApplicationStats?.data?.completed ?? 0,
+      figure: getApplicationStats?.data?.numberOfCompletedApplications ?? 0,
       detail: "See Completed Applications",
     },
     {
       label: "Number of Pending Applications",
-      figure: getApplicationStats?.data?.pending ?? 0,
+      figure: getApplicationStats?.data?.numberOfPendingApplications ?? 0,
       detail: "See Pending Applications",
     },
 

@@ -46,11 +46,8 @@ const Visa: React.FC = () => {
   const [previewFileType, setPreviewFileType] = useState<string>("");
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [page, setPage] = useState<number>(1);
   const itemsPerPage = 10;
   const navigate = useNavigate()
-
-  const isCurrentPageEmpty = page > totalPages;
 
   const getFileTypeFromUrl = (url: string) => {
     const segments = url.split("/");
@@ -90,9 +87,9 @@ const Visa: React.FC = () => {
     fetchApplications(currentPage, itemsPerPage);
   }, [fetchApplications, currentPage, itemsPerPage]);
 
-  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
-    fetchApplications(value, itemsPerPage);
-  };
+  const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, page: number) => {
+    fetchApplications(page, itemsPerPage);
+  }, [fetchApplications, itemsPerPage])
 
   const highlightText = (text: string, query: string) => {
     if (!query) return text;
@@ -269,11 +266,10 @@ const Visa: React.FC = () => {
         </section>
         {!loading && visa && visa.length > 0 && (
           <div className="mt-6 flex justify-center">
-           <CustomPagination
-            page={currentPage}
-            onChange={handlePageChange}
-            isCurrentPageEmpty={isCurrentPageEmpty}
-            count={totalPages}
+            <CustomPagination
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            hasMore={visa.length === itemsPerPage}
           />
           </div>
         )}

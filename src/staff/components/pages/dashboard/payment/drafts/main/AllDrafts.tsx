@@ -118,11 +118,11 @@ const AllDrafts: React.FC = () => {
 
       {!loading && (
         <div className="mt-6 flex justify-center">
-          <CustomPagination
-            page={page}
-            onChange={handlePageChange}
-            isCurrentPageEmpty={isCurrentPageEmpty}
-          />
+          {/* <CustomPagination
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            hasMore={applications.length === itemsPerPage}
+          /> */}
         </div>
       )}
     </main>

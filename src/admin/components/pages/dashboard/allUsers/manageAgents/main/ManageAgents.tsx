@@ -208,10 +208,9 @@ const ManageAgents = () => {
       {!loading && agents.length > 0 && (
         <div className="mt-6 flex justify-center">
           <CustomPagination
-            page={currentPage}
-            count={totalPages}
-            onChange={handlePageChange}
-            isCurrentPageEmpty={isCurrentPageEmpty}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            hasMore={agents.length === itemsPerPage}
           />
         </div>
       )}

@@ -2,9 +2,9 @@ import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { FiSearch } from "react-icons/fi";
 import transaction from "../../../../../../../assets/svg/Transaction.svg";
 import { useNavigate } from "react-router-dom";
-import { useAllStudent } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
 import CustomPagination from "../../../../../../../shared/utils/customPagination";
 import DOMPurify from "dompurify";
+import { useAllStudents } from "../../../../../../../shared/redux/hooks/admin/getAdminProfile";
 
 interface Student {
   profile: {
@@ -27,7 +27,7 @@ const SkeletonRow: React.FC = () => (
 );
 
 const AllStudents: React.FC = () => {
-  const { useAllStudents, fetchApplications, loading } = useAllStudent();
+  const { useAllStudent, fetchApplications, loading } = useAllStudents();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [page, setPage] = useState<number>(1);
   const navigate = useNavigate();
@@ -39,9 +39,9 @@ const AllStudents: React.FC = () => {
 
   const studentsData = useMemo(() => {
     const data =
-      useAllStudents?.data?.applications || useAllStudents?.data || [];
+      useAllStudent || useAllStudent || [];
     return Array.isArray(data) ? data : [];
-  }, [useAllStudents?.data]);
+  }, [useAllStudent]);
 
   const filteredStudents = useMemo(() => {
     return studentsData.filter((student: Student) =>
@@ -221,11 +221,11 @@ const AllStudents: React.FC = () => {
 
       {!loading && filteredStudents.length > 0 && (
         <div className="mt-6 flex justify-center">
-          <CustomPagination
-            page={page}
-            onChange={handlePageChange}
-            isCurrentPageEmpty={isCurrentPageEmpty}
-          />
+           {/* <CustomPagination
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            hasMore={filteredStudents.length === itemsPerPage}
+          /> */}
         </div>
       )}
     </main>

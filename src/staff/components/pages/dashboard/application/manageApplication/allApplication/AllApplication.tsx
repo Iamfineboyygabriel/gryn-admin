@@ -261,11 +261,11 @@ const AllApplication = () => {
       </table>
       {!loading && (
         <div className="mt-6 flex justify-center">
-          <CustomPagination
+          {/* <CustomPagination
             page={page}
             onChange={handlePageChange}
             isCurrentPageEmpty={isCurrentPageEmpty}
-          />
+          /> */}
         </div>
       )}
     </main>

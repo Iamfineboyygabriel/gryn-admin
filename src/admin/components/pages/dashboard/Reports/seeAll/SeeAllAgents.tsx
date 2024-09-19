@@ -194,13 +194,12 @@ const SeeAllAgents = () => {
         </table>
            {!loading && agents.length > 0 && (
            <div className="mt-6 flex justify-center">
-           <CustomPagination
-            page={currentPage}
-            count={totalPages}
-            onChange={handlePageChange}
-            isCurrentPageEmpty={isCurrentPageEmpty}
-            />
-        </div>
+            <CustomPagination
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            hasMore={agents.length === itemsPerPage}
+          />
+          </div>
         )}
        </div>
      </div>

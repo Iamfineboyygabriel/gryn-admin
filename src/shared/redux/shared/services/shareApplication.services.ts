@@ -381,24 +381,6 @@ const getTopUniversities = async () => {
   }
 };
 
-const getAllStudents = async (page: number, limit: number) => {
-  const url = `${process.env.REACT_APP_API_URL}/admin/users/students?page=${page}&limit=${limit}`;
-  try {
-    const response = await axios({
-      url,
-      headers: authHeader(),
-      method: "get",
-    });
-    const token = response?.data?.data?.tokens?.accessToken;
-    if (token) {
-      sessionStorage.setItem("userData", token);
-    }
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
-
 const getAllAgents = async (page: number, limit: number, search: string = '') => {
   const url = `${process.env.REACT_APP_API_URL}/admin/users/agents?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
   try {
@@ -889,7 +871,6 @@ const shareApplicationServices = {
   uploadApplication,
   getTopCountries,
   getTopUniversities,
-  getAllStudents,
   getAllAgents,
   createInvoice,
   createDraft,
