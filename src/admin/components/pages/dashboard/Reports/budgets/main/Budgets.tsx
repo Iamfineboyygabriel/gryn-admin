@@ -187,7 +187,7 @@ const Budgets: React.FC = () => {
                         alt="No applications"
                         className="mb-4"
                       />
-                      <p>No applications</p>
+                      <p>No budget available.</p>
                     </div>
                   </td>
                 </tr>

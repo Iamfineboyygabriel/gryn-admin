@@ -16,10 +16,8 @@ const SkeletonRow = () => (
   </tr>
 );
 
-const AllApplication = () => {
-  const { applications, loading, fetchApplications } = useAllApplication();
-  const [page, setPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState("");
+const AllApplication: React.FC = () => {
+  const { applications, totalPages, currentPage, loading, fetchApplications, searchTerm, updateSearchTerm } = useAllApplication();
   const [sortField, setSortField] = useState("lastName");
   const [sortOrder, setSortOrder] = useState("asc");
 
@@ -27,30 +25,22 @@ const AllApplication = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchApplications(page, itemsPerPage);
-  }, [fetchApplications, page, itemsPerPage]);
+    fetchApplications(currentPage, itemsPerPage);
+  }, [fetchApplications, currentPage, itemsPerPage]);
 
-  const handlePageChange = (
-    event: React.ChangeEvent<unknown>,
-    value: number
-  ) => {
-    setPage(value);
-  };
+  const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, page: number) => {
+    fetchApplications(page, itemsPerPage);
+  }, [fetchApplications, itemsPerPage])
 
   const filteredAndSortedApplications = useMemo(() => {
-    if (
-      !applications?.applications ||
-      !Array.isArray(applications.applications)
-    ) {
+    if (!applications || !Array.isArray(applications)) {
       return [];
     }
 
-    const filtered = applications.applications.filter((item: any) =>
-      `${item?.lastName || ""} ${item?.firstName || ""} ${
-        item?.middleName || ""
-      }`
+    const filtered = applications.filter((item: any) =>
+      `${item?.lastName || ""} ${item?.firstName || ""} ${item?.middleName || ""}`
         .toLowerCase()
-        .includes(searchTerm.toLowerCase())
+        .includes((searchTerm || '').toLowerCase())
     );
 
     return filtered.sort((a: any, b: any) => {
@@ -61,13 +51,10 @@ const AllApplication = () => {
       return 0;
     });
   }, [applications, searchTerm, sortField, sortOrder]);
-  const isCurrentPageEmpty = filteredAndSortedApplications.length === 0;
-
+  
   const handleViewDetails = useCallback(
     (applicationId: string) => {
-      navigate(
-        `/staff/dashboard/application/manage_application/view_application/${applicationId}`
-      );
+      navigate(`/staff/dashboard/application/manage_application/view_application/${applicationId}`);
     },
     [navigate]
   );
@@ -80,7 +67,7 @@ const AllApplication = () => {
 
   const highlightText = useCallback(
     (text: string) => {
-      if (!searchTerm.trim()) return text;
+      if (!searchTerm?.trim()) return text;
       const regex = new RegExp(`(${searchTerm})`, "gi");
       return text.replace(
         regex,
@@ -105,10 +92,10 @@ const AllApplication = () => {
       return filteredAndSortedApplications.map((item: any, index: number) => (
         <tr
           key={item.id}
-          className="text-sm font-medium text-grey-primary border-b border-gray-200 dark:text-white"
+          className="text-sm text-grey-primary font-medium border-b border-gray-200"
         >
           <td className="whitespace-nowrap px-6 py-4">
-            {(page - 1) * itemsPerPage + index + 1}
+            {(currentPage - 1) * itemsPerPage + index + 1}
           </td>
           <td
             className="whitespace-nowrap px-6 py-4"
@@ -139,9 +126,7 @@ const AllApplication = () => {
           <td className="flex items-center whitespace-nowrap px-6 py-4">
             <button
               className={`mr-2 rounded-full px-3 py-2 text-white ${
-                item?.status === "SUBMITTED"
-                  ? "bg-yellow-500  "
-                  : "  bg-green-500  "
+                item?.status === "SUBMITTED" ? "bg-yellow-500" : "bg-green-500"
               }`}
             >
               {item?.status === "SUBMITTED" ? "In Progress" : "Completed"}
@@ -171,7 +156,7 @@ const AllApplication = () => {
     }
   }, [
     filteredAndSortedApplications,
-    page,
+    currentPage,
     itemsPerPage,
     sanitizeHTML,
     highlightText,
@@ -190,16 +175,16 @@ const AllApplication = () => {
   };
 
   return (
-    <main className="mt-[1.3em] h-auto w-full overflow-auto rounded-lg bg-white py-3 pb-[10em]">
-      <div className="flex">
+    <main>
+      <div className="flex mt-[1.5em]">
         <div className="flex items-center gap-[1em]">
-          <div className="relative w-full">
+        <div className="relative w-full">
             <input
               type="text"
               className="w-full rounded-full bg-gray-100 py-2 pl-2 pr-[3em] text-sm"
               placeholder="Search"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              value={searchTerm || ''}
+              onChange={(e) => updateSearchTerm(e.target.value)}
             />
             <FiSearch className="absolute right-[1em] top-1/2 -translate-y-1/2 transform text-lg text-gray-500" />
           </div>
@@ -207,37 +192,20 @@ const AllApplication = () => {
             className="flex cursor-pointer items-center bg-gray-100 px-3 py-2"
             onClick={() => handleSort("lastName")}
           >
-            <p className="whitespace-nowrap font-medium text-gray-500 text-sm">
+            <p className="whitespace-nowrap text-sm">
               Sort by Name
-              <span className="ml-8">
-                {sortField === "lastName"
-                  ? sortOrder === "asc"
-                    ? " ▲"
-                    : " ▼"
-                  : ""}
-              </span>
-            </p>
-          </div>
-          <div
-            className="flex cursor-pointer items-center  bg-gray-100 px-3 py-2"
-            onClick={() => handleSort("status")}
-          >
-            <p className="whitespace-nowrap font-medium text-gray-500 text-sm">
-              Sort by Status
-              <span className="ml-8">
-                {sortField === "status"
-                  ? sortOrder === "asc"
-                    ? " ▲"
-                    : " ▼"
-                  : ""}
-              </span>
+              {sortField === "lastName"
+                ? sortOrder === "asc"
+                  ? " ▲"
+                  : " ▼"
+                : ""}
             </p>
           </div>
         </div>
       </div>
       <table className="mt-4 w-full table-auto overflow-x-auto">
         <thead>
-          <tr className="text-gray-700">
+          <tr className="text-gray-700  border-b border-gray-200">
             <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
             <th className="whitespace-nowrap px-6 py-3 text-left text-sm font-normal">
               Full Name
@@ -259,13 +227,15 @@ const AllApplication = () => {
         </thead>
         <tbody>{renderTableBody()}</tbody>
       </table>
-      {!loading && (
+      {!loading && applications?.length > 0 && (
         <div className="mt-6 flex justify-center">
-          {/* <CustomPagination
-            page={page}
-            onChange={handlePageChange}
-            isCurrentPageEmpty={isCurrentPageEmpty}
-          /> */}
+            <div className="mt-6 flex justify-center">
+            <CustomPagination
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            hasMore={applications.length === itemsPerPage}
+          />
+        </div>
         </div>
       )}
     </main>

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../../../../../shared/redux/store';
 import { findStudentByEmailUniversityDegree } from '../../../../../../shared/redux/shared/slices/shareApplication.slices';
-import { useAllApplication } from '../../../../../../shared/redux/hooks/admin/getAdminProfile';
+import { useStudentEmails } from '../../../../../../shared/redux/hooks/admin/getAdminProfile';
 import { useTopUniversities } from '../../../../../../shared/redux/hooks/shared/getUserProfile';
 import { Dropdown, DropdownItem } from '../../../../../../shared/dropDown/DropDown';
 import { button } from "../../../../../../shared/buttons/Button";
@@ -41,21 +41,22 @@ interface StudentData {
   payment: any;
 }
 
-const FindStudentByAll: React.FC = () => {
+interface FindStudentByAllProps {
+  redirectTo?: string;  
+}
+
+const FindStudentByAll: React.FC<FindStudentByAllProps> = ({ redirectTo = "/admin/dashboard/application/update_application" }) => {
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
   const { userTopUniversities, loading: universityLoading } = useTopUniversities();
-  const { applications, loading: emailLoading, updateSearchTerm, fetchApplications } = useAllApplication();
+  const { studentsEmail, loading: emailLoading } = useStudentEmails();
 
   const [university, setUniversity] = useState<string | null>(null);
   const [degree, setDegree] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
-  const [isEmailDropdownOpen, setIsEmailDropdownOpen] = useState(false);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const itemsPerDropDown = 10;
   const userToken = sessionStorage.getItem("userData");
 
   const type: Degree[] = [{ name: "BACHELOR" }, { name: "MASTERS" }, { name: "DOCTORATE" }];
@@ -66,8 +67,8 @@ const FindStudentByAll: React.FC = () => {
   );
 
   const emailItems: DropdownItem[] = useMemo(() => 
-    (applications || []).map((app: any) => ({ name: app.email })),
-    [applications]
+    (studentsEmail || []).map((email: string) => ({ name: email })),
+    [studentsEmail]
   );
 
   const handleSelectItem = useCallback((item: DropdownItem) => {
@@ -84,27 +85,6 @@ const FindStudentByAll: React.FC = () => {
     setEmail(item?.name || null);
     setError(null);
   }, []);
-
-  const handleEmailSearch = useCallback((term: string) => {
-    if (!isInitialLoad) {
-      updateSearchTerm(term);
-      fetchApplications(1, itemsPerDropDown);
-    }
-  }, [updateSearchTerm, fetchApplications, itemsPerDropDown, isInitialLoad]);
-
-  useEffect(() => {
-    if (isEmailDropdownOpen && isInitialLoad) {
-      fetchApplications(1, itemsPerDropDown);
-      setIsInitialLoad(false);
-    }
-  }, [isEmailDropdownOpen, isInitialLoad, fetchApplications, itemsPerDropDown]);
-
-  const handleEmailDropdownToggle = useCallback((isOpen: boolean) => {
-    setIsEmailDropdownOpen(isOpen);
-    if (isOpen && isInitialLoad) {
-      setIsInitialLoad(false);
-    }
-  }, [isInitialLoad]);
 
   const getStudent = useCallback(async (event: React.FormEvent) => {
     event.preventDefault();
@@ -130,13 +110,13 @@ const FindStudentByAll: React.FC = () => {
         throw new Error("Student not found");
       }
 
-      navigate("/admin/dashboard/application/update_application", { state: { studentData } });
+      navigate(redirectTo, { state: { studentData } });
     } catch (error: any) {
       setError(error.message || "An error occurred while fetching student data");
     } finally {
       setLoading(false);
     }
-  }, [email, university, degree, userToken, dispatch, navigate]);
+  }, [email, university, degree, userToken, dispatch, navigate, redirectTo]);
 
   const isFormComplete = email && university && degree;
 
@@ -159,9 +139,6 @@ const FindStudentByAll: React.FC = () => {
             asterisk
             searchVisible
             loading={emailLoading}
-            onChange={handleEmailSearch}
-            useEndpointSearch
-            onDropdownToggle={handleEmailDropdownToggle}
           />
 
           <Dropdown

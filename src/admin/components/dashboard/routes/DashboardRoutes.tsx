@@ -118,6 +118,7 @@ import NewBudgets from "../../pages/dashboard/Reports/budgets/newBudgets/NewBudg
 import SeeAllApplication from "../../pages/dashboard/Reports/seeAll/SeeAllApplication";
 import SeeAllPendingApplication from "../../pages/dashboard/Reports/seeAll/SeeAllPendingApplication";
 import SeeAllAgents from "../../pages/dashboard/Reports/seeAll/SeeAllAgents";
+import AddNewSchool from "../../pages/dashboard/application/addNewSchool/AddNewSchool";
 
 const ProtectedSuperAdminRoute = ({ children }:any) => {
   const { userDetails } = useCurrentUser();
@@ -150,7 +151,11 @@ const DashboardRoutes = () => {
           path="/application/update_application"
           element={<UpdateApplication />}
         />
-
+        
+        <Route
+          path="/application/new_school"
+          element={<AddNewSchool />}
+        />
         
         <Route path="/visa" element={<Visa />} />
         <Route path="/visa/new_application" element={<NewVisaApplication />} />

@@ -29,7 +29,7 @@ const AllApplication: React.FC = () => {
   }, [fetchApplications, currentPage, itemsPerPage]);
 
   const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, page: number) => {
-    fetchApplications(page, itemsPerPage);
+    fetchApplications(currentPage, itemsPerPage);
   }, [fetchApplications, itemsPerPage])
 
   const filteredAndSortedApplications = useMemo(() => {

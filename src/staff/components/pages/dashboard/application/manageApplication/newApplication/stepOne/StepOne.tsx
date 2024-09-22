@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { button } from "../../../../../../../../shared/buttons/Button";
 import Flag from "react-world-flags";
 import { CgAsterisk } from "react-icons/cg";
 import ReactLoading from "react-loading";
@@ -8,9 +7,10 @@ import {
   useCountries,
   useStates,
 } from "../../../../../../../../shared/redux/hooks/shared/getUserProfile";
+import { formatDateApplication } from "../../../../../../../../shared/utils/dateFormat";
 import CustomDatePicker from "../../../../../../../../shared/utils/CustomeDatePicker";
 import { Dropdown } from "../../../../../../../../shared/dropDown/DropDown";
-import { formatDateApplication } from "../../../../../../../../shared/utils/dateFormat";
+import { button } from "../../../../../../../../shared/buttons/Button";
 
 interface Country {
   name: string;
@@ -29,6 +29,7 @@ const StepOne = ({ onNext }: any) => {
   const [internationalPassportNumber, setInternationalPassportNumber] =
     useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [email, setEmail] = useState("");
   const [selectedDate, setSelectedDate] = useState(null);
 
   const [loading, setLoading] = useState(false);
@@ -63,6 +64,7 @@ const StepOne = ({ onNext }: any) => {
         lastName,
         middleName,
         dateOfBirth: formatDateApplication(selectedDate),
+        email,
         address,
         phoneNumber,
         localGovtArea,
@@ -113,7 +115,7 @@ const StepOne = ({ onNext }: any) => {
         className="mt-[2em] w-[77%] dark:text-white"
         onSubmit={submitApplication}
       >
-        <div className="flex flex-row gap-[3em]">
+        <div className="grid grid-cols-2 gap-[2em]">
           <div className="w-full">
             <label htmlFor="firstName" className="flex-start flex font-medium">
               First Name
@@ -125,7 +127,7 @@ const StepOne = ({ onNext }: any) => {
               required
               disabled={loading}
               onChange={(e) => setFirstName(e.target.value)}
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
+              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
             />
           </div>
           <div className="w-full">
@@ -140,12 +142,10 @@ const StepOne = ({ onNext }: any) => {
               required
               disabled={loading}
               onChange={(e) => setLastName(e.target.value)}
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
+              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
             />
           </div>
-        </div>
 
-        <div className="mt-[1em] flex flex-row gap-[3em]">
           <div className="w-full">
             <label htmlFor="middleName" className="flex-start flex font-medium">
               Middle Name
@@ -156,30 +156,25 @@ const StepOne = ({ onNext }: any) => {
               name="middleName"
               disabled={loading}
               onChange={(e) => setMiddleName(e.target.value)}
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none dark:text-white"
+              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none dark:text-white"
             />
           </div>
           <div className="w-full">
-            <label
-              htmlFor="phoneNumber"
-              className="flex-start flex font-medium"
-            >
-              Phone Number
+            <label htmlFor="email" className="flex-start flex font-medium">
+              Email Address
               <CgAsterisk className="text-red-500" />
             </label>
             <input
-              id="phoneNumber"
-              name="phoneNumber"
+              id="email"
+              name="email"
               type="text"
               required
               disabled={loading}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
+              onChange={(e) => setEmail(e.target.value)}
+              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
             />
           </div>
-        </div>
 
-        <div className="mt-[1em] flex flex-row gap-[3em]">
           <div className="w-full">
             <label
               htmlFor="dateOfBirth"
@@ -205,12 +200,10 @@ const StepOne = ({ onNext }: any) => {
               required
               disabled={loading}
               onChange={(e) => setAddress(e.target.value)}
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
+              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
             />
           </div>
-        </div>
 
-        <div className="mt-[1em] flex flex-row gap-[3em]">
           <div className="w-full">
             <label
               htmlFor="localGovtArea"
@@ -225,7 +218,7 @@ const StepOne = ({ onNext }: any) => {
               required
               disabled={loading}
               onChange={(e) => setLocalGovtArea(e.target.value)}
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
+              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
             />
           </div>
           <Dropdown
@@ -237,30 +230,26 @@ const StepOne = ({ onNext }: any) => {
             searchVisible
             loading={statesLoading}
           />
-        </div>
 
-        <div className="mt-[1em] flex flex-row gap-[3em]">
-          <div className="w-full">
-            <Dropdown
-              label="Select Country"
-              items={countryDropdownItems}
-              selectedItem={
-                country
-                  ? {
-                      name: country.name,
-                      cca2: country.cca2,
-                      label: countryDropdownItems.find(
-                        (item) => item.name === country.name
-                      )?.label,
-                    }
-                  : null
-              }
-              onSelectItem={handleCountrySelect}
-              asterisk
-              searchVisible
-              loading={countriesLoading}
-            />
-          </div>
+          <Dropdown
+            label="Select Country"
+            items={countryDropdownItems}
+            selectedItem={
+              country
+                ? {
+                    name: country.name,
+                    cca2: country.cca2,
+                    label: countryDropdownItems.find(
+                      (item) => item.name === country.name
+                    )?.label,
+                  }
+                : null
+            }
+            onSelectItem={handleCountrySelect}
+            asterisk
+            searchVisible
+            loading={countriesLoading}
+          />
           <div className="w-full">
             <label
               htmlFor="passportNumber"
@@ -276,7 +265,25 @@ const StepOne = ({ onNext }: any) => {
               required
               disabled={loading}
               onChange={(e) => setInternationalPassportNumber(e.target.value)}
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
+              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
+            />
+          </div>
+          <div className="w-full">
+            <label
+              htmlFor="phoneNumber"
+              className="flex-start flex font-medium"
+            >
+              Phone Number
+              <CgAsterisk className="text-red-500" />
+            </label>
+            <input
+              id="phoneNumber"
+              name="phoneNumber"
+              type="text"
+              required
+              disabled={loading}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
             />
           </div>
         </div>

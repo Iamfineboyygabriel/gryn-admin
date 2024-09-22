@@ -1,12 +1,12 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import { useAllDraftItems } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
 import eyeImg from "../../../../../../../assets/svg/eyeImg.svg";
-import online from "../../../../../../../assets/svg/online.svg";
 import DOMPurify from "dompurify";
 import transaction from "../../../../../../../assets/svg/Transaction.svg";
 import CustomPagination from "../../../../../../../shared/utils/customPagination";
 import { formatDateTime } from "../../../../../../../shared/utils/dateFormat";
+import { useNavigate } from "react-router";
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -19,16 +19,16 @@ const SkeletonRow = () => (
 );
 
 const AllDrafts: React.FC = () => {
-  const { draftItems, fetchDraftItems, loading } = useAllDraftItems();
+  const { draftItems, fetchDraftItems, loading, currentPage } = useAllDraftItems();
   const [searchQuery, setSearchQuery] = useState("");
-  const [page, setPage] = useState(1);
+  const navigate = useNavigate()
   const itemsPerPage = 8;
 
-  const draftData = useMemo(() => draftItems?.data || [], [draftItems]);
+  const draftData = useMemo(() => draftItems || [], [draftItems]);
 
   useEffect(() => {
-    fetchDraftItems(page, itemsPerPage);
-  }, [fetchDraftItems, page, itemsPerPage]);
+    fetchDraftItems(currentPage, itemsPerPage);
+  }, [fetchDraftItems, currentPage, itemsPerPage]);
 
   const escapeRegExp = (string: string) => {
     return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -52,23 +52,25 @@ const AllDrafts: React.FC = () => {
   const filteredDrafts = useMemo(
     () =>
       draftData.filter((item: any) =>
-        item.productName.toLowerCase().includes(searchQuery.toLowerCase())
+        item.name?.toLowerCase().includes(searchQuery.toLowerCase())
       ),
     [draftData, searchQuery]
   );
 
   const visibleData = useMemo(() => {
-    return filteredDrafts.slice((page - 1) * itemsPerPage, page * itemsPerPage);
-  }, [filteredDrafts, page, itemsPerPage]);
+    return filteredDrafts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  }, [filteredDrafts, currentPage, itemsPerPage]);
   const isCurrentPageEmpty = filteredDrafts.length === 0;
 
-  const handlePageChange = (
-    event: React.ChangeEvent<unknown>,
-    value: number
-  ) => {
-    setPage(value);
+  const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, page: number) => {
+    fetchDraftItems(currentPage, itemsPerPage);
+  }, [fetchDraftItems, itemsPerPage])
+
+    const handleViewDraft = (draftId: string) => {
+    navigate(`/staff/dashboard/payments/use_draft_information/${draftId}`);
   };
 
+  
   return (
     <main className="font-outfit">
       <header className="flex justify-between">
@@ -78,7 +80,7 @@ const AllDrafts: React.FC = () => {
         <input
           type="text"
           className="flex-grow rounded-full bg-transparent py-2 pl-4 pr-2 text-sm focus:border-grey-primary focus:outline-none"
-          placeholder="Search by Product Name"
+          placeholder="Search"
           onChange={(e) => setSearchQuery(e.target.value)}
         />
         <FiSearch className="mr-3 text-lg text-gray-500" />
@@ -96,13 +98,14 @@ const AllDrafts: React.FC = () => {
             >
               <div className="flex flex-col gap-1">
                 <h1 className="font-semibold text-lg">
-                  {highlightText(draft.productName, searchQuery)}
+                  {highlightText(draft.name, searchQuery)}
                 </h1>
                 <small>{formatDateTime(draft.createdAt)}</small>
               </div>
               <div className="flex gap-[2em] items-center">
-                <img src={eyeImg} alt="View" />
-                <img src={online} alt="Online" />
+                <p onClick={() => handleViewDraft(draft.id)} className="cursor-pointer">
+               <img src={eyeImg} alt="View" />
+                </p>
               </div>
             </div>
           ))
@@ -116,13 +119,15 @@ const AllDrafts: React.FC = () => {
         )}
       </section>
 
-      {!loading && (
+      {!loading && draftItems?.length > 0 && (
         <div className="mt-6 flex justify-center">
-          {/* <CustomPagination
+            <div className="mt-6 flex justify-center">
+            <CustomPagination
             currentPage={currentPage}
             onPageChange={handlePageChange}
-            hasMore={applications.length === itemsPerPage}
-          /> */}
+            hasMore={draftItems.length === itemsPerPage}
+          />
+        </div>
         </div>
       )}
     </main>

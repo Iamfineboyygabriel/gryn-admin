@@ -6,7 +6,12 @@ import { CgAsterisk } from "react-icons/cg";
 import { findStudentByEmail } from "../redux/shared/slices/shareApplication.slices";
 import ReactLoading from 'react-loading';
 
-const FindStudentByEmail: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+interface FindStudentByEmailProps {
+  onClose: () => void;
+  redirect?: string; 
+}
+
+const FindStudentByEmail: React.FC<FindStudentByEmailProps> = ({ onClose, redirect }) => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -19,10 +24,13 @@ const FindStudentByEmail: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     try {
       const response = await dispatch(findStudentByEmail(email) as any);
       onClose();
-      navigate("/admin/dashboard/all_users/update_student", {
+
+      const redirectPath = redirect || "/admin/dashboard/all_users/update_student";
+      navigate(redirectPath, {
         state: { studentData: response.payload }
       });
-    } catch (err) {
+    } catch (error) {
+      console.log("Error",error)
       setError("Failed to find student. Please try again.");
     } finally {
       setLoading(false);

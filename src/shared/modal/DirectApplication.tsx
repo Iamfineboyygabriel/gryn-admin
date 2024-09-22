@@ -3,10 +3,19 @@ import { Link } from 'react-router-dom';
 import { useTopCountries, useTopUniversities } from '../redux/hooks/shared/getUserProfile';
 import { Dropdown, DropdownItem } from '../dropDown/DropDown';
 import { button } from "../../shared/buttons/Button";
+import { GoPlus } from "react-icons/go";
+import ApplicationLinks from './ApplicationLinks';
+import Modal from './Modal';
+import { findSchoolLinkByCountryAndUniversity } from '../redux/admin/services/application.services';
+import ReactLoading from 'react-loading';
+
 
 const DirectApplication = () => {
     const { userTopCountries, loading: countryLoading } = useTopCountries();
     const { userTopUniversities, loading: universityLoading } = useTopUniversities();
+    const [resultModal, setResultModal] = useState(false);
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const [university, setUniversity] = useState<string | null>(null);
     const [country, setCountry] = useState<string | null>(null);
@@ -28,12 +37,36 @@ const DirectApplication = () => {
     const handleSelectUniversity = (item: DropdownItem) => {
         if (item.name) {
             setUniversity(item.name);
+            setError('');
         }
     };
 
     const handleSelectCountry = (item: DropdownItem) => {
         if (item.name) {
             setCountry(item.name);
+            setError('');
+        }
+    };
+
+    const handleContinue = async () => {
+        if (!university || !country) return;
+
+        setLoading(true);
+        setError('');
+
+        try {
+            const endpoint = `/school?country=${encodeURIComponent(country)}&university=${encodeURIComponent(university)}`;
+            const response = await findSchoolLinkByCountryAndUniversity(endpoint);
+
+            if (response.status === 201) {
+                setResultModal(true);
+            } else {
+                setError(response.message || 'An error occurred. Please try again.');
+            }
+        } catch (error: any) {
+            setError(error.message || 'An error occurred. Please try again.');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -64,15 +97,35 @@ const DirectApplication = () => {
                         searchVisible
                     />
                 </article>
-                <Link to="">
-                    <button.PrimaryButton 
-                        className="m-auto mt-[2em] flex w-[60%] justify-center gap-2 rounded-full bg-linear-gradient py-[10px] text-center font-medium text-white"
-                        disabled={!university || !country}
-                    >
-                        Continue
-                    </button.PrimaryButton>
-                </Link>
+                {error && (
+                    <p className="text-red-500 text-sm mt-2 mb-[-8px]">{error}</p>
+                )}
+                <button.PrimaryButton 
+                    className="m-auto mt-[2em] flex w-[60%] justify-center gap-2 rounded-full bg-linear-gradient py-[10px] text-center font-medium text-white"
+                    // disabled={!university || !country || loading}
+                    onClick={handleContinue}
+                >
+                      {loading ? (
+                <ReactLoading
+                  color="#FFFFFF"
+                  width={25}
+                  height={25}
+                  type="spin"
+                />
+              ) : (
+                'Continue'
+              )}
+                </button.PrimaryButton>
             </div>
+            <Link to="/admin/dashboard/application/new_school">
+                <span className='text-pink-primary font-medium items-center mb-2 cursor-pointer mt-[8px] flex justify-center'>
+                <GoPlus className='text-pink-primary size-8 mr-2'/>Add New School</span>
+            </Link>
+            {resultModal && (
+                <Modal isOpen={resultModal} onClose={() => setResultModal(false)} data-aos="zoom-in">
+                    <ApplicationLinks onClose={() => setResultModal(false)} />
+                </Modal>
+            )}
         </main>
     );
 };

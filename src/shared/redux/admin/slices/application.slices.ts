@@ -65,14 +65,101 @@ export const getAllPendingApplication = createAsyncThunk(
   }
 );
 
+export const getActivity = createAsyncThunk(
+  "application/getActivity",
+  async (_, thunkAPI) => {
+    try {
+      const data = await applicationServices.getActivity();
+      return data;
+    } catch (error: any) {
+      const message = error.message;
+      error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
+export const addNewSchool= createAsyncThunk(
+  "apllication/addNewSchool",
+  async (body: any, thunkAPI) => {
+    try {
+      const data = await applicationServices.addNewSchool(body);
+      return data;
+    } catch (error: any) {
+      const message = error;
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+export const getAllStudentEmail = createAsyncThunk(
+  "application/getAllStudentEmail",
+  async (_, thunkAPI) => {
+    try {
+      const response = await applicationServices.getAllStudentEmail();
+      return {
+        studentsEmail: response.data,
+      };
+    } catch (error: any) {
+      const message = error.message || "An error occurred"; 
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+export const getAllAgentEmail = createAsyncThunk(
+  "application/getAllAgentEmail",
+  async (_, thunkAPI) => {
+    try {
+      const response = await applicationServices.getAllAgentsEmail();
+      return {
+        agentsEmail: response.data,
+      };
+    } catch (error: any) {
+      const message = error.message || "An error occurred"; 
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+export const getAllAdminsEmail = createAsyncThunk(
+  "application/getAllAdminsEmail",
+  async (_, thunkAPI) => {
+    try {
+      const response = await applicationServices.getAllAdminsEmail();
+      return {
+        adminsEmail: response.data,
+      };
+    } catch (error: any) {
+      const message = error.message || "An error occurred"; 
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+export const getAllSchoolsListCountries = createAsyncThunk(
+  "application/getAllSchoolsListCountries",
+  async (_, thunkAPI) => {
+    try {
+      const response = await applicationServices.getAllSchoolsListCountries();
+      return {
+        listSchools: response.data,
+      };
+    } catch (error: any) {
+      const message = error.message || "An error occurred"; 
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const getAllAdminForSuperAdmin = createAsyncThunk(
   "application/getAllAdminForSuperAdmin",
-  async ({ page, limit, search }: { page: number; limit: number; search: string }) => {
+  async ({ page, limit, search }: { page?: number; limit?: number; search: string }) => {
     const response = await applicationServices.getAllAdminForSuperAdmin(page, limit, search);
     return {
-      allAdmin: response.data, 
-      totalPages: response.data.totalPages,
-      currentPage: page
+      admins: response,
+      totalPages: response.totalPages || 0,
+      currentPage: page || 1
     };
   }
 );
@@ -96,9 +183,21 @@ interface ApplicationState {
   getStats: any;
   getStaffStats: any;
   allAdmin: {
-    admins: any; 
+    admins: any[] | null;
     totalPages: number;
     currentPage: number;
+  };
+  allStudentsEmail: {
+    studentsEmail: any[];
+  };
+  allAgentsEmail: {
+    agentsEmail: any[];
+  };
+  allAdminsEmail: {
+    adminsEmail: any[];
+  };
+  allSchoolList: {
+    listSchools: any[];
   };
   loading: boolean;
   error: string | null;
@@ -106,13 +205,15 @@ interface ApplicationState {
   allStudentsSearchTerm: string;
   allPendingApplicationSearchTerm: string;
   allAdminSearchTerm: string;
+  allActivity: any,
+  addSchool: null,
 }
 
 const initialState: ApplicationState = {
   getStats: null,
   getStaffStats: null,
   allAdmin: {
-    admins: null,
+    admins: [],
     totalPages: 0,
     currentPage: 1,
   },
@@ -126,6 +227,18 @@ const initialState: ApplicationState = {
     totalPages: 0,
     currentPage: 1,
   },
+  allStudentsEmail: {
+    studentsEmail: [],
+  },
+  allAgentsEmail: {
+    agentsEmail: [],
+  },
+  allAdminsEmail: {
+    adminsEmail: [],
+  },
+  allSchoolList: {
+    listSchools: [],
+  },
   allPendingApplication: {
     applications: [],
     totalPages: 0,
@@ -137,6 +250,8 @@ const initialState: ApplicationState = {
   allStudentsSearchTerm: '',
   allPendingApplicationSearchTerm: '',
   allAdminSearchTerm: '',
+  allActivity: null,
+  addSchool:null,
 };
 
 export const applicationSlice = createSlice({
@@ -210,6 +325,7 @@ export const applicationSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || "Failed to fetch all students";
       })
+
       .addCase(getAllPendingApplication.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -226,26 +342,119 @@ export const applicationSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || "Failed to fetch pending applications";
       })
+
+
       .addCase(getAllAdminForSuperAdmin.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(getAllAdminForSuperAdmin.fulfilled, (state, action: PayloadAction<{
-        allAdmin: any;
+        admins: any[];
         totalPages: number;
         currentPage: number;
       }>) => {
         state.loading = false;
-        state.allAdmin = {
-          admins: action.payload.allAdmin,
-          totalPages: action.payload.totalPages,
-          currentPage: action.payload.currentPage
-        };
+        state.allAdmin = action.payload;
       })
       .addCase(getAllAdminForSuperAdmin.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || "Failed to fetch admin data";
-      });
+        state.error = action.error.message || "Failed to fetch admins";
+      })
+
+      .addCase(
+        getActivity.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.allActivity = action.payload;
+        },
+      )
+      .addCase(getActivity.rejected, (state, action) => {
+        state.allActivity = null;
+        const errorMessage =
+          action.error.message || "Failed to fetch student activity";
+        setMessage(errorMessage);
+      })
+
+      .addCase(
+        addNewSchool.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.addSchool = action.payload;
+        }
+      )
+      .addCase(addNewSchool.rejected, (state, action) => {
+        state.addSchool = null;
+        const errorMessage =
+          action.error.message || "school failed to create";
+        setMessage(errorMessage);
+      })
+
+      .addCase(getAllStudentEmail.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllStudentEmail.fulfilled, (state, action: PayloadAction<{
+        studentsEmail: any[];
+      }>) => {
+        state.loading = false;
+        state.allStudentsEmail = {
+          studentsEmail: action.payload.studentsEmail,
+        };
+      })
+      .addCase(getAllStudentEmail.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch all students email";
+      })
+
+      .addCase(getAllAgentEmail.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllAgentEmail.fulfilled, (state, action: PayloadAction<{
+        agentsEmail: any[];
+      }>) => {
+        state.loading = false;
+        state.allAgentsEmail = {
+          agentsEmail: action.payload.agentsEmail,
+        };
+      })
+      .addCase(getAllAgentEmail.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch all agents email";
+      })
+
+      .addCase(getAllAdminsEmail.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllAdminsEmail.fulfilled, (state, action: PayloadAction<{
+        adminsEmail: any[];
+      }>) => {
+        state.loading = false;
+        state.allAdminsEmail = {
+          adminsEmail: action.payload.adminsEmail,
+        };
+      })
+      .addCase(getAllAdminsEmail.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch all admins email";
+      })
+
+
+      .addCase(getAllSchoolsListCountries.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllSchoolsListCountries.fulfilled, (state, action: PayloadAction<{
+        listSchools: any[];
+      }>) => {
+        state.loading = false;
+        state.allSchoolList = {
+         listSchools: action.payload.listSchools,
+        };
+      })
+      .addCase(getAllSchoolsListCountries.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch all school list";
+      })
   },
 });
 

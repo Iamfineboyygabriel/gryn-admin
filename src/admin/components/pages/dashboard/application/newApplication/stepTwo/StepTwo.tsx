@@ -91,7 +91,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
           toast.error(response.data.message);
         }
       } catch (error: any) {
-        toast.error(error.message);
+        toast.error(error);
       } finally {
         setLoading(false);
       }

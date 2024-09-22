@@ -3,8 +3,11 @@ import Counts from "../Counts";
 import TopPeople from "../topPeople/TopPeople";
 import ApexChart from "../../../../../../shared/chart/ApexChart";
 import Status from "../Status/Status"
+import { useAdminsEmails } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
 
 const Home = () => {
+  const {adminsEmail} = useAdminsEmails()
+  console.log("trigger",adminsEmail)
   return (
     <div>
       <h1 className="text-2xl font-bold">Overview</h1>

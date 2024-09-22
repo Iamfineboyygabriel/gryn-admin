@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router";
 import { AppDispatch } from "../../../../../../../shared/redux/store";
 import {
   createDraft,
@@ -20,6 +20,7 @@ import addItem from "../../../../../../../assets/svg/addItem.svg";
 import { toast } from "react-toastify";
 import ReactLoading from "react-loading";
 import { MdOutlineVisibility, MdOutlineVisibilityOff } from "react-icons/md";
+import { getDraftItemById } from "../../../../../../../shared/redux/shared/services/shareApplication.services";
 
 type Status = DropdownItem;
 
@@ -29,7 +30,7 @@ interface Item {
 
 interface ProductsItems {
   id: number;
-  productName: string;
+  name: string;
   quantity: number;
   rate: number;
   amount: number;
@@ -49,7 +50,8 @@ interface InvoiceItem {
 
 const GenerateInvoice = () => {
   const { draftItems } = useAllDraftItems();
-  const draftItemsData = draftItems?.data || [];
+  const { draftId } = useParams();
+  const draftItemsData = draftItems || [];
   const [status, setStatus] = useState<Status | null>(null);
   const [invoiceDate, setInvoiceDate] = useState<Date | null>(null);
   const [dueDate, setDueDate] = useState<Date | null>(null);
@@ -64,11 +66,43 @@ const GenerateInvoice = () => {
   const [selectedExistingItem, setSelectedExistingItem] =
     useState<ProductsItems | null>(null);
   const [visibleItems, setVisibleItems] = useState<number[]>([]);
-
+  const dispatch: AppDispatch = useAppDispatch();
+  
   const handleOpenModal = () => setModalOpen(true);
   const handleCloseModal = () => setModalOpen(false);
 
-  const state: Status[] = [{ name: "OPEN" }, { name: "CLOSE" }];
+   
+  useEffect(() => {
+    const fetchDraftItem = async () => {
+      if (draftId) {
+        try {
+          const response = await getDraftItemById(`/invoice/item/${draftId}`);
+          console.log("response",response)
+          const draftData = response.data; 
+          if (draftData) {
+            setStatus({ name: draftData?.status });
+            setInvoiceDate(new Date(draftData?.invoiceDate));
+            setDueDate(new Date(draftData?.dueDate));
+            setInvoiceNumber(draftData?.invoiceNumber);
+            setItems(draftData?.items);
+            setVisibleItems(draftData?.items?.map((_:any, index:any) => index));
+          }
+        } catch (error: any) {
+          if (error.message) {
+            toast.error(error.message);
+          } else {
+            toast.error("Error fetching draft item");
+          }
+          console.error("Error fetching draft item:", error);
+        }
+      }
+    };
+
+    fetchDraftItem();
+  }, [draftId]);
+
+
+  const state: Status[] = [{ name: "SUBMITTED" }];
 
   const choice: Item[] = [
     { name: "Add New Item" },
@@ -103,7 +137,7 @@ const GenerateInvoice = () => {
     setItems([
       ...items,
       {
-        productName: item.productName,
+        productName: item.name,
         quantity: item.quantity,
         rate: item.rate,
         amount: item.amount,
@@ -122,6 +156,12 @@ const GenerateInvoice = () => {
     }
   };
 
+  const calculateAmount = (quantity: number, rate: number, discount: number) => {
+    const subtotal = quantity * rate;
+    const discountAmount = (subtotal * discount) / 100;
+    return subtotal - discountAmount;
+  };
+
   const handleItemChange = (
     index: number,
     field: keyof InvoiceItem,
@@ -134,10 +174,13 @@ const GenerateInvoice = () => {
       newItems[index][field] = parseFloat(value) || 0;
     }
 
+    if (field === "quantity" || field === "rate" || field === "discount") {
+      const { quantity, rate, discount } = newItems[index];
+      newItems[index].amount = calculateAmount(quantity, rate, discount);
+    }
+
     setItems(newItems);
   };
-
-  const dispatch: AppDispatch = useAppDispatch();
 
   const formatDate = (date: Date | null) => {
     if (!date) return "";
@@ -163,10 +206,22 @@ const GenerateInvoice = () => {
       await dispatch(createInvoice(body)).unwrap();
       handleOpenModal();
     } catch (error: any) {
-      toast.error(error.message);
+      toast.error(error);
     } finally {
       setInvoiceLoading(false);
     }
+  };
+
+  const resetForm = () => {
+    setStatus(null);
+    setInvoiceDate(null);
+    setDueDate(null);
+    setInvoiceNumber("");
+    setItems([]);
+    setVisibleItems([]);
+    setChoiceItem(null);
+    setSelectedExistingItem(null);
+    setShowExistingItemDropdown(false);
   };
 
   const submitDraft = async (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -184,6 +239,7 @@ const GenerateInvoice = () => {
 
       await dispatch(createDraft(body)).unwrap();
       toast.success("drafts saved successfully");
+      resetForm();
     } catch (error: any) {
       toast.error(error.message);
     } finally {
@@ -211,11 +267,11 @@ const GenerateInvoice = () => {
       <div className="mt-[1em] h-auto w-full overflow-auto rounded-lg bg-white px-[2em] py-3 pb-[10em] dark:bg-gray-800">
         <header>
           <div className="flex items-center justify-between">
-            <div>
+          <div>
               <h1 className="font-medium dark:text-gray-700">
                 Payment /
                 <span className="ml-1 font-medium text-primary-700 dark:text-white">
-                  Generate Invoice
+                  {draftId ? "Edit Draft" : "Generate Invoice"}
                 </span>
               </h1>
             </div>
@@ -225,7 +281,7 @@ const GenerateInvoice = () => {
           </div>
         </header>
 
-        <h1 className="font-semibold text-2xl">Generate Invoice</h1>
+        <h1 className="font-semibold text-2xl">{draftId ? "Edit Draft" : "Generate Invoice"}</h1>
 
         <section>
           <div className="flex justify-between mt-[1.5em]">
@@ -300,13 +356,13 @@ const GenerateInvoice = () => {
                   label="Select"
                   labelClassName="text-grey-primary"
                   items={draftItemsData.map((item: ProductsItems) => ({
-                    name: item.productName,
+                    name: item.name,
                   }))}
                   selectedItem={selectedExistingItem}
                   onSelectItem={(item) =>
                     handleExistingItemSelect(
                       draftItemsData.find(
-                        (i: ProductsItems) => i.productName === item.name
+                        (i: ProductsItems) => i.name === item.name
                       )!
                     )
                   }
@@ -343,98 +399,97 @@ const GenerateInvoice = () => {
                   </div>
 
                   {visibleItems.includes(index) && (
-                    <>
-                      <div className="flex mt-[1em] gap-[1em]">
-                        <div className="flex-1">
-                          <label
-                            htmlFor={`quantity-${index}`}
-                            className="flex-start flex font-medium mb-2"
-                          >
-                            Quantity
-                          </label>
-                          <input
-                            id={`quantity-${index}`}
-                            name={`quantity-${index}`}
-                            required
-                            type="number"
-                            value={item.quantity}
-                            onChange={(e) =>
-                              handleItemChange(
-                                index,
-                                "quantity",
-                                e.target.value
-                              )
-                            }
-                            className="border-border w-[200px] focus:border-border mt-1 rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
-                          />
-                        </div>
-                        <div className="flex-1">
-                          <label
-                            htmlFor={`rate-${index}`}
-                            className="flex-start flex font-medium mb-2"
-                          >
-                            Rate
-                          </label>
-                          <input
-                            id={`rate-${index}`}
-                            name={`rate-${index}`}
-                            required
-                            type="number"
-                            value={item.rate}
-                            onChange={(e) =>
-                              handleItemChange(index, "rate", e.target.value)
-                            }
-                            className="border-border w-[200px] focus:border-border mt-1 rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
-                          />
-                        </div>
-                      </div>
-                      <div className="flex mt-[1em] gap-[1em]">
-                        <div className="flex-1">
-                          <label
-                            htmlFor={`amount-${index}`}
-                            className="flex-start flex font-medium mb-2"
-                          >
-                            Amount
-                          </label>
-                          <input
-                            id={`amount-${index}`}
-                            name={`amount-${index}`}
-                            required
-                            type="number"
-                            value={item.amount}
-                            readOnly
-                            className="border-border w-[200px] focus:border-border mt-1 rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
-                          />
-                        </div>
-                        <div className="flex-1">
-                          <label
-                            htmlFor={`discount-${index}`}
-                            className="flex-start flex font-medium mb-2"
-                          >
-                            Discount
-                          </label>
-                          <input
-                            id={`discount-${index}`}
-                            name={`discount-${index}`}
-                            required
-                            type="number"
-                            value={item.discount}
-                            onChange={(e) =>
-                              handleItemChange(
-                                index,
-                                "discount",
-                                e.target.value
-                              )
-                            }
-                            className="border-border w-[200px] focus:border-border mt-1 rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
-                          />
-                        </div>
-                      </div>
-                    </>
-                  )}
+            <>
+              <div className="flex mt-[1em] gap-[1em]">
+                <div className="flex-1">
+                  <label
+                    htmlFor={`quantity-${index}`}
+                    className="flex-start flex font-medium mb-2"
+                  >
+                    Quantity
+                  </label>
+                  <input
+                    id={`quantity-${index}`}
+                    name={`quantity-${index}`}
+                    required
+                    type="number"
+                    value={item.quantity}
+                    onChange={(e) =>
+                      handleItemChange(
+                        index,
+                        "quantity",
+                        e.target.value
+                      )
+                    }
+                    className="border-border w-[200px] focus:border-border mt-1 rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
+                  />
                 </div>
-              ))}
-
+                <div className="flex-1">
+                  <label
+                    htmlFor={`rate-${index}`}
+                    className="flex-start flex font-medium mb-2"
+                  >
+                    Rate
+                  </label>
+                  <input
+                    id={`rate-${index}`}
+                    name={`rate-${index}`}
+                    required
+                    type="number"
+                    value={item.rate}
+                    onChange={(e) =>
+                      handleItemChange(index, "rate", e.target.value)
+                    }
+                    className="border-border w-[200px] focus:border-border mt-1 rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
+                  />
+                </div>
+              </div>
+              <div className="flex mt-[1em] gap-[1em]">
+                <div className="flex-1">
+                  <label
+                    htmlFor={`amount-${index}`}
+                    className="flex-start flex font-medium mb-2"
+                  >
+                    Amount
+                  </label>
+                  <input
+                    id={`amount-${index}`}
+                    name={`amount-${index}`}
+                    required
+                    type="number"
+                    value={item.amount.toFixed(2)}
+                    readOnly
+                    className="border-border w-[200px] focus:border-border mt-1 rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
+                  />
+                </div>
+                <div className="flex-1">
+                  <label
+                    htmlFor={`discount-${index}`}
+                    className="flex-start flex font-medium mb-2"
+                  >
+                    Tax/Discount (%)
+                  </label>
+                  <input
+                    id={`discount-${index}`}
+                    name={`discount-${index}`}
+                    required
+                    type="number"
+                    value={item.discount}
+                    onChange={(e) =>
+                      handleItemChange(
+                        index,
+                        "discount",
+                        e.target.value
+                      )
+                    }
+                    className="border-border w-[200px] focus:border-border mt-1 rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
+                  />
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      ))}
               <button onClick={addNewItem} className="flex gap-2 items-center">
                 <img src={addItem} alt="" />
                 <span className="font-medium text-primary-700">
@@ -442,21 +497,21 @@ const GenerateInvoice = () => {
                 </span>
               </button>
               <div className="flex mt-[1em] justify-between items-center">
-                <button.PrimaryButton
-                  className="rounded-full w-[45%] bg-purple-pink py-[12px] text-center text-lg font-semibold text-primary-700"
-                  onClick={submitDraft}
-                >
-                  {draftLoading ? (
-                    <ReactLoading
-                      color="#FFFFFF"
-                      width={25}
-                      height={25}
-                      type="spin"
-                    />
-                  ) : (
-                    "Save as Draft"
-                  )}
-                </button.PrimaryButton>
+              <button.PrimaryButton
+            className="rounded-full w-[45%] bg-purple-pink py-[12px] text-center text-lg font-semibold text-primary-700"
+            onClick={submitDraft}
+          >
+            {draftLoading ? (
+              <ReactLoading
+                color="#FFFFFF"
+                width={25}
+                height={25}
+                type="spin"
+              />
+            ) : (
+              draftId ? "Update Draft" : "Save as Draft"
+            )}
+          </button.PrimaryButton>
 
                 <button.PrimaryButton
                   className=" bg-linear-gradient rounded-full w-[45%]  py-[12px] text-center text-lg font-semibold text-white"
@@ -487,7 +542,7 @@ const GenerateInvoice = () => {
           onClose={handleCloseModal}
           data-aos="zoom-in"
         >
-          <InvoiceSent to="/staff/dashboard/home" onClose={handleCloseModal} />
+          <InvoiceSent to="/staff/dashboard/payments" onClose={handleCloseModal} />
         </Modal>
       )}
     </main>

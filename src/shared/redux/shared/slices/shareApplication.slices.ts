@@ -260,12 +260,16 @@ export const createDraft = createAsyncThunk(
   }
 );
 
-export const getAllDraftItems = createAsyncThunk(
+export const  getAllDraftItems = createAsyncThunk(
   "shareApplication/getAllDraftItems",
   async ({ page, limit }: { page: number; limit: number }, thunkAPI) => {
     try {
       const data = await shareApplicationServices.getAllDraftItems(page, limit);
-      return data;
+      return {
+        data,
+        totalPages: data.totalPages,
+        currentPage: page
+      } 
     } catch (error: any) {
       const message = error.message;
       error.toString();
@@ -279,7 +283,11 @@ export const getAllInvoice = createAsyncThunk(
   async ({ page, limit }: { page: number; limit: number }, thunkAPI) => {
     try {
       const data = await shareApplicationServices.getAllInvoice(page, limit);
-      return data;
+      return {
+        data,
+        totalPages: data.totalPages,
+        currentPage: page
+      } 
     } catch (error: any) {
       const message = error.message;
       error.toString();
@@ -357,10 +365,14 @@ export const createAgent = createAsyncThunk(
 
 export const findStudentByEmail = createAsyncThunk(
   "shareApplication/findStudentByEmail",
-   async (email:string) => {
-     const response = await shareApplicationServices.findStudentByEmail(email);
-     return response.data
-   }
+   async (email:string, thunkAPI) => {
+    try{
+    const response = await shareApplicationServices.findStudentByEmail(email);
+      return response.data
+    }catch (error: any) {
+    return thunkAPI.rejectWithValue(error);
+  }
+ }
  );
 
  export const findAgentByEmail = createAsyncThunk(
@@ -481,12 +493,16 @@ interface ApplicationState {
       draftsItems: any[];
     } | null;
     totalItems: number;
+    totalPages: number;
+    currentPage: number;
   };
   allInvoice: {
     data: {
       invoice: any[];
     } | null;
     totalItems: number;
+    totalPages: number;
+    currentPage: number;
   };
   allAgents: {
     agents: any[]; 
@@ -542,10 +558,14 @@ const initialState: ApplicationState = {
   allDraftItems: {
     data: null,
     totalItems: 0,
+    totalPages: 0,
+    currentPage: 1,
   },
   allInvoice: {
     data: null,
     totalItems: 0,
+    totalPages: 0,
+    currentPage: 1,
   },
    allAgents: {
     agents: [],
@@ -734,33 +754,38 @@ export const shareApplicationSlice = createSlice({
         setMessage(errorMessage);
       })
 
-      .addCase(
-        getAllDraftItems.fulfilled,
-        (state, action: PayloadAction<any>) => {
-          state.allDraftItems = action.payload;
-          state.allInvoice.totalItems = action.payload.totalItems;
-          state.loading = false;
-        }
-      )
+      .addCase(getAllDraftItems.fulfilled, (state, action: PayloadAction<any>) => {
+        state.allDraftItems = action.payload;
+        state.allDraftItems.totalItems = action.payload.totalItems;
+        state.allDraftItems.currentPage = action.payload.currentPage; 
+        state.loading = false;
+      })
       .addCase(getAllDraftItems.rejected, (state, action) => {
         state.allDraftItems = {
           data: null,
           totalItems: 0,
+          totalPages: 0,
+          currentPage: 1, 
         };
       })
 
+      
       .addCase(getAllInvoice.fulfilled, (state, action: PayloadAction<any>) => {
         state.allInvoice = action.payload;
         state.allInvoice.totalItems = action.payload.totalItems;
+        state.allInvoice.currentPage = action.payload.currentPage; 
         state.loading = false;
       })
       .addCase(getAllInvoice.rejected, (state, action) => {
         state.allInvoice = {
           data: null,
           totalItems: 0,
+          totalPages: 0,
+          currentPage: 1, 
         };
       })
 
+     
       .addCase(
         createApplication.fulfilled,
         (state, action: PayloadAction<any>) => {

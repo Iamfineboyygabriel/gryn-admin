@@ -19,7 +19,7 @@ const SkeletonRow = () => (
 );
 
 const AllInvoices = () => {
-  const { useInvoice, fetchInvoice, loading } = useAllInvoice();
+  const { useInvoice, fetchInvoice, loading , currentPage} = useAllInvoice();
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
   const itemsPerPage = 10;
@@ -65,9 +65,6 @@ const AllInvoices = () => {
     [invoiceData, searchQuery]
   );
 
-  const totalPages = Math.ceil(filteredInvoice.length / itemsPerPage);
-  const isCurrentPageEmpty = page > totalPages;
-
   const visibleData = filteredInvoice;
 
   const handlePageChange = (event: any, value: any) => {
@@ -87,7 +84,7 @@ const AllInvoices = () => {
                 <input
                   type="text"
                   className="flex-grow rounded-full bg-transparent py-2 pl-5 pr-2 text-sm focus:border-grey-primary focus:outline-none"
-                  placeholder="Search by Product Name or Invoice Number"
+                  placeholder="Search by Product Name"
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
                 <FiSearch className="mr-3 text-lg text-gray-500" />
@@ -154,7 +151,7 @@ const AllInvoices = () => {
                       )}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
-                      {highlightText(formatData(item.productName), searchQuery)}
+                      {highlightText(formatData(item.name), searchQuery)}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
                       {formatData(item.quantity)}
@@ -175,9 +172,20 @@ const AllInvoices = () => {
                         new Date(invoice.dueDate).toLocaleDateString()
                       )}
                     </td>
-                    <td className="whitespace-nowrap px-6 py-4">
-                      {formatData(invoice.status)}
-                    </td>
+                    <td className="flex items-center whitespace-nowrap px-6 py-4">
+                  <button
+                  className={`mr-2 rounded-full px-3 py-2 text-white ${
+                  invoice?.status === "SUBMITTED" ? "bg-yellow-500" : "bg-green-500"
+                  }`}
+                >
+                {formatData(invoice.status)   === "SUBMITTED" ? "In Progress" : "Completed"}
+               </button>
+                  <p
+                    className="cursor-pointer font-semibold text-primary-700"
+                  >
+                    View details
+                  </p>
+                </td>
                   </tr>
                 ))
               )
@@ -197,13 +205,17 @@ const AllInvoices = () => {
         </table>
       </div>
 
-      <div className="mt-6 flex justify-center">
-      {/* <CustomPagination
+      {!loading && useInvoice?.length > 0 && (
+        <div className="mt-6 flex justify-center">
+            <div className="mt-6 flex justify-center">
+            <CustomPagination
             currentPage={currentPage}
             onPageChange={handlePageChange}
-            hasMore={applications.length === itemsPerPage}
-          /> */}
-      </div>
+            hasMore={useInvoice.length === itemsPerPage}
+          />
+        </div>
+        </div>
+      )}
     </main>
   );
 };

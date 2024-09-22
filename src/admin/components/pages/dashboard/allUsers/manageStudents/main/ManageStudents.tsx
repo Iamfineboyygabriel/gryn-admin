@@ -32,7 +32,6 @@ const SkeletonRow: React.FC = () => (
 
 const AllStudents: React.FC = () => {
   const { useAllStudent, totalPages, currentPage, loading, fetchApplications, searchTerm, updateSearchTerm } = useAllStudents();
-  console.log("uas",useAllStudents)
   const [isModalOpen, setModalOpen] = useState(false);
   const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm || '');
 

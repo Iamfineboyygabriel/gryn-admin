@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useBudgetFetch } from "../../../../../../shared/redux/hooks/shared/getUserProfile";
 import { MdKeyboardArrowRight } from "react-icons/md";
+import transaction from "../../../../../../assets/svg/Transaction.svg";
 
 const Transaction = () => {
   const { budgets } = useBudgetFetch();
@@ -12,7 +13,7 @@ const Transaction = () => {
       case "PENDING":
         return "bg-yellow-500";
       default:
-        return;
+        return "";
     }
   };
 
@@ -33,9 +34,10 @@ const Transaction = () => {
             <div className="flex items-center justify-between">
               <h1 className="text-lg font-bold text-grey-primary">Budgets</h1>
               <Link to="/admin/dashboard/reports/budgets">
-              <p className="font-medium flex items-center text-primary-700">See All
-              <MdKeyboardArrowRight />
-              </p>
+                <p className="font-medium flex items-center text-primary-700">
+                  See All
+                  <MdKeyboardArrowRight />
+                </p>
               </Link>
             </div>
           </header>
@@ -50,26 +52,39 @@ const Transaction = () => {
               </tr>
             </thead>
             <tbody>
-              {budgets?.data?.map((budget: any, index: number) => (
-                <tr className="border-b border-gray-200" key={budget?.id}>
-                  <td className="px-3 py-2 text-sm">{index + 1}</td>
-                  <td className="px-3 py-2 text-sm">
-                    {budget?.BudgetItem?.length > 0
-                      ? `NGN ${budget?.BudgetItem[0]?.amount}` 
-                      : '-'}
-                  </td>
-                  <td className="px-3 py-2 text-sm">{budget?.location || '-'}</td>
-                  <td className="px-3 py-2">
-                    <span
-                      className={`rounded-full px-3 py-1 text-white text-sm ${getStatusColor(
-                        budget?.status
-                      )}`}
-                    >
-                      {budget?.status || '-'}
-                    </span>
+              {budgets?.data?.length > 0 ? (
+                budgets?.data.map((budget: any, index: number) => (
+                  <tr className="border-b border-gray-200" key={budget?.id}>
+                    <td className="px-3 py-2 text-sm">{index + 1}</td>
+                    <td className="px-3 py-2 text-sm">
+                      {budget?.BudgetItem?.length > 0
+                        ? `NGN ${budget?.BudgetItem[0]?.amount}`
+                        : '-'}
+                    </td>
+                    <td className="px-3 py-2 text-sm">{budget?.location || '-'}</td>
+                    <td className="px-3 py-2">
+                      <span
+                        className={`rounded-full px-3 py-1 text-white text-sm ${getStatusColor(
+                          budget?.status
+                        )}`}
+                      >
+                        {budget?.status || '-'}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={4} className="text-center">
+                    <div className="mt-[2em] flex flex-col items-center justify-center">
+                      <img src={transaction} alt="No Data Available" />
+                      <p className="mt-2 text-sm text-gray-500 dark:text-white">
+                        No Data Available.
+                      </p>
+                    </div>
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

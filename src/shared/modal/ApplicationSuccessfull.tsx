@@ -2,7 +2,12 @@ import { Link } from "react-router-dom";
 import { button } from "../../shared/buttons/Button";
 import Success from "../../assets/svg/ResetPassword.svg";
 
-const InvoiceSent = ({ onClose }: any) => {
+interface ApplicationSuccessfulProps {
+  onClose?: () => void;
+  to?: string; 
+}
+
+const ApplicationSuccessfull = ({ onClose, to = "/admin/dashboard/application" }: ApplicationSuccessfulProps) => {
   return (
     <main className="px-[5em] font-outfit">
       <div className="m-auto w-[24em] py-[2em] text-center">
@@ -12,10 +17,10 @@ const InvoiceSent = ({ onClose }: any) => {
         </header>
         <article>
           <div className="mt-[1.5em] text-sm font-light text-center tracking-wide text-grey dark:text-white">
-            <p>you have Created an Application successfully</p>
+            <p>You have created an application successfully</p>
           </div>
         </article>
-        <Link to="/admin/dashboard/application">
+        <Link to={to}>
           <button.PrimaryButton className="m-auto mt-[2em] flex w-[60%] justify-center gap-2 rounded-full bg-linear-gradient py-[10px] text-center font-medium text-white">
             Proceed to Dashboard
           </button.PrimaryButton>
@@ -25,4 +30,4 @@ const InvoiceSent = ({ onClose }: any) => {
   );
 };
 
-export default InvoiceSent;
+export default ApplicationSuccessfull;

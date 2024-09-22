@@ -54,9 +54,9 @@ const StaffLanding = () => {
         } else {
           toast.error("Invalid credentials");
         }
-      } catch (error) {
-        if (error instanceof Error) {
-          toast.error(error.message);
+      } catch (error:any) {
+        if (error) {
+          toast.error(error);
         } else {
           toast.error("Network error: please check your internet connection");
         }

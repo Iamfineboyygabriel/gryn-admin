@@ -1,19 +1,72 @@
-import { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas";
 import PersonalDetails from "../personalDeatils/PersonalDetails";
 import Degree from "../degree/Degree";
 import UploadedDocument from "../upload/UploadedDocuments";
 import { button } from "../../../../../../../../shared/buttons/Button";
 import upload from "../../../../../../../../assets/svg/Upload.svg";
 
-const ViewApplication = () => {
+const ViewApplication: React.FC = () => {
   const [activeLink, setActiveLink] = useState("personalDetails");
   const { applicationId } = useParams();
-
   const navigate = useNavigate();
+  const personalDetailsRef = useRef<HTMLDivElement>(null);
+  const degreeRef = useRef<HTMLDivElement>(null);
+  const uploadedDocumentRef = useRef<HTMLDivElement>(null);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState<boolean>(false);
 
-  const handleBackClick = async () => {
+  const handleBackClick = () => {
     navigate(-1);
+  };
+
+  const downloadPDF = async () => {
+    setIsGeneratingPDF(true);
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const components = [
+      { ref: personalDetailsRef, title: "Personal Details" },
+      { ref: degreeRef, title: "Degree" },
+      { ref: uploadedDocumentRef, title: "Uploaded Documents" },
+    ];
+
+    try {
+      for (let i = 0; i < components.length; i++) {
+        const { ref, title } = components[i];
+        const content = ref.current;
+        if (content) {
+          content.style.display = 'block';
+
+          const canvas = await html2canvas(content, {
+            scale: 2,
+            logging: false, 
+            useCORS: true 
+          });
+
+          const imgData = canvas.toDataURL('image/jpeg', 0.95); 
+
+          if (i !== 0) {
+            pdf.addPage();
+          }
+
+          pdf.setFontSize(16);
+          pdf.text(title, 20, 20);
+
+          const imgWidth = 170; 
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          pdf.addImage(imgData, 'JPEG', 20, 30, imgWidth, imgHeight);
+
+          content.style.display = i === 0 ? 'block' : 'none';
+        }
+      }
+
+      pdf.save('application.pdf');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('An error occurred while generating the PDF. Please try again.');
+    } finally {
+      setIsGeneratingPDF(false);
+    }
   };
 
   return (
@@ -39,51 +92,43 @@ const ViewApplication = () => {
           <nav className="mt-[1.5em]">
             <div className="flex items-center border-b-[3px] border-gray-100 text-base font-semibold">
               <div className="flex gap-[2em]">
-                <div
-                  className={`cursor-pointer py-3 ${
-                    activeLink === "personalDetails"
-                      ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700"
-                      : "text-lg font-light text-gray-500"
-                  }`}
-                  onClick={() => setActiveLink("personalDetails")}
-                >
-                  Personal Details
-                </div>
-                <div
-                  className={`cursor-pointer py-3 ${
-                    activeLink === "degree"
-                      ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700"
-                      : "text-lg font-light text-gray-500"
-                  }`}
-                  onClick={() => setActiveLink("degree")}
-                >
-                  Degree
-                </div>
-                <div
-                  className={`cursor-pointer py-3 ${
-                    activeLink === "uploadedDocument"
-                      ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700"
-                      : "text-lg font-light text-gray-500"
-                  }`}
-                  onClick={() => setActiveLink("uploadedDocument")}
-                >
-                  Uploaded Documents
-                </div>
+                {["personalDetails", "degree", "uploadedDocument"].map((link) => (
+                  <div
+                    key={link}
+                    className={`cursor-pointer py-3 ${
+                      activeLink === link
+                        ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700"
+                        : "text-lg font-medium text-gray-500"
+                    }`}
+                    onClick={() => setActiveLink(link)}
+                  >
+                    {link === "personalDetails"
+                      ? "Personal Details"
+                      : link === "degree"
+                      ? "Degree"
+                      : "Uploaded Documents"}
+                  </div>
+                ))}
               </div>
-              <button.PrimaryButton className=" ml-[3em] items-center gap-2 flex rounded-full bg-primary-200 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300 hover:bg-primary-700 hover:text-white">
+              <button.PrimaryButton 
+                onClick={downloadPDF}
+                className="ml-[3em] items-center gap-2 flex rounded-full bg-primary-200 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300"
+              >
                 <img src={upload} alt="upload" />
-                Download Application
+                {isGeneratingPDF ? 'Generating PDF...' : 'Download Application'}
               </button.PrimaryButton>
             </div>
           </nav>
           <section className="mt-8">
-            {activeLink === "personalDetails" && (
+            <div ref={personalDetailsRef} style={{display: activeLink === "personalDetails" ? "block" : "none"}}>
               <PersonalDetails applicationId={applicationId} />
-            )}
-            {activeLink === "degree" && (
+            </div>
+            <div ref={degreeRef} style={{display: activeLink === "degree" ? "block" : "none"}}>
               <Degree applicationId={applicationId} />
-            )}
-            {activeLink === "uploadedDocument" && <UploadedDocument />}
+            </div>
+            <div ref={uploadedDocumentRef} style={{display: activeLink === "uploadedDocument" ? "block" : "none"}}>
+              <UploadedDocument applicationId={applicationId}/>
+            </div>
           </section>
         </div>
       </div>

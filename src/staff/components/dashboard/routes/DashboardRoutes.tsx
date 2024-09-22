@@ -13,10 +13,15 @@ import ViewStudentApplication from "../../../../staff/components/pages/dashboard
 import AgentDetails from "../../pages/dashboard/application/manageAgents/agentDetails/main/AgentDetails";
 import ViewAgentStudentApplication from "../../pages/dashboard/application/manageAgents/agentDetails/manageStudents/view/main/ViewApplication";
 import NewApplication from "../../pages/dashboard/application/manageApplication/newApplication/main/NewApplication";
-import UpdateApplication from "../../pages/dashboard/application/manageApplication/update/newApplication/main/NewApplication";
 import Visa from "../../pages/dashboard/visa/main/Visa";
 import NewVisaApplication from "../../pages/dashboard/visa/newVisa/main/NewApplication";
 import GenerateInvoice from "../../pages/dashboard/payment/allInvoices/generateInvoice/GenerateInvoice";
+import UpdateApplication from "../../pages/dashboard/application/manageApplication/updateApplication/main/UpdateApplication"
+import ViewVisaApplication from "../../pages/dashboard/visa/viewVisaApplication/main/ViewApplication"
+import UpdateStudent from "../../pages/dashboard/application/manageStudents/allStudents/updateStudent/UpdateStudent";
+import NewBudgets from "../../pages/dashboard/payment/newBudgets/NewBudgets";
+import UseDraftInformation from "../../pages/dashboard/payment/drafts/useDraftInformation/UseDraftInformation";
+
 const DashboardRoutes = () => {
   return (
     <DashboardLayout>
@@ -31,10 +36,18 @@ const DashboardRoutes = () => {
           path="/application/manage_application/view_application/:applicationId"
           element={<ViewApplication />}
         />
+         <Route
+          path="/application/manage_application/update_application"
+          element={<UpdateApplication />}
+        />
 
         <Route
           path="/application/manage_student/new_student"
           element={<NewStudent />}
+        />
+         <Route
+          path="/application/manage_student/update_student"
+          element={<UpdateStudent />}
         />
         <Route
           path="/application/manage_student/application_details/:studentId"
@@ -63,8 +76,11 @@ const DashboardRoutes = () => {
         />
         <Route path="/visa" element={<Visa />} />
         <Route path="/visa/new_application" element={<NewVisaApplication />} />
+        <Route path="/visa/view_visa_application/:applicationId" element={<ViewVisaApplication />} />
 
         <Route path="/payments/generate_invoice" element={<GenerateInvoice />} />
+        <Route path="/payments/use_draft_information/:draftId" element={<UseDraftInformation />} />
+        <Route path="/payments/new_budget" element={<NewBudgets />} />
       </Routes>
     </DashboardLayout>
   );

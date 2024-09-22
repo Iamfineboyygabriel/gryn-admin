@@ -1,21 +1,18 @@
 import React, { useCallback, useEffect, useState } from "react";
 import plus from "../../../../../../assets/svg/plus.svg";
-import { Link } from "react-router-dom";
-import approved from "../../../../../../assets/svg/Approved.svg";
-import rejected from "../../../../../../assets/svg/Rejected.svg";
-import pending from "../../../../../../assets/svg/Pending.svg";
+import { Link, useNavigate } from "react-router-dom";
 import transaction from "../../../../../../assets/svg/Transaction.svg";
 import DocumentPreviewModal from "../../../../../../shared/modal/DocumentPreviewModal";
 import { useAllVisa } from "../../../../../../shared/redux/hooks/shared/getUserProfile";
 import { FiSearch } from "react-icons/fi";
 import CustomPagination from "../../../../../../shared/utils/customPagination";
-
-const escapeRegExp = (str: any) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+import eye from "../../../../../../assets/svg/eyeImg.svg";
 
 interface VisaData {
   lastName: string;
   firstName: string;
   schoolName: string;
+  id:string;
   agent: {
     profile: {
       lastName: string;
@@ -24,6 +21,10 @@ interface VisaData {
   };
   destination: string;
   issuedDate: string;
+  document: Array<{
+    documentType: string;
+    publicURL: string;
+  }>;
 }
 
 const SkeletonRow: React.FC = () => (
@@ -37,24 +38,55 @@ const SkeletonRow: React.FC = () => (
 );
 
 const Visa: React.FC = () => {
-  const { visa, loading,  totalPages, currentPage, fetchApplications, searchTerm, updateSearchTerm  } = useAllVisa();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { visa, loading, totalPages, currentPage, fetchApplications, searchTerm, updateSearchTerm } = useAllVisa();
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewFileType, setPreviewFileType] = useState<string>("");
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [page, setPage] = useState<number>(1);
   const itemsPerPage = 10;
+  const navigate = useNavigate()
 
-  const isCurrentPageEmpty = page > totalPages;
+  const getFileTypeFromUrl = (url: string) => {
+    const segments = url.split("/");
+    const fileExtension = segments.pop()?.split(".").pop();
+    switch (fileExtension) {
+      case "pdf":
+        return "application/pdf";
+      case "jpg":
+      case "jpeg":
+        return "image/jpeg";
+      case "png":
+        return "image/png";
+      case "gif":
+        return "image/gif";
+      default:
+        return "application/octet-stream";
+    }
+  };
+
+  const handlePreview = (url: string) => {
+    const fileType = getFileTypeFromUrl(url);
+    if (fileType === "application/pdf") {
+      url += "&viewer=pdf";
+    }
+    setPreviewUrl(url);
+    setPreviewFileType(fileType);
+    setIsPreviewOpen(true);
+  };
+   
+  const closePreviewModal = () => {
+    setIsPreviewOpen(false);
+    setPreviewUrl(null);
+    setPreviewFileType("");
+  };
 
   useEffect(() => {
     fetchApplications(currentPage, itemsPerPage);
   }, [fetchApplications, currentPage, itemsPerPage]);
 
-  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
-    fetchApplications(value, itemsPerPage);
-  };
-
+  const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, page: number) => {
+    fetchApplications(page, itemsPerPage);
+  }, [fetchApplications, itemsPerPage])
 
   const highlightText = (text: string, query: string) => {
     if (!query) return text;
@@ -71,17 +103,32 @@ const Visa: React.FC = () => {
     );
   };
 
-  const getStatusClassAndIcon = (status: string) => {
-    switch (status) {
-      case "APPROVED":
-        return { class: "text-green-500", icon: approved };
-      case "REJECTED":
-        return { class: "text-red-500", icon: rejected };
-      case "PENDING":
-        return { class: "text-yellow-500", icon: pending };
-      default:
-        return { class: "text-gray-500", icon: undefined };
+  const handleViewDetails = useCallback(
+    (applicationId: string) => {
+      navigate(`/staff/dashboard/visa/view_visa_application/${applicationId}`);
+    },
+    [navigate]
+  );
+
+
+  const renderPaymentStatus = (documents: Array<{documentType: string; publicURL: string}>, type: string) => {
+    const document = documents.find(doc => doc.documentType === type);
+    if (document) {
+      return (
+        <div className="flex items-center">
+          <span className="mr-3">Paid</span>
+           <button
+            type="button"
+            className="flex items-center gap-1 rounded-full bg-purple-white px-3 py-[4px] text-center font-medium text-[#660066] dark:bg-gray-600 dark:text-white"
+            onClick={() => handlePreview(document.publicURL)}
+          >
+            <img src={eye} alt="eye" />
+            <span className="mr-6">View</span>
+          </button>
+        </div>
+      );
     }
+    return "-";
   };
 
   return (
@@ -100,7 +147,7 @@ const Visa: React.FC = () => {
               <FiSearch className="absolute right-[1em] top-1/2 -translate-y-1/2 transform text-lg text-gray-500" />
             </div>
           </div>
-          <Link to="/staff/dashboard/visa/new_application">
+          <Link to="/admin/dashboard/visa/new_application">
             <button className="mt-4 flex gap-2 rounded-full bg-linear-gradient px-6 py-2 font-medium text-white transition-colors duration-300 hover:bg-primary-700 hover:text-white">
               <img src={plus} alt="cross" />
               New Application
@@ -110,7 +157,7 @@ const Visa: React.FC = () => {
 
         <section className="overflow-auto py-6">
           <table className="w-full border-collapse mt-4">
-            <thead className="border-b border-gray-200 text-gray-500 dark:text-white">
+            <thead className="border-b border-gray-200 text-gray-500">
               <tr>
                 <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
                 <th className="px-6 py-3 whitespace-nowrap text-left text-sm font-normal">
@@ -151,7 +198,7 @@ const Visa: React.FC = () => {
                 visa.map((item: VisaData, index: number) => (
                   <tr
                     key={index}
-                    className="text-sm font-medium text-grey-primary dark:text-white"
+                    className="text-sm font-medium text-grey-primary font-outfit"
                   >
                     <td className="whitespace-nowrap px-6 py-4">{index + 1}</td>
                     <td className="whitespace-nowrap gap-2 px-6 py-4">
@@ -172,20 +219,26 @@ const Visa: React.FC = () => {
                     <td className="whitespace-nowrap px-6 py-4">
                       {highlightText(item.destination || "-", searchQuery)}
                     </td>
-                    <td className="whitespace-nowrap px-6 py-4">-</td>
-                    <td className="whitespace-nowrap px-6 py-4">-</td>
-                    <td className="whitespace-nowrap px-6 py-4">-</td>
+                    <td className="whitespace-nowrap px-6 py-4">
+                      {renderPaymentStatus(item.document, "SERVICE_CHARGE")}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4">
+                      {renderPaymentStatus(item.document, "IHS")}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4">
+                      {renderPaymentStatus(item.document, "VISA_FEE")}
+                    </td>
                     <td className="whitespace-nowrap px-6 py-4">
                       {highlightText(item.issuedDate || "-", searchQuery)}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
-                      <Link
-                        to="#"
-                        className="font-medium text-primary-700 underline dark:text-gray-500"
-                      >
-                        View Details
-                      </Link>
-                    </td>
+                    <button
+                      onClick={() => handleViewDetails(item.id)}
+                      className="font-medium text-primary-700 dark:text-gray-500"
+                    >
+                      View Details
+                    </button>
+                  </td>
                   </tr>
                 ))
               ) : (
@@ -210,18 +263,18 @@ const Visa: React.FC = () => {
         </section>
         {!loading && visa && visa.length > 0 && (
           <div className="mt-6 flex justify-center">
-          {/* <CustomPagination
+            <CustomPagination
             currentPage={currentPage}
             onPageChange={handlePageChange}
-            hasMore={applications.length === itemsPerPage}
-          /> */}
+            hasMore={visa.length === itemsPerPage}
+          />
           </div>
         )}
       </div>
 
       <DocumentPreviewModal
-        isOpen={isModalOpen}
-        onRequestClose={() => setIsModalOpen(false)}
+        isOpen={isPreviewOpen}
+        onRequestClose={closePreviewModal}
         previewUrl={previewUrl}
         previewFileType={previewFileType}
       />

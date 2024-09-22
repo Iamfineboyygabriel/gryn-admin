@@ -23,6 +23,7 @@ const NewApplication = () => {
     middleName: string;
     dateOfBirth: string;
     address: string;
+    email: string;
     state: string;
     localGovtArea: string;
     country: CustomCountry | null;
@@ -35,6 +36,7 @@ const NewApplication = () => {
     middleName: "",
     dateOfBirth: "",
     address: "",
+    email: "",
     state: "",
     localGovtArea: "",
     country: null,
@@ -107,6 +109,7 @@ const NewApplication = () => {
                 middleName: string;
                 dateOfBirth: string;
                 address: string;
+                email: string;
                 state: string;
                 localGovtArea: string;
                 country: CustomCountry | null;
@@ -120,6 +123,7 @@ const NewApplication = () => {
                   middleName: data.middleName,
                   dateOfBirth: data.dateOfBirth,
                   address: data.address,
+                  email: data.email,
                   state: data.state,
                   localGovtArea: data.localGovtArea,
                   country: data.country,

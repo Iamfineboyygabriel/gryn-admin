@@ -397,9 +397,11 @@ export const useAllAgent = () => {
 export const useAllDraftItems = () => {
   const dispatch: AppDispatch = useDispatch();
   const draftItems = useSelector(
-    (state: any) => state.shareApplication.allDraftItems
+    (state: any) => state.shareApplication?.allDraftItems?.data?.data
   );
-  const loading = useSelector((state: any) => state.shareApplication.loading);
+  const totalPages = useSelector((state: any) => state?.shareApplication?.allDraftItems?.totalPages || 0);
+  const currentPage = useSelector((state: any) => state?.shareApplication?.allDraftItems?.currentPage || 1);
+  const loading = useSelector((state: any) => state?.shareApplication?.loading || false);
 
   const fetchDraftItems = useCallback(
     (page: number, limit: number) => {
@@ -408,15 +410,18 @@ export const useAllDraftItems = () => {
     [dispatch]
   );
 
-  return { draftItems, fetchDraftItems, loading };
+  return { draftItems, loading, fetchDraftItems ,totalPages,currentPage };
 };
+
 
 export const useAllInvoice = () => {
   const dispatch: AppDispatch = useDispatch();
   const useInvoice = useSelector(
-    (state: any) => state.shareApplication?.allInvoice.data
+    (state: any) => state.shareApplication?.allInvoice?.data?.data
   );
-  const loading = useSelector((state: any) => state.shareApplication.loading);
+  const totalPages = useSelector((state: any) => state?.shareApplication?.allInvoice?.totalPages || 0);
+  const currentPage = useSelector((state: any) => state?.shareApplication?.allInvoice?.currentPage || 1);
+  const loading = useSelector((state: any) => state?.shareApplication?.loading || false);
 
   const fetchInvoice = useCallback(
     (page: number, limit: number) => {
@@ -425,7 +430,7 @@ export const useAllInvoice = () => {
     [dispatch]
   );
 
-  return { useInvoice, loading, fetchInvoice };
+  return { useInvoice, loading, fetchInvoice,totalPages,currentPage };
 };
 
 export const useSingleStudentApplication = (studentId?: string) => {
@@ -531,39 +536,39 @@ export const useVisaApplicationDetails = (applicationId: string) => {
   return { applicationDetails, loading, error };
 };
 
-export const useAllAdminForSuperAdmin = () => {
-  const dispatch: AppDispatch = useDispatch();
-  const adminData = useSelector((state: any) => state.application);
-  console.log("admindd",adminData)
-  const loading = useSelector((state: any) => state.application.loading);
-  const error = useSelector((state: any) => state.application.error);
-  const searchTerm = useSelector((state: any) => state.application.searchTerm);
+// export const useAllAdminForSuperAdmin = () => {
+//   const dispatch: AppDispatch = useDispatch();
+//   const adminData = useSelector((state: any) => state.application?.allAdmins);
+//   console.log("admindd",adminData)
+//   const loading = useSelector((state: any) => state.application.loading);
+//   const error = useSelector((state: any) => state.application.error);
+//   const searchTerm = useSelector((state: any) => state.application.searchTerm);
 
-  const fetchAdmin = useCallback(
-    (page: number, limit: number) => {
-      dispatch(getAllAdminForSuperAdmin({ page, limit, search: searchTerm }));
-    },
-    [dispatch, searchTerm]
-  );
+//   const fetchAdmin = useCallback(
+//     (page: number, limit: number) => {
+//       dispatch(getAllAdminForSuperAdmin({ page, limit, search: searchTerm }));
+//     },
+//     [dispatch, searchTerm]
+//   );
 
-  const updateSearchTerm = useCallback(
-    (term: string) => {
-      // dispatch(setSearchTerm(term));
-    },
-    [dispatch]
-  );
+//   const updateSearchTerm = useCallback(
+//     (term: string) => {
+//       // dispatch(setSearchTerm(term));
+//     },
+//     [dispatch]
+//   );
 
-  return {
-    admin: adminData,
-    // totalPages: adminData.totalPages,
-    // currentPage: adminData.currentPage,
-    loading,
-    error,
-    searchTerm,
-    fetchAdmin,
-    updateSearchTerm
-  };
-};
+//   return {
+//     admin: adminData,
+//     // totalPages: adminData.totalPages,
+//     // currentPage: adminData.currentPage,
+//     loading,
+//     error,
+//     searchTerm,
+//     fetchAdmin,
+//     updateSearchTerm
+//   };
+// };
 
 export const useBudgetFetch = (initialPage = 1, initialLimit = 10) => {
   const dispatch: AppDispatch = useDispatch();

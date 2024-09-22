@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../store";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   getAllApplication,
   getAllPendingApplication,
@@ -9,8 +9,22 @@ import {
   setAllApplicationSearchTerm,
   setAllStudentsSearchTerm,
   setAllPendingApplicationSearchTerm,
+  getActivity,
+  getAllStudentEmail,
+  getAllAgentEmail,
+  getAllAdminsEmail,
+  getAllSchoolsListCountries,
+  getAllAdminForSuperAdmin,
+  setAllAdminSearchTerm,
 } from "../../admin/slices/application.slices";
 import { setMessage } from "../../message.slices";
+import { createSelector } from "@reduxjs/toolkit";
+import { RootState } from "../../rootReducer";
+
+export const selectUserActivity = createSelector(
+  [(state: any) => state.application?.allActivity],
+  (allActivity) => allActivity,
+);
 
 export const useStats = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -115,4 +129,135 @@ export const useAllPendingApplication = () => {
   );
 
   return { applications, totalPages, currentPage, loading, error, searchTerm, fetchApplications, updateSearchTerm };
+};
+
+export const useUserActivity = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+
+  const userActivity = useSelector(selectUserActivity);
+  const userToken = sessionStorage.getItem("userData");
+
+  const fetchActivity = useCallback(() => {
+    if (userToken) {
+      setLoading(true);
+      dispatch(getActivity())
+        .unwrap()
+        .then(() => setLoading(false))
+        .catch((error: any) => {
+          const errorMessage = error.message;
+          dispatch(setMessage(errorMessage));
+          setLoading(false);
+        });
+    } else {
+      dispatch(setMessage("Token not found"));
+    }
+  }, [userToken, dispatch]);
+
+  useEffect(() => {
+    fetchActivity();
+  }, [fetchActivity]);
+
+  return useMemo(
+    () => ({ userActivity, loading }),
+    [userActivity, loading],
+  );
+};
+
+export const useStudentEmails = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { studentsEmail, loading, error } = useSelector((state: RootState) => ({
+    studentsEmail: state?.application?.allStudentsEmail?.studentsEmail,
+    loading: state.application.loading,
+    error: state.application.error,
+  }));
+  // console.log("student email",studentsEmail)
+
+  useEffect(() => {
+    dispatch(getAllStudentEmail());
+  }, [dispatch]);
+
+  return { studentsEmail, loading, error };
+};
+
+export const useAgentsEmails = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { agentsEmail, loading, error } = useSelector((state: RootState) => ({
+    agentsEmail: state?.application?.allAgentsEmail?.agentsEmail,
+    loading: state.application.loading,
+    error: state.application.error,
+  }));
+  // console.log("agents email",agentsEmail)
+
+  useEffect(() => {
+    dispatch(getAllAgentEmail());
+  }, [dispatch]);
+
+  return { agentsEmail, loading, error };
+};
+
+export const useAdminsEmails = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { adminsEmail, loading, error } = useSelector((state: RootState) => ({
+    adminsEmail: state?.application?.allAdminsEmail?.adminsEmail,
+    loading: state.application.loading,
+    error: state.application.error,
+  }));
+  // console.log("admins email",adminsEmail)
+
+  useEffect(() => {
+    dispatch(getAllAdminsEmail());
+  }, [dispatch]);
+
+  return { adminsEmail, loading, error };
+};
+
+export const useSchoolListCountries = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { listSchools, loading, error } = useSelector((state: RootState) => ({
+    listSchools: state?.application?.allSchoolList?.listSchools,
+    loading: state.application.loading,
+    error: state.application.error,
+  }));
+  // console.log("list schools",listSchool)
+
+  useEffect(() => {
+    dispatch(getAllSchoolsListCountries());
+  }, [dispatch]);
+
+  return { listSchools, loading, error };
+};
+
+
+export const useAllAdminForSuperAdmin = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const allAdmin:any = useSelector((state: RootState) => state.application.allAdmin);
+  const loading = useSelector((state: RootState) => state.application.loading);
+  const error = useSelector((state: RootState) => state.application.error);
+  const searchTerm = useSelector((state: RootState) => state.application.allAdminSearchTerm);
+
+  const fetchAdmins = useCallback(
+    (page?: number, limit?: number) => {
+      return dispatch(getAllAdminForSuperAdmin({ page, limit, search: searchTerm }));
+    },
+    [dispatch, searchTerm]
+  );
+
+  const updateSearchTerm = useCallback(
+    (term: string) => {
+      dispatch(setAllAdminSearchTerm(term));
+    },
+    [dispatch]
+  );
+
+  return { 
+    admins: allAdmin.admins, 
+    totalPages: allAdmin.totalPages, 
+    currentPage: allAdmin.currentPage, 
+    loading, 
+    error, 
+    searchTerm, 
+    fetchAdmins, 
+    updateSearchTerm 
+  };
 };

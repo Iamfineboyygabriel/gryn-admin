@@ -857,6 +857,24 @@ const getAllBudget = async ({
   }
 };
 
+export const getDraftItemById = async (endpoint: any) => {
+  const url = `${process.env.REACT_APP_API_URL}${endpoint}`;
+  try {
+    const response = await axios.get(url, {
+      headers: authHeader(),
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error: any) {
+    if (!error.response) {
+      throw new Error("Network Error: Please check your internet connection.");
+    }
+    throw error.response.data;
+  }
+};
 
 const shareApplicationServices = {
   getUserProfile,
@@ -898,6 +916,7 @@ const shareApplicationServices = {
   getAllBudget,
   createBudget,
   findStaffByEmail,
+  getDraftItemById,
 };
 
 export default shareApplicationServices;
