@@ -248,7 +248,7 @@ export const useAllAdminForSuperAdmin = () => {
   );
 
   return { 
-    admins: allAdmin.admins, 
+    admins: allAdmin?.admins, 
     totalPages: allAdmin.totalPages, 
     currentPage: allAdmin.currentPage, 
     loading, 
