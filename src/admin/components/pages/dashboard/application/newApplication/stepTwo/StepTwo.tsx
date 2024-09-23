@@ -44,6 +44,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
   applicationId,
   stepOneData,
 }) => {
+  console.log("step one dta",stepOneData)
   const [university, setUniversity] = useState("");
   const [course, setCourse] = useState("");
   const [degreeType, setDegreeType] = useState<DropdownItem | null>(null);
@@ -81,7 +82,6 @@ const StepTwo: React.FC<StepTwoProps> = ({
           university,
           degreeType: finalDegreeType,
         };
-  
         const response = await dispatch(createApplication(body)).unwrap();
   
         if (response.status === 201) {

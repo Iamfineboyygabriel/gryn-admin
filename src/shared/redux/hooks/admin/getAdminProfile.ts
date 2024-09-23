@@ -171,8 +171,6 @@ export const useStudentEmails = () => {
     loading: state.application.loading,
     error: state.application.error,
   }));
-  // console.log("student email",studentsEmail)
-
   useEffect(() => {
     dispatch(getAllStudentEmail());
   }, [dispatch]);
@@ -219,7 +217,6 @@ export const useSchoolListCountries = () => {
     loading: state.application.loading,
     error: state.application.error,
   }));
-  // console.log("list schools",listSchool)
 
   useEffect(() => {
     dispatch(getAllSchoolsListCountries());

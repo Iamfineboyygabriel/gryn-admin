@@ -90,7 +90,7 @@ const ApprovePendingAgent = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="font-medium dark:text-gray-700">
-                Manage Application /
+                Pending Agent /
                 <span className="ml-1 font-medium text-primary-700 dark:text-white">
                   View Application
                 </span>

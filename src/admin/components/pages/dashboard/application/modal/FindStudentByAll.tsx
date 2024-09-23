@@ -1,9 +1,9 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../../../../../shared/redux/store';
 import { findStudentByEmailUniversityDegree } from '../../../../../../shared/redux/shared/slices/shareApplication.slices';
-import { useStudentEmails } from '../../../../../../shared/redux/hooks/admin/getAdminProfile';
+import { useSchoolListCountries, useStudentEmails } from '../../../../../../shared/redux/hooks/admin/getAdminProfile';
 import { useTopUniversities } from '../../../../../../shared/redux/hooks/shared/getUserProfile';
 import { Dropdown, DropdownItem } from '../../../../../../shared/dropDown/DropDown';
 import { button } from "../../../../../../shared/buttons/Button";
@@ -50,7 +50,6 @@ const FindStudentByAll: React.FC<FindStudentByAllProps> = ({ redirectTo = "/admi
   const dispatch: AppDispatch = useDispatch();
   const { userTopUniversities, loading: universityLoading } = useTopUniversities();
   const { studentsEmail, loading: emailLoading } = useStudentEmails();
-
   const [university, setUniversity] = useState<string | null>(null);
   const [degree, setDegree] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
@@ -59,17 +58,19 @@ const FindStudentByAll: React.FC<FindStudentByAllProps> = ({ redirectTo = "/admi
 
   const userToken = sessionStorage.getItem("userData");
 
-  const type: Degree[] = [{ name: "BACHELOR" }, { name: "MASTERS" }, { name: "DOCTORATE" }];
+  const type: Degree[] = [{ name: "BACHELOR" }, {name:"INTERNATIONAL_YEAR_ONE"}, {name:"PRE_MASTERS"}, {name:"UNDERGRADUATE"}, { name: "MASTERS" }, { name: "DOCTORATE" }];
 
   const dropdownItems: DropdownItem[] = useMemo(() => 
     (userTopUniversities?.data || []).map((uni: University) => ({ name: uni.name })),
     [userTopUniversities]
   );
 
-  const emailItems: DropdownItem[] = useMemo(() => 
-    (studentsEmail || []).map((email: string) => ({ name: email })),
-    [studentsEmail]
-  );
+  const emailItems: DropdownItem[] = useMemo(() => {
+    if (Array.isArray(studentsEmail)) {
+      return studentsEmail.map((item: any) => ({ name: item.email }));
+    }
+    return [];
+  }, [studentsEmail]);
 
   const handleSelectItem = useCallback((item: DropdownItem) => {
     setUniversity(item?.name || null);
@@ -169,7 +170,9 @@ const FindStudentByAll: React.FC<FindStudentByAllProps> = ({ redirectTo = "/admi
             disabled={loading || !isFormComplete}
           >
             {loading ? (
+              <div className='mr-auto'>
               <ReactLoading color="#FFFFFF" width={25} height={25} type="spin" />
+              </div>
             ) : (
               "Continue"
             )}

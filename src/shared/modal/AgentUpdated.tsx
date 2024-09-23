@@ -17,7 +17,7 @@ const AgentUpdated = ({ onClose }: any) => {
             <p className="font-semibold text-black">tundegabriel999@gmail.com</p>
           </div>
         </article>
-        <Link to="/admin/dashboard/home">
+        <Link to="/admin/dashboard/all_users">
           <button.PrimaryButton className="m-auto mt-[2em] flex w-[60%] justify-center gap-2 rounded-full bg-linear-gradient py-[10px] text-center font-medium text-white">
             Proceed to Dashboard
           </button.PrimaryButton>

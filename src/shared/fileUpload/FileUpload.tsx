@@ -4,7 +4,6 @@ import upload from "../../assets/svg/Upload.svg";
 import fileImg from "../../assets/svg/File.svg";
 import { CgAsterisk } from "react-icons/cg";
 import { AiOutlineEye } from "react-icons/ai";
-import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Modal from "react-modal";
 

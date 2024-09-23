@@ -102,6 +102,13 @@ export const adminSideBarLinks = [
     pathsToCheck: ["/admin/dashboard/all_users"],
   },
   {
+    img: inActiveUser,
+    imgActive: activeUser,
+    text: "All Staffs",
+    to: "/admin/dashboard/all_staffs",
+    pathsToCheck: ["/admin/dashboard/all_staffs"],
+  },
+  {
     img: payment,
     imgActive: paymentActive,
     text: "Payments",

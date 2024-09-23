@@ -1,14 +1,12 @@
 import React, { useEffect, useMemo, useCallback, useState } from "react";
 import { FiSearch } from "react-icons/fi";
-import transaction from "../../../../../../../assets/svg/Transaction.svg";
-import { Link, useNavigate } from "react-router-dom";
-import CustomPagination from "../../../../../../../shared/utils/customPagination";
+import transaction from "../../../../../../assets/svg/Transaction.svg";
+import { Link } from "react-router-dom";
 import DOMPurify from "dompurify";
-import { useAllAgent } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
-import { button } from "../../../../../../../shared/buttons/Button";
-import plus from "../../../../../../../assets/svg/plus.svg";
-import Modal from "../../../../../../../shared/modal/Modal";
-import FindAgentByEmail from "../../../../../../../shared/modal/FindAgentByEmail";
+import { button } from "../../../../../../shared/buttons/Button";
+import plus from "../../../../../../assets/svg/plus.svg";
+import CustomPagination from "../../../../../../shared/utils/customPagination";
+import { useAllAdminForSuperAdmin } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -20,61 +18,43 @@ const SkeletonRow = () => (
   </tr>
 );
 
-const ManageAgents = () => {
+const AllStaff = () => {
   const { 
-    agents, 
+    admins, 
     totalPages, 
     currentPage, 
     loading, 
-    fetchAgents, 
+    error, 
     searchTerm, 
+    fetchAdmins, 
     updateSearchTerm 
-  } = useAllAgent();
+  } = useAllAdminForSuperAdmin();
 
   const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
   const itemsPerPage = 10;
-
-  
   const [isModalOpen, setModalOpen] = useState(false);
-  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
-  const navigate = useNavigate()
 
   const handleOpenModal = () => setModalOpen(true);
   const handleCloseModal = () => setModalOpen(false);
-
-  const handleAssignModal = () => setIsAssignModalOpen(true);
-  const handleAssignModalClose = () => setIsAssignModalOpen(false);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       if (localSearchTerm !== searchTerm) {
         updateSearchTerm(localSearchTerm);
-        fetchAgents(1, itemsPerPage);
+        fetchAdmins(1, itemsPerPage);
       }
     }, 300);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [localSearchTerm, updateSearchTerm, fetchAgents, itemsPerPage, searchTerm]);
+  }, [localSearchTerm, updateSearchTerm, fetchAdmins, itemsPerPage, searchTerm]);
 
-  const handleViewDetails = useCallback(
-    (studentId: string, firstName: string, lastName: string) => {
-      navigate(
-        `/admin/dashboard/all_users/agent_details/${studentId}`,
-        {
-          state: { firstName, lastName },
-        }
-      );
-    },
-    [navigate]
-  );
-  
   useEffect(() => {
-    fetchAgents(currentPage, itemsPerPage);
-  }, [fetchAgents, currentPage, itemsPerPage]);
+    fetchAdmins(currentPage, itemsPerPage);
+  }, [fetchAdmins, currentPage, itemsPerPage]);
 
   const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, value: number) => {
-    fetchAgents(value, itemsPerPage);
-  }, [fetchAgents, itemsPerPage]);
+    fetchAdmins(value, itemsPerPage);
+  }, [fetchAdmins, itemsPerPage]);
 
   const escapeRegExp = useCallback((string: string) => {
     return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -96,15 +76,17 @@ const ManageAgents = () => {
 
   const formatData = useCallback((data: any) => (data ? data : "-"), []);
 
-  const filteredAgents = useMemo(() => {
-    return (agents || []).filter((agent: any) => {
-      const fullName = `${agent.profile.firstName} ${agent.profile.lastName}`.toLowerCase();
+  const filteredAdmins = useMemo(() => {
+    if (!admins.data) return [];
+    return admins?.data?.filter((admin: any) => {
+      const fullName = `${admin?.profile?.firstName} ${admin?.profile?.lastName}`?.toLowerCase();
       return (
-        fullName.includes(localSearchTerm.toLowerCase()) ||
-        agent.email.toLowerCase().includes(localSearchTerm.toLowerCase())
+        fullName?.includes(localSearchTerm?.toLowerCase()) ||
+        admin?.email.toLowerCase()?.includes(localSearchTerm?.toLowerCase()) ||
+        admin?.role?.toLowerCase()?.includes(localSearchTerm?.toLowerCase())
       );
     });
-  }, [agents, localSearchTerm]);
+  }, [admins, localSearchTerm]);
 
   const renderTableBody = useCallback(() => {
     if (loading) {
@@ -113,10 +95,10 @@ const ManageAgents = () => {
       ));
     }
 
-    if (filteredAgents.length > 0) {
-      return filteredAgents.map((agent: any, index: number) => (
+    if (filteredAdmins?.length > 0) {
+      return filteredAdmins?.map((admin: any, index: number) => (
         <tr
-          key={agent.id}
+          key={admin?.id}
           className="text-[14px] border-b border-gray-200 leading-[20px] text-grey-primary font-medium"
         >
           <td className="py-[16px] px-[24px]">
@@ -126,37 +108,26 @@ const ManageAgents = () => {
             className="py-[16px] gap-1 px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
               highlightText(
-                `${agent.profile.firstName} ${agent.profile.lastName}`,
+                `${admin?.profile?.firstName} ${admin?.profile?.lastName}`,
                 localSearchTerm
               )
             )}
           />
           <td className="py-[16px] px-[24px]">
-            {formatData(agent.phoneNumber)}
+            {formatData(admin?.profile?.phoneNumber)}
+          </td>
+          <td className="py-[16px] px-[24px]">
+            {formatData(admin?.role)}
           </td>
           <td 
             className="py-[16px] px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
               highlightText(
-                formatData(agent.email),
+                formatData(admin?.email),
                 localSearchTerm
               )
             )}
           />
-          <td className="py-[16px] px-[24px]">
-            <p
-               onClick={() =>
-                handleViewDetails(
-                  agent?.id,
-                  agent?.profile.firstName,
-                  agent?.profile.lastName
-                )
-              }
-              className="text-primary-700 cursor-pointer font-[600] flex items-center gap-[8px]"
-            >
-              View Application
-            </p>
-          </td>
         </tr>
       ));
     } else {
@@ -164,35 +135,34 @@ const ManageAgents = () => {
         <tr>
           <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
             <div className="mt-[2em] flex flex-col items-center justify-center">
-              <img src={transaction} alt="No applications" />
+              <img src={transaction} alt="No admins" />
               <p className="mt-2 text-sm text-gray-500 dark:text-white">
-                No Agents.
+                No Admins found.
               </p>
             </div>
           </td>
         </tr>
       );
     }
-  }, [loading, filteredAgents, currentPage, itemsPerPage, sanitizeHTML, highlightText, localSearchTerm, formatData]);
+  }, [loading, filteredAdmins, currentPage, itemsPerPage, sanitizeHTML, highlightText, localSearchTerm, formatData]);
 
   return (
-    <main>
+    <main className="font-outfit">
+      <h1 className="text-2xl font-bold">Staff Management</h1>
+      <div className="mt-[1em] h-auto w-full overflow-auto rounded-lg bg-white px-[2em] py-3 pb-[10em]">
+
       <div className="relative">
-      <header className="flex items-center justify-between">
-          <h1 className="font-medium text-xl">All Agents</h1>
+        <header className="flex items-center justify-between">
+          <h1 className="font-medium text-xl">All Staff</h1>
           <div className="flex gap-2">
-            <button.PrimaryButton onClick={handleAssignModal} className="mt-[1em] flex gap-2 rounded-full bg-[#9747FF] px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
-              <img src={plus} alt="plus" />
-              Assign Agent
-            </button.PrimaryButton>
             <button.PrimaryButton onClick={handleOpenModal} className="mt-[1em] flex gap-2 rounded-full bg-primary-200 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
               <img src={plus} alt="plus" />
-              Update Agent
+              Update Staff
             </button.PrimaryButton>
-            <Link to="/admin/dashboard/all_users/create_agent">
+            <Link to="/admin/dashboard/all_users/create_admin">
               <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-primary-700 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
                 <img src={plus} alt="plus" />
-                New Agent
+                New Staff
               </button.PrimaryButton>
             </Link>
           </div>
@@ -208,41 +178,33 @@ const ManageAgents = () => {
           <FiSearch className="mr-3 text-lg text-gray-500" />
         </div>
 
-        <table className="w-full mt-4  border-collapse">
+        <table className="w-full mt-4 border-collapse">
           <thead className="text-gray-500 border-b border-gray-200">
             <tr>
               <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
               <th className="px-6 py-3 text-left text-sm font-normal">Full Name</th>
               <th className="px-6 py-3 text-left text-sm font-normal">Phone Number</th>
+              <th className="px-6 py-3 text-left text-sm font-normal">Role</th>
               <th className="px-6 py-3 text-left text-sm font-normal">Email Address</th>
-              <th className="px-6 py-3 text-left text-sm font-normal">Action</th>
             </tr>
           </thead>
           <tbody>{renderTableBody()}</tbody>
         </table>
       </div>
 
-      {!loading && agents.length > 0 && (
+      {!loading && admins && admins?.data && admins?.data?.length > 0 && (
         <div className="mt-6 flex justify-center">
           <CustomPagination
             currentPage={currentPage}
             onPageChange={handlePageChange}
-            hasMore={agents.length === itemsPerPage}
+            hasMore={admins.data.length === itemsPerPage}
           />
         </div>
       )}
-        {isModalOpen && (
-        <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
-          <FindAgentByEmail  onClose={handleCloseModal} />
-        </Modal>
-      )}
-        {isAssignModalOpen && (
-        <Modal isOpen={isAssignModalOpen} onClose={handleAssignModalClose} data-aos="zoom-in">
-          <FindAgentByEmail redirect="/admin/dashboard/all_users/assign_agent"  onClose={handleAssignModalClose} />
-        </Modal>
-      )}
+      </div>
     </main>
   );
 };
 
-export default ManageAgents;
+export default AllStaff
+

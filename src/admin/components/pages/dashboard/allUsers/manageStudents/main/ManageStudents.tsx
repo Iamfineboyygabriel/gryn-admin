@@ -189,10 +189,6 @@ const AllStudents: React.FC = () => {
         <header className="flex items-center justify-between">
           <h1 className="font-medium text-xl">All Students</h1>
           <div className="flex gap-2">
-            <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-[#9747FF] px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
-              <img src={plus} alt="plus" />
-              Assign Student
-            </button.PrimaryButton>
             <button.PrimaryButton onClick={handleOpenModal} className="mt-[1em] flex gap-2 rounded-full bg-primary-200 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
               <img src={plus} alt="plus" />
               Update Student

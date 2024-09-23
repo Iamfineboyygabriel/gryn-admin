@@ -119,6 +119,8 @@ import SeeAllApplication from "../../pages/dashboard/Reports/seeAll/SeeAllApplic
 import SeeAllPendingApplication from "../../pages/dashboard/Reports/seeAll/SeeAllPendingApplication";
 import SeeAllAgents from "../../pages/dashboard/Reports/seeAll/SeeAllAgents";
 import AddNewSchool from "../../pages/dashboard/application/addNewSchool/AddNewSchool";
+import AgentDetails from "../../pages/dashboard/allUsers/manageAgents/agentDetails/main/AgentDetails";
+import AllStaff from "../../pages/dashboard/allStaffs/main/AllStaff";
 
 const ProtectedSuperAdminRoute = ({ children }:any) => {
   const { userDetails } = useCurrentUser();
@@ -176,6 +178,10 @@ const DashboardRoutes = () => {
           element={<AllStudentApplications />}
         />
           <Route
+          path="/all_users/agent_details/:agentId"
+          element={<AgentDetails />}
+        />
+          <Route
           path="/all_users/view_application/:applicationId"
           element={<ViewApplication />}
         />
@@ -197,6 +203,10 @@ const DashboardRoutes = () => {
           path="/all_users/approve_agents/:email"
           element={<ApprovePendingAgent />}
         />
+
+          <Route path="all_staffs" element={<AllStaff />} />
+
+
           <Route path="reports" element={<Report />} />
           <Route path="/reports/budgets" element={<Budgets />} />
           <Route path="/reports/new_budgets" element={<NewBudgets />} />

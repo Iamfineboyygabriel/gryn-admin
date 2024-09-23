@@ -491,6 +491,25 @@ export const getSingleStudentApplication = async (endpoint: any) => {
   }
 };
 
+export const getSingleAgentApplication = async (endpoint: any) => {
+  const url = `${process.env.REACT_APP_API_URL}${endpoint}`;
+  try {
+    const response = await axios.get(url, {
+      headers: authHeader(),
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error: any) {
+    if (!error.response) {
+      throw new Error("Network Error: Please check your internet connection.");
+    }
+    throw error.response.data;
+  }
+};
+
 const createApplication = async (body: CreateApplicationBody) => {
   try {
     const token = sessionStorage.getItem("userData");
@@ -876,6 +895,52 @@ export const getDraftItemById = async (endpoint: any) => {
   }
 };
 
+export const updateRegistrationUploadedDocument = async (
+  endpoint: string,
+  formData: FormData,
+) => {
+  const url = `${process.env.REACT_APP_API_URL}${endpoint}`;
+  try {
+    const response = await axios({
+      url,
+      headers: {
+        ...authHeader(),
+        "Content-Type": "multipart/form-data",
+      },
+      method: "patch",
+      data: formData,
+    });
+
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getAccountInfo = async (code: number, account_number:string) => {
+  const url = `${process.env.REACT_APP_API_URL}/auth/bank/accountInfo`;
+  try {
+    const response = await axios({
+      url,
+      method: "get",
+      headers: authHeader(),
+      params: { code,account_number }, 
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const shareApplicationServices = {
   getUserProfile,
   uploadAvatar,
@@ -917,6 +982,7 @@ const shareApplicationServices = {
   createBudget,
   findStaffByEmail,
   getDraftItemById,
+  updateRegistrationUploadedDocument,
 };
 
 export default shareApplicationServices;

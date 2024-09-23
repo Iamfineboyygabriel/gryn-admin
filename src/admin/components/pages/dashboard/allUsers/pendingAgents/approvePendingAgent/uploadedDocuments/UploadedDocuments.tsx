@@ -15,7 +15,6 @@ import approve from "../../../../../../../../assets/svg/Approved.svg";
 import reject from "../../../../../../../../assets/svg/Rejected.svg";
 import ReactLoading from "react-loading";
 
-
 interface Document {
   id: string;
   name: string;
@@ -23,11 +22,6 @@ interface Document {
   documentType: string;
   remark: string;
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
-}
-
-interface UpdateDocStatus {
-  id: string;
-  remark: 'APPROVED' | 'REJECTED' | 'PENDING';
 }
 
 interface AgentData {
@@ -50,9 +44,9 @@ interface LoadingStatus {
 const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({ agentData }) => {
   const dispatch: AppDispatch = useAppDispatch();
   const { updateDocStatus, error } = useSelector((state: RootState) => state.shareApplication) as { 
-    updateDocStatus: UpdateDocStatus | null; 
+    updateDocStatus: { id: string; remark: 'APPROVED' | 'REJECTED' | 'PENDING' } | null; 
     error: string | null;
-  };  
+  };
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewFileType, setPreviewFileType] = useState<string>("");
@@ -60,6 +54,7 @@ const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({ agentData }) => {
   const [documents, setDocuments] = useState<Document[]>(agentData?.agentRegistrationDoc || []);
   const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>({});
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [approvalError, setApprovalError] = useState<string | null>(null);
   const loading = useSelector((state: any) => state?.shareApplication?.loading || false);
 
   useEffect(() => {
@@ -79,17 +74,12 @@ const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({ agentData }) => {
     const segments = url.split("/");
     const fileExtension = segments[segments.length - 1].split(".").pop()?.toLowerCase();
     switch (fileExtension) {
-      case "pdf":
-        return "application/pdf";
+      case "pdf": return "application/pdf";
       case "jpg":
-      case "jpeg":
-        return "image/jpeg";
-      case "png":
-        return "image/png";
-      case "gif":
-        return "image/gif";
-      default:
-        return "application/octet-stream";
+      case "jpeg": return "image/jpeg";
+      case "png": return "image/png";
+      case "gif": return "image/gif";
+      default: return "application/octet-stream";
     }
   };
 
@@ -98,12 +88,6 @@ const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({ agentData }) => {
     setPreviewUrl(url);
     setPreviewFileType(fileType);
     setIsPreviewOpen(true);
-  };
-
-  const closePreviewModal = () => {
-    setIsPreviewOpen(false);
-    setPreviewUrl(null);
-    setPreviewFileType("");
   };
 
   const handleDownload = (url: string, fileName: string) => {
@@ -131,7 +115,7 @@ const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({ agentData }) => {
     try {
       const response = await dispatch(updateDocumentStatus({ id, remark }));
       
-      if (response.meta.requestStatus === 'fulfilled' && response.payload?.status === 200) {
+      if (response.meta.requestStatus === 'fulfilled') {
         setDocuments((prevDocs) =>
           prevDocs.map((doc) =>
             doc.id === id ? { ...doc, status: remark, remark: remark } : doc
@@ -151,21 +135,22 @@ const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({ agentData }) => {
     }
   };
 
-  const handleAgentApproval = async (approve: boolean) => {
+
+  const handleAgentApproval = async (approve: boolean): Promise<{ status: number }> => {
     if (!agentData?.id) {
-      console.error('Agent ID is missing');
-      return;
+      throw new Error('Agent ID is missing');
     }
 
     try {
       if (approve) {
-        await approveAgent(agentData.id);
+        const response = await approveAgent(agentData.id);
+        return { status: response.status };
       } else {
-        await rejectAgent(agentData.id);
+        const response = await rejectAgent(agentData.id);
+        return { status: response.status };
       }
-    } catch (error) {
-      console.error('Failed to approve/reject agent:', error);
-      // Handle error (e.g., show error message)
+    } catch (error: any) {
+      throw new Error(error.message || 'An unknown error occurred');
     }
   };
 
@@ -270,6 +255,16 @@ const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({ agentData }) => {
                   </button>
                 </div>
               </div>
+              <p className="text-sm mt-[4px] font-medium">
+                current status : {' '}
+                <span className={
+                  doc.remark === "APPROVED" ? "text-approve" :
+                  doc.remark === "REJECTED" ? "text-red-600" :
+                  "text-yellow-500"
+                }>
+                  {doc.remark || "PENDING"}
+                </span>
+              </p>
               <div className="flex mt-[1em] gap-2 items-center">
                 {renderActionButton(doc, 'APPROVED')}
                 {renderActionButton(doc, 'REJECTED')}
@@ -280,7 +275,7 @@ const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({ agentData }) => {
       </section>
       <DocumentPreviewModal
         isOpen={isPreviewOpen}
-        onRequestClose={closePreviewModal}
+        onRequestClose={() => setIsPreviewOpen(false)}
         previewUrl={previewUrl}
         previewFileType={previewFileType}
       />
@@ -302,6 +297,7 @@ const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({ agentData }) => {
             onApprove={() => handleAgentApproval(true)}
             onReject={() => handleAgentApproval(false)}
             approvalType="agent"
+            approvalError={approvalError}
           />
         </Modal>
       )}

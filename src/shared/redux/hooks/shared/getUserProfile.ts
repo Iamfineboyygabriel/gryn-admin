@@ -21,6 +21,7 @@ import {
 import { AppDispatch } from "../../store";
 import { setMessage } from "../../message.slices";
 import {
+  getSingleAgentApplication,
   getSingleStudentApplication,
   getStudentApplication,
   getVisaApplicationDetails,
@@ -456,6 +457,31 @@ export const useSingleStudentApplication = (studentId?: string) => {
 
   return { applicationDetails: data, loading: isLoading, error };
 };
+
+export const useSingleAgentApplication = (agentId?: string) => {
+  const dispatch = useDispatch();
+
+  const { data, isLoading, error } = useQuery(
+    ["applicationDetails", agentId],
+    async () => {
+      if (!agentId) {
+        throw new Error("No student ID provided");
+      }
+      const endpoint = `/admin/users/agent/${agentId}/applications`;
+      const response = await getSingleAgentApplication(endpoint);
+      return response.data;
+    },
+    {
+      enabled: !!agentId,
+      onError: (error: any) => {
+        dispatch(setMessage(error.message));
+      },
+    }
+  );
+
+  return { applicationDetails: data, loading: isLoading, error };
+};
+
 
 
 export const useAllVisa = () => {

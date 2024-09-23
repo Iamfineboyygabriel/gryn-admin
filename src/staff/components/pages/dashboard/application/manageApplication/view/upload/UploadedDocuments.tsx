@@ -314,13 +314,13 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
           onClose={handleCloseModal}
           data-aos="zoom-in"
         >
-          <ApplicationSummary
+          {/* <ApplicationSummary
             onClose={handleCloseModal}
             documents={documents}
             onApprove={() => handleAgentApproval(true)}
             onReject={() => handleAgentApproval(false)}
             approvalType="student"
-          />
+          /> */}
         </Modal>
       )}
     </main>

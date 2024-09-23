@@ -2,11 +2,9 @@ import  { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { AppDispatch } from "../../../../../../../../../shared/redux/store";
 import { useApplicationDetails } from "../../../../../../../../../shared/redux/hooks/shared/getUserProfile";
-import { approveAgent, rejectAgent } from "../../../../../../../../../shared/redux/shared/services/shareApplication.services";
 import { updateDocumentStatus } from "../../../../../../../../../shared/redux/shared/slices/shareApplication.slices";
 import { useAppDispatch } from "../../../../../../../../../shared/redux/hooks/shared/reduxHooks";
 import Modal from "../../../../../../../../../shared/modal/Modal";
-import ApplicationSummary from "../../../../../../../../../shared/modal/applicationSummaryModal/ApplicationSummary";
 import DocumentPreviewModal from "../../../../../../../../../shared/modal/DocumentPreviewModal";
 import { button } from "../../../../../../../../../shared/buttons/Button";
 import eye from "../../../../../../../../../assets/svg/eyeImg.svg";
@@ -15,6 +13,7 @@ import download from "../../../../../../../../../assets/svg/download.svg";
 import approve from "../../../../../../../../../assets/svg/Approved.svg";
 import reject from "../../../../../../../../../assets/svg/Rejected.svg";
 import ReactLoading from "react-loading";
+import StudentApplicationSummary from "../../../../../../../../../shared/modal/applicationSummaryModal/StudentApplicationSummary";
 
 interface Document {
   id: string;
@@ -153,25 +152,6 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
     }
   };
 
-  const handleAgentApproval = async (approve: boolean) => {
-    if (!applicationId) {
-      console.error('Application ID is missing');
-      return;
-    }
-
-    try {
-      if (approve) {
-        await approveAgent(applicationId);
-      } else {
-        await rejectAgent(applicationId);
-      }
-      // You might want to update the application status here or refresh the data
-    } catch (error) {
-      console.error('Failed to approve/reject agent:', error);
-      // Handle error (e.g., show error message)
-    }
-  };
-
   const renderActionButton = (doc: Document, action: 'APPROVED' | 'REJECTED') => {
     const actionType: ActionType = action.toLowerCase() as ActionType;
     const isLoading = loadingStatus[doc.id]?.[actionType] || false;
@@ -288,6 +268,16 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
                   </button>
                 </div>
               </div>
+              <p className="text-sm mt-[4px] font-medium">
+                current status : {' '}
+                <span className={
+                  doc.remark === "APPROVED" ? "text-approve" :
+                  doc.remark === "REJECTED" ? "text-red-600" :
+                  "text-yellow-500"
+                }>
+                  {doc.remark || "PENDING"}
+                </span>
+              </p>
               <div className="flex mt-[1em] gap-2 items-center">
                 {renderActionButton(doc, 'APPROVED')}
                 {renderActionButton(doc, 'REJECTED')}
@@ -314,12 +304,9 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
           onClose={handleCloseModal}
           data-aos="zoom-in"
         >
-          <ApplicationSummary
+          <StudentApplicationSummary
             onClose={handleCloseModal}
             documents={documents}
-            onApprove={() => handleAgentApproval(true)}
-            onReject={() => handleAgentApproval(false)}
-            approvalType="student"
           />
         </Modal>
       )}

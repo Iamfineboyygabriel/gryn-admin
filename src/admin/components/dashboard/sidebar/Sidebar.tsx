@@ -35,11 +35,11 @@ const Sidebar = () => {
             </Link>
           );
         })}
-        <div className="mt-[1.5em] flex flex-col items-center justify-center rounded-lg bg-purple-deep px-3 py-4 dark:bg-gray-700">
-          <img src={logout} alt="logout_image" className="mt-6 w-[4em]" />
+        <div className="mt-[1.2em] flex flex-col items-center justify-center rounded-lg bg-purple-deep px-3 py-4 dark:bg-gray-700">
+          <img src={logout} alt="logout_image" className="mt-2 w-[4em]" />
           <button.PrimaryButton
             onClick={() => handleLogout(navigate)}
-            className="btn-auth mt-[1em] rounded-lg px-[2.5em] py-[10px] font-medium text-white"
+            className="btn-auth mt-[10px] rounded-lg px-[2.5em] py-[10px] font-medium text-white"
           >
             Log Out
           </button.PrimaryButton>

@@ -4,7 +4,6 @@ import { AppDispatch } from "../../../../../../../shared/redux/store";
 import { updateDocumentStatus } from "../../../../../../../shared/redux/shared/slices/shareApplication.slices";
 import { useVisaApplicationDetails } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
 import { useAppDispatch } from "../../../../../../../shared/redux/hooks/shared/reduxHooks";
-import StudentApplicationSummary from "../../../../../../../shared/modal/applicationSummaryModal/StudentApplicationSummary";
 import Modal from "../../../../../../../shared/modal/Modal";
 import DocumentPreviewModal from "../../../../../../../shared/modal/DocumentPreviewModal";
 import { button } from "../../../../../../../shared/buttons/Button";
@@ -14,6 +13,7 @@ import download from "../../../../../../../assets/svg/download.svg";
 import approve from "../../../../../../../assets/svg/Approved.svg";
 import reject from "../../../../../../../assets/svg/Rejected.svg";
 import ReactLoading from "react-loading";
+import VisaApplicationSummary from "../../../../../../../shared/modal/applicationSummaryModal/VisaApplicationSummary";
 
 interface Document {
   id: string;
@@ -268,6 +268,16 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
                   </button>
                 </div>
               </div>
+              <p className="text-sm mt-[4px] font-medium">
+                current status : {' '}
+                <span className={
+                  doc.remark === "APPROVED" ? "text-approve" :
+                  doc.remark === "REJECTED" ? "text-red-600" :
+                  "text-yellow-500"
+                }>
+                  {doc.remark || "PENDING"}
+                </span>
+              </p>
               <div className="flex mt-[1em] gap-2 items-center">
                 {renderActionButton(doc, 'APPROVED')}
                 {renderActionButton(doc, 'REJECTED')}
@@ -294,7 +304,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
           onClose={handleCloseModal}
           data-aos="zoom-in"
         >
-          <StudentApplicationSummary
+          <VisaApplicationSummary
             onClose={handleCloseModal}
             documents={documents}
           />
