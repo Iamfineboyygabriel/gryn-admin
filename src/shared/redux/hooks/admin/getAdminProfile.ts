@@ -107,7 +107,7 @@ export const useAllStudents = () => {
 
 export const useAllPendingApplication = () => {
   const dispatch: AppDispatch = useDispatch();
-  const applications = useSelector((state: any) => state?.application?.allPendingApplication.applications);
+  const applications = useSelector((state: any) => state?.application?.allPendingApplication?.applications);
   const totalPages = useSelector((state: any) => state?.application?.allPendingApplication?.totalPages);
   const currentPage = useSelector((state: any) => state?.application?.allPendingApplication?.currentPage);
   const loading = useSelector((state: any) => state?.application?.loading);
