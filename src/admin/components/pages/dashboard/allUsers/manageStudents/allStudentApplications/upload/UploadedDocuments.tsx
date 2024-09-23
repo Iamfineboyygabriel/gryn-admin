@@ -288,6 +288,16 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
                   </button>
                 </div>
               </div>
+              <p className="text-sm mt-[4px] font-medium">
+                current status : {' '}
+                <span className={
+                  doc.remark === "APPROVED" ? "text-approve" :
+                  doc.remark === "REJECTED" ? "text-red-600" :
+                  "text-yellow-500"
+                }>
+                  {doc.remark || "PENDING"}
+                </span>
+              </p>
               <div className="flex mt-[1em] gap-2 items-center">
                 {renderActionButton(doc, 'APPROVED')}
                 {renderActionButton(doc, 'REJECTED')}

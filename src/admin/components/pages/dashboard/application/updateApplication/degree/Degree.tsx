@@ -19,10 +19,9 @@ const Degree = ({
   applicationId: string | null;
   studentData:any
 }) => {
-  console.log("student data",studentData)
-  const [university, setUniversity] = useState(studentData?.firstName || "");
-  const [course, setCourse] = useState("");
-  const [degreeType, setDegreeType] = useState<string | null>(null);
+  const [university, setUniversity] = useState(studentData?.degree.university || "");
+  const [course, setCourse] = useState(studentData?.degree.course || "");
+  const [degreeType, setDegreeType] = useState(studentData?.degree.degreeType || "");
   const [loading, setLoading] = useState(false);
 
   const dispatch: AppDispatch = useAppDispatch();

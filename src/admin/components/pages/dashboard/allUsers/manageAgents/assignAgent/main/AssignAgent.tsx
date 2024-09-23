@@ -20,6 +20,7 @@ interface AgentData {
     bankCode: string;
     accountName: string;
     accountNumber: string;
+    bankName: string;
   }>;
   profile: {
     firstName: string;
@@ -187,7 +188,7 @@ const AssignAgent = () => {
             id="bankName"
             name="bankName"
             required
-            value={agentData.bankAccounts[0]?.bankCode}
+            value={agentData.bankAccounts[0]?.bankName}
             className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
             />
             </div>

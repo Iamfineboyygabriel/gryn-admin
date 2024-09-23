@@ -64,7 +64,7 @@ const ApplicationSummary: React.FC<ApplicationSummaryProps> = ({
     setActionTaken('approve');
     try {
       const response = await onApprove();
-      if (response.status === 201) {
+      if (response.status === 200) {
         setShowApprovalSuccess(true);
       } else {
         throw new Error('Approval failed');
@@ -83,7 +83,7 @@ const ApplicationSummary: React.FC<ApplicationSummaryProps> = ({
     setActionTaken('reject');
     try {
       const response = await onReject();
-      if (response.status === 201) {
+      if (response.status === 200) {
         setShowSendMessage(true);
       } else {
         throw new Error('Decline failed');

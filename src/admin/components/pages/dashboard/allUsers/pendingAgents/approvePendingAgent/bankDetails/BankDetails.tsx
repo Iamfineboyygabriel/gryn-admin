@@ -8,7 +8,6 @@ const SkeletonField = () => (
 const BankDetails = ({
   agentData, loading
 }: any) => {
-    console.log("aaa", agentData);
     const bankAccount = agentData?.bankAccounts?.[0];
     const renderField = (label: string, value: string | undefined) => (
         <div className="w-full">

@@ -180,7 +180,7 @@ const AgentProfile: React.FC<AgentProfileProps> = ({
   const hasDocuments = agentData?.agentRegistrationDoc?.length > 0;
 
   return (
-    <div>
+    <main className='font-outfit'>
       <div className="flex w-[85%] flex-col mt-[2em] gap-[3em]">
         <section className="section-personal-details flex flex-col gap-[1.2em]">
           <h2 className="text-xl font-normal text-gray-400">Personal Details</h2>
@@ -262,7 +262,7 @@ const AgentProfile: React.FC<AgentProfileProps> = ({
                 id="bankName"
                 name="bankName"
                 required
-                value={agentData?.bankAccounts?.[0]?.bankCode || ''}
+                value={agentData?.bankAccounts?.[0]?.bankName || ''}
                 readOnly
                 className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
               />
@@ -389,7 +389,7 @@ const AgentProfile: React.FC<AgentProfileProps> = ({
         previewUrl={previewUrl}
         previewFileType={previewFileType}
       />
-    </div>
+    </main>
   );
 };
 
