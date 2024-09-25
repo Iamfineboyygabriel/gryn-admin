@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import StepIndicator from "../../../../../../../shared/stepIndicator/StepIndicator";
 import StepOne from "../stepOne/StepOne";
 import StepTwo from "../stepTwo/StepTwo";
 import StepThree from "../stepThree/StepThree";
-import { button } from "../../../../../../../shared/buttons/Button";
+import { button } from "../../../../../../../shared/buttons/Button"
 
 const NewApplication = () => {
   const [currentStep, setCurrentStep] = useState(1);

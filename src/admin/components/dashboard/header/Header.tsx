@@ -4,6 +4,7 @@ import gryn_index_logo from "../../../../assets/svg/Gryn_Index _logo.svg";
 import { IoIosNotifications } from "react-icons/io";
 import { formatDate } from "../../../../shared/utils/dateFormat";
 import useUserProfile from "../../../../shared/redux/hooks/shared/getUserProfile";
+import { Link } from "react-router-dom";
 
 const Header: React.FC = () => {
   const today = new Date();
@@ -26,13 +27,15 @@ const Header: React.FC = () => {
         >
           <div className="flex items-center gap-3">
             <time dateTime={today.toISOString()}>{formattedDate}</time>
+          <Link to="/admin/dashboard/notifications">
             <button className="relative" aria-label="View notifications">
               <IoIosNotifications
                 className="cursor-pointer fill-green-500 dark:fill-green-300"
                 size={27}
                 aria-hidden="true"
-              />
+                />
             </button>
+          </Link>
           </div>
           <div className="flex items-center gap-2">
             <div className="relative h-12 w-12 cursor-pointer overflow-hidden rounded-full bg-gray-200">

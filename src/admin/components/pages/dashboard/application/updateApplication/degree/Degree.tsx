@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CgAsterisk } from "react-icons/cg";
 import { toast } from "react-toastify";
 import ReactLoading from "react-loading";
@@ -6,46 +6,70 @@ import { button } from "../../../../../../../shared/buttons/Button";
 import activeCertificate from "../../../../../../../assets/svg/ActiveCertificate.svg";
 import { AppDispatch } from "../../../../../../../shared/redux/store";
 import { useAppDispatch } from "../../../../../../../shared/redux/hooks/shared/reduxHooks";
-import { studentDegree } from "../../../../../../../data/data";
 import { updateStudentDegreeApplication } from "../../../../../../../shared/redux/shared/services/shareApplication.services";
+import { Dropdown, DropdownItem } from "../../../../../../../shared/dropDown/DropDown";
+import { studentDegree } from "../../../../../../../data/data";
+
+const bachelorTypes: DropdownItem[] = [
+  { name: "BACHELOR" },
+  { name: "INTERNATIONAL_YEAR_ONE" },
+  { name: "PRE_MASTERS" },
+  { name: "UNDERGRADUATE" },
+];
 
 const Degree = ({
-  onNext,
+  applicationId,
   studentData,
+  onNext,
 }: {
-  onNext: (data: {
-    newApplicationId?: string;
-  }) => void;
-  applicationId: string | null;
-  studentData:any
+  applicationId: any;
+  studentData: any;
+  onNext: any,
 }) => {
-  const [university, setUniversity] = useState(studentData?.degree.university || "");
-  const [course, setCourse] = useState(studentData?.degree.course || "");
-  const [degreeType, setDegreeType] = useState(studentData?.degree.degreeType || "");
+  const [university, setUniversity] = useState(studentData?.degree?.university || "");
+  const [course, setCourse] = useState(studentData?.degree?.course || "");
+  const [degreeType, setDegreeType] = useState<DropdownItem | null>(null);
+  const [selectedDegreeOption, setSelectedDegreeOption] = useState<string | null>(
+    studentData?.degree?.degreeType || null
+  );
   const [loading, setLoading] = useState(false);
 
   const dispatch: AppDispatch = useAppDispatch();
+
+  useEffect(() => {
+    const selectedOption = bachelorTypes?.find(
+      (option) => option.name === studentData?.degree.degreeType
+    );
+    setDegreeType(selectedOption || null);
+  }, [studentData?.degree?.degreeType, bachelorTypes]);
 
   const updateDetails = async () => {
     setLoading(true);
     try {
       const body = {
         university,
-        degreeType,
+        degreeType: selectedDegreeOption || "",
         course,
       };
-      // const response = await updateStudentDegreeApplication(applicationId, body);
-      // toast.success(response?.message);
-    } catch (error) {
-      toast.error("Failed to update degree");
+      const response = await updateStudentDegreeApplication(studentData.id, body);
+      onNext()
+      toast.success(response?.message);
+    } catch (error:any) {
+      toast.error(error);
     } finally {
       setLoading(false);
     }
   };
-  
 
   const handleDegreeSelect = (degree: string) => {
-    setDegreeType(degree);
+    setSelectedDegreeOption(degree);
+    const selectedOption = bachelorTypes?.find((option) => option?.name === degree);
+    setDegreeType(selectedOption || null);
+  };
+
+  const handleSelectItem = (item: DropdownItem | null) => {
+    setDegreeType(item);
+    setSelectedDegreeOption(item?.name || null);
   };
 
   return (
@@ -76,42 +100,53 @@ const Degree = ({
           </div>
           <p>What do you want to study abroad</p>
           <div className="flex w-[70%] gap-[2em]">
-            {studentDegree?.map((text, index) => (
-              <div
-                key={index}
-                className={`flex w-full cursor-pointer flex-col gap-[1em] rounded-lg px-[20px] py-[1.5em] dark:bg-gray-700 dark:text-white ${
-                  degreeType === text.value
-                    ? "bg-primary-700 text-white"
-                    : "bg-purple-white text-primary-700"
-                }`}
-                onClick={() => handleDegreeSelect(text.value)}
-              >
-                <header>
-                  <div className="flex justify-between">
-                    <img
-                      src={
-                        degreeType === text.value
-                          ? activeCertificate
-                          : text.iconA
-                      }
-                      alt="certificate_icon"
-                    />
-                    <img src={text.iconB} alt="circle_icon" />
-                  </div>
-                </header>
-                <div
-                  className={`text-xl dark:text-white ${
-                    degreeType === text.value
-                      ? "text-white"
-                      : "text-primary-700"
-                  }`}
-                >
-                  <h1>{text.titleA}</h1>
-                  <h1>{text.titleB}</h1>
-                </div>
+        {studentDegree?.map((text, index) => (
+          <div
+            key={index}
+            className={`flex w-full cursor-pointer flex-col gap-[1em] rounded-lg px-[20px] py-[1.5em] dark:bg-gray-700 dark:text-white ${
+              selectedDegreeOption === text.value
+                ? "bg-primary-700 text-white"
+                : "bg-purple-white text-primary-700"
+            }`}
+            onClick={() => handleDegreeSelect(text?.value)}
+          >
+            <header>
+              <div className="flex justify-between">
+                <img
+                  src={
+                    selectedDegreeOption === text?.value
+                      ? activeCertificate
+                      : text?.iconA
+                  }
+                  alt="certificate_icon"
+                />
+                <img src={text?.iconB} alt="circle_icon" />
               </div>
-            ))}
+            </header>
+            <div
+              className={`text-xl dark:text-white ${
+                selectedDegreeOption === text?.value
+                  ? "text-white"
+                  : "text-primary-700"
+              }`}
+            >
+              <h1>{text?.titleA}</h1>
+              <h1>{text?.titleB}</h1>
+            </div>
           </div>
+        ))}
+      </div>
+
+        <div className="w-[40%] flex flex-col gap-[1.2em]">
+          <Dropdown
+            label="Degree Type"
+            labelClassName="text-grey-primary"
+            className="text-purple-deep"
+            items={bachelorTypes}
+            selectedItem={degreeType}
+            onSelectItem={handleSelectItem}
+          />
+        </div>
           <div className="w-[40%]">
             <label
               htmlFor="course"
@@ -131,7 +166,7 @@ const Degree = ({
         </div>
 
         <button.PrimaryButton
-        onClick={updateDetails}
+          onClick={updateDetails}
           className="m-auto mt-[5em] w-[30%] justify-center gap-2 rounded-full bg-linear-gradient py-[11px] text-center font-medium text-white"
           type="submit"
           disabled={loading}

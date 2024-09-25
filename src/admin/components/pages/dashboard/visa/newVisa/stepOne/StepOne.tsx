@@ -50,7 +50,7 @@ const StepOne = ({ onNext }: any) => {
               required
               disabled={loading}
               onChange={(e) => setFirstName(e.target.value)}
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
+              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
             />
           </div>
           <div className="w-full">
@@ -65,7 +65,7 @@ const StepOne = ({ onNext }: any) => {
               required
               disabled={loading}
               onChange={(e) => setLastName(e.target.value)}
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
+              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
             />
           </div>
         </div>
@@ -79,7 +79,7 @@ const StepOne = ({ onNext }: any) => {
               id="otherName"
               name="otherName"
               onChange={(e) => setOtherName(e.target.value)}
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none dark:text-white"
+              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none dark:text-white"
             />
           </div>
           <div className="w-full">
@@ -94,7 +94,7 @@ const StepOne = ({ onNext }: any) => {
               required
               disabled={loading}
               onChange={(e) => setEmail(e.target.value)}
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
+              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
             />
           </div>
         </div>

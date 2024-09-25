@@ -13,7 +13,7 @@ export interface DropdownItem {
 
 interface ToggleDropdownProps {
   items: DropdownItem[];
-  selectedItem: DropdownItem | null;
+  selectedItem: DropdownItem | null | undefined;
   onSelectItem: (item: DropdownItem) => void;
   label?: string;
   asterisk?: boolean;

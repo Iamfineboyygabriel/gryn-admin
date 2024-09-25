@@ -72,7 +72,7 @@ const BasicInfo = () => {
 
 
   return (
-    <main className="font-outfit">
+    <main className="font-outfit px-[2em]">
       <header>
         <h1 className="text-xl font-medium dark:text-white">
           Basic Information

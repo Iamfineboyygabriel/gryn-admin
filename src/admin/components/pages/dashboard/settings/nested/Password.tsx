@@ -43,7 +43,7 @@ const Password = () => {
   };
 
   return (
-    <main className="font-outfit">
+    <main className="font-outfit px-[2em]">
       <div>
         <header>
           <h1 className="text-xl font-semibold dark:text-white">

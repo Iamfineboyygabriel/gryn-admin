@@ -1,9 +1,10 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import BasicInfo from "./nested/BasicInfo";
 import Password from "./nested/Password";
 import AdminManagement from "./superAdmin/adminManagement/main/AdminManagement";
 import RoleManagement from "./superAdmin/roleManagement/main/RoleManagement";
 import { useCurrentUser } from "../../../../../shared/redux/hooks/shared/getUserProfile";
+import Activity from "./nested/Activity";
 
 const Settings = () => {
   const [activeLink, setActiveLink] = useState("basicInfo");
@@ -14,10 +15,10 @@ const Settings = () => {
   return (
     <main className="font-outfit">
       <h1 className="text-2xl font-bold dark:text-white">Settings</h1>
-      <div className="mt-[1em] h-auto w-full overflow-auto rounded-lg bg-white px-[2em] py-3 pb-[10em] dark:bg-gray-800">
+      <div className="mt-[1em] h-auto w-full overflow-auto rounded-lg bg-white py-3 pb-[10em] dark:bg-gray-800">
         <div>
           <nav>
-            <div className="flex gap-[2em] border-b-[3px] border-gray-100 text-base font-semibold dark:border-white">
+            <div className="flex px-[2em] gap-[2em] border-b-[3px] border-gray-100 text-base font-semibold dark:border-white">
               <div
                 className={`cursor-pointer py-3 ${activeLink === "basicInfo" ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700 dark:text-white" : "text-lg font-light text-gray-500"}`}
                 onClick={() => setActiveLink("basicInfo")}
@@ -29,6 +30,12 @@ const Settings = () => {
                 onClick={() => setActiveLink("password")}
               >
                 Password
+              </div>
+              <div
+                className={`cursor-pointer py-3 ${activeLink === "activity" ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700 dark:text-white" : "text-lg font-light text-gray-500"}`}
+                onClick={() => setActiveLink("activity")}
+              >
+                Activity
               </div>
               {isSuperAdmin && (
                 <>
@@ -51,6 +58,7 @@ const Settings = () => {
           <section className="mt-8">
             {activeLink === "basicInfo" && <BasicInfo />}
             {activeLink === "password" && <Password />}
+            {activeLink === "activity" && <Activity />}
             {isSuperAdmin && activeLink === "adminManagement" && <AdminManagement />}
             {isSuperAdmin && activeLink === "roleManagement" && <RoleManagement />}
           </section>

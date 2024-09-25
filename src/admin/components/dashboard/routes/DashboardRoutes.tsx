@@ -28,6 +28,8 @@ import SeeAllAgents from "../../pages/dashboard/Reports/seeAll/SeeAllAgents";
 import AddNewSchool from "../../pages/dashboard/application/addNewSchool/AddNewSchool";
 import AgentDetails from "../../pages/dashboard/allUsers/manageAgents/agentDetails/main/AgentDetails";
 import AllStaff from "../../pages/dashboard/allStaffs/main/AllStaff";
+import Notification from "../../pages/dashboard/notification/main/Notification";
+import CreateNews from "../../pages/dashboard/notification/news/createNews/CreateNews";
 
 const ProtectedSuperAdminRoute = ({ children }:any) => {
   const { userDetails } = useCurrentUser();
@@ -113,14 +115,18 @@ const DashboardRoutes = () => {
 
           <Route path="all_staffs" element={<AllStaff />} />
 
-
           <Route path="reports" element={<Report />} />
           <Route path="/reports/budgets" element={<Budgets />} />
           <Route path="/reports/new_budgets" element={<NewBudgets />} />
           <Route path="/reports/All_Application" element={<SeeAllApplication />} />
           <Route path="/reports/All_Pending_Applications" element={<SeeAllPendingApplication />} />
           <Route path="/reports/All_Agents" element={<SeeAllAgents />} />
+
           <Route path="settings" element={<Settings />} />
+
+          <Route path="notifications" element={<Notification />} />
+          <Route path="/news/create_news" element={<CreateNews />} />
+
 
        <Route path="settings/admin_management/*" element={
           <ProtectedSuperAdminRoute>
