@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router';
-import { button } from "../../../../../../../shared/buttons/Button";
-import { CgAsterisk } from 'react-icons/cg';
-import { Dropdown, DropdownItem } from '../../../../../../../shared/dropDown/DropDown';
-import { useAppDispatch } from '../../../../../../../shared/redux/hooks/shared/reduxHooks';
 import { AppDispatch } from '../../../../../../../shared/redux/store';
-import ReactLoading from "react-loading";
-import { createNews } from '../../../../../../../shared/redux/admin/slices/notificationApplication.slices';
 import { createDraft } from '../../../../../../../shared/redux/shared/slices/shareApplication.slices';
-import { toast } from "react-toastify";
-import Modal from '../../../../../../../shared/modal/Modal';
+import { createNews } from '../../../../../../../shared/redux/admin/slices/notificationApplication.slices';
+import { useAppDispatch } from '../../../../../../../shared/redux/hooks/shared/reduxHooks';
 import NewsCreated from '../../../../../../../shared/modal/NewsCreated';
+import Modal from '../../../../../../../shared/modal/Modal';
+import { Dropdown, DropdownItem } from '../../../../../../../shared/dropDown/DropDown';
+import { button } from "../../../../../../../shared/buttons/Button";
+import { useNavigate } from 'react-router';
+import { CgAsterisk } from 'react-icons/cg';
+import ReactLoading from "react-loading";
+import { toast } from "react-toastify";
 
 const CreateNews: React.FC = () => {
     const [topic, setTopic] = useState("");
@@ -43,12 +43,12 @@ const CreateNews: React.FC = () => {
     };
 
     const prepareNewsData = () => ({
-        topic,
-        description,
-        date: formatDateTime(),
-        link,
-        time: formatDateTime(),
-        sendTo: sendTo ? [sendTo.name] : []
+         topic,
+         description,
+         date: formatDateTime(),
+         time: formatDateTime(),
+         link,
+         sendTo: sendTo ? [sendTo.name] : []
     });
 
     const resetForm = () => {

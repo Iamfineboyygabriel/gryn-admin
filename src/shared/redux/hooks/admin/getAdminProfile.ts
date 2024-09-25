@@ -20,6 +20,7 @@ import {
 import { setMessage } from "../../message.slices";
 import { createSelector } from "@reduxjs/toolkit";
 import { RootState } from "../../rootReducer";
+import { getAllDraftedNews, getAllNews, setAllDraftedNewsSearchTerm, setAllNewsSearchTerm } from "../../admin/slices/notificationApplication.slices";
 
 export const selectUserActivity = createSelector(
   [(state: any) => state.application?.allActivity],
@@ -185,7 +186,6 @@ export const useAgentsEmails = () => {
     loading: state.application.loading,
     error: state.application.error,
   }));
-  // console.log("agents email",agentsEmail)
 
   useEffect(() => {
     dispatch(getAllAgentEmail());
@@ -201,7 +201,6 @@ export const useAdminsEmails = () => {
     loading: state.application.loading,
     error: state.application.error,
   }));
-  // console.log("admins email",adminsEmail)
 
   useEffect(() => {
     dispatch(getAllAdminsEmail());
@@ -257,4 +256,56 @@ export const useAllAdminForSuperAdmin = () => {
     fetchAdmins, 
     updateSearchTerm 
   };
+};
+
+export const useAllNews = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const allUserNews = useSelector((state: any) => state?.notificationApplication?.allNews?.news);
+  const totalPages = useSelector((state: any) => state?.notificationApplication?.allNews?.totalPages);
+  const currentPage = useSelector((state: any) => state?.notificationApplication?.allNews?.currentPage);
+  const loading = useSelector((state: any) => state?.notificationApplication?.loading);
+  const error = useSelector((state: any) => state.notificationApplication?.error);
+  const searchTerm = useSelector((state: any) => state.notificationApplication?.allNewsSearchTerm);
+
+  const fetchNews = useCallback(
+    (page: number, limit: number) => {
+      dispatch(getAllNews({ page, limit, search: searchTerm || '' }));
+    },
+    [dispatch, searchTerm]
+  );
+
+  const updateSearchTerm = useCallback(
+    (term: string) => {
+      dispatch(setAllNewsSearchTerm(term));
+    },
+    [dispatch]
+  );
+
+  return { allUserNews, totalPages, currentPage, loading, error, searchTerm, fetchNews, updateSearchTerm };
+};
+
+export const useAllDraftedNews = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const allUserDraftedNews = useSelector((state: any) => state?.notificationApplication?.allDraftedNews?.draftedNews);
+  const totalPages = useSelector((state: any) => state?.notificationApplication?.allDraftedNews?.totalPages);
+  const currentPage = useSelector((state: any) => state?.notificationApplication?.allDraftedNews?.currentPage);
+  const loading = useSelector((state: any) => state?.notificationApplication?.loading);
+  const error = useSelector((state: any) => state?.notificationApplication?.error);
+  const searchTerm = useSelector((state: any) => state?.notificationApplication?.allDraftedNewsSearchTerm);
+
+  const fetchNews = useCallback(
+    (page: number, limit: number) => {
+      dispatch(getAllDraftedNews({ page, limit, search: searchTerm || '' }));
+    },
+    [dispatch, searchTerm]
+  );
+
+  const updateSearchTerm = useCallback(
+    (term: string) => {
+      dispatch(setAllDraftedNewsSearchTerm(term));
+    },
+    [dispatch]
+  );
+
+  return { allUserDraftedNews, totalPages, currentPage, loading, error, searchTerm, fetchNews, updateSearchTerm };
 };

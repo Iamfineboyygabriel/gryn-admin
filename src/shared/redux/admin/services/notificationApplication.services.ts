@@ -3,6 +3,7 @@ import authHeader from "../../headers";
 
 const API_URL_CREATE_NEWS = process.env.REACT_APP_API_URL + "/news";
 const API_URL_CREATE_NEWS_DRAFT = process.env.REACT_APP_API_URL + "/news/draft";
+const API_URL = process.env.REACT_APP_API_URL;
 
 const handleApiError = (error: any) => {
     if (!error.response) {
@@ -34,10 +35,43 @@ const createNews = async (body: any) => {
       handleApiError(error);
     }
   };
+   
+  const getAllNews = async (page: number, limit: number, search: string = '') => {
+    const url = `${API_URL}/news?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
+    try {
+      const response = await axios.get(url, { headers: authHeader() });
+      
+      const token = response?.data?.data?.tokens?.accessToken;
+      if (token) {
+        sessionStorage.setItem("userData", token);
+      }
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+
+  const getAllDraftedNews = async (page: number, limit: number, search: string = '') => {
+    const url = `${API_URL}/news/draft?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
+    try {
+      const response = await axios.get(url, { headers: authHeader() });
+      
+      const token = response?.data?.data?.tokens?.accessToken;
+      if (token) {
+        sessionStorage.setItem("userData", token);
+      }
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  };
 
 const notificationApplicationServices = {
     createNews,
     createNewsDraft,
+    getAllNews,
+    getAllDraftedNews,
 }
 
 export default notificationApplicationServices;

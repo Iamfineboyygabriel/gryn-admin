@@ -45,7 +45,7 @@ const NewBudgets: React.FC = () => {
   const navigate = useNavigate();
   const dispatch: AppDispatch = useAppDispatch();
 
-  const paymentTypes: DropdownItem[] = [{ name: "BANK_TRANSFER" }];
+  const paymentTypes: DropdownItem[] = [{ name: "MONEY_OUT" }];
   const branches: DropdownItem[] = [
     { name: "Ikeja Branch, Lagos Nigeria" },
     { name: "Ipaja Branch, Lagos Nigeria" },
@@ -79,11 +79,11 @@ const NewBudgets: React.FC = () => {
   };
 
   const calculateTotalRate = (): number => {
-    return formData.BudgetItem.reduce((sum, item) => sum + item.rate, 0);
+    return formData?.BudgetItem?.reduce((sum, item) => sum + item.rate, 0);
   };
 
   const calculateTotalAmount = (): number => {
-    return formData.BudgetItem.reduce((sum, item) => sum + item.amount, 0);
+    return formData?.BudgetItem?.reduce((sum, item) => sum + item.amount, 0);
   };
 
   const submitBudget = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -94,7 +94,7 @@ const NewBudgets: React.FC = () => {
       await dispatch(createBudget(formData)).unwrap();
       setModalOpen(true);
     } catch (error: any) {
-      toast.error(error.message || "An error occurred while creating the budget.");
+      toast.error(error || "An error occurred while creating the budget.");
     } finally {
       setBudgetLoading(false);
     }

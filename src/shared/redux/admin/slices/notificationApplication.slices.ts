@@ -4,7 +4,7 @@ import { RootState } from "../../store";
 import notificationApplicationServices from "../services/notificationApplication.services";
 
 export const createNews = createAsyncThunk(
-    "shareApplication/createNews",
+    "notificationApplication/createNews",
     async (body: any, thunkAPI) => {
       try {
         const data = await notificationApplicationServices.createNews(body);
@@ -21,7 +21,7 @@ export const createNews = createAsyncThunk(
   );
 
   export const createNewsDrafs = createAsyncThunk(
-    "shareApplication/createNewsDraft",
+    "notificationApplication/createNewsDraft",
     async (body: any, thunkAPI) => {
       try {
         const data = await notificationApplicationServices.createNewsDraft(body);
@@ -36,8 +36,32 @@ export const createNews = createAsyncThunk(
       }
     }
   );
+   
+  export const getAllNews = createAsyncThunk(
+    "notificationApplication/getAllNews",
+    async ({ page, limit, search }: { page: number; limit: number; search: string }) => {
+      const response = await notificationApplicationServices.getAllNews(page, limit, search);
+      return {
+        news: response,
+        totalPages: response.data.totalPages,
+        currentPage: page
+      };
+    }
+  );
 
-  
+  export const getAllDraftedNews = createAsyncThunk(
+    "notificationApplication/getAllDraftedNews",
+    async ({ page, limit, search }: { page: number; limit: number; search: string }) => {
+      const response = await notificationApplicationServices.getAllDraftedNews(page, limit, search);
+      return {
+        draftedNews: response,
+        totalPages: response?.data?.totalPages,
+        currentPage: page
+      };
+    }
+  );
+
+
 interface ApplicationState {
     registerNews: null;
     registerNewsDraft: null;
@@ -48,6 +72,18 @@ interface ApplicationState {
     month: string | null;
     search: string;
     searchTerm: string;
+    allNews: {
+      news: any[];
+      totalPages: number;
+      currentPage: number;
+    };
+    allDraftedNews: {
+      draftedNews: any[];
+      totalPages: number;
+      currentPage: number;
+    };
+   allNewsSearchTerm: string;
+   allDraftedNewsSearchTerm: string;
   }
   
   const initialState: ApplicationState = {
@@ -60,6 +96,18 @@ interface ApplicationState {
     month: null,
     search: '',
     searchTerm: "",
+    allNews: {
+      news: [],
+      totalPages: 0,
+      currentPage: 1,
+    },
+    allDraftedNews: {
+      draftedNews: [],
+      totalPages: 0,
+      currentPage: 1,
+    },
+   allNewsSearchTerm: '',
+   allDraftedNewsSearchTerm: '',
   };
 
 
@@ -67,7 +115,14 @@ interface ApplicationState {
 export const notificationApplicationSlice = createSlice({
     name: "notificationApplication",
     initialState,
-    reducers: {},
+    reducers: {
+      setAllNewsSearchTerm: (state, action: PayloadAction<string>) => {
+        state.allNewsSearchTerm = action.payload;
+      },
+      setAllDraftedNewsSearchTerm: (state, action: PayloadAction<string>) => {
+        state.allDraftedNewsSearchTerm = action.payload;
+      },
+    },
     extraReducers: (builder) => {
       builder
   .addCase(createNews.fulfilled, (state, action: PayloadAction<any>) => {
@@ -87,8 +142,47 @@ export const notificationApplicationSlice = createSlice({
     const errorMessage = action.error.message || "News drafts creation failed.";
     setMessage(errorMessage);
   })
+
+  .addCase(getAllNews.pending, (state) => {
+    state.loading = true;
+    state.error = null;
+  })
+  .addCase(getAllNews.fulfilled, (state, action: PayloadAction<{
+    news: any[];
+    totalPages: number;
+    currentPage: number;
+  }>) => {
+    state.loading = false;
+    state.allNews = action.payload;
+  })
+  .addCase(getAllNews.rejected, (state, action) => {
+    state.loading = false;
+    state.error = action.error.message || "Failed to fetch news";
+  })
+
+  .addCase(getAllDraftedNews.pending, (state) => {
+    state.loading = true;
+    state.error = null;
+  })
+  .addCase(getAllDraftedNews.fulfilled, (state, action: PayloadAction<{
+    draftedNews: any[];
+    totalPages: number;
+    currentPage: number;
+  }>) => {
+    state.loading = false;
+    state.allDraftedNews = action.payload;
+  })
+  .addCase(getAllDraftedNews.rejected, (state, action) => {
+    state.loading = false;
+    state.error = action.error.message || "Failed to fetch drafted news";
+  })
 }
 })
 
+
   const { reducer } = notificationApplicationSlice;
+  export const {
+    setAllNewsSearchTerm,
+    setAllDraftedNewsSearchTerm ,
+  } = notificationApplicationSlice.actions;
   export default reducer;

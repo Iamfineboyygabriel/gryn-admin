@@ -22,12 +22,6 @@ const Notification = () => {
                All
               </div>
               <div
-                className={`cursor-pointer py-3 ${activeLink === "password" ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700 dark:text-white" : "text-lg font-light text-gray-500"}`}
-                onClick={() => setActiveLink("password")}
-              >
-                Password
-              </div>
-              <div
                 className={`cursor-pointer py-3 ${activeLink === "unRead" ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700 dark:text-white" : "text-lg font-light text-gray-500"}`}
                 onClick={() => setActiveLink("unRead")}
               >
