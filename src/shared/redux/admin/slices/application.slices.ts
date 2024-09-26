@@ -79,8 +79,8 @@ export const getActivity = createAsyncThunk(
   },
 );
 
-export const addNewSchool= createAsyncThunk(
-  "apllication/addNewSchool",
+export const addNewSchool = createAsyncThunk(
+  "application/addNewSchool",
   async (body: any, thunkAPI) => {
     try {
       const data = await applicationServices.addNewSchool(body);
@@ -182,6 +182,7 @@ interface ApplicationState {
   };
   getStats: any;
   getStaffStats: any;
+  registerSchool:null;
   allAdmin: {
     admins: any[] | null;
     totalPages: number;
@@ -212,6 +213,7 @@ interface ApplicationState {
 const initialState: ApplicationState = {
   getStats: null,
   getStaffStats: null,
+  registerSchool:null,
   allAdmin: {
     admins: [],
     totalPages: 0,
@@ -455,6 +457,7 @@ export const applicationSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || "Failed to fetch all school list";
       })
+
   },
 });
 

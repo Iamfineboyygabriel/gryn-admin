@@ -2,7 +2,7 @@ import axios from "axios";
 import authHeader from "../../headers";
 
 const API_URL = process.env.REACT_APP_API_URL;
-const API_URL_Add_New_School = process.env.REACT_APP_API_URL + "/admin/users/student";
+const API_URL_Add_New_School = process.env.REACT_APP_API_URL + "/school";
 
 
 const handleApiError = (error: any) => {

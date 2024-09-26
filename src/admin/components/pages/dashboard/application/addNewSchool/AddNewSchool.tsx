@@ -9,43 +9,50 @@ import AddNewSchoolM from '../../../../../../shared/modal/AddNewSchoolM';
 import { useAppDispatch } from '../../../../../../shared/redux/hooks/shared/reduxHooks';
 import { AppDispatch } from '../../../../../../shared/redux/store';
 import { addNewSchool } from '../../../../../../shared/redux/admin/slices/application.slices';
+import plus from "../../../../../../assets/svg/plus.svg"
 
 const AddNewSchool = () => {
   const [country, setCountry] = useState('');
-  const [university, setUniversity] = useState('');
-  const [otherName, setOtherName] = useState('');
-  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [urls, setUrls] = useState(['', '']);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const dispatch: AppDispatch = useAppDispatch();
 
   const navigate = useNavigate();
-  const handleBackClick = () => {
-    navigate(-1);
+
+  const handleOpenModal = () => setModalOpen(true);
+  const handleCloseModal = () => setModalOpen(false);
+  const handleBackClick = () => navigate(-1);
+
+  const handleUrlChange = (index: number, value: string) => {
+    const newUrls = [...urls];
+    newUrls[index] = value;
+    setUrls(newUrls);
   };
 
- 
+  const addNewUrlFields = () => {
+    setUrls([...urls, '', '']);
+  };
 
-//   const submitApplication = async (event: React.FormEvent<HTMLFormElement>) => {
-//     event.preventDefault();
-//     setLoading(true);
+  const submitApplication = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setLoading(true);
 
-//     try {
-//       const body = {
-//         country,
-//         university,
-//         otherName,
-//         email,
-//       };
-//       await dispatch(addNewSchool(body)).unwrap();
-//       handleOpenModal();
-//     } catch (error: any) {
-//         console.log("error",error)
-//       toast.error(
-//         error.message || 'An error occurred while creating the application'
-//       );
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
+    try {
+      const body = {
+        country,
+        name,
+        url: urls?.filter(url => url.trim() !== ''),
+      };
+      await dispatch(addNewSchool(body)).unwrap();
+      handleOpenModal();
+    } catch (error: any) {
+      toast.error(error?.message || 'An error occurred while adding new school');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <main className="font-outfit">
@@ -68,16 +75,14 @@ const AddNewSchool = () => {
         </header>
         <header>
           <h1 className="text-2xl mt-[1.5em] font-medium">School Details</h1>
-          </header>
+        </header>
         <form
           className="mt-[1.5em] w-[77%] dark:text-white"
+          onSubmit={submitApplication}
         >
           <div className="flex flex-row gap-[3em]">
             <div className="w-full">
-              <label
-                htmlFor="country"
-                className="flex-start flex font-medium"
-              >
+              <label htmlFor="country" className="flex-start flex font-medium">
                 Country
                 <CgAsterisk className="text-red-500" />
               </label>
@@ -86,55 +91,71 @@ const AddNewSchool = () => {
                 name="country"
                 required
                 disabled={loading}
+                value={country}
                 onChange={(e) => setCountry(e.target.value)}
                 className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
               />
             </div>
             <div className="w-full">
-              <label htmlFor="lastName" className="flex-start flex font-medium">
-                Last Name
+              <label htmlFor="name" className="flex-start flex font-medium">
+                University Name
                 <CgAsterisk className="text-red-500" />
               </label>
               <input
-                id="lastName"
-                name="lastName"
+                id="name"
+                name="name"
                 type="text"
                 required
                 disabled={loading}
-                onChange={(e) => setUniversity(e.target.value)}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
               />
             </div>
           </div>
 
-          <div className="mt-[1em] flex flex-row gap-[3em]">
-            <div className="w-full">
-              <label htmlFor="email" className="flex-start flex font-medium">
-                Link
-                <CgAsterisk className="text-red-500" />
-              </label>
-              <input
-                id="otherName"
-                name="otherName"
-                onChange={(e) => setOtherName(e.target.value)}
-                className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none dark:text-white"
-              />
+          {urls?.map((url, index) => (
+            index % 2 === 0 && (
+              <div key={index} className="mt-[1em] flex flex-row gap-[3em]">
+                <div className="w-full">
+                  <label htmlFor={`url-${index}`} className="flex-start flex font-medium">
+                    Link
+                    <CgAsterisk className="text-red-500" />
+                  </label>
+                  <input
+                    id={`url-${index}`}
+                    name={`url-${index}`}
+                    type='url'
+                    value={url}
+                    onChange={(e) => handleUrlChange(index, e.target.value)}
+                    className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none dark:text-white"
+                  />
+                </div>
+                <div className="w-full">
+                  <label htmlFor={`url-${index + 1}`} className="flex-start flex font-medium">
+                    Link
+                    <CgAsterisk className="text-red-500" />
+                  </label>
+                  <input
+                    id={`url-${index + 1}`}
+                    name={`url-${index + 1}`}
+                    type="url"
+                    value={urls[index + 1] || ''}
+                    onChange={(e) => handleUrlChange(index + 1, e.target.value)}
+                    className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
+                  />
+                </div>
+              </div>
+            )
+          ))}
+          
+          <div className='flex mt-[2em] text-primary-700 font-semibold items-center cursor-pointer' onClick={addNewUrlFields}>
+            <div>
+              <img src={plus} alt="plus" />
             </div>
-            <div className="w-full">
-              <label htmlFor="email" className="flex-start flex font-medium">
-                Link
-                <CgAsterisk className="text-red-500" />
-              </label>
-              <input
-                id="link"
-                name="link"
-                type="link"
-                required
-                disabled={loading}
-                onChange={(e) => setEmail(e.target.value)}
-                className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
-              />
-            </div>
+            <p>
+              Add New Link
+            </p>
           </div>
 
           <div className="mr-auto mt-4">
@@ -157,11 +178,13 @@ const AddNewSchool = () => {
           </div>
         </form>
       </div>
-     
+      {isModalOpen && (
+        <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
+          <AddNewSchoolM onClose={handleCloseModal} />
+        </Modal>
+      )}
     </main>
   );
 };
 
 export default AddNewSchool;
-
-

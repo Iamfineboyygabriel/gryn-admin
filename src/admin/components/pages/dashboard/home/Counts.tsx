@@ -9,26 +9,26 @@ const Counts = () => {
     {
       label: "Total Number of Applications",
       figure: getApplicationStats?.data?.size ?? 0,
-      detail: "See Application",
-      to: "/admin/dashboard/reports/all_application"
+      detail: "See All Application",
+      to: "/admin/dashboard/application"
     },
     {
-      label: "Number of Pending Applications",
-      figure: getApplicationStats?.data?.pending ?? 0,
-      detail: "See Pending Applications",
-      to:"/admin/dashboard/reports/all_pending_applications"
-    },
-    {
-      label: "Number of Completed Applications",
-      figure: getApplicationStats?.data?.completed ?? 0,
-      detail: "See Completed Applications",
-      to:"/admin/dashboard/reports/all_completed_application"
+      label: "Number of Students",
+      figure: getApplicationStats?.data?.numberOfStudent ?? 0,
+      detail: "See All Students",
+      to:"/admin/dashboard/all_users"
     },
     {
       label: "Number of Agents",
-      figure: getApplicationStats?.data?.numberOfAgent ?? 0,
+      figure: getApplicationStats?.data?.numberOfAgents ?? 0,
       detail: "See All Agents",
-      to: "/admin/dashboard/reports/all_agents"
+      to:"/admin/dashboard/all_users"
+    },
+    {
+      label: "Number of Staffs",
+      figure: getApplicationStats?.data?.numberOfStaffs ?? 0,
+      detail: "See All Staffs",
+      to: "/admin/dashboard/all_staffs"
     },
   ];
 
