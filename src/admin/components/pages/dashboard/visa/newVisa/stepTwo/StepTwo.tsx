@@ -1,7 +1,6 @@
 import React, { useRef, useState } from "react";
 import { useAppDispatch } from "../../../../../../../shared/redux/hooks/shared/reduxHooks";
 import { createVisaApplication } from "../../../../../../../shared/redux/shared/slices/shareApplication.slices";
-import CustomDatePicker from "../../../../../../../shared/utils/CustomeDatePicker";
 import { useCountries } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
 import useClickOutside from "../../../../../../../shared/utils/useClickOutside";
 import { button } from "../../../../../../../shared/buttons/Button";
@@ -11,6 +10,7 @@ import Flag from "react-world-flags";
 import { toast } from "react-toastify";
 import { AppDispatch } from "../../../../../../../shared/redux/store";
 
+
 interface CreateApplicationBody {
   firstName: string;
   lastName: string;
@@ -19,7 +19,7 @@ interface CreateApplicationBody {
   passportNumber: string;
   issuedDate: string;
   expiryDate: string;
-  destination: string | null;
+  destination: string;
   agentEmail: string;
   schoolName: string;
 }
@@ -45,8 +45,8 @@ const StepTwo: React.FC<StepTwoProps> = ({
   stepOneData,
   applicationId,
 }) => {
-  const [issuedDate, setIssuedDate] = useState<Date | null>(null);
-  const [expiryDate, setExpiryDate] = useState<Date | null>(null);
+  const [issuedDate, setIssuedDate] = useState("");
+  const [expiryDate, setExpiryDate] = useState("");
   const [passportNumber, setPassportNumber] = useState("");
   const [destination, setDestination] = useState<Country | null>(null);
   const [agentEmail, setAgentEmail] = useState("");
@@ -69,7 +69,6 @@ const StepTwo: React.FC<StepTwoProps> = ({
 
   const submitApplication = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log("submitApplication called");
   
     const validationError = validateFields();
     if (validationError) {
@@ -81,10 +80,10 @@ const StepTwo: React.FC<StepTwoProps> = ({
     try {
       const body: CreateApplicationBody = {
         ...stepOneData,
-        issuedDate: issuedDate?.toISOString().split("T")[0] || "",
+        issuedDate,
         passportNumber,
-        expiryDate: expiryDate?.toISOString().split("T")[0] || "",
-        destination: destination?.name || null,
+        expiryDate,
+        destination: destination?.name || "",
         agentEmail,
         schoolName,
       };
@@ -96,11 +95,9 @@ const StepTwo: React.FC<StepTwoProps> = ({
       } else {
         throw new Error("Unexpected response format");
       }
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error:", error); 
-      toast.error(
-        error instanceof Error ? error.message : "An error occurred while creating the application"
-      );
+      toast.error( error.message || "An error occurred while creating the application");
     } finally {
       setLoading(false);
     }
@@ -135,7 +132,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
                 name="passportNumber"
                 required
                 disabled={loading}
-                type="text"
+                type="tel"
                 onChange={(e) => setPassportNumber(e.target.value)}
                 className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
               />
@@ -148,9 +145,13 @@ const StepTwo: React.FC<StepTwoProps> = ({
               >
                 Issued Date
               </label>
-              <CustomDatePicker
-                selected={issuedDate}
-                onChange={(date: any) => setIssuedDate(date)}
+              <input
+              type="date"
+              id="date"
+              onChange={(e) => setIssuedDate(e.target.value)}
+              required
+              disabled={loading}
+              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
               />
             </div>
           </div>
@@ -163,9 +164,13 @@ const StepTwo: React.FC<StepTwoProps> = ({
               >
                 Expiry Date
               </label>
-              <CustomDatePicker
-                selected={expiryDate}
-                onChange={(date: any) => setExpiryDate(date)}
+                <input
+              type="date"
+              id="date"
+              onChange={(e) =>  setExpiryDate(e.target.value)}
+              required
+              disabled={loading}
+              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
               />
             </div>
 
@@ -239,6 +244,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
               <input
                 id="schoolName"
                 name="schoolName"
+                type="text"
                 onChange={(e) => setSchoolName(e.target.value)}
                 className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none dark:text-white"
               />
@@ -253,7 +259,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
               <input
                 id="assignedAgent"
                 name="assignedAgent"
-                type="text"
+                type="email"
                 required
                 disabled={loading}
                 onChange={(e) => setAgentEmail(e.target.value)}

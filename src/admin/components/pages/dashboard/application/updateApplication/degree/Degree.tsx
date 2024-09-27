@@ -34,14 +34,13 @@ const Degree = ({
   );
   const [loading, setLoading] = useState(false);
 
-  const dispatch: AppDispatch = useAppDispatch();
-
   useEffect(() => {
     const selectedOption = bachelorTypes?.find(
-      (option) => option.name === studentData?.degree.degreeType
+      (option) => option?.name === studentData?.degree?.degreeType
     );
     setDegreeType(selectedOption || null);
-  }, [studentData?.degree?.degreeType, bachelorTypes]);
+    setSelectedDegreeOption(studentData?.degree?.degreeType || null);
+  }, [studentData?.degree?.degreeType]);
 
   const updateDetails = async () => {
     setLoading(true);
@@ -55,21 +54,10 @@ const Degree = ({
       onNext()
       toast.success(response?.message);
     } catch (error:any) {
-      toast.error(error);
+      toast.error(error?.message);
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleDegreeSelect = (degree: string) => {
-    setSelectedDegreeOption(degree);
-    const selectedOption = bachelorTypes?.find((option) => option?.name === degree);
-    setDegreeType(selectedOption || null);
-  };
-
-  const handleSelectItem = (item: DropdownItem | null) => {
-    setDegreeType(item);
-    setSelectedDegreeOption(item?.name || null);
   };
 
   return (
@@ -98,55 +86,56 @@ const Degree = ({
               />
             </div>
           </div>
-          <p>What do you want to study abroad</p>
+          <p>Your selected degree type (cannot be changed)</p>
           <div className="flex w-[70%] gap-[2em]">
-        {studentDegree?.map((text, index) => (
-          <div
-            key={index}
-            className={`flex w-full cursor-pointer flex-col gap-[1em] rounded-lg px-[20px] py-[1.5em] dark:bg-gray-700 dark:text-white ${
-              selectedDegreeOption === text.value
-                ? "bg-primary-700 text-white"
-                : "bg-purple-white text-primary-700"
-            }`}
-            onClick={() => handleDegreeSelect(text?.value)}
-          >
-            <header>
-              <div className="flex justify-between">
-                <img
-                  src={
+            {studentDegree?.map((text, index) => (
+              <div
+                key={index}
+                className={`flex w-full flex-col gap-[1em] rounded-lg px-[20px] py-[1.5em] dark:bg-gray-700 dark:text-white ${
+                  selectedDegreeOption === text.value
+                    ? "bg-primary-700 text-white"
+                    : "bg-purple-white text-primary-700 opacity-50"
+                }`}
+              >
+                <header>
+                  <div className="flex justify-between">
+                    <img
+                      src={
+                        selectedDegreeOption === text?.value
+                          ? activeCertificate
+                          : text?.iconA
+                      }
+                      alt="certificate_icon"
+                    />
+                    <img src={text?.iconB} alt="circle_icon" />
+                  </div>
+                </header>
+                <div
+                  className={`text-xl dark:text-white ${
                     selectedDegreeOption === text?.value
-                      ? activeCertificate
-                      : text?.iconA
-                  }
-                  alt="certificate_icon"
-                />
-                <img src={text?.iconB} alt="circle_icon" />
+                      ? "text-white"
+                      : "text-primary-700"
+                  }`}
+                >
+                  <h1>{text?.titleA}</h1>
+                  <h1>{text?.titleB}</h1>
+                </div>
               </div>
-            </header>
-            <div
-              className={`text-xl dark:text-white ${
-                selectedDegreeOption === text?.value
-                  ? "text-white"
-                  : "text-primary-700"
-              }`}
-            >
-              <h1>{text?.titleA}</h1>
-              <h1>{text?.titleB}</h1>
-            </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-        <div className="w-[40%] flex flex-col gap-[1.2em]">
-          <Dropdown
-            label="Degree Type"
-            labelClassName="text-grey-primary"
-            className="text-purple-deep"
-            items={bachelorTypes}
-            selectedItem={degreeType}
-            onSelectItem={handleSelectItem}
-          />
-        </div>
+          <div className="w-[40%] flex flex-col gap-[1.2em]">
+            <Dropdown
+              label="Degree Type (Read-only)"
+              labelClassName="text-grey-primary"
+              className="text-purple-deep"
+              items={bachelorTypes}
+              selectedItem={degreeType}
+              onSelectItem={() => {}} 
+              disabled={true} 
+            />
+          </div>
+
           <div className="w-[40%]">
             <label
               htmlFor="course"

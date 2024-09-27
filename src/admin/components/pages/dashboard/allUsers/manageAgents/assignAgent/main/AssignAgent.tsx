@@ -15,7 +15,7 @@ interface AgentData {
   lastName: string;
   email: string;
   middleName: string;
-  userId: string;
+  id: string;
   bankAccounts: Array<{
     bankCode: string;
     accountName: string;
@@ -128,7 +128,7 @@ const AssignAgent = () => {
                     id="firstName"
                     name="firstName"
                     required
-                    value={agentData.profile.firstName}
+                    value={agentData?.profile?.firstName}
                     className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
                 />
                 </div>
@@ -141,7 +141,7 @@ const AssignAgent = () => {
                     name="lastName"
                     type="text"
                     required
-                    value={agentData.profile.lastName}
+                    value={agentData?.profile?.lastName}
                     className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
                 />
                 </div>
@@ -154,7 +154,7 @@ const AssignAgent = () => {
                 <input
                     id="otherName"
                     name="otherName"
-                    value={agentData.profile.middleName}
+                    value={agentData?.profile?.middleName}
                     className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none dark:text-white"
                 />
                 </div>
@@ -188,7 +188,7 @@ const AssignAgent = () => {
             id="bankName"
             name="bankName"
             required
-            value={agentData.bankAccounts[0]?.bankName}
+            value={agentData?.bankAccounts[0]?.bankName}
             className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
             />
             </div>
@@ -202,7 +202,7 @@ const AssignAgent = () => {
             name="accountNumber"
             type="text"
             required
-            value={agentData.bankAccounts[0]?.accountNumber}
+            value={agentData?.bankAccounts[0]?.accountNumber}
             className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
             />
             </div>
@@ -214,7 +214,7 @@ const AssignAgent = () => {
             <input
             id="accountName"
             name="accountName"
-            value={agentData.bankAccounts[0]?.accountName}
+            value={agentData?.bankAccounts[0]?.accountName}
             className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none dark:text-white"
             />
             </div>
@@ -224,20 +224,20 @@ const AssignAgent = () => {
         <section className="section-personal-details flex flex-col gap-[1.2em]">
                 <h2 className="text-xl font-normal text-gray-400">Uploaded Documents</h2>
                 <div className="grid grid-cols-1 gap-[1.2em] md:grid-cols-2">
-                {agentData.agentRegistrationDoc.map((doc:any)  => (
+                {agentData?.agentRegistrationDoc?.map((doc:any)  => (
                     <div key={doc.id} className="w-full">
                     <div>
                     <label className="dark:text-white" htmlFor={doc.documentType}>
-                    {doc.documentType}
+                    {doc?.documentType}
                     </label>
                 </div>
                     <div className="mt-2 flex items-center justify-between rounded-lg border-[1px] border-gray-300 px-[1em] py-5">
-                        <label htmlFor={doc.documentType} className="flex flex-grow flex-col dark:text-white cursor-pointer">
+                        <label htmlFor={doc?.documentType} className="flex flex-grow flex-col dark:text-white cursor-pointer">
                         <div className="flex items-center gap-5">
                             <div className="flex gap-2">
                             <img src={fileImg} alt="file_img" />
                             <p className="text-lg whitespace-nowrap font-light">
-                                {doc.name}
+                                {doc?.name}
                             </p>
                             </div>
                         </div>
@@ -272,9 +272,13 @@ const AssignAgent = () => {
         previewUrl={previewUrl}
         previewFileType={previewFileType}
         />
-          {isModalOpen && (
+       {isModalOpen && (
         <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
-          <FindStaffByEmail redirect="/admin/dashboard/all_users/assign_agent"  onClose={handleCloseModal} />
+          <FindStaffByEmail
+            redirect="/admin/dashboard/all_users/assign_agent"
+            onClose={handleCloseModal}
+            agentId={agentData.id} 
+          />
         </Modal>
       )}
     </main>

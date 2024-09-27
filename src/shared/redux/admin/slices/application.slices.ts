@@ -164,6 +164,19 @@ export const getAllAdminForSuperAdmin = createAsyncThunk(
   }
 );
 
+export const assignAgentToStaff = createAsyncThunk(
+  "application/assignAgentToStaff",
+  async ({ agentId, email }: { agentId: string; email: string }, thunkAPI) => {
+    try {
+      const data = await applicationServices.assignAgentToStaff( agentId, email);
+      return data;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  },
+);
+
+
 interface ApplicationState {
   allApplication: {
     applications: any[];
@@ -183,6 +196,7 @@ interface ApplicationState {
   getStats: any;
   getStaffStats: any;
   registerSchool:null;
+  assignAgent: null;
   allAdmin: {
     admins: any[] | null;
     totalPages: number;
@@ -214,6 +228,7 @@ const initialState: ApplicationState = {
   getStats: null,
   getStaffStats: null,
   registerSchool:null,
+  assignAgent: null,
   allAdmin: {
     admins: [],
     totalPages: 0,
@@ -456,6 +471,24 @@ export const applicationSlice = createSlice({
       .addCase(getAllSchoolsListCountries.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to fetch all school list";
+      })
+
+      .addCase(assignAgentToStaff.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        assignAgentToStaff.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.loading = false;
+          state.assignAgent = action.payload;
+          state.error = null;
+        },
+      )
+      .addCase(assignAgentToStaff.rejected, (state, action) => {
+        state.loading = false;
+        state.assignAgent = null;
+        state.error = action.payload as string || "Failed to update user profile.";
       })
 
   },

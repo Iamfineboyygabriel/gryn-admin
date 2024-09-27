@@ -216,6 +216,71 @@ const getAllActivity = async (page: number, limit: number, search: string = '') 
   }
 };
 
+export const updateApplicationDocument = async (
+  endpoint: string,
+  formData: FormData,
+) => {
+  const url = `${process.env.REACT_APP_API_URL}${endpoint}`;
+  try {
+    const response = await axios({
+      url,
+      headers: {
+        ...authHeader(),
+        "Content-Type": "multipart/form-data",
+      },
+      method: "patch",
+      data: formData,
+    });
+
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const findSchoolByCountryName = async (endpoint: any) => {
+  const url = `${process.env.REACT_APP_API_URL}${endpoint}`;
+  try {
+    const response = await axios.get(url, {
+      headers: authHeader(),
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error: any) {
+    if (!error.response) {
+      throw new Error("Network Error: Please check your internet connection.");
+    }
+    throw error.response.data;
+  }
+};
+
+const assignAgentToStaff = async (agentId: string, email: string) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/users/assign/agent/${agentId}?email=${email}`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "patch",
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw handleApiError(error);
+  }
+};
+
+
 const applicationServices = {
   getStats,
   getStaffDashboardStats,
@@ -229,7 +294,9 @@ const applicationServices = {
   getAllAgentsEmail,
   getAllAdminsEmail,
   getAllSchoolsListCountries,
-  getAllActivity
+  getAllActivity,
+  updateApplicationDocument,
+  assignAgentToStaff,
 };
 
 export default applicationServices;

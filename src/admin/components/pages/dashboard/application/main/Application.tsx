@@ -6,6 +6,7 @@ import Modal from "../../../../../../shared/modal/Modal";
 import { button } from "../../../../../../shared/buttons/Button";
 import plus from "../../../../../../assets/svg/plus.svg";
 import FindStudentByAll from "../modal/FindStudentByAll";
+import ApplicationLinks from "../../../../../../shared/modal/ApplicationLinks";
 
 const Application = () => {
   const [isModalOpen, setModalOpen] = useState(false);

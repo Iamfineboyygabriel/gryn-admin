@@ -67,6 +67,9 @@ const PersonalDetails: React.FC<{ applicationId: any }> = ({
             applicationDetails?.data?.internationalPassportNumber
           )}
         </div>
+        <div className="flex mt-[1em] w-[47%]">
+          {renderField("Email", applicationDetails?.data?.email)}
+        </div>
       </form>
     </main>
   );

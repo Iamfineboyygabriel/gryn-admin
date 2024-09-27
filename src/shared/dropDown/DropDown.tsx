@@ -25,6 +25,7 @@ interface ToggleDropdownProps {
   renderItem?: (item: DropdownItem) => React.ReactNode;
   useEndpointSearch?: boolean;
   onDropdownToggle?: (isOpen: boolean) => void;
+  disabled?: boolean; 
 }
 
 const useToggleDropdown = () => {
@@ -59,6 +60,7 @@ export const Dropdown: React.FC<ToggleDropdownProps> = ({
   renderItem,
   useEndpointSearch = false,
   onDropdownToggle,
+  disabled = false,
 }) => {
   const { isOpen, toggleDropdown, closeDropdown } = useToggleDropdown();
   const [search, setSearch] = useState("");
@@ -128,6 +130,7 @@ export const Dropdown: React.FC<ToggleDropdownProps> = ({
           onClick={handleToggleDropdown}
           aria-haspopup="listbox"
           aria-expanded={isOpen}
+          disabled={disabled}
         >
           {selectedItem ? (
             defaultRenderItem(selectedItem)

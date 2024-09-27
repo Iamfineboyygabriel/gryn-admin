@@ -169,7 +169,7 @@ const ApplicationSummary: React.FC<ApplicationSummaryProps> = ({
           <div className="flex justify-between gap-4">
             <button.PrimaryButton
               className="rounded-full cursor-pointer bg-error px-[3em] py-[8px] text-center font-medium text-white"
-              onClick={handleDecline}
+              onClick={onClose}
               disabled={declineLoading || approveLoading}
             >
               {declineLoading ? (
@@ -180,7 +180,7 @@ const ApplicationSummary: React.FC<ApplicationSummaryProps> = ({
                   type="spin"
                 />
               ) : (
-                "Decline"
+                "Back"
               )}
             </button.PrimaryButton>
             <button.PrimaryButton

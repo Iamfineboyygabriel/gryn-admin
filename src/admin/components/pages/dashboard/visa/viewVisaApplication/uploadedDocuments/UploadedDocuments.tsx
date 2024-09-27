@@ -245,7 +245,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
                   <div className="flex items-center gap-5">
                     <div className="flex gap-2">
                       <img src={fileImg} alt="file_img" />
-                      <p className="text-lg whitespace-nowrap font-light">
+                      <p className="text-lg truncate max-w-[130px] whitespace-nowrap font-light">
                         {doc.name}
                       </p>
                     </div>

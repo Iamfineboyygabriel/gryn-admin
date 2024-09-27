@@ -3,17 +3,22 @@ import { useAllPendingAgents } from "../../../../../../shared/redux/hooks/shared
 
 const TotalNumber = () => {
   const { getApplicationStats } = useStats();
-  const { agents } = useAllPendingAgents();
+  
   const Data = [
     {
       label: "Number of Completed Applications",
-      figure: getApplicationStats?.data?.completed ?? 0,
-      detail: "See Completed Applications",
+      figure: getApplicationStats?.data?.numberOfCompletedApplication ?? 0,
+      detail: "See All Completed Applications",
     },
     {
       label: "Number of Pending Applications",
-      figure: getApplicationStats?.data?.pending ?? 0,
-      detail: "See Pending Applications",
+      figure: getApplicationStats?.data?.numberOfPendingApplication ?? 0,
+      detail: "See All Pending Applications",
+    },
+    {
+      label: "Number of Pending Agents",
+      figure: getApplicationStats?.data?.numberOfPendingAgents ?? 0,
+      detail: "See All Pending Agents",
     },
   ];
   return (
@@ -31,17 +36,6 @@ const TotalNumber = () => {
             <h1 className="mt-[1.5em] text-2xl">{text.figure}</h1>
           </div>
         ))}
-      <div className="w-[em]">
-       <div
-       className="w-full rounded-lg bg-white px-[20px] py-[1.5em] transition-colors duration-300"
-        >
-        <header>
-            <h1>Pending</h1>
-            <h1>Agents</h1>
-        </header>
-        <h1 className="mt-[1.5em] text-2xl">{agents?.length}</h1>
-        </div>
-     </div>
       </div>
     </main>
   );

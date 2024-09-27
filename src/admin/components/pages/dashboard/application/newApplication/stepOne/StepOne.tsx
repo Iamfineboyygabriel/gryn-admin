@@ -8,7 +8,6 @@ import {
   useStates,
 } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
 import { formatDateApplication } from "../../../../../../../shared/utils/dateFormat";
-import CustomDatePicker from "../../../../../../../shared/utils/CustomeDatePicker";
 import { Dropdown } from "../../../../../../../shared/dropDown/DropDown";
 import { button } from "../../../../../../../shared/buttons/Button";
 
@@ -30,18 +29,12 @@ const StepOne = ({ onNext }: any) => {
     useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
-  const [selectedDate, setSelectedDate] = useState(null);
 
   const [loading, setLoading] = useState(false);
 
   const { countries, loading: countriesLoading } = useCountries();
   const { states, loading: statesLoading } = useStates();
   const statesData = states;
-
-  const handleDateChange = (date: any) => {
-    setSelectedDate(date);
-    setDateOfBirth(date);
-  };
 
   const areFieldsFilled = () => {
     return dateOfBirth && state && country;
@@ -55,15 +48,15 @@ const StepOne = ({ onNext }: any) => {
       toast.error("All fields must be filled");
       return;
     }
-
+  
     setLoading(true);
-
+  
     setTimeout(() => {
       const body = {
         firstName,
         lastName,
         middleName,
-        dateOfBirth: formatDateApplication(selectedDate),
+        dateOfBirth: dateOfBirth ? formatDateApplication(new Date(dateOfBirth)) : null,
         email,
         address,
         phoneNumber,
@@ -126,6 +119,7 @@ const StepOne = ({ onNext }: any) => {
               name="firstName"
               required
               disabled={loading}
+              type="text"
               onChange={(e) => setFirstName(e.target.value)}
               className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
             />
@@ -155,6 +149,7 @@ const StepOne = ({ onNext }: any) => {
               id="middleName"
               name="middleName"
               disabled={loading}
+              type="text"
               onChange={(e) => setMiddleName(e.target.value)}
               className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none dark:text-white"
             />
@@ -167,7 +162,7 @@ const StepOne = ({ onNext }: any) => {
             <input
               id="email"
               name="email"
-              type="text"
+              type="email"
               required
               disabled={loading}
               onChange={(e) => setEmail(e.target.value)}
@@ -183,10 +178,14 @@ const StepOne = ({ onNext }: any) => {
               Date of Birth
               <CgAsterisk className="text-red-500" />
             </label>
-            <CustomDatePicker
-              selected={selectedDate}
-              onChange={handleDateChange}
-            />
+              <input
+              type="date"
+              id="date"
+              onChange={(e) => setDateOfBirth(e.target.value)}
+              required
+              disabled={loading}
+              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
+              />
           </div>
           <div className="w-full">
             <label htmlFor="address" className="flex-start flex font-medium">
@@ -217,6 +216,7 @@ const StepOne = ({ onNext }: any) => {
               name="localGovtArea"
               required
               disabled={loading}
+              type="text"
               onChange={(e) => setLocalGovtArea(e.target.value)}
               className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
             />
@@ -279,7 +279,7 @@ const StepOne = ({ onNext }: any) => {
             <input
               id="phoneNumber"
               name="phoneNumber"
-              type="text"
+              type="tel"
               required
               disabled={loading}
               onChange={(e) => setPhoneNumber(e.target.value)}

@@ -644,7 +644,7 @@ const findAgentByEmail = async (email: string) => {
 };
 
 const findStaffByEmail = async (email: string) => {
-  const url = `${process.env.REACT_APP_API_URL}/admin/users/staff/email`;
+  const url = `${process.env.REACT_APP_API_URL}/admin/users/staff/find/email`;
   try {
     const response = await axios({
       url,

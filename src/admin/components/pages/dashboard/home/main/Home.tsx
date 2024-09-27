@@ -5,9 +5,9 @@ import ApexChart from "../../../../../../shared/chart/ApexChart";
 import Status from "../Status/Status"
 import { useSchoolListCountries } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
 
+
 const Home = () => {
-  // const {listSchools} = useSchoolListCountries()
-  // console.log("list schools",listSchools)
+
   return (
     <div>
       <h1 className="text-2xl font-bold">Overview</h1>

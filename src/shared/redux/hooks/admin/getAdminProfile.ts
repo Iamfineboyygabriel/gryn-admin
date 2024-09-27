@@ -211,26 +211,26 @@ export const useAdminsEmails = () => {
 
 export const useSchoolListCountries = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { listSchools, loading, error } = useSelector((state: RootState) => ({
-    listSchools: state?.application?.allSchoolList?.listSchools,
-    loading: state.application.loading,
-    error: state.application.error,
+  const { listCountries, loading, error } = useSelector((state: RootState) => ({
+    listCountries: state?.application?.allSchoolList?.listSchools,
+    loading: state?.application?.loading,
+    error: state?.application?.error,
   }));
 
   useEffect(() => {
     dispatch(getAllSchoolsListCountries());
   }, [dispatch]);
 
-  return { listSchools, loading, error };
+  return { listCountries, loading, error };
 };
 
 
 export const useAllAdminForSuperAdmin = () => {
   const dispatch: AppDispatch = useDispatch();
-  const allAdmin:any = useSelector((state: RootState) => state.application.allAdmin);
-  const loading = useSelector((state: RootState) => state.application.loading);
-  const error = useSelector((state: RootState) => state.application.error);
-  const searchTerm = useSelector((state: RootState) => state.application.allAdminSearchTerm);
+  const allAdmin:any = useSelector((state: RootState) => state?.application?.allAdmin);
+  const loading = useSelector((state: RootState) => state?.application?.loading);
+  const error = useSelector((state: RootState) => state?.application.error);
+  const searchTerm = useSelector((state: RootState) => state?.application?.allAdminSearchTerm);
 
   const fetchAdmins = useCallback(
     (page?: number, limit?: number) => {

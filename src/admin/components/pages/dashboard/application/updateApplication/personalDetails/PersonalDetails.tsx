@@ -50,8 +50,8 @@ const PersonalDeatils = ({ onNext,studentData }: any) => {
       const response = await updateStudentApplication(studentData.id, body);
       onNext()
       toast.success(response?.message);
-    } catch (error) {
-      toast.error("Failed to update personal details");
+    } catch (error:any) {
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }

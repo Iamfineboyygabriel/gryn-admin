@@ -150,7 +150,7 @@ const StepThree = ({ applicationId }: any) => {
   return (
     <main>
       <form onSubmit={submitDocument}>
-        <div className="mt-[1.5em] grid w-[80%] grid-cols-2 gap-8">
+        <div className="mt-[1.5em] grid w-[95%] grid-cols-2 gap-8">
           <FileUpload
             label="Service Charge"
             inputId="resumeFile"
