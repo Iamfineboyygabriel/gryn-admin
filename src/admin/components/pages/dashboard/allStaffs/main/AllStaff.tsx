@@ -137,7 +137,7 @@ const AllStaff = () => {
             <div className="mt-[2em] flex flex-col items-center justify-center">
               <img src={transaction} alt="No admins" />
               <p className="mt-2 text-sm text-gray-500 dark:text-white">
-                No Admins found.
+                No Staff found.
               </p>
             </div>
           </td>

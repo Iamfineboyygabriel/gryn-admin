@@ -184,7 +184,7 @@ const getAllSchoolsListCountries = async () => {
 
 
 export const getAllAdminForSuperAdmin = async (page?: number, limit?: number, search: string = '') => {
-  let url = `${API_URL}/admin/users/admin?`;
+  let url = `${API_URL}/admin/users/admin/staffs?`;
   
   if (page !== undefined) url += `page=${page}&`;
   if (limit !== undefined) url += `limit=${limit}&`;
