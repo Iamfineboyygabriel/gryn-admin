@@ -77,7 +77,7 @@ const AllStaff = () => {
   const formatData = useCallback((data: any) => (data ? data : "-"), []);
 
   const filteredAdmins = useMemo(() => {
-    if (!admins.data) return [];
+    if (!admins?.data) return [];
     return admins?.data?.filter((admin: any) => {
       const fullName = `${admin?.profile?.firstName} ${admin?.profile?.lastName}`?.toLowerCase();
       return (
