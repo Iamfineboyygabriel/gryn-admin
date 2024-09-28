@@ -138,6 +138,19 @@ const getAllStudentEmail = async () => {
   }
 };
 
+const getAllStaffEmail = async () => {
+  const url = `${API_URL}/admin/users/staffs/emails`;
+  try {
+    const response = await axios.get(url, { headers: authHeader() });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 
 const getAllAdminsEmail = async () => {
   const url = `${API_URL}/admin/users/admins/emails`;
@@ -280,6 +293,41 @@ const assignAgentToStaff = async (agentId: string, email: string) => {
   }
 };
 
+const assignApplicationToStaff = async (applicationId: string, email: string) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/application/staff/assign/${applicationId}?email=${email}`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "patch",
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw handleApiError(error);
+  }
+};
+
+const assignApplicationToAgent = async (applicationId: string, email: string) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/application/agent/assign/${applicationId}?email=${email}`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "patch",
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw handleApiError(error);
+  }
+};
 
 const applicationServices = {
   getStats,
@@ -293,10 +341,13 @@ const applicationServices = {
   getAllStudentEmail,
   getAllAgentsEmail,
   getAllAdminsEmail,
+  getAllStaffEmail,
   getAllSchoolsListCountries,
   getAllActivity,
   updateApplicationDocument,
   assignAgentToStaff,
+  assignApplicationToStaff,
+  assignApplicationToAgent
 };
 
 export default applicationServices;

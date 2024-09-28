@@ -16,6 +16,7 @@ import {
   getAllSchoolsListCountries,
   getAllAdminForSuperAdmin,
   setAllAdminSearchTerm,
+  getAllStaffEmail,
 } from "../../admin/slices/application.slices";
 import { setMessage } from "../../message.slices";
 import { createSelector } from "@reduxjs/toolkit";
@@ -177,6 +178,21 @@ export const useStudentEmails = () => {
   }, [dispatch]);
 
   return { studentsEmail, loading, error };
+};
+
+
+export const useStaffEmails = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { staffEmail, loading, error } = useSelector((state: RootState) => ({
+    staffEmail: state?.application?.allStaffEmail?.staffEmail,
+    loading: state.application.loading,
+    error: state.application.error,
+  }));
+  useEffect(() => {
+    dispatch(getAllStaffEmail());
+  }, [dispatch]);
+
+  return { staffEmail, loading, error };
 };
 
 export const useAgentsEmails = () => {

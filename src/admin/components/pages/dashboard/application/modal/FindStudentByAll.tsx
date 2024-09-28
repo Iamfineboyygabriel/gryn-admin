@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../../../../../shared/redux/store';
 import { findStudentByEmailUniversityDegree } from '../../../../../../shared/redux/shared/slices/shareApplication.slices';
-import { useSchoolListCountries, useStudentEmails } from '../../../../../../shared/redux/hooks/admin/getAdminProfile';
+import {  useStudentEmails } from '../../../../../../shared/redux/hooks/admin/getAdminProfile';
 import { useTopUniversities } from '../../../../../../shared/redux/hooks/shared/getUserProfile';
 import { Dropdown, DropdownItem } from '../../../../../../shared/dropDown/DropDown';
 import { button } from "../../../../../../shared/buttons/Button";

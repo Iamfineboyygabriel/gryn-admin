@@ -122,6 +122,21 @@ export const getAllAgentEmail = createAsyncThunk(
   }
 );
 
+export const getAllStaffEmail = createAsyncThunk(
+  "application/getAllStaffEmail",
+  async (_, thunkAPI) => {
+    try {
+      const response = await applicationServices.getAllStaffEmail();
+      return {
+        staffEmail: response.data,
+      };
+    } catch (error: any) {
+      const message = error.message || "An error occurred"; 
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const getAllAdminsEmail = createAsyncThunk(
   "application/getAllAdminsEmail",
   async (_, thunkAPI) => {
@@ -176,6 +191,30 @@ export const assignAgentToStaff = createAsyncThunk(
   },
 );
 
+export const assignApplicationToStaff = createAsyncThunk(
+  "application/assignApplicationToStaff",
+  async ({ applicationId, email }: { applicationId: string; email: string }, thunkAPI) => {
+    try {
+      const data = await applicationServices.assignApplicationToStaff( applicationId, email);
+      return data;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  },
+);
+
+export const assignApplicationToAgent = createAsyncThunk(
+  "application/assignApplicationToAgent",
+  async ({ applicationId, email }: { applicationId: string; email: string }, thunkAPI) => {
+    try {
+      const data = await applicationServices.assignApplicationToAgent( applicationId, email);
+      return data;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  },
+);
+
 
 interface ApplicationState {
   allApplication: {
@@ -197,6 +236,8 @@ interface ApplicationState {
   getStaffStats: any;
   registerSchool:null;
   assignAgent: null;
+  assignApplicationStaff: null;
+  assignApplicationAgent: null;
   allAdmin: {
     admins: any[] | null;
     totalPages: number;
@@ -204,6 +245,9 @@ interface ApplicationState {
   };
   allStudentsEmail: {
     studentsEmail: any[];
+  };
+  allStaffEmail: {
+    staffEmail: any[];
   };
   allAgentsEmail: {
     agentsEmail: any[];
@@ -229,6 +273,8 @@ const initialState: ApplicationState = {
   getStaffStats: null,
   registerSchool:null,
   assignAgent: null,
+  assignApplicationStaff: null,
+  assignApplicationAgent: null,
   allAdmin: {
     admins: [],
     totalPages: 0,
@@ -246,6 +292,9 @@ const initialState: ApplicationState = {
   },
   allStudentsEmail: {
     studentsEmail: [],
+  },
+  allStaffEmail: {
+    staffEmail: [],
   },
   allAgentsEmail: {
     agentsEmail: [],
@@ -421,6 +470,23 @@ export const applicationSlice = createSlice({
         state.error = action.error.message || "Failed to fetch all students email";
       })
 
+      .addCase(getAllStaffEmail.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllStaffEmail.fulfilled, (state, action: PayloadAction<{
+        staffEmail: any[];
+      }>) => {
+        state.loading = false;
+        state.allStaffEmail = {
+          staffEmail: action.payload.staffEmail,
+        };
+      })
+      .addCase(getAllStaffEmail.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch all staff email";
+      })
+
       .addCase(getAllAgentEmail.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -489,6 +555,42 @@ export const applicationSlice = createSlice({
         state.loading = false;
         state.assignAgent = null;
         state.error = action.payload as string || "Failed to update user profile.";
+      })
+
+      .addCase(assignApplicationToStaff.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        assignApplicationToStaff.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.loading = false;
+          state.assignApplicationStaff = action.payload;
+          state.error = null;
+        },
+      )
+      .addCase(assignApplicationToStaff.rejected, (state, action) => {
+        state.loading = false;
+        state.assignApplicationStaff = null;
+        state.error = action.payload as string || "Failed to assign application to staff.";
+      })
+
+      .addCase(assignApplicationToAgent.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        assignApplicationToAgent.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.loading = false;
+          state.assignApplicationAgent = action.payload;
+          state.error = null;
+        },
+      )
+      .addCase(assignApplicationToAgent.rejected, (state, action) => {
+        state.loading = false;
+        state.assignApplicationAgent = null;
+        state.error = action.payload as string || "Failed to assign application to agent.";
       })
 
   },

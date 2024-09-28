@@ -14,6 +14,7 @@ import approve from "../../../../../../../../../assets/svg/Approved.svg";
 import reject from "../../../../../../../../../assets/svg/Rejected.svg";
 import ReactLoading from "react-loading";
 import StudentApplicationSummary from "../../../../../../../../../shared/modal/applicationSummaryModal/StudentApplicationSummary";
+import AssignApplication from "../../../../../../../../../shared/modal/AssignApplication";
 
 interface Document {
   id: string;
@@ -53,6 +54,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewFileType, setPreviewFileType] = useState<string>("");
   const [isModalOpen, setModalOpen] = useState(false);
+  const [isAssignModal, setIsAssignModal] = useState(false);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>({});
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -75,6 +77,9 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
 
   const handleOpenModal = () => setModalOpen(true);
   const handleCloseModal = () => setModalOpen(false);
+
+  const handleAssignOpenModal = () => setIsAssignModal(true);
+  const handleAssignCloseModal = () => setIsAssignModal(false);
 
   const getFileTypeFromUrl = (url: string): string => {
     const segments = url.split("/");
@@ -245,7 +250,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
                   <div className="flex items-center gap-5">
                     <div className="flex gap-2">
                       <img src={fileImg} alt="file_img" />
-                      <p className="text-lg whitespace-nowrap font-light">
+                      <p className="text-lg truncate max-w-[170px] whitespace-nowrap font-light">
                         {doc.name}
                       </p>
                     </div>
@@ -292,12 +297,21 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
         previewUrl={previewUrl}
         previewFileType={previewFileType}
       />
+      <div>
       <button.PrimaryButton
-        className="m-auto mt-[5em] w-[18%] gap-2 rounded-full bg-linear-gradient py-[12px] text-center text-lg font-medium text-white"
+        className="m-auto mt-[5em] w-[18%] gap-2 rounded-full bg-purple-white  py-[12px] text-center text-lg font-semibold text-primary-700"
+        onClick={handleAssignOpenModal}
+        >
+        Assign Application
+      </button.PrimaryButton>
+       
+      <button.PrimaryButton
+        className="m-auto mt-[5em] ml-8 w-[18%] gap-2 rounded-full bg-linear-gradient py-[12px] text-center text-lg font-medium text-white"
         onClick={handleOpenModal}
-      >
+        >
         Submit Response
       </button.PrimaryButton>
+          </div>
       {isModalOpen && (
         <Modal
           isOpen={isModalOpen}
@@ -308,6 +322,18 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
             onClose={handleCloseModal}
             documents={documents}
           />
+        </Modal>
+      )}
+        {isAssignModal && (
+        <Modal
+          isOpen={isAssignModal}
+          onClose={handleAssignCloseModal}
+          data-aos="zoom-in"
+        >
+          <AssignApplication 
+           applicationId={applicationId}
+           onClose={handleAssignCloseModal}
+           />
         </Modal>
       )}
     </main>
