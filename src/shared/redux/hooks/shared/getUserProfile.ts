@@ -29,6 +29,7 @@ import {
 import { useQuery } from "react-query";
 import { getAllAdminForSuperAdmin } from "../../admin/slices/application.slices";
 import { useAppSelector } from "./reduxHooks";
+import { getAllBanks } from "../../admin/services/application.services";
 
 interface UpdateProfile {
   email?: string;
@@ -623,3 +624,5 @@ export const useBudgetFetch = (initialPage = 1, initialLimit = 10) => {
     refetch: fetchBudgets,
   };
 };
+
+

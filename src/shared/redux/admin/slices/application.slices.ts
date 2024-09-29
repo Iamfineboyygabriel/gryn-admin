@@ -216,6 +216,22 @@ export const assignApplicationToAgent = createAsyncThunk(
 );
 
 
+export const getAllBanks = createAsyncThunk(
+  "application/getAllBanks",
+  async (_, thunkAPI) => {
+    try {
+      const data = await applicationServices.getAllBanks();
+      return data;
+    } catch (error: any) {
+      const message = error?.message || "Failed to fetch banks";
+      thunkAPI.dispatch(setMessage(message));
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
+
+
 interface ApplicationState {
   allApplication: {
     applications: any[];
@@ -238,6 +254,7 @@ interface ApplicationState {
   assignAgent: null;
   assignApplicationStaff: null;
   assignApplicationAgent: null;
+  allBanks: null,
   allAdmin: {
     admins: any[] | null;
     totalPages: number;
@@ -275,6 +292,7 @@ const initialState: ApplicationState = {
   assignAgent: null,
   assignApplicationStaff: null,
   assignApplicationAgent: null,
+  allBanks: null,
   allAdmin: {
     admins: [],
     totalPages: 0,
@@ -592,6 +610,16 @@ export const applicationSlice = createSlice({
         state.assignApplicationAgent = null;
         state.error = action.payload as string || "Failed to assign application to agent.";
       })
+
+      builder.addCase(
+        getAllBanks.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.allBanks = action.payload;
+        },
+      );
+      builder.addCase(getAllBanks.rejected, (state, action) => {
+        state.allBanks = null;
+      });
 
   },
 });

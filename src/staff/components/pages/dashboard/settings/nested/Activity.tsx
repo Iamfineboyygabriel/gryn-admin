@@ -1,5 +1,4 @@
 import { useUserActivity } from '../../../../../../shared/redux/hooks/admin/getAdminProfile';
-import eyeImg from "../../../../../../assets/svg/eyeImg.svg";
 
 const Activity = () => {
   const { userActivity } = useUserActivity();
@@ -20,7 +19,6 @@ const Activity = () => {
               {new Date(activity?.createdAt).toLocaleDateString()}
             </small>
           </div>
-          <div><img src={eyeImg} alt="eye_img" /></div>
         </div>
       ))}
     </>
@@ -28,4 +26,3 @@ const Activity = () => {
 }
 
 export default Activity;
-

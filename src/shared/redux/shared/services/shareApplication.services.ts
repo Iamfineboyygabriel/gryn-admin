@@ -941,6 +941,70 @@ export const getAccountInfo = async (code: number, account_number:string) => {
   }
 };
 
+export const findStaffDetailByEmail = async (endpoint:any) => {
+  const url = `${process.env.REACT_APP_API_URL}${endpoint}`;
+  try {
+    const response = await axios({
+      url,
+      method: "get",
+      headers: authHeader(),
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+export const updateStaffRegistrationDocument = async (
+  endpoint: string,
+  formData: FormData,
+) => {
+  const url = `${process.env.REACT_APP_API_URL}${endpoint}`;
+  try {
+    const response = await axios({
+      url,
+      headers: {
+        ...authHeader(),
+        "Content-Type": "multipart/form-data",
+      },
+      method: "patch",
+      data: formData,
+    });
+
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const findStaffAssignedAgent = async (endpoint:any) => {
+  const url = `${process.env.REACT_APP_API_URL}${endpoint}`;
+  try {
+    const response = await axios({
+      url,
+      method: "get",
+      headers: authHeader(),
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const shareApplicationServices = {
   getUserProfile,
   uploadAvatar,

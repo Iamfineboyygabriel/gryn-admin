@@ -31,6 +31,8 @@ import AllStaff from "../../pages/dashboard/allStaffs/main/AllStaff";
 import Notification from "../../pages/dashboard/notification/main/Notification";
 import CreateNews from "../../pages/dashboard/notification/news/createNews/CreateNews";
 import SeeAllStudents from "../../pages/dashboard/Reports/seeAll/SeeAllStudents";
+import ViewStaffProfile from "../../pages/dashboard/allStaffs/viewStaffProfile/main/ViewStaffProfile";
+import NewInvoice from "../../pages/dashboard/allStaffs/viewStaffProfile/invoices/NewInvoice";
 
 const ProtectedSuperAdminRoute = ({ children }:any) => {
   const { userDetails } = useCurrentUser();
@@ -115,7 +117,9 @@ const DashboardRoutes = () => {
         />
 
           <Route path="all_staffs" element={<AllStaff />} />
-
+          <Route path="/all_staffs/view_profile/:staffEmail" element={<ViewStaffProfile />} />
+          <Route path="/all_staffs/view_profile/new_invoice" element={<NewInvoice />} />
+           
           <Route path="reports" element={<Report />} />
           <Route path="/reports/budgets" element={<Budgets />} />
           <Route path="/reports/new_budgets" element={<NewBudgets />} />

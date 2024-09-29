@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useCallback, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import transaction from "../../../../../../assets/svg/Transaction.svg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import DOMPurify from "dompurify";
 import { button } from "../../../../../../shared/buttons/Button";
 import plus from "../../../../../../assets/svg/plus.svg";
@@ -10,7 +10,7 @@ import { useAllAdminForSuperAdmin } from "../../../../../../shared/redux/hooks/a
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
-    {Array.from({ length: 5 }).map((_, index) => (
+    {Array.from({ length: 6 }).map((_, index) => (
       <td key={index} className="px-6 py-4">
         <div className="h-4 bg-gray-200 rounded"></div>
       </td>
@@ -33,7 +33,7 @@ const AllStaff = () => {
   const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
   const itemsPerPage = 10;
   const [isModalOpen, setModalOpen] = useState(false);
-
+   const navigate = useNavigate()
   const handleOpenModal = () => setModalOpen(true);
   const handleCloseModal = () => setModalOpen(false);
 
@@ -88,6 +88,13 @@ const AllStaff = () => {
     });
   }, [admins, localSearchTerm]);
 
+  const handleViewDetails = useCallback(
+    (staffEmail: string) => {
+      navigate(`/admin/dashboard/all_staffs/view_profile/${staffEmail}`);
+    },
+    [navigate]
+  );
+
   const renderTableBody = useCallback(() => {
     if (loading) {
       return Array.from({ length: itemsPerPage }).map((_, index) => (
@@ -128,6 +135,11 @@ const AllStaff = () => {
               )
             )}
           />
+            <td
+              onClick={() => handleViewDetails(admin?.profile?.email)}
+              className="py-[16px] cursor-pointer px-[24px]">
+                View details
+          </td>
         </tr>
       ));
     } else {
@@ -186,6 +198,7 @@ const AllStaff = () => {
               <th className="px-6 py-3 text-left text-sm font-normal">Phone Number</th>
               <th className="px-6 py-3 text-left text-sm font-normal">Role</th>
               <th className="px-6 py-3 text-left text-sm font-normal">Email Address</th>
+              <th className="px-6 py-3 text-left text-sm font-normal">Action</th>
             </tr>
           </thead>
           <tbody>{renderTableBody()}</tbody>

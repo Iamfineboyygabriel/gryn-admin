@@ -4,6 +4,12 @@ import authHeader from "../../headers";
 const API_URL = process.env.REACT_APP_API_URL;
 const API_URL_Add_New_School = process.env.REACT_APP_API_URL + "/school";
 
+interface SubmitBankDetailsParams {
+  accountNumber: string;
+  accountName: string;
+  bankCode: string;
+  bankName:string;
+}
 
 const handleApiError = (error: any) => {
   if (!error?.response) {
@@ -329,6 +335,87 @@ const assignApplicationToAgent = async (applicationId: string, email: string) =>
   }
 };
 
+
+export const getAllBanks = async () => {
+  const url = `${API_URL}/auth/bank/list`;
+  try {
+    const response = await axios.get(url, { headers: authHeader() });
+    const token = response.data.data?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error: any) {
+    if (!error.response) {
+      throw new Error("Network Error: Please check your internet connection.");
+    }
+    throw error.response.data;
+  }
+};
+
+export const getAccountName = async (endpoint: any) => {
+  const url = `${process.env.REACT_APP_API_URL}${endpoint}`;
+  try {
+    const response = await axios.get(url, {
+      headers: authHeader(),
+    });
+    const token = response.data.data?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error: any) {
+    if (!error.response) {
+      throw new Error("Network Error: Please check your internet connection.");
+    }
+    throw error.response.data;
+  }
+};
+
+export const submitBankDetails = async (
+  email: string,
+  { accountNumber, accountName, bankCode, bankName }: SubmitBankDetailsParams,
+) => {
+  const url = `${process.env.REACT_APP_API_URL}/auth/bankInfo?email=${encodeURIComponent(email)}`;
+  try {
+    const response = await axios.post(
+      url,
+      {
+        accountNumber,
+        accountName,
+        bankCode,
+        bankName,
+      },
+      {
+        headers: authHeader(),
+      },
+    );
+    return response.data;
+  } catch (error: any) {
+    if (!error.response) {
+      throw new Error("Network Error: Please check your internet connection.");
+    }
+    throw error.response.data;
+  }
+};
+
+export const uploadApplication = async (endpoint: string, body: FormData) => {
+  const url = `${API_URL}${endpoint}`;
+  try {
+    const token = sessionStorage.getItem("userData");
+    const headers = {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
+    const response = await axios.post(url, body, { headers });
+    return response.data;
+  } catch (error: any) {
+    if (!error.response) {
+      throw new Error("Network Error: Please check your internet connection.");
+    }
+    throw error.response.data;
+  }
+};
+
 const applicationServices = {
   getStats,
   getStaffDashboardStats,
@@ -347,7 +434,10 @@ const applicationServices = {
   updateApplicationDocument,
   assignAgentToStaff,
   assignApplicationToStaff,
-  assignApplicationToAgent
+  assignApplicationToAgent,
+  getAllBanks,
+  getAccountName,
+  submitBankDetails,
 };
 
 export default applicationServices;

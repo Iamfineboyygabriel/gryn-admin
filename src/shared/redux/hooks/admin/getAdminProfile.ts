@@ -22,6 +22,70 @@ import { setMessage } from "../../message.slices";
 import { createSelector } from "@reduxjs/toolkit";
 import { RootState } from "../../rootReducer";
 import { getAllDraftedNews, getAllNews, setAllDraftedNewsSearchTerm, setAllNewsSearchTerm } from "../../admin/slices/notificationApplication.slices";
+import { getAllBanks } from "../../admin/slices/application.slices";
+import { useQuery } from "react-query";
+import { findStaffAssignedAgent, findStaffDetailByEmail } from "../../shared/services/shareApplication.services";
+
+
+
+export interface StaffDetails {
+  status: number;
+  data: {
+    profile:{
+      firstName: string;
+      lastName: string;
+      publicURL:string;
+      middleName: string;
+      email: string;
+      userId: string;
+    },
+    role:string;
+    phoneNumber: string;
+    dateOfBirth: string;
+    address: string;
+    localGovtArea: string;
+    state: string;
+    country: string;
+    internationalPassportNumber: string;
+    status: string;
+    userId: string;
+    staffRegistrationDoc: {
+      id: string;
+      name: string;
+      publicURL: string;
+      documentType: string;
+      uploadType: string;
+      applicationId: number;
+      paymentId: null;
+      agentId: null;
+      remark: string;
+      status: 'PENDING' | 'APPROVED' | 'REJECTED';
+    }[];
+  };
+}
+
+
+export interface StaffAssignedAgent {
+  status: number;
+  data: {
+      firstName: string;
+      lastName: string;
+      publicURL:string;
+      middleName: string;
+      email: string;
+     id: string;
+    phoneNumber: string;
+    dateOfBirth: string;
+    address: string;
+    localGovtArea: string;
+    state: string;
+    country: string;
+    internationalPassportNumber: string;
+    status: string;
+    userId: string;
+  };
+}
+
 
 export const selectUserActivity = createSelector(
   [(state: any) => state.application?.allActivity],
@@ -324,4 +388,87 @@ export const useAllDraftedNews = () => {
   );
 
   return { allUserDraftedNews, totalPages, currentPage, loading, error, searchTerm, fetchNews, updateSearchTerm };
+};
+
+
+export const useBanks = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+
+  const allBanks = useSelector(
+    (state: any) => state?.application?.allBanks?.data?.data || [],
+  );
+
+  useEffect(() => {
+    if (allBanks?.length === 0) {
+      setLoading(true);
+      dispatch(getAllBanks())
+        .unwrap()
+        .then(() => setLoading(false))
+        .catch((error: any) => {
+          const errorMessage = error?.message || "Failed to fetch banks";
+          dispatch(setMessage(errorMessage));
+          setLoading(false);
+        });
+    }
+  }, [dispatch, allBanks?.length]);
+
+  return { allBanks, loading };
+};
+
+
+export const useStaffDetails = (staffEmail: string) => {
+  const dispatch = useDispatch();
+
+  const {
+    data: staffDetail,
+    isLoading: loading,
+    error,
+  } = useQuery<StaffDetails, Error>(
+    ["staffDetail", staffEmail],
+    async () => {
+      if (!staffEmail) {
+        throw new Error("No email provided");
+      }
+      const endpoint = `/admin/users/staff/find/email?email=${staffEmail}`;
+      return await findStaffDetailByEmail(endpoint);
+    },
+    {
+      enabled: !!staffEmail, 
+      onError: (error) => {
+        dispatch(setMessage(error.message));
+      },
+    }
+  );
+
+  return { staffDetail: staffDetail ?? null, loading, error };
+};
+
+
+
+export const useStaffAssignedAgents = (staffId: string) => {
+  const dispatch = useDispatch();
+
+  const {
+    data: agentDetail,
+    isLoading: loading,
+    error,
+  } = useQuery<StaffAssignedAgent, Error>(
+    ["agentDetail", staffId],
+    async () => {
+      if (!staffId) {
+        throw new Error("No id provided");
+      }
+      const endpoint = `/admin/users/staff/${staffId}`;
+      return await findStaffAssignedAgent(endpoint);
+    },
+    {
+      enabled: !!staffId, 
+      onError: (error) => {
+        dispatch(setMessage(error.message));
+      },
+    }
+  );
+
+  return { agentDetail: agentDetail ?? null, loading, error };
 };

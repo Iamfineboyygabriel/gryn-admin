@@ -235,7 +235,7 @@ const AllApplication: React.FC = () => {
             <th className="px-6 py-3 text-left whitespace-nowrap text-sm font-normal">
               Assigned Agent
             </th>
-            <th className="px-6 py-3 text-left text-sm font-normal">Actions</th>
+            <th className="px-6 py-3 text-left text-sm font-normal">Action</th>
           </tr>
         </thead>
         <tbody>{renderTableBody()}</tbody>
