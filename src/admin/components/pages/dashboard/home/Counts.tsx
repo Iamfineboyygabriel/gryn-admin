@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { useStats } from "../../../../../shared/redux/hooks/admin/getAdminProfile";
 import { IoIosArrowForward } from "react-icons/io";
-// lll
 const Counts = () => {
   const { getApplicationStats } = useStats();
 

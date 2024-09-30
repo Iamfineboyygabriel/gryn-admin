@@ -7,25 +7,22 @@ const Counts = () => {
     {
       label: "Total Number of Applications",
       figure: getApplicationStats?.data?.numberOfApplications ?? 0,
-      detail: "See Application",
     },
     {
       label: "Number of Completed Applications",
-      figure: getApplicationStats?.data?.numberOfCompletedApplications ?? 0,
-      detail: "See Completed Applications",
+      figure: getApplicationStats?.data?.numberOfCompletedApplication ?? 0,
     },
     {
       label: "Number of Pending Applications",
-      figure: getApplicationStats?.data?.numberOfPendingApplications ?? 0,
-      detail: "See Pending Applications",
+      figure: getApplicationStats?.data?.numberOfPendingApplication ?? 0,
     },
 
     {
       label: "Number of Agents",
       figure: getApplicationStats?.data?.numberOfAgent ?? 0,
-      detail: "See All Agents",
     },
   ];
+  
   return (
     <main className="font-outfit">
       <div className="flex justify-between gap-3 rounded-lg font-medium text-grey-primary">
@@ -38,7 +35,6 @@ const Counts = () => {
               <h1 className="mb-2">{text.label}</h1>
               <h1 className="text-2xl">{text.figure}</h1>
             </div>
-            <p className="text-sm">{text.detail}</p>
           </div>
         ))}
       </div>

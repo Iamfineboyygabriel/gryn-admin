@@ -203,14 +203,14 @@ const AllApplication: React.FC = () => {
           </div>
         </div>
       </div>
-      <table className="mt-4 w-full table-auto overflow-x-auto">
+      <table className="mt-4 w-full table-auto overflow-auto">
         <thead>
           <tr className="text-gray-700  border-b border-gray-200">
             <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
             <th className="whitespace-nowrap px-6 py-3 text-left text-sm font-normal">
               Full Name
             </th>
-            <th className="px-6 py-3 text-left text-sm font-normal">Phone</th>
+            <th className="px-6 py-3 text-left text-sm font-normal">Phone Number</th>
             <th className="px-6 py-3 text-left text-sm font-normal">Email</th>
             <th className="px-6 py-3 whitespace-nowrap text-left text-sm font-normal">
               Degree Type

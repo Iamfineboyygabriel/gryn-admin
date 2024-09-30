@@ -87,7 +87,11 @@ const TopPeople = () => {
           </div>
 
           <div className="mt-[1em] flex flex-col gap-[1.2em]">
-            {loadingAgents && <p>Loading agent data...</p>}
+            {loadingAgents &&  <>
+                <SkeletonRow />
+                <SkeletonRow />
+                <SkeletonRow />
+              </>}
             {agents?.length > 0 ? (
               agents.map((agent: any, index: number) => (
                 <div className="flex items-center justify-between" key={index}>

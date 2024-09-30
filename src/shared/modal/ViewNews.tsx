@@ -35,14 +35,7 @@ const ViewNews = ({onClose,news}:any) => {
         <div>
          <img src={trashCan} alt="trash_icon" />
         </div>
-        <Link to="/admin/dashboard/home">
-          <button.PrimaryButton className="m-auto flex justify-center gap-2 rounded-full bg-linear-gradient py-[7px] text-center font-medium text-white">
-            View Link for Details
-          </button.PrimaryButton>
-         </Link>
       </div>
-
-
       </div>
     </main>
   );
