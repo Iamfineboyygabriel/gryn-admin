@@ -3,8 +3,6 @@ import Counts from "../Counts";
 import TopPeople from "../topPeople/TopPeople";
 import ApexChart from "../../../../../../shared/chart/ApexChart";
 import Status from "../Status/Status"
-import { useSchoolListCountries } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
-
 
 const Home = () => {
 
