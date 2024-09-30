@@ -33,6 +33,8 @@ import CreateNews from "../../pages/dashboard/notification/news/createNews/Creat
 import SeeAllStudents from "../../pages/dashboard/Reports/seeAll/SeeAllStudents";
 import ViewStaffProfile from "../../pages/dashboard/allStaffs/viewStaffProfile/main/ViewStaffProfile";
 import NewInvoice from "../../pages/dashboard/allStaffs/viewStaffProfile/invoices/NewInvoice";
+import SeeAllStaffs from "../../pages/dashboard/Reports/seeAll/SeeAllStaffs";
+import SeeAllPendingAgents from "../../pages/dashboard/Reports/seeAll/SeeAllPendingAgents";
 
 const ProtectedSuperAdminRoute = ({ children }:any) => {
   const { userDetails } = useCurrentUser();
@@ -123,10 +125,12 @@ const DashboardRoutes = () => {
           <Route path="reports" element={<Report />} />
           <Route path="/reports/budgets" element={<Budgets />} />
           <Route path="/reports/new_budgets" element={<NewBudgets />} />
-          <Route path="/reports/All_Application" element={<SeeAllApplication />} />
-          <Route path="/reports/All_Pending_Applications" element={<SeeAllPendingApplication />} />
-          <Route path="/reports/All_Agents" element={<SeeAllAgents />} />
-          <Route path="/reports/All_Students" element={<SeeAllStudents />} />
+          <Route path="/reports/all_application" element={<SeeAllApplication />} />
+          <Route path="/reports/all_pending_applications" element={<SeeAllPendingApplication />} />
+          <Route path="/reports/all_agents" element={<SeeAllAgents />} />
+          <Route path="/reports/all_students" element={<SeeAllStudents />} />
+          <Route path="/reports/all_staffs" element={<SeeAllStaffs />} />
+          <Route path="/reports/all_pending_agents" element={<SeeAllPendingAgents />} />
 
           <Route path="settings" element={<Settings />} />
 

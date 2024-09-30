@@ -1,5 +1,6 @@
+import { Link } from "react-router-dom";
+import { IoIosArrowForward } from "react-icons/io";
 import { useStats } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
-
 const Counts = () => {
   const { getApplicationStats } = useStats();
 
@@ -7,22 +8,26 @@ const Counts = () => {
     {
       label: "Total Number of Applications",
       figure: getApplicationStats?.data?.size ?? 0,
-      detail: "See Application",
+      detail: "See All Application",
+      to: "/admin/dashboard/reports/all_application"
     },
     {
-      label: "Number of Pending Applications",
-      figure: getApplicationStats?.data?.pending ?? 0,
-      detail: "See Pending Applications",
-    },
-    {
-      label: "Number of Completed Applications",
-      figure: getApplicationStats?.data?.completed ?? 0,
-      detail: "See Completed Applications",
+      label: "Number of Students",
+      figure: getApplicationStats?.data?.numberOfStudent ?? 0,
+      detail: "See All Students",
+      to:"/admin/dashboard/reports/all_students"
     },
     {
       label: "Number of Agents",
-      figure: getApplicationStats?.data?.numberOfAgent ?? 0,
+      figure: getApplicationStats?.data?.numberOfAgents ?? 0,
       detail: "See All Agents",
+      to:"/admin/dashboard/reports/all_agents"
+    },
+    {
+      label: "Number of Staffs",
+      figure: getApplicationStats?.data?.numberOfStaffs ?? 0,
+      detail: "See All Staffs",
+      to: "/admin/dashboard/reports/All_Staffs"
     },
   ];
 
@@ -55,7 +60,12 @@ const Counts = () => {
               <h1 className="mb-2">{text.label}</h1>
               <h1 className="text-2xl">{text.figure}</h1>
             </div>
-            <p className="text-sm">{text.detail}</p>
+            <div className="flex justify-between items-center">
+              <p className="text-sm">{text.detail}</p>
+              <Link to={text.to}>
+                <IoIosArrowForward className="cursor-pointer" />
+              </Link>
+            </div>
           </div>
         ))}
       </div>
@@ -64,4 +74,3 @@ const Counts = () => {
 };
 
 export default Counts;
-

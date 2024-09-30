@@ -97,7 +97,7 @@ const ViewStaffProfile = () => {
             {activeLink === "uploadedDocuments" && <UploadedDocuments staffEmail={staffEmail}/>}
             {activeLink === "assignedAgents" && <AssignedAgents staffEmail={staffEmail}/>}
             {activeLink === "staffPayments" && <StaffPayments staffEmail={staffEmail}/>}
-            {activeLink === "invoices" && <Invoices staffEmail={staffEmail}/>}
+            {activeLink === "invoices" && <Invoices staffEmail={staffEmail} />}
             {activeLink === "activity" && <Activity staffEmail={staffEmail}/>}
           </section>
         </div>

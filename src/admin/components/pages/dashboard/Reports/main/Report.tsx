@@ -1,13 +1,11 @@
 import MostApplied from "../../../../../../shared/mostApplied/MostApplied";
-import Counts from "../../home/Counts";
+import Counts from "../counts/Counts";
 import TopPeople from "../../home/topPeople/TopPeople";
 import ApexChart from "../../../../../../shared/chart/ApexChart";
 import TotalNumber from "../totalNumber/TotalNumber";
 import Transaction from "../transaction/Transaction";
-import { useBudgetFetch } from "../../../../../../shared/redux/hooks/shared/getUserProfile";
 
 const Home = () => {
-
 
   return (
     <div>

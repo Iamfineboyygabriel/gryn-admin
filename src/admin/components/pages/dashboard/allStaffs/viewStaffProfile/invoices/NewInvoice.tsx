@@ -311,7 +311,7 @@ const NewInvoice = () => {
                     onChange={(e) => setInvoiceDate(e.target.value)}
                     required
                     //   disabled={loading}
-              className="border-border focus:border-border mt-[8px] w-[13em] rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
+              className="border-border focus:border-border mt-[8px] w-[13.5em] rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
               />
                 </div>
               </div>

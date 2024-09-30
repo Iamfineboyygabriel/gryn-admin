@@ -1005,6 +1005,24 @@ export const findStaffAssignedAgent = async (endpoint:any) => {
   }
 };
 
+export const findStaffInvoices = async (endpoint:any) => {
+  const url = `${process.env.REACT_APP_API_URL}${endpoint}`;
+  try {
+    const response = await axios({
+      url,
+      method: "get",
+      headers: authHeader(),
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const shareApplicationServices = {
   getUserProfile,
   uploadAvatar,

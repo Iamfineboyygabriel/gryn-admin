@@ -34,7 +34,7 @@ const AssignedAgents: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
   const { staffDetail, loading: staffLoading } = useStaffDetails(staffEmail);
   const staffId:any = staffDetail?.data.profile.userId;
   const { agentDetail, loading: agentsLoading } = useStaffAssignedAgents(staffId);
-console.log("aaa",agentDetail)
+// console.log("aaa",agentDetail)
   const [localSearchTerm, setLocalSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;

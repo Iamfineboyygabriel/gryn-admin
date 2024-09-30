@@ -11,7 +11,7 @@ const PersonalDetails: React.FC<{ staffEmail: any }> = ({
   const [middleName, setMiddleName] = useState(staffDetail?.data?.profile?.middleName || "");
   const [email, setEmail] = useState(staffDetail?.data?.profile?.email || "")
 
-    console.log("stt",staffDetail)
+    // console.log("stt",staffDetail)
   return (
     <main>
        <header className='mt-[1em]'>

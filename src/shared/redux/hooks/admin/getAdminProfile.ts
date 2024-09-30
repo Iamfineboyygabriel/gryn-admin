@@ -24,9 +24,7 @@ import { RootState } from "../../rootReducer";
 import { getAllDraftedNews, getAllNews, setAllDraftedNewsSearchTerm, setAllNewsSearchTerm } from "../../admin/slices/notificationApplication.slices";
 import { getAllBanks } from "../../admin/slices/application.slices";
 import { useQuery } from "react-query";
-import { findStaffAssignedAgent, findStaffDetailByEmail } from "../../shared/services/shareApplication.services";
-
-
+import { findStaffAssignedAgent, findStaffDetailByEmail, findStaffInvoices } from "../../shared/services/shareApplication.services";
 
 export interface StaffDetails {
   status: number;
@@ -445,7 +443,6 @@ export const useStaffDetails = (staffEmail: string) => {
 };
 
 
-
 export const useStaffAssignedAgents = (staffId: string) => {
   const dispatch = useDispatch();
 
@@ -472,3 +469,31 @@ export const useStaffAssignedAgents = (staffId: string) => {
 
   return { agentDetail: agentDetail ?? null, loading, error };
 };
+
+export const useStaffInvoices = (staffId: string) => {
+  const dispatch = useDispatch();
+
+  const {
+    data: staffInvoices,
+    isLoading: loading,
+    error,
+  } = useQuery<StaffAssignedAgent, Error>(
+    ["staffInvoices", staffId],
+    async () => {
+      if (!staffId) {
+        throw new Error("No id provided");
+      }
+      const endpoint = `/invoice/staff/${staffId}`;
+      return await findStaffInvoices(endpoint);
+    },
+    {
+      enabled: !!staffId, 
+      onError: (error) => {
+        dispatch(setMessage(error.message));
+      },
+    }
+  );
+
+  return { staffInvoices: staffInvoices ?? null, loading, error };
+};
+
