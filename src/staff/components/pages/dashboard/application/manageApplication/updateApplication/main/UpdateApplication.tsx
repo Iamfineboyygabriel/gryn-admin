@@ -108,7 +108,7 @@ const UpdateApplication = () => {
             <UploadedDocuments
               onNext={handleNextClick}
               onPrevious={handleBackClick}
-              applicationId={applicationId}
+              studentData={studentData}
             />
           )}
         </div>

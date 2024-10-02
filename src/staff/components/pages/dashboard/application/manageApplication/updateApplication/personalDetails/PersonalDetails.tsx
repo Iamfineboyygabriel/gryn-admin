@@ -11,7 +11,11 @@ const PersonalDeatils = ({ onNext,studentData }: any) => {
   const [firstName, setFirstName] = useState(studentData?.firstName || "");
   const [lastName, setLastName] = useState(studentData?.lastName || "");
   const [middleName, setMiddleName] = useState(studentData?.middleName || "");
-  const [dateOfBirth, setDateOfBirth] = useState(studentData?.dateOfBirth || "");
+  const [dateOfBirth, setDateOfBirth] = useState(
+    studentData?.dateOfBirth
+      ? dayjs(studentData.dateOfBirth).format("YYYY-MM-DD")
+      : ""
+  );
   const [address, setAddress] = useState(studentData?.address || "");
   const [state, setState] = useState(studentData?.state || "");
   const [localGovtArea, setLocalGovtArea] = useState(
@@ -46,8 +50,8 @@ const PersonalDeatils = ({ onNext,studentData }: any) => {
       const response = await updateStudentApplication(studentData.id, body);
       onNext()
       toast.success(response?.message);
-    } catch (error) {
-      toast.error("Failed to update personal details");
+    } catch (error:any) {
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }
@@ -124,6 +128,7 @@ const PersonalDeatils = ({ onNext,studentData }: any) => {
               required
               disabled={loading}
               value={dateOfBirth}
+              placeholder="YYYY-MM-DD"
               onChange={(e) => setDateOfBirth(e.target.value)}
               className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
             />

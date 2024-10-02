@@ -49,7 +49,7 @@ const Application = () => {
             onClose={handleCloseModal}
             data-aos="zoom-in"
           >
-            <DirectApplication/>
+            <DirectApplication addSchoolLink="/admin/dashboard/application/new_school"/>
           </Modal>
         )}
          {isFindByModalOpen && (

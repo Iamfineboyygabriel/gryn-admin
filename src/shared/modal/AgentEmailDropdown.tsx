@@ -8,6 +8,7 @@ import { useAppDispatch } from "../redux/hooks/shared/reduxHooks";
 import { AppDispatch } from "../redux/store";
 import ReactLoading from "react-loading";
 import ApplicationAssignedSuccessAgent from "./ApplicationAssignedSuccessAgent";
+import ApplicationAssignedSuccessStaff from "./ApplicationAssignSuccessStaff";
 
 const AgentEmailDropdown = ({ applicationId }: { applicationId: string }) => {
     const dispatch:AppDispatch = useAppDispatch();
@@ -99,7 +100,7 @@ const AgentEmailDropdown = ({ applicationId }: { applicationId: string }) => {
           onClose={handleModalClose}
           data-aos="zoom-in"
         >
-          <ApplicationAssignedSuccessAgent />
+          <ApplicationAssignedSuccessStaff />
         </Modal>
       )}
     </main>

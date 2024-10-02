@@ -14,7 +14,11 @@ interface LinkData {
   url: string;
 }
 
-const DirectApplication = () => {
+interface DirectApplicationProps {
+  addSchoolLink: string; 
+}
+
+const DirectApplication: React.FC<DirectApplicationProps> = ({ addSchoolLink }) => {
     const { listCountries, loading: countryLoading } = useSchoolListCountries();
     const [showApplicationLinks, setShowApplicationLinks] = useState(false);
     const [error, setError] = useState('');
@@ -143,7 +147,7 @@ const DirectApplication = () => {
                             'Continue'
                         )}
                     </button.PrimaryButton>
-                    <Link to="/admin/dashboard/application/new_school">
+                    <Link to={addSchoolLink}>
                         <span className='text-pink-primary font-medium items-center mb-2 cursor-pointer mt-[8px] flex justify-center'>
                             <GoPlus className='text-pink-primary size-8 mr-2' />Add New School
                         </span>

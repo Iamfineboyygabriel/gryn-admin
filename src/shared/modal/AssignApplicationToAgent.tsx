@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { Dropdown, DropdownItem } from "../dropDown/DropDown";
 import { button } from "../../shared/buttons/Button"; 
-import StaffEmailDropdown from "./StaffEmailDropdown";
+import AgentEmailDropdown from "./AgentEmailDropdown";
 import Modal from "./Modal";
 
 interface Choice {
@@ -13,19 +13,19 @@ interface AssignApplicationProps {
   onClose: () => void;
 }
 
-const AssignApplication = ({ applicationId, onClose }: AssignApplicationProps) => {
-  const type: Choice[] = [{ name: "Staff" }];
+const AssignApplicationToAgent = ({ applicationId, onClose }: AssignApplicationProps) => {
+  const type: Choice[] = [{ name: "Agent" }];
   const [person, setPerson] = useState<string | null>(null);
-  const [staffModal, setStaffModal] = useState(false);
+  const [agentModal, setAgentModal] = useState(false);
   const [isParentModalVisible, setIsParentModalVisible] = useState(true); 
 
-  const handleOpenStaffModal = () => {
+  const handleOpenAgentModal = () => {
     setIsParentModalVisible(false); 
-    setStaffModal(true);
+    setAgentModal(true); 
   };
 
-  const handleCloseStaffModal = () => {
-    setStaffModal(false);
+  const handleCloseAgentModal = () => {
+    setAgentModal(false);
     onClose(); 
   };
 
@@ -34,8 +34,8 @@ const AssignApplication = ({ applicationId, onClose }: AssignApplicationProps) =
   }, []);
 
   const handleContinue = () => {
-    if (person === "Staff") {
-      handleOpenStaffModal();
+    if (person === "Agent") {
+      handleOpenAgentModal();
     }
   };
 
@@ -45,8 +45,8 @@ const AssignApplication = ({ applicationId, onClose }: AssignApplicationProps) =
         <>
           <div className="m-auto w-[24em] text-center">
             <header className="flex gap-2 flex-col">
-              <h1 className="text-2xl font-bold">Staff Details</h1>
-              <p className="font-light">Enter the details of the Staff</p>
+              <h1 className="text-2xl font-bold">Agent Details</h1>
+              <p className="font-light">Enter the details of the Agent</p>
             </header>
           </div>
           <Dropdown
@@ -70,17 +70,17 @@ const AssignApplication = ({ applicationId, onClose }: AssignApplicationProps) =
         </>
       )}
 
-      {staffModal && (
+      {agentModal && (
         <Modal
-          isOpen={staffModal}
-          onClose={handleCloseStaffModal}
+          isOpen={agentModal}
+          onClose={handleCloseAgentModal}
           data-aos="zoom-in"
         >
-          <StaffEmailDropdown applicationId={applicationId} />
+          <AgentEmailDropdown applicationId={applicationId} />
         </Modal>
       )}
     </main>
   );
 };
 
-export default AssignApplication;
+export default AssignApplicationToAgent;

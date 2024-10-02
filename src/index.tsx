@@ -17,7 +17,6 @@ const root = ReactDOM.createRoot(
 );
 let persistor = persistStore(store);
 root.render(
-  <React.StrictMode>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <QueryClientProvider client={queryClient}>
@@ -26,7 +25,6 @@ root.render(
         <ToastContainerWrapper />
       </PersistGate>
     </Provider>
-  </React.StrictMode>
 );
 
 reportWebVitals();

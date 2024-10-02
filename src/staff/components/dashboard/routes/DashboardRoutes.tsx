@@ -21,6 +21,7 @@ import ViewVisaApplication from "../../pages/dashboard/visa/viewVisaApplication/
 import UpdateStudent from "../../pages/dashboard/application/manageStudents/allStudents/updateStudent/UpdateStudent";
 import NewBudgets from "../../pages/dashboard/payment/newBudgets/NewBudgets";
 import UseDraftInformation from "../../pages/dashboard/payment/drafts/useDraftInformation/UseDraftInformation";
+import AddNewSchool from "../../pages/dashboard/application/addNewSchool/AddNewSchool";
 
 const DashboardRoutes = () => {
   return (
@@ -35,6 +36,10 @@ const DashboardRoutes = () => {
         <Route
           path="/application/manage_application/view_application/:applicationId"
           element={<ViewApplication />}
+        />
+         <Route
+          path="/application/manage_application/new_school"
+          element={<AddNewSchool />}
         />
          <Route
           path="/application/manage_application/update_application"
