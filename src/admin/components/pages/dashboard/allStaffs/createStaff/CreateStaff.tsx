@@ -159,23 +159,9 @@ const CreateStaff = () => {
                 className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
               />
             </div>
-            <div className="w-full md:w-[48%]">
-              <label htmlFor="role" className="flex items-center font-medium">
-                Role <CgAsterisk className="text-red-500 ml-1" />
-              </label>
-              <input
-                id="role"
-                name="role"
-                type="text"
-                required
-                disabled={loading}
-                onChange={(e) => setDesignation(e.target.value)}
-                className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
-              />
-            </div>
           </div>
 
-          <div className="mt-6">
+          <div className="mt-11">
             <button.PrimaryButton
               className="m-auto w-[100%] md:w-[37%] justify-center gap-2 rounded-full bg-linear-gradient py-[11px] text-center font-medium text-white"
               type="submit"

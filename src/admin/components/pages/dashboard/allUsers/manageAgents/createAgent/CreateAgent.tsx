@@ -13,7 +13,7 @@ import { toast } from 'react-toastify';
 const CreateAgent = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [otherName, setOtherName] = useState('');
+  const [middleName, setMiddleName] = useState('');
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
@@ -35,7 +35,7 @@ const CreateAgent = () => {
       const body = {
         firstName,
         lastName,
-        otherName,
+        middleName,
         email,
       };
       await dispatch(createAgent(body)).unwrap();
@@ -119,7 +119,7 @@ const CreateAgent = () => {
               <input
                 id="otherName"
                 name="otherName"
-                onChange={(e) => setOtherName(e.target.value)}
+                onChange={(e) => setMiddleName(e.target.value)}
                 className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none dark:text-white"
               />
             </div>
