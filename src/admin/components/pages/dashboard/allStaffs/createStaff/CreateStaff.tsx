@@ -3,20 +3,19 @@ import { useNavigate } from 'react-router';
 import { AppDispatch } from '../../../../../../shared/redux/store';
 import { useAppDispatch } from '../../../../../../shared/redux/hooks/shared/reduxHooks';
 import Modal from '../../../../../../shared/modal/Modal';
-import StudentCreated from '../../../../../../shared/modal/StudentCreated';
+import StaffCreated from '../../../../../../shared/modal/StaffCreated';
 import { button } from '../../../../../../shared/buttons/Button';
 import { CgAsterisk } from 'react-icons/cg';
 import ReactLoading from 'react-loading';
 import { toast } from 'react-toastify';
 import { createStaff } from '../../../../../../shared/redux/shared/slices/shareApplication.slices';
-import StaffCreated from '../../../../../../shared/modal/StaffCreated';
 
 const CreateStaff = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [middleName, setMiddleName] = useState('');
   const [email, setEmail] = useState('');
-  const [gender,setGender] = useState("")
+  const [gender, setGender] = useState('');
   const [designation, setDesignation] = useState('');
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
@@ -46,7 +45,7 @@ const CreateStaff = () => {
       await dispatch(createStaff(body)).unwrap();
       handleOpenModal();
     } catch (error: any) {
-        console.log("error",error)
+      console.log('error', error);
       toast.error(
         error.message || 'An error occurred while creating the application'
       );
@@ -63,7 +62,7 @@ const CreateStaff = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="font-medium dark:text-gray-700">
-                staff management /
+                staff management /{' '}
                 <span className="ml-1 font-medium text-primary-700 dark:text-white">
                   New staff
                 </span>
@@ -76,19 +75,18 @@ const CreateStaff = () => {
         </header>
         <header>
           <h1 className="text-2xl mt-[1.5em] font-bold">Personal Details</h1>
-          </header>
+        </header>
         <form
-          className="mt-[1.5em] w-[77%] dark:text-white"
+          className="mt-[1.5em] w-full max-w-4xl dark:text-white"
           onSubmit={submitApplication}
         >
-          <div className="flex flex-row gap-[3em]">
-            <div className="w-full">
+          <div className="flex flex-wrap gap-[2em]">
+            <div className="w-full md:w-[48%]">
               <label
                 htmlFor="firstName"
-                className="flex-start flex font-medium"
+                className="flex items-center font-medium"
               >
-                First Name
-                <CgAsterisk className="text-red-500" />
+                First Name <CgAsterisk className="text-red-500 ml-1" />
               </label>
               <input
                 id="firstName"
@@ -99,10 +97,12 @@ const CreateStaff = () => {
                 className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
               />
             </div>
-            <div className="w-full">
-              <label htmlFor="lastName" className="flex-start flex font-medium">
-                Last Name
-                <CgAsterisk className="text-red-500" />
+            <div className="w-full md:w-[48%]">
+              <label
+                htmlFor="lastName"
+                className="flex items-center font-medium"
+              >
+                Last Name <CgAsterisk className="text-red-500 ml-1" />
               </label>
               <input
                 id="lastName"
@@ -116,22 +116,21 @@ const CreateStaff = () => {
             </div>
           </div>
 
-          <div className="mt-[1em] flex flex-row gap-[3em]">
-            <div className="w-full">
-              <label htmlFor="middleName" className="flex-start font-medium">
-                Other Name <span className="text-gray-500">(Optional)</span>
+          <div className="flex flex-wrap gap-[2em] mt-[1em]">
+            <div className="w-full md:w-[48%]">
+              <label htmlFor="middleName" className="flex items-center font-medium">
+                Other Name <span className="text-gray-500 ml-1">(Optional)</span>
               </label>
               <input
-                id="otherName"
-                name="otherName"
+                id="middleName"
+                name="middleName"
                 onChange={(e) => setMiddleName(e.target.value)}
                 className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none dark:text-white"
               />
             </div>
-            <div className="w-full">
-              <label htmlFor="email" className="flex-start flex font-medium">
-                Email Address
-                <CgAsterisk className="text-red-500" />
+            <div className="w-full md:w-[48%]">
+              <label htmlFor="email" className="flex items-center font-medium">
+                Email Address <CgAsterisk className="text-red-500 ml-1" />
               </label>
               <input
                 id="email"
@@ -145,44 +144,40 @@ const CreateStaff = () => {
             </div>
           </div>
 
-          <div className="mt-[1em] flex flex-row gap-[3em]"> 
-          <div className="w-full mt-[1.5em]">
-              <label htmlFor="email" className="flex-start flex font-medium">
-                Gender
-                <CgAsterisk className="text-red-500" />
+          <div className="flex flex-wrap gap-[2em] mt-[1em]">
+            <div className="w-full md:w-[48%]">
+              <label htmlFor="gender" className="flex items-center font-medium">
+                Gender <CgAsterisk className="text-red-500 ml-1" />
               </label>
               <input
                 id="gender"
                 name="gender"
-                type=""
+                type="text"
                 required
                 disabled={loading}
                 onChange={(e) => setGender(e.target.value)}
-                className="border-border focus:border-border mt-[1em] rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
+                className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
               />
             </div>
-
-          <div className="w-full mt-[1.5em]">
-              <label htmlFor="email" className="flex-start flex font-medium">
-                Role
-                <CgAsterisk className="text-red-500" />
+            <div className="w-full md:w-[48%]">
+              <label htmlFor="role" className="flex items-center font-medium">
+                Role <CgAsterisk className="text-red-500 ml-1" />
               </label>
               <input
                 id="role"
                 name="role"
-                type=""
+                type="text"
                 required
                 disabled={loading}
                 onChange={(e) => setDesignation(e.target.value)}
-                className="border-border focus:border-border mt-[1em] w-[47%] rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
+                className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
               />
+            </div>
           </div>
-           
-         </div>
 
-          <div className="mr-auto mt-4">
+          <div className="mt-6">
             <button.PrimaryButton
-              className="m-auto mt-[3.5em] w-[37%] justify-center gap-2 rounded-full bg-linear-gradient py-[11px] text-center font-medium text-white"
+              className="m-auto w-[100%] md:w-[37%] justify-center gap-2 rounded-full bg-linear-gradient py-[11px] text-center font-medium text-white"
               type="submit"
               disabled={loading}
             >
@@ -200,6 +195,7 @@ const CreateStaff = () => {
           </div>
         </form>
       </div>
+
       {isModalOpen && (
         <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
           <StaffCreated onClose={handleCloseModal} />
