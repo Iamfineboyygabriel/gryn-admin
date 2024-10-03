@@ -202,7 +202,7 @@ const getAllSchoolsListCountries = async () => {
 };
 
 
-export const getAllAdminForSuperAdmin = async (page?: number, limit?: number, search: string = '') => {
+export const getAllStaffForSuperAdmin = async (page?: number, limit?: number, search: string = '') => {
   let url = `${API_URL}/admin/users/admin/staffs?`;
   
   if (page !== undefined) url += `page=${page}&`;
@@ -416,11 +416,32 @@ export const uploadApplication = async (endpoint: string, body: FormData) => {
   }
 };
 
+
+export const getAllAdminForSuperAdmin = async (page?: number, limit?: number, search: string = '') => {
+  let url = `${API_URL}/admin/users/admin?`;
+  
+  if (page !== undefined) url += `page=${page}&`;
+  if (limit !== undefined) url += `limit=${limit}&`;
+  if (search) url += `search=${encodeURIComponent(search)}`;
+
+  try {
+    const response = await axios.get(url, { headers: authHeader() });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const applicationServices = {
   getStats,
   getStaffDashboardStats,
   getAllApplication,
   getAllPendingApplication,
+  getAllStaffForSuperAdmin,
   getAllAdminForSuperAdmin,
   getAllStudents,
   getActivity,

@@ -1,20 +1,23 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { AppDispatch } from '../../../../../../../shared/redux/store';
-import { createStudent } from '../../../../../../../shared/redux/shared/slices/shareApplication.slices';
-import { useAppDispatch } from '../../../../../../../shared/redux/hooks/shared/reduxHooks';
-import Modal from '../../../../../../../shared/modal/Modal';
-import StudentCreated from '../../../../../../../shared/modal/StudentCreated';
-import { button } from '../../../../../../../shared/buttons/Button';
+import { AppDispatch } from '../../../../../../shared/redux/store';
+import { useAppDispatch } from '../../../../../../shared/redux/hooks/shared/reduxHooks';
+import Modal from '../../../../../../shared/modal/Modal';
+import StudentCreated from '../../../../../../shared/modal/StudentCreated';
+import { button } from '../../../../../../shared/buttons/Button';
 import { CgAsterisk } from 'react-icons/cg';
 import ReactLoading from 'react-loading';
 import { toast } from 'react-toastify';
+import { createStaff } from '../../../../../../shared/redux/shared/slices/shareApplication.slices';
+import StaffCreated from '../../../../../../shared/modal/StaffCreated';
 
-const NewStudent = () => {
+const CreateStaff = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [otherName, setOtherName] = useState('');
+  const [middleName, setMiddleName] = useState('');
   const [email, setEmail] = useState('');
+  const [gender,setGender] = useState("")
+  const [designation, setDesignation] = useState('');
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
 
@@ -35,10 +38,12 @@ const NewStudent = () => {
       const body = {
         firstName,
         lastName,
-        otherName,
+        middleName,
         email,
+        gender,
+        designation,
       };
-      await dispatch(createStudent(body)).unwrap();
+      await dispatch(createStaff(body)).unwrap();
       handleOpenModal();
     } catch (error: any) {
         console.log("error",error)
@@ -52,15 +57,15 @@ const NewStudent = () => {
 
   return (
     <main className="font-outfit">
-      <h1 className="text-2xl font-bold dark:text-white">Application</h1>
+      <h1 className="text-2xl font-bold dark:text-white">Staff Management</h1>
       <div className="mt-[1em] h-auto w-full overflow-auto rounded-lg bg-white px-[2em] py-3 pb-[10em] dark:bg-gray-800">
         <header>
           <div className="flex items-center justify-between">
             <div>
               <h1 className="font-medium dark:text-gray-700">
-                Manage Students /
+                staff management /
                 <span className="ml-1 font-medium text-primary-700 dark:text-white">
-                  New Student
+                  New staff
                 </span>
               </h1>
             </div>
@@ -119,7 +124,7 @@ const NewStudent = () => {
               <input
                 id="otherName"
                 name="otherName"
-                onChange={(e) => setOtherName(e.target.value)}
+                onChange={(e) => setMiddleName(e.target.value)}
                 className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none dark:text-white"
               />
             </div>
@@ -139,6 +144,41 @@ const NewStudent = () => {
               />
             </div>
           </div>
+
+          <div className="mt-[1em] flex flex-row gap-[3em]"> 
+          <div className="w-full mt-[1.5em]">
+              <label htmlFor="email" className="flex-start flex font-medium">
+                Gender
+                <CgAsterisk className="text-red-500" />
+              </label>
+              <input
+                id="gender"
+                name="gender"
+                type=""
+                required
+                disabled={loading}
+                onChange={(e) => setGender(e.target.value)}
+                className="border-border focus:border-border mt-[1em] rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
+              />
+            </div>
+
+          <div className="w-full mt-[1.5em]">
+              <label htmlFor="email" className="flex-start flex font-medium">
+                Role
+                <CgAsterisk className="text-red-500" />
+              </label>
+              <input
+                id="role"
+                name="role"
+                type=""
+                required
+                disabled={loading}
+                onChange={(e) => setDesignation(e.target.value)}
+                className="border-border focus:border-border mt-[1em] w-[47%] rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
+              />
+          </div>
+           
+         </div>
 
           <div className="mr-auto mt-4">
             <button.PrimaryButton
@@ -162,11 +202,11 @@ const NewStudent = () => {
       </div>
       {isModalOpen && (
         <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
-          <StudentCreated onClose={handleCloseModal} />
+          <StaffCreated onClose={handleCloseModal} />
         </Modal>
       )}
     </main>
   );
 };
 
-export default NewStudent;
+export default CreateStaff;

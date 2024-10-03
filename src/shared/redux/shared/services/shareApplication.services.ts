@@ -17,6 +17,8 @@ const API_URL_CREATE_DRAFT = process.env.REACT_APP_API_URL + "/invoice/draft";
 
 const API_URL_CREATE_STUDENT = process.env.REACT_APP_API_URL + "/admin/users/student";
 
+const API_URL_CREATE_STAFF = process.env.REACT_APP_API_URL + "/admin/users/staff";
+
 const API_URL_CREATE_AGENT = process.env.REACT_APP_API_URL + "/admin/users/agent";
 
 const API_URL_FINDSTUDENTBY_EMAIL_UNIVERSITY_DEGREE = process.env.REACT_APP_API_URL + "/admin/application/byNameUniversityAndDegree";
@@ -605,6 +607,18 @@ const createAgent = async (body: any) => {
   }
 };
 
+const createStaff = async (body: any) => {
+  try {
+    const token = sessionStorage.getItem("userData");
+    const response = await axios.post(API_URL_CREATE_STAFF, body, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error: any) {
+    handleApiError(error);
+  }
+};
+
 const findStudentByEmail = async (email: string) => {
   const url = `${process.env.REACT_APP_API_URL}/admin/users/students/email`;
   try {
@@ -1023,6 +1037,38 @@ export const findStaffInvoices = async (endpoint:any) => {
   }
 };
 
+export async function uploadPayment(endpoint: string, body: FormData) {
+  const url = `${process.env.REACT_APP_API_URL}${endpoint}`;
+  try {
+    const token = sessionStorage.getItem("userData");
+    const headers = {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
+    const response = await axios.post(url, body, { headers });
+    return response.data;
+  } catch (error: any) {
+    handleApiError(error);
+  }
+}
+
+const getAllApplicationPayment = async (page: number, limit: number, search: string = '') => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/application/payment?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "get",
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const shareApplicationServices = {
   getUserProfile,
   uploadAvatar,
@@ -1065,6 +1111,8 @@ const shareApplicationServices = {
   findStaffByEmail,
   getDraftItemById,
   updateRegistrationUploadedDocument,
+  getAllApplicationPayment,
+  createStaff,
 };
 
 export default shareApplicationServices;

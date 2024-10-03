@@ -14,9 +14,11 @@ import {
   getAllAgentEmail,
   getAllAdminsEmail,
   getAllSchoolsListCountries,
-  getAllAdminForSuperAdmin,
-  setAllAdminSearchTerm,
+  getAllStaffForSuperAdmin,
+  setAllStaffSearchTerm,
   getAllStaffEmail,
+  setAllAdminSearchTerm,
+  getAllAdminForSuperAdmin
 } from "../../admin/slices/application.slices";
 import { setMessage } from "../../message.slices";
 import { createSelector } from "@reduxjs/toolkit";
@@ -302,30 +304,29 @@ export const useSchoolListCountries = () => {
   return { listCountries, loading, error };
 };
 
-
-export const useAllAdminForSuperAdmin = () => {
+export const useAllStaffForSuperAdmin = () => {
   const dispatch: AppDispatch = useDispatch();
-  const allAdmin:any = useSelector((state: RootState) => state?.application?.allAdmin);
+  const allAdmin:any = useSelector((state: RootState) => state?.application?.allStaff);
   const loading = useSelector((state: RootState) => state?.application?.loading);
   const error = useSelector((state: RootState) => state?.application.error);
-  const searchTerm = useSelector((state: RootState) => state?.application?.allAdminSearchTerm);
+  const searchTerm = useSelector((state: RootState) => state?.application?.allStaffSearchTerm);
 
   const fetchAdmins = useCallback(
     (page?: number, limit?: number) => {
-      return dispatch(getAllAdminForSuperAdmin({ page, limit, search: searchTerm }));
+      return dispatch(getAllStaffForSuperAdmin({ page, limit, search: searchTerm }));
     },
     [dispatch, searchTerm]
   );
 
   const updateSearchTerm = useCallback(
     (term: string) => {
-      dispatch(setAllAdminSearchTerm(term));
+      dispatch(setAllStaffSearchTerm(term));
     },
     [dispatch]
   );
 
   return { 
-    admins: allAdmin?.admins, 
+    admins: allAdmin?.staffs, 
     totalPages: allAdmin?.totalPages, 
     currentPage: allAdmin?.currentPage, 
     loading, 
@@ -497,3 +498,36 @@ export const useStaffInvoices = (staffId: string) => {
   return { staffInvoices: staffInvoices ?? null, loading, error };
 };
 
+
+export const useAllAdminForSuperAdmin = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const allAdmin:any = useSelector((state: RootState) => state?.application?.allAdmin);
+  const loading = useSelector((state: RootState) => state?.application?.loading);
+  const error = useSelector((state: RootState) => state?.application.error);
+  const searchTerm = useSelector((state: RootState) => state?.application?.allAdminSearchTerm);
+
+  const fetchAdmins = useCallback(
+    (page?: number, limit?: number) => {
+      return dispatch(getAllAdminForSuperAdmin({ page, limit, search: searchTerm }));
+    },
+    [dispatch, searchTerm]
+  );
+
+  const updateSearchTerm = useCallback(
+    (term: string) => {
+      dispatch(setAllAdminSearchTerm(term));
+    },
+    [dispatch]
+  );
+
+  return { 
+    admins: allAdmin?.admins, 
+    totalPages: allAdmin?.totalPages, 
+    currentPage: allAdmin?.currentPage, 
+    loading, 
+    error, 
+    searchTerm, 
+    fetchAdmins, 
+    updateSearchTerm 
+  };
+};

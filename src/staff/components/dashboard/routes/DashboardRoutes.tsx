@@ -22,6 +22,13 @@ import UpdateStudent from "../../pages/dashboard/application/manageStudents/allS
 import NewBudgets from "../../pages/dashboard/payment/newBudgets/NewBudgets";
 import UseDraftInformation from "../../pages/dashboard/payment/drafts/useDraftInformation/UseDraftInformation";
 import AddNewSchool from "../../pages/dashboard/application/addNewSchool/AddNewSchool";
+import NewAgent from "../../pages/dashboard/application/manageAgents/newAgent/NewAgent"
+import NewPayment from "../../pages/dashboard/payment/allPayment/newPayment/NewPayment";
+import SeeAllStudents from "../../pages/dashboard/reports copy/seeAll/SeeAllStudents";
+import SeeAllApplication from "../../pages/dashboard/reports copy/seeAll/SeeAllApplication";
+import SeeAllPendingApplication from "../../pages/dashboard/reports copy/seeAll/SeeAllPendingApplication";
+import SeeAllAgents from "../../pages/dashboard/reports copy/seeAll/SeeAllAgents";
+
 
 const DashboardRoutes = () => {
   return (
@@ -31,12 +38,17 @@ const DashboardRoutes = () => {
         <Route path="application" element={<Application />} />
         <Route path="payments" element={<Payment />} />
         <Route path="reports" element={<Report />} />
+        <Route path="reports/all_students" element={<SeeAllStudents />} />
+        <Route path="reports/all_application" element={<SeeAllApplication />} />
+        <Route path="reports/all_pending_applications" element={<SeeAllPendingApplication />} />
+        <Route path="reports/all_agents" element={<SeeAllAgents />} />
         <Route path="messages" element={<Messaging />} />
         <Route path="settings" element={<Settings />} />
         <Route
           path="/application/manage_application/view_application/:applicationId"
           element={<ViewApplication />}
         />
+        
          <Route
           path="/application/manage_application/new_school"
           element={<AddNewSchool />}
@@ -50,6 +62,8 @@ const DashboardRoutes = () => {
           path="/application/manage_student/new_student"
           element={<NewStudent />}
         />
+    
+
          <Route
           path="/application/manage_student/update_student"
           element={<UpdateStudent />}
@@ -64,8 +78,12 @@ const DashboardRoutes = () => {
         />
 
         <Route
-          path="/application/manage_agent/agent_details"
+          path="/application/manage_agent/agent_details/:agentId"
           element={<AgentDetails />}
+        />
+         <Route
+          path="/application/create_agent"
+          element={<NewAgent />}
         />
         <Route
           path="/application/manage_agent/manage_student/view_application"
@@ -83,6 +101,7 @@ const DashboardRoutes = () => {
         <Route path="/visa/new_application" element={<NewVisaApplication />} />
         <Route path="/visa/view_visa_application/:applicationId" element={<ViewVisaApplication />} />
 
+        <Route path="/payments/new_payment" element={<NewPayment />} />
         <Route path="/payments/generate_invoice" element={<GenerateInvoice />} />
         <Route path="/payments/use_draft_information/:draftId" element={<UseDraftInformation />} />
         <Route path="/payments/new_budget" element={<NewBudgets />} />

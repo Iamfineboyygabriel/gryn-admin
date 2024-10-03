@@ -1,14 +1,11 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { FiSearch } from "react-icons/fi";
-import transaction from "../../../../../../../assets/svg/Transaction.svg";
+import transaction from "../../../../../../assets/svg/Transaction.svg";
 import { Link, useNavigate } from "react-router-dom";
-import CustomPagination from "../../../../../../../shared/utils/customPagination";
-import { button } from "../../../../../../../shared/buttons/Button";
-import plus from "../../../../../../../assets/svg/plus.svg";
+import { button } from "../../../../../../shared/buttons/Button";
 import DOMPurify from "dompurify";
-import Modal from "../../../../../../../shared/modal/Modal";
-import FindStudentByEmail from "../../../../../../../shared/modal/FindStudentByEmail";
-import { useAllStudents } from "../../../../../../../shared/redux/hooks/admin/getAdminProfile";
+import CustomPagination from "../../../../../../shared/utils/customPagination";
+import { useAllStudents } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
 
 interface Student {
   profile: {
@@ -30,7 +27,7 @@ const SkeletonRow: React.FC = () => (
   </tr>
 );
 
-const AllStudents: React.FC = () => {
+const SeeAllStudents: React.FC = () => {
   const { useAllStudent, totalPages, currentPage, loading, fetchApplications, searchTerm, updateSearchTerm } = useAllStudents();
   const [isModalOpen, setModalOpen] = useState(false);
   const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm || '');
@@ -182,27 +179,32 @@ const AllStudents: React.FC = () => {
     formatData,
     handleViewDetails,
   ]);
+  const handleBackClick = () => navigate(-1);
 
   return (
-    <main>
-      <div className="relative">
-        <header className="flex items-center justify-between">
-          <h1 className="font-medium text-xl">All Students</h1>
-          <div className="flex gap-2">
-            <button.PrimaryButton 
-            onClick={handleOpenModal}
-             className="mt-[1em] flex gap-2 rounded-full bg-primary-200 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
-              <img src={plus} alt="plus" />
-              Update Student
+    <main className="font-outfit">
+    <header>
+    <div className="flex items-center justify-between">
+     <h1 className="text-2xl font-bold">Application</h1>
+      </div>
+     </header>
+        <div className="mt-[1.3em] h-auto w-full overflow-auto rounded-lg bg-white px-[1em] py-3 pb-[10em]">
+     <header>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="font-medium dark:text-gray-700">
+                Reports /
+                <span className="ml-1 font-medium text-primary-700 dark:text-white">
+                  All Students
+                </span>
+              </h1>
+            </div>
+            <button.PrimaryButton className="btn-2" onClick={handleBackClick}>
+              Back
             </button.PrimaryButton>
-            <Link to="/staff/dashboard/application/manage_student/new_student">
-              <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-primary-700 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
-                <img src={plus} alt="plus" />
-                New Student
-              </button.PrimaryButton>
-            </Link>
           </div>
         </header>
+        
         <div className="flex items-center w-64 mt-[1em] rounded-full border-[1px] border-border bg-gray-100 dark:bg-gray-700">
           <input
             type="text"
@@ -247,13 +249,8 @@ const AllStudents: React.FC = () => {
           />
         </div>
       )}
-      {isModalOpen && (
-        <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
-          <FindStudentByEmail redirect="/staff/dashboard/application/manage_student/update_student" onClose={handleCloseModal} />
-        </Modal>
-      )}
     </main>
   );
 };
 
-export default AllStudents;
+export default SeeAllStudents;

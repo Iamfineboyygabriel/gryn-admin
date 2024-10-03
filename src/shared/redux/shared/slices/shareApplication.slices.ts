@@ -350,6 +350,19 @@ export const createStudent = createAsyncThunk(
   }
 );
 
+export const createStaff = createAsyncThunk(
+  "shareApplication/createStaff",
+  async (body: any, thunkAPI) => {
+    try {
+      const data = await shareApplicationServices.createStaff(body);
+      return data;
+    } catch (error: any) {
+      const message = error;
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const createAgent = createAsyncThunk(
   "shareApllication/createAgent",
   async (body: any, thunkAPI) => {
@@ -465,6 +478,18 @@ export const getAllBudget = createAsyncThunk(
   }
 );
 
+export const getAllApplicationPayment = createAsyncThunk(
+  "shareApplication/getAllApplicationPayment",
+  async ({ page, limit, search }: { page: number; limit: number; search: string }) => {
+    const response = await shareApplicationServices.getAllApplicationPayment(page, limit, search);
+    return {
+      payments: response.data,
+      totalPages: response.data.totalPages,
+      currentPage: page
+    };
+  }
+);
+
 interface ApplicationState {
   userProfile: null;
   currentUser: null;
@@ -480,6 +505,7 @@ interface ApplicationState {
   registerVisaApplication: any | null;
   registerStudent:null;
   registerAgent:null,
+  registerStaff:null,
   updateStudent: null,
   updateAgent:null,
   updateDocStatus:null,
@@ -514,6 +540,11 @@ interface ApplicationState {
     totalPages: number;
     currentPage: number;
   };
+  allAppPayment: {
+    payments: any[];
+    totalPages: number;
+    currentPage: number;
+  };
   allPendingAgents: {
     allPending: any[]; 
     totalPages: number;
@@ -529,6 +560,7 @@ interface ApplicationState {
   searchTerm: string;
   allAgentSearchTerm: string;
   allVisaApplicationSearchTerm: string;
+  allApplicationPaymentSearchTerm: string;
   allPendingAgentSearchTerm: string;
 }
 
@@ -539,6 +571,7 @@ const initialState: ApplicationState = {
   updateProfile: null,
   updatePassword: null,
   registerStudent:null,
+  registerStaff:null,
   registerAgent:null,
   topCountries: null,
   topUniversities: null,
@@ -577,6 +610,11 @@ const initialState: ApplicationState = {
     totalPages: 0,
     currentPage: 1,
   },
+  allAppPayment: {
+    payments: [],
+    totalPages: 0,
+    currentPage: 1,
+  },
   allPendingAgents: {
     allPending: [],
     totalPages: 0,
@@ -596,6 +634,7 @@ const initialState: ApplicationState = {
   searchTerm: "",
   allAgentSearchTerm: "",
   allVisaApplicationSearchTerm: "",
+  allApplicationPaymentSearchTerm: "",
   allPendingAgentSearchTerm: "",
 };
 
@@ -622,6 +661,9 @@ export const shareApplicationSlice = createSlice({
     },
     setAllVisaApplicationSearchTerm: (state, action: PayloadAction<string>) => {
       state.allVisaApplicationSearchTerm = action.payload;
+    },
+    setAllApplicationPaymentSearchTerm: (state, action: PayloadAction<string>) => {
+      state.allApplicationPaymentSearchTerm = action.payload;
     },
     setAllPendingAgentSearchTerm: (state, action: PayloadAction<string>) => {
       state.allPendingAgentSearchTerm = action.payload;
@@ -848,6 +890,19 @@ export const shareApplicationSlice = createSlice({
       })
 
       .addCase(
+        createStaff.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.registerStaff = action.payload;
+        }
+      )
+      .addCase(createStaff.rejected, (state, action) => {
+        state.registerStaff = null;
+        const errorMessage =
+          action.error.message || "Student Application creation failed.";
+        setMessage(errorMessage);
+      })
+
+      .addCase(
         createAgent.fulfilled,
         (state, action: PayloadAction<any>) => {
           state.registerAgent = action.payload;
@@ -1008,10 +1063,27 @@ export const shareApplicationSlice = createSlice({
         setMessage(errorMessage);
       })
 
+      .addCase(getAllApplicationPayment.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllApplicationPayment.fulfilled, (state, action: PayloadAction<{
+        payments: any[];
+        totalPages: number;
+        currentPage: number;
+      }>) => {
+        state.loading = false;
+        state.allAppPayment = action.payload;
+      })
+      .addCase(getAllApplicationPayment.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch payment applications";
+      })
+             
   },
 });
 
 
-export const { setSort, setStatus, setMonth, setSearch, setAllAgentSearchTerm, setAllVisaApplicationSearchTerm, setAllPendingAgentSearchTerm } = shareApplicationSlice.actions;
+export const { setSort, setStatus, setMonth, setSearch, setAllAgentSearchTerm, setAllVisaApplicationSearchTerm, setAllPendingAgentSearchTerm, setAllApplicationPaymentSearchTerm } = shareApplicationSlice.actions;
 const { reducer } = shareApplicationSlice;
 export default reducer;

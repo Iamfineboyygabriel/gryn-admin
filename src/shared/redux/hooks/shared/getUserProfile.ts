@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import {
   getAllAgents,
+  getAllApplicationPayment,
   getAllBudget,
   getAllDraftItems,
   getAllInvoice,
@@ -13,6 +14,7 @@ import {
   getTopUniversities,
   getUserProfile,
   setAllAgentSearchTerm,
+  setAllApplicationPaymentSearchTerm,
   setAllPendingAgentSearchTerm,
   setAllVisaApplicationSearchTerm,
   updateProfile,
@@ -27,7 +29,7 @@ import {
   getVisaApplicationDetails,
 } from "../../shared/services/shareApplication.services";
 import { useQuery } from "react-query";
-import { getAllAdminForSuperAdmin } from "../../admin/slices/application.slices";
+import { getAllStaffForSuperAdmin } from "../../admin/slices/application.slices";
 import { useAppSelector } from "./reduxHooks";
 import { getAllBanks } from "../../admin/services/application.services";
 
@@ -626,3 +628,28 @@ export const useBudgetFetch = (initialPage = 1, initialLimit = 10) => {
 };
 
 
+export const useAllApplicationPayment = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const allApplicationPayment = useSelector((state: any) => state?.shareApplication?.allAppPayment?.payments || []);
+  const totalPages = useSelector((state: any) => state?.shareApplication?.allPayment?.totalPages || 0);
+  const currentPage = useSelector((state: any) => state?.shareApplication?.allPayment?.currentPage || 1);
+  const loading = useSelector((state: any) => state?.shareApplication?.loading || false);
+  const error = useSelector((state: any) => state?.shareApplication?.error || null);
+  const searchTerm = useSelector((state: any) => state?.shareApplication?.searchTerm || '');
+
+  const fetchApplicationPayments = useCallback(
+    (page: number, limit: number) => {
+      dispatch(getAllApplicationPayment({ page, limit, search: searchTerm || '' }));
+    },
+    [dispatch, searchTerm]
+  );
+
+  const updateSearchTerm = useCallback(
+    (term: string) => {
+      dispatch(setAllApplicationPaymentSearchTerm(term));
+    },
+    [dispatch]
+  );
+
+  return { allApplicationPayment, totalPages, currentPage, loading, error, searchTerm, fetchApplicationPayments, updateSearchTerm };
+};

@@ -1,16 +1,15 @@
 import React, { useEffect, useMemo, useCallback, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import transaction from "../../../../../../assets/svg/Transaction.svg";
-import { Link, useNavigate } from "react-router-dom";
 import DOMPurify from "dompurify";
-import { button } from "../../../../../../shared/buttons/Button";
-import plus from "../../../../../../assets/svg/plus.svg";
+import { useAllAgent } from "../../../../../../shared/redux/hooks/shared/getUserProfile";
+import { useNavigate } from "react-router";
+import { button } from "../../../../../../shared/buttons/Button"
 import CustomPagination from "../../../../../../shared/utils/customPagination";
-import { useAllStaffForSuperAdmin } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
-    {Array.from({ length: 6 }).map((_, index) => (
+    {Array.from({ length: 5 }).map((_, index) => (
       <td key={index} className="px-6 py-4">
         <div className="h-4 bg-gray-200 rounded"></div>
       </td>
@@ -18,43 +17,40 @@ const SkeletonRow = () => (
   </tr>
 );
 
-const AllStaff = () => {
+const SeeAllAgents = () => {
   const { 
-    admins, 
+    agents, 
     totalPages, 
     currentPage, 
     loading, 
-    error, 
+    fetchAgents, 
     searchTerm, 
-    fetchAdmins, 
     updateSearchTerm 
-  } = useAllStaffForSuperAdmin();
-console.log("ddd",admins)
+  } = useAllAgent();
+
   const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
+  const navigate = useNavigate();
+  const handleBackClick = () => navigate(-1);
   const itemsPerPage = 10;
-  const [isModalOpen, setModalOpen] = useState(false);
-   const navigate = useNavigate()
-  const handleOpenModal = () => setModalOpen(true);
-  const handleCloseModal = () => setModalOpen(false);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       if (localSearchTerm !== searchTerm) {
         updateSearchTerm(localSearchTerm);
-        fetchAdmins(1, itemsPerPage);
+        fetchAgents(1, itemsPerPage);
       }
     }, 300);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [localSearchTerm, updateSearchTerm, fetchAdmins, itemsPerPage, searchTerm]);
+  }, [localSearchTerm, updateSearchTerm, fetchAgents, itemsPerPage, searchTerm]);
 
   useEffect(() => {
-    fetchAdmins(currentPage, itemsPerPage);
-  }, [fetchAdmins, currentPage, itemsPerPage]);
+    fetchAgents(currentPage, itemsPerPage);
+  }, [fetchAgents, currentPage, itemsPerPage]);
 
   const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, value: number) => {
-    fetchAdmins(value, itemsPerPage);
-  }, [fetchAdmins, itemsPerPage]);
+    fetchAgents(value, itemsPerPage);
+  }, [fetchAgents, itemsPerPage]);
 
   const escapeRegExp = useCallback((string: string) => {
     return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -76,24 +72,17 @@ console.log("ddd",admins)
 
   const formatData = useCallback((data: any) => (data ? data : "-"), []);
 
-  const filteredAdmins = useMemo(() => {
-    if (!admins?.data) return [];
-    return admins.data.filter((admin: any) => {
-      const fullName = `${admin?.profile?.firstName} ${admin?.profile?.lastName}`?.toLowerCase();
+  const filteredAgents = useMemo(() => {
+    return (agents || []).filter((agent: any) => {
+      const fullName = `${agent.profile.firstName} ${agent.profile.lastName}`.toLowerCase();
       return (
-        fullName?.includes(localSearchTerm?.toLowerCase()) ||
-        admin?.email.toLowerCase()?.includes(localSearchTerm?.toLowerCase()) ||
-        admin?.role?.toLowerCase()?.includes(localSearchTerm?.toLowerCase())
+        fullName.includes(localSearchTerm.toLowerCase()) ||
+        agent.email.toLowerCase().includes(localSearchTerm.toLowerCase())
       );
     });
-  }, [admins, localSearchTerm]);
+  }, [agents, localSearchTerm]);
 
-  const handleViewDetails = useCallback(
-    (staffEmail: string) => {
-      navigate(`/admin/dashboard/all_staffs/view_profile/${staffEmail}`);
-    },
-    [navigate]
-  );
+  const isCurrentPageEmpty = filteredAgents.length === 0;
 
   const renderTableBody = useCallback(() => {
     if (loading) {
@@ -102,10 +91,10 @@ console.log("ddd",admins)
       ));
     }
 
-    if (filteredAdmins?.length > 0) {
-      return filteredAdmins?.map((admin: any, index: number) => (
+    if (filteredAgents.length > 0) {
+      return filteredAgents.map((agent: any, index: number) => (
         <tr
-          key={admin?.id}
+          key={agent.id}
           className="text-[14px] border-b border-gray-200 leading-[20px] text-grey-primary font-medium"
         >
           <td className="py-[16px] px-[24px]">
@@ -115,30 +104,30 @@ console.log("ddd",admins)
             className="py-[16px] gap-1 px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
               highlightText(
-                `${admin?.profile?.firstName} ${admin?.profile?.lastName}`,
+                `${agent.profile.firstName} ${agent.profile.lastName}`,
                 localSearchTerm
               )
             )}
           />
           <td className="py-[16px] px-[24px]">
-            {formatData(admin?.profile?.phoneNumber)}
-          </td>
-          <td className="py-[16px] px-[24px]">
-            {formatData(admin?.role)}
+            {formatData(agent.phoneNumber)}
           </td>
           <td 
             className="py-[16px] px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
               highlightText(
-                formatData(admin?.email),
+                formatData(agent.email),
                 localSearchTerm
               )
             )}
           />
-            <td
-              onClick={() => handleViewDetails(admin?.profile?.email)}
-              className="py-[16px] cursor-pointer px-[24px]">
-                View details
+          <td className="py-[16px] px-[24px]">
+            <p
+              // to={`/agent/${agent.id}`}
+              className="text-primary-700 font-[600] flex items-center gap-[8px]"
+            >
+              View Application
+            </p>
           </td>
         </tr>
       ));
@@ -147,42 +136,43 @@ console.log("ddd",admins)
         <tr>
           <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
             <div className="mt-[2em] flex flex-col items-center justify-center">
-              <img src={transaction} alt="No admins" />
+              <img src={transaction} alt="No applications" />
               <p className="mt-2 text-sm text-gray-500 dark:text-white">
-                No Staff found.
+                No Agents.
               </p>
             </div>
           </td>
         </tr>
       );
     }
-  }, [loading, filteredAdmins, currentPage, itemsPerPage, sanitizeHTML, highlightText, localSearchTerm, formatData]);
+  }, [loading, filteredAgents, currentPage, itemsPerPage, sanitizeHTML, highlightText, localSearchTerm, formatData]);
 
   return (
-    <main className="font-outfit">
-      <h1 className="text-2xl font-bold">Staff Management</h1>
-      <div className="mt-[1em] h-auto w-full overflow-auto rounded-lg bg-white px-[2em] py-3 pb-[10em]">
-
+    <main>
       <div className="relative">
-        <header className="flex items-center justify-between">
-          <h1 className="font-medium text-xl">All Staff</h1>
-          <div className="flex gap-2">
-            <button.PrimaryButton onClick={handleOpenModal} className="mt-[1em] flex gap-2 rounded-full bg-primary-200 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
-              <img src={plus} alt="plus" />
-              Update Staff
+      <header className="flex items-center justify-between">
+      <h1 className="text-2xl font-bold">Application</h1>
+        </header>
+    <div className="mt-[1.3em] h-auto w-full overflow-auto rounded-lg bg-white px-[1em] py-3 pb-[10em]">
+    <header>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="font-medium dark:text-gray-700">
+                Reports /
+                <span className="ml-1 font-medium text-primary-700 dark:text-white">
+                  All Agents
+                </span>
+              </h1>
+            </div>
+            <button.PrimaryButton className="btn-2" onClick={handleBackClick}>
+              Back
             </button.PrimaryButton>
-            <Link to="/admin/dashboard/all_staffs/create_staff">
-              <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-primary-700 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
-                <img src={plus} alt="plus" />
-                New Staff
-              </button.PrimaryButton>
-            </Link>
           </div>
         </header>
-        <div className="flex items-center mt-3 w-64 rounded-full border-[1px] border-border bg-gray-100 dark:bg-gray-700">
+      <div className="flex items-center mt-3 w-64 rounded-full border-[1px] border-border bg-white -100">
           <input
             type="text"
-            className="flex-grow rounded-full bg-transparent py-2 pl-4 pr-2 text-sm focus:border-grey-primary focus:outline-none"
+            className="flex-grow rounded-full bg-gray-100 bg-transparent py-2 pl-4 pr-2 text-sm focus:border-grey-primary focus:outline-none"
             placeholder="Search"
             value={localSearchTerm}
             onChange={(e) => setLocalSearchTerm(e.target.value)}
@@ -190,34 +180,31 @@ console.log("ddd",admins)
           <FiSearch className="mr-3 text-lg text-gray-500" />
         </div>
 
-        <table className="w-full mt-4 border-collapse">
+        <table className="w-full mt-4  border-collapse">
           <thead className="text-gray-500 border-b border-gray-200">
             <tr>
               <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
               <th className="px-6 py-3 text-left text-sm font-normal">Full Name</th>
               <th className="px-6 py-3 text-left text-sm font-normal">Phone Number</th>
-              <th className="px-6 py-3 text-left text-sm font-normal">Role</th>
               <th className="px-6 py-3 text-left text-sm font-normal">Email Address</th>
               <th className="px-6 py-3 text-left text-sm font-normal">Action</th>
             </tr>
           </thead>
           <tbody>{renderTableBody()}</tbody>
         </table>
-      </div>
-
-   {!loading && admins && admins.data && admins.data.length > 0 && (
-  <div className="mt-6 flex justify-center">
-    <CustomPagination
-      currentPage={currentPage}
-      onPageChange={handlePageChange}
-      hasMore={admins.data.length === itemsPerPage}
-    />
-  </div>
-)}
-      </div>
+           {!loading && agents.length > 0 && (
+           <div className="mt-6 flex justify-center">
+            <CustomPagination
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            hasMore={agents.length === itemsPerPage}
+          />
+          </div>
+        )}
+       </div>
+     </div>
     </main>
   );
 };
 
-export default AllStaff
-
+export default SeeAllAgents;

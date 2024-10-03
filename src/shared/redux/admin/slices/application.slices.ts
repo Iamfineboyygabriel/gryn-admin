@@ -167,12 +167,12 @@ export const getAllSchoolsListCountries = createAsyncThunk(
   }
 );
 
-export const getAllAdminForSuperAdmin = createAsyncThunk(
-  "application/getAllAdminForSuperAdmin",
+export const getAllStaffForSuperAdmin = createAsyncThunk(
+  "application/getAllStaffForSuperAdmin",
   async ({ page, limit, search }: { page?: number; limit?: number; search: string }) => {
-    const response = await applicationServices.getAllAdminForSuperAdmin(page, limit, search);
+    const response = await applicationServices.getAllStaffForSuperAdmin(page, limit, search);
     return {
-      admins: response,
+      staffs: response,
       totalPages: response.totalPages || 0,
       currentPage: page || 1
     };
@@ -231,6 +231,18 @@ export const getAllBanks = createAsyncThunk(
 );
 
 
+export const getAllAdminForSuperAdmin = createAsyncThunk(
+  "application/getAllAdminForSuperAdmin",
+  async ({ page, limit, search }: { page?: number; limit?: number; search: string }) => {
+    const response = await applicationServices.getAllAdminForSuperAdmin(page, limit, search);
+    return {
+      admins: response,
+      totalPages: response.totalPages || 0,
+      currentPage: page || 1
+    };
+  }
+);
+
 
 interface ApplicationState {
   allApplication: {
@@ -255,6 +267,11 @@ interface ApplicationState {
   assignApplicationStaff: null;
   assignApplicationAgent: null;
   allBanks: null,
+  allStaff: {
+    staffs: any[] | null;
+    totalPages: number;
+    currentPage: number;
+  };
   allAdmin: {
     admins: any[] | null;
     totalPages: number;
@@ -280,6 +297,7 @@ interface ApplicationState {
   allApplicationSearchTerm: string;
   allStudentsSearchTerm: string;
   allPendingApplicationSearchTerm: string;
+  allStaffSearchTerm: string;
   allAdminSearchTerm: string;
   allActivity: any,
   addSchool: null,
@@ -293,6 +311,11 @@ const initialState: ApplicationState = {
   assignApplicationStaff: null,
   assignApplicationAgent: null,
   allBanks: null,
+  allStaff: {
+    staffs: [],
+    totalPages: 0,
+    currentPage: 1,
+  },
   allAdmin: {
     admins: [],
     totalPages: 0,
@@ -333,6 +356,7 @@ const initialState: ApplicationState = {
   allApplicationSearchTerm: '',
   allStudentsSearchTerm: '',
   allPendingApplicationSearchTerm: '',
+  allStaffSearchTerm: '',
   allAdminSearchTerm: '',
   allActivity: null,
   addSchool:null,
@@ -351,10 +375,14 @@ export const applicationSlice = createSlice({
     setAllPendingApplicationSearchTerm: (state, action: PayloadAction<string>) => {
       state.allPendingApplicationSearchTerm = action.payload;
     },
+    setAllStaffSearchTerm: (state, action: PayloadAction<string>) => {
+      state.allStaffSearchTerm = action.payload;
+    },
     setAllAdminSearchTerm: (state, action: PayloadAction<string>) => {
       state.allAdminSearchTerm = action.payload;
     },
   },
+
   extraReducers: (builder) => {
     builder
       .addCase(getStats.fulfilled, (state, action: PayloadAction<any>) => {
@@ -428,6 +456,24 @@ export const applicationSlice = createSlice({
       })
 
 
+      .addCase(getAllStaffForSuperAdmin.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllStaffForSuperAdmin.fulfilled, (state, action: PayloadAction<{
+        staffs: any[];
+        totalPages: number;
+        currentPage: number;
+      }>) => {
+        state.loading = false;
+        state.allStaff = action.payload;
+      })
+      .addCase(getAllStaffForSuperAdmin.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch admins";
+      })
+     
+      
       .addCase(getAllAdminForSuperAdmin.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -628,6 +674,7 @@ export const {
   setAllApplicationSearchTerm,
   setAllStudentsSearchTerm,
   setAllPendingApplicationSearchTerm,
+  setAllStaffSearchTerm,
   setAllAdminSearchTerm,
 } = applicationSlice.actions;
 

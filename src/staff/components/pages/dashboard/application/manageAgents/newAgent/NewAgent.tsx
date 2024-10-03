@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { AppDispatch } from '../../../../../../../shared/redux/store';
-import { createStudent } from '../../../../../../../shared/redux/shared/slices/shareApplication.slices';
+import { createAgent } from '../../../../../../../shared/redux/shared/slices/shareApplication.slices';
 import { useAppDispatch } from '../../../../../../../shared/redux/hooks/shared/reduxHooks';
 import Modal from '../../../../../../../shared/modal/Modal';
-import StudentCreated from '../../../../../../../shared/modal/StudentCreated';
+import AgentCreated from '../../../../../../../shared/modal/AgentCreated';
 import { button } from '../../../../../../../shared/buttons/Button';
 import { CgAsterisk } from 'react-icons/cg';
 import ReactLoading from 'react-loading';
 import { toast } from 'react-toastify';
 
-const NewStudent = () => {
+const CreateAgent = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [otherName, setOtherName] = useState('');
@@ -38,7 +38,7 @@ const NewStudent = () => {
         otherName,
         email,
       };
-      await dispatch(createStudent(body)).unwrap();
+      await dispatch(createAgent(body)).unwrap();
       handleOpenModal();
     } catch (error: any) {
         console.log("error",error)
@@ -58,9 +58,9 @@ const NewStudent = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="font-medium dark:text-gray-700">
-                Manage Students /
+                Manage Agent /
                 <span className="ml-1 font-medium text-primary-700 dark:text-white">
-                  New Student
+                  New Agent
                 </span>
               </h1>
             </div>
@@ -162,11 +162,11 @@ const NewStudent = () => {
       </div>
       {isModalOpen && (
         <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
-          <StudentCreated onClose={handleCloseModal} />
+          <AgentCreated onClose={handleCloseModal} />
         </Modal>
       )}
     </main>
   );
 };
 
-export default NewStudent;
+export default CreateAgent;

@@ -56,7 +56,7 @@ const StaffLanding = () => {
         }
       } catch (error:any) {
         if (error) {
-          toast.error(error.message);
+          toast.error(error);
         } else {
           toast.error("Network error: please check your internet connection");
         }

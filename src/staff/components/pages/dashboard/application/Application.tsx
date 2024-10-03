@@ -35,7 +35,7 @@ const Application = () => {
                 onClick={() => setActiveLink("manageStudents")}
               >
                 <button.PrimaryButton className="m-auto flex justify-center gap-2 font-medium text-black">
-                  Manage Student
+                  Assigned Student
                 </button.PrimaryButton>
               </div>
               <div
@@ -47,7 +47,7 @@ const Application = () => {
                 onClick={() => setActiveLink("manageAgents")}
               >
                 <button.PrimaryButton className="m-auto flex justify-center gap-2 font-medium text-black">
-                  Manage Agents
+                  Assigned Agents
                 </button.PrimaryButton>
               </div>
             </div>

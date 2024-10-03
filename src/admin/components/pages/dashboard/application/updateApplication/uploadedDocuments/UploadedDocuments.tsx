@@ -251,7 +251,7 @@ const UploadedDocument = ({ studentData }: any) => {
                     data-aos="zoom-in"
                     onClose={handleCloseModal}
                 >
-                    <ApplicationUpdated onClose={handleCloseModal} />
+                    <ApplicationUpdated to="/admin/dashboard/application" onClose={handleCloseModal} />
                 </Modal>
             )}
     </main>

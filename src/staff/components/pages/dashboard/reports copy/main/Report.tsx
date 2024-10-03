@@ -2,6 +2,7 @@ import Counts from "../counts/Counts";
 import MostApplied from "../../../../../../shared/mostApplied/MostApplied";
 import { button } from "../../../../../../shared/buttons/Button";
 import plus from "../../../../../../assets/svg/Upload.svg";
+import ApexChart from "../../../../../../shared/chart/ApexChart";
 
 const Report = () => {
   return (
@@ -18,6 +19,7 @@ const Report = () => {
       <div className="mt-[1em] flex flex-col gap-[1.2em]">
         <Counts />
         <MostApplied />
+        <ApexChart/>
       </div>
     </main>
   );

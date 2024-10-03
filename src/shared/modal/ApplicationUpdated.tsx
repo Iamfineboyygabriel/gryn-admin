@@ -2,11 +2,12 @@ import { Link } from "react-router-dom";
 import Success from "../../assets/svg/ResetPassword.svg";
 import { button } from "../../shared/buttons/Button";
 
-interface NewsSentProps {
+interface ApplicationUpdatedProps {
   onClose?: () => void;
+  to: string;
 }
 
-const ApplicationUpdated = ({onClose}:any) => {
+const ApplicationUpdated = ({ onClose, to }: ApplicationUpdatedProps) => {
   return (
     <main className="px-[5em] font-outfit">
       <div className="m-auto w-[24em] py-[2em] text-center">
@@ -19,7 +20,7 @@ const ApplicationUpdated = ({onClose}:any) => {
             <p>You have updated an application successfully </p>
           </div>
         </article>
-        <Link to="/admin/dashboard/application">
+        <Link to={to}>
           <button.PrimaryButton className="m-auto mt-[2em] flex w-[60%] justify-center gap-2 rounded-full bg-linear-gradient py-[10px] text-center font-medium text-white">
             Proceed to Dashboard
           </button.PrimaryButton>

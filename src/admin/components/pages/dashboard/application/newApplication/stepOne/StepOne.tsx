@@ -221,15 +221,24 @@ const StepOne = ({ onNext }: any) => {
               className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
             />
           </div>
-          <Dropdown
-            label="Select State"
-            items={stateDropdownItems}
-            selectedItem={state ? { name: state } : null}
-            onSelectItem={handleStateSelect}
-            asterisk
-            searchVisible
-            loading={statesLoading}
-          />
+          <div className="w-full">
+            <label
+              htmlFor="localGovtArea"
+              className="flex-start flex font-medium"
+            >
+              State
+              <CgAsterisk className="text-red-500" />
+            </label>
+            <input
+              id="state"
+              name="state"
+              required
+              disabled={loading}
+              type="text"
+              onChange={(e) => setState(e.target.value)}
+              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
+            />
+           </div>
 
           <Dropdown
             label="Select Country"

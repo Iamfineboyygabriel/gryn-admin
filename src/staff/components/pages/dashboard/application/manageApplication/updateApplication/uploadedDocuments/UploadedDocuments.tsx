@@ -7,10 +7,8 @@ import ReactLoading from "react-loading";
 import { AiOutlineEye } from "react-icons/ai";
 import { updateApplicationDocument } from "../../../../../../../../shared/redux/shared/services/shareApplication.services";
 import DocumentPreviewModal from "../../../../../../../../shared/modal/DocumentPreviewModal";
-import NewsCreated from "../../../../../../../../shared/modal/NewsCreated";
 import Modal from "../../../../../../../../shared/modal/Modal";
 import ApplicationUpdated from "../../../../../../../../shared/modal/ApplicationUpdated";
-
 
 const SkeletonRow = () => (
   <div className="mb-4 animate-pulse space-y-4">
@@ -22,19 +20,20 @@ const SkeletonRow = () => (
 const UploadedDocument = ({ studentData }: any) => {
   const [files, setFiles] = useState<{ [key: string]: File | null }>({});
   const [fileNames, setFileNames] = useState<{ [key: string]: string }>({});
-  const [loading, setLoading] = useState(true); 
-  const [uploading, setUploading] = useState(false); 
+  const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewFileType, setPreviewFileType] = useState<string>("");
-  const [isModalOpen, setModalOpen] = useState(false);  
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [changedFiles, setChangedFiles] = useState<string[]>([]);
 
   const handleOpenModal = () => setModalOpen(true);
   const handleCloseModal = () => setModalOpen(false);
 
   useEffect(() => {
     if (studentData?.documents) {
-      const documentFiles = studentData.documents?.reduce(
+      const documentFiles = studentData.documents.reduce(
         (acc: { [key: string]: File | null }, doc: any) => {
           acc[doc.documentType] = null;
           return acc;
@@ -42,7 +41,7 @@ const UploadedDocument = ({ studentData }: any) => {
         {}
       );
 
-      const documentNames = studentData.documents?.reduce(
+      const documentNames = studentData.documents.reduce(
         (acc: { [key: string]: string }, doc: any) => {
           acc[doc.documentType] = doc.name;
           return acc;
@@ -51,7 +50,8 @@ const UploadedDocument = ({ studentData }: any) => {
       );
       setFiles(documentFiles);
       setFileNames(documentNames);
-      setLoading(false); 
+      setChangedFiles([]);
+      setLoading(false);
     }
   }, [studentData]);
 
@@ -60,8 +60,6 @@ const UploadedDocument = ({ studentData }: any) => {
   ) => {
     const selectedFile = event?.target?.files?.[0];
     if (selectedFile) {
-  
-
       setFiles((prevFiles) => ({
         ...prevFiles,
         [documentType]: selectedFile,
@@ -70,6 +68,12 @@ const UploadedDocument = ({ studentData }: any) => {
         ...prevNames,
         [documentType]: selectedFile?.name,
       }));
+      setChangedFiles((prev) => {
+        if (!prev.includes(documentType)) {
+          return [...prev, documentType];
+        }
+        return prev;
+      });
     }
   };
 
@@ -79,52 +83,68 @@ const UploadedDocument = ({ studentData }: any) => {
 
   const updateDetails = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setUploading(true); 
+    
+    if (changedFiles.length === 0) {
+      toast.info("No changes detected. Please modify at least one document before saving.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      return;
+    }
+
+    setUploading(true);
 
     const successfulUploads: string[] = [];
     const failedUploads: string[] = [];
 
     try {
-      await Promise.all(
-        Object?.entries(files)?.map(async ([documentType, file]) => {
-          const doc = studentData.documents?.find(
-            (d: any) => d?.documentType === documentType
-          );
-          if (file && doc) {
-            try {
-              const form = new FormData();
-              form?.append("file", file);
-              const endpoint = `/media/application/upload-doc/${doc?.id}`;
-              const response = await updateApplicationDocument(endpoint, form);
-              if (response?.status === 201) {
-                successfulUploads.push(documentType);
-              } else {
-                failedUploads?.push(documentType);
-              }
-            } catch (error) {
+      const uploadPromises = changedFiles.map(async (documentType) => {
+        const file = files[documentType];
+        const doc = studentData.documents?.find(
+          (d: any) => d?.documentType === documentType
+        );
+        
+        if (file && doc) {
+          try {
+            const form = new FormData();
+            form.append("file", file);
+            const endpoint = `/media/application/upload-doc/${doc?.id}`;
+            const response = await updateApplicationDocument(endpoint, form);
+            if (response?.status === 201) {
+              successfulUploads.push(documentType);
+            } else {
               failedUploads.push(documentType);
             }
+          } catch (error) {
+            failedUploads.push(documentType);
           }
-        })
-      );
+        }
+      });
 
-      if (successfulUploads?.length > 0) {
-        toast.success(`Successfully uploaded: ${successfulUploads?.join(", ")}`);
+      await Promise.all(uploadPromises);
+
+      if (successfulUploads.length > 0) {
+        toast.success(`Successfully uploaded: ${successfulUploads.join(", ")}`);
         handleOpenModal();
+        setChangedFiles([]);
       }
       if (failedUploads.length > 0) {
-        toast.error(`Failed to upload: ${failedUploads?.join(", ")}`);
+        toast.error(`Failed to upload: ${failedUploads.join(", ")}`);
       }
     } catch (error) {
       toast.error("Network error occurred");
     } finally {
-      setUploading(false); 
+      setUploading(false);
     }
   };
 
-  const getFileTypeFromUrl = (url: any) => {
+  const getFileTypeFromUrl = (url: string) => {
     const segments = url.split("/");
-    const fileExtension = segments.pop().split(".").pop();
+    const fileExtension = segments[segments.length - 1].split(".").pop()?.toLowerCase();
     switch (fileExtension) {
       case "pdf":
         return "application/pdf";
@@ -140,12 +160,9 @@ const UploadedDocument = ({ studentData }: any) => {
     }
   };
 
-  const handlePreview = (url: any) => {
+  const handlePreview = (url: string) => {
     const fileType = getFileTypeFromUrl(url);
-    if (fileType === "application/pdf") {
-      url += "&viewer=pdf";
-    }
-    setPreviewUrl(url);
+    setPreviewUrl(fileType === "application/pdf" ? `${url}&viewer=pdf` : url);
     setPreviewFileType(fileType);
     setIsPreviewOpen(true);
   };
@@ -185,40 +202,43 @@ const UploadedDocument = ({ studentData }: any) => {
           {studentData?.documents?.map((doc: any) => (
             <div key={doc?.id}>
               <div>
-                <label className="dark:text-white" htmlFor="documentType">
-                  {doc?.documentType}
+                <label className="dark:text-white" htmlFor={doc.documentType}>
+                  {doc.documentType}
                 </label>
               </div>
               <div className="dark:border-border mt-2 flex items-center justify-between rounded-lg border-[1px] border-gray-300 px-[1.5em] py-2 dark:bg-gray-700">
                 <input
                   type="file"
-                  id={doc?.documentType}
+                  id={doc.documentType}
                   accept=".png,.jpeg,.jpg,.doc,.docx,.pdf"
                   className="hidden"
-                  onChange={handleFileChange(doc?.documentType)}
+                  onChange={handleFileChange(doc.documentType)}
                 />
                 <label
-                  htmlFor={doc?.documentType}
+                  htmlFor={doc.documentType}
                   className="flex flex-grow flex-col dark:text-white cursor-pointer"
                 >
                   <div className="flex items-center gap-5">
                     <div className="flex gap-2">
                       <img src={fileImg} alt="file_img" />
                       <p className="text-lg truncate max-w-[180px] font-light">
-                        {fileNames[doc?.documentType]}
+                        {fileNames[doc.documentType]}
                       </p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => handlePreview(doc?.publicURL)}
-                    >
-                      <AiOutlineEye />
-                    </button>
+                    {doc.publicURL && (
+                      <button
+                        type="button"
+                        onClick={() => handlePreview(doc.publicURL)}
+                      >
+                        <AiOutlineEye />
+                      </button>
+                    )}
                   </div>
                 </label>
                 <button.PrimaryButton
                   className="flex flex-shrink-0 items-center gap-2 rounded-lg bg-primary-700 p-[10px] text-white dark:bg-gray-800"
                   onClick={handleUploadClick(doc.documentType)}
+                  type="button"
                 >
                   <img src={upload} alt="upload icon" />
                   Upload
@@ -245,15 +265,15 @@ const UploadedDocument = ({ studentData }: any) => {
         previewUrl={previewUrl}
         previewFileType={previewFileType}
       />
-           {isModalOpen && (
-                <Modal
-                    isOpen={isModalOpen}
-                    data-aos="zoom-in"
-                    onClose={handleCloseModal}
-                >
-                    <ApplicationUpdated onClose={handleCloseModal} />
-                </Modal>
-            )}
+      {isModalOpen && (
+        <Modal
+          isOpen={isModalOpen}
+          data-aos="zoom-in"
+          onClose={handleCloseModal}
+        >
+          <ApplicationUpdated to="/staff/dashboard/application" onClose={handleCloseModal} />
+        </Modal>
+      )}
     </main>
   );
 };
