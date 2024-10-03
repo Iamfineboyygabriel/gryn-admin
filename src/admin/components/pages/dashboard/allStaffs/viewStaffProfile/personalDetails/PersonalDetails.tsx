@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { useStaffDetails } from '../../../../../../../shared/redux/hooks/admin/getAdminProfile';
 import user from "../../../../../../../assets/png/avatar.png";
+import { toast } from "react-toastify";
+import { updateStaff } from '../../../../../../../shared/redux/shared/services/shareApplication.services';
+import ReactLoading from "react-loading";
+import { button } from "../../../../../../../shared/buttons/Button";
 
 const SkeletonField = () => (
   <div className="w-full animate-pulse">
@@ -23,19 +27,50 @@ const PersonalDetails: React.FC<{ staffEmail: any }> = ({
   staffEmail,
 }) => {
   const { staffDetail, loading } = useStaffDetails(staffEmail);
+  const staffId:any = staffDetail?.data.profile.userId;
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [middleName, setMiddleName] = useState("");
   const [email, setEmail] = useState("");
-
+  const [gender, setGender] = useState("")
+  const [designation, setDesignation] = useState("")
+  const [updateLoading, setUpdateLoading] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  
   useEffect(() => {
     if (staffDetail?.data?.profile) {
       setFirstName(staffDetail.data.profile.firstName || "");
       setLastName(staffDetail.data.profile.lastName || "");
       setMiddleName(staffDetail.data.profile.middleName || "");
       setEmail(staffDetail.data.profile.email || "");
+      setGender(staffDetail.data.profile.gender || "");
+      setDesignation(staffDetail.data.designation || "STAFF");
     }
   }, [staffDetail]);
+
+  const updateDetails = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!isEditing) {
+      setIsEditing(true);
+      return;
+    }
+    setUpdateLoading(true);
+    try {
+      const body = {
+        firstName,
+        lastName,
+        middleName,
+        gender,
+      };
+      const response = await updateStaff(staffId, body);
+      toast.success(response?.message);
+      setIsEditing(false);
+    } catch (error:any) {
+      toast.error(error.message);
+    } finally {
+      setUpdateLoading(false);
+    }
+  };
 
   return (
     <main>
@@ -67,7 +102,7 @@ const PersonalDetails: React.FC<{ staffEmail: any }> = ({
           </div>
         </div>
       )}
-      <div className="mt-[1.5em] grid w-full max-w-[80%] grid-cols-1 gap-[1.8em] text-grey md:grid-cols-2">
+      <form onSubmit={updateDetails} className="mt-[1.5em] grid w-full max-w-[80%] grid-cols-1 gap-[1.8em] text-grey md:grid-cols-2">
         {loading ? (
           <>
             <SkeletonField />
@@ -90,7 +125,7 @@ const PersonalDetails: React.FC<{ staffEmail: any }> = ({
                   id="firstName"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  readOnly
+                  readOnly={!isEditing}
                   disabled={loading}
                   className="focus:border-border border-border mt-[1em] flex w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none dark:border-gray-700 dark:text-white"
                 />
@@ -110,7 +145,7 @@ const PersonalDetails: React.FC<{ staffEmail: any }> = ({
                   id="lastName"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-                  readOnly
+                  readOnly={!isEditing}
                   disabled={loading}
                   className="focus:border-border border-border mt-[1em] flex w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none dark:border-gray-700 dark:text-white"
                 />
@@ -130,7 +165,7 @@ const PersonalDetails: React.FC<{ staffEmail: any }> = ({
                   id="middleName"
                   value={middleName}
                   onChange={(e) => setMiddleName(e.target.value)}
-                  readOnly
+                  readOnly={!isEditing}
                   disabled={loading}
                   className="focus:border-border border-border mt-[1em] flex w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none dark:border-gray-700 dark:text-white"
                 />
@@ -151,14 +186,74 @@ const PersonalDetails: React.FC<{ staffEmail: any }> = ({
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   readOnly
+                  disabled={true}
+                  className="focus:border-border border-border mt-[1em] flex w-full rounded-lg border-[1px] bg-gray-100 p-3 focus:outline-none dark:border-gray-700 dark:text-white dark:bg-gray-700"
+                />
+              </div>
+            </div>
+
+            <div className="w-full">
+              <label
+                htmlFor="gender"
+                className="flex-start flex gap-3 font-medium text-grey-primary dark:text-white"
+              >
+                Gender
+              </label>
+              <div className="relative flex text-center">
+                <input
+                  name="gender"
+                  id="gender"
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value)}
+                  readOnly={!isEditing}
                   disabled={loading}
                   className="focus:border-border border-border mt-[1em] flex w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none dark:border-gray-700 dark:text-white"
                 />
               </div>
             </div>
+
+            <div className="w-full">
+              <label
+                htmlFor="designation"
+                className="flex-start flex gap-3 font-medium text-grey-primary dark:text-white"
+              >
+                Designation
+              </label>
+              <div className="relative flex text-center">
+                <input
+                  name="designation"
+                  id="designation"
+                  value={designation}
+                  onChange={(e) => setDesignation(e.target.value)}
+                  readOnly
+                  disabled={true}
+                  className="focus:border-border border-border mt-[1em] flex w-full rounded-lg border-[1px] bg-gray-100 p-3 focus:outline-none dark:border-gray-700 dark:text-white dark:bg-gray-700"
+                />
+              </div>
+            </div>
           </>
         )}
-      </div>
+        <div className="mr-auto mt-4">
+          <button.PrimaryButton
+            className="m-auto mt-[1.5em] px-[1.5em] justify-center gap-2 rounded-full bg-linear-gradient py-[11px] text-center font-medium text-white"
+            type="submit"
+            disabled={loading}
+          >
+            {updateLoading ? (
+              <ReactLoading
+                color="#FFFFFF"
+                width={25}
+                height={25}
+                type="spin"
+              />
+            ) : isEditing ? (
+              "Save Changes"
+            ) : (
+              "Update Profile"
+            )}
+          </button.PrimaryButton>
+        </div>
+      </form>
     </main>
   )
 }

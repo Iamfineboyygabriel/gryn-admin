@@ -90,7 +90,7 @@ const AgentDetails: React.FC = () => {
           <section className="mt-3">
             {activeLink === "manageApplication" && <ManageApplication error={error} loading={loading} applicationDetails={applicationDetails}/>}
             {activeLink === "agentProfile" && <AgentProfile error={error} loading={loading}  applicationDetails={applicationDetails}/>}
-            {activeLink === "pendingAgents" && <AgentCommission/>}
+            {activeLink === "agentCommission" && <AgentCommission/>}
           </section>
         </div>
   

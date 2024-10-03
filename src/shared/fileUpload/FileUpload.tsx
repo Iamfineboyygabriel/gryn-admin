@@ -4,19 +4,24 @@ import upload from "../../assets/svg/Upload.svg";
 import fileImg from "../../assets/svg/File.svg";
 import { CgAsterisk } from "react-icons/cg";
 import { AiOutlineEye } from "react-icons/ai";
+import { RxCrossCircled } from "react-icons/rx";
 import "react-toastify/dist/ReactToastify.css";
 import Modal from "react-modal";
 
 interface FileUploadProps {
   label: string;
   inputId: string;
-  file: File | null;
-  setFile: React.Dispatch<React.SetStateAction<File | null>>;
-  onFileChange: (
+  file?: File | null;  // Made optional
+  files?: File[];      // New prop for multiple files
+  setFile?: React.Dispatch<React.SetStateAction<File | null>>;  // Made optional
+  setFiles?: React.Dispatch<React.SetStateAction<File[]>>;      // New prop for setting multiple files
+  onFileChange?: (
     file: File | null,
     setFile: React.Dispatch<React.SetStateAction<File | null>>,
   ) => void;
+  onFilesChange?: (files: FileList) => void;  // New prop for handling multiple files
   onBrowseClick: (inputId: string) => Promise<void>;
+  multiple?: boolean;  // New prop to enable multiple file selection
   asterisk?: boolean;
   labelClassName?: string;
   error?: string;
@@ -27,22 +32,40 @@ const FileUpload: React.FC<FileUploadProps> = ({
   label,
   inputId,
   file,
+  files = [],
   setFile,
+  setFiles,
   onFileChange,
+  onFilesChange,
   onBrowseClick,
+  multiple = false,
   asterisk = false,
   labelClassName,
   error,
   success,
 }) => {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [previewFile, setPreviewFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files && files.length > 0) {
-      const selectedFile = files[0];
-      onFileChange(selectedFile, setFile);
+    const selectedFiles = event.target.files;
+    if (!selectedFiles || selectedFiles.length === 0) return;
+
+    if (multiple) {
+      if (onFilesChange) {
+        onFilesChange(selectedFiles);
+      } else if (setFiles) {
+        const newFiles = Array.from(selectedFiles);
+        setFiles(prevFiles => [...prevFiles, ...newFiles]);
+      }
+    } else {
+      const selectedFile = selectedFiles[0];
+      if (onFileChange && setFile) {
+        onFileChange(selectedFile, setFile);
+      } else if (setFile) {
+        setFile(selectedFile);
+      }
     }
   };
 
@@ -50,9 +73,62 @@ const FileUpload: React.FC<FileUploadProps> = ({
     fileInputRef.current?.click();
   };
 
-  const handlePreview = () => {
-    if (file) {
-      setIsPreviewOpen(true);
+  const handlePreview = (fileToPreview: File) => {
+    setPreviewFile(fileToPreview);
+    setIsPreviewOpen(true);
+  };
+
+  const renderFileContent = () => {
+    if (multiple && (files.length > 0)) {
+      return (
+        <div className="flex flex-col gap-2">
+          {files.map((f, index) => (
+            <div key={index} className="flex items-center gap-2">
+              <img src={fileImg} alt="file_image" className="w-[18px]" />
+              <div className="flex flex-grow flex-col">
+                <p className="text-lg font-light truncate max-w-[170px]">{f.name}</p>
+                <p className="text-xs text-gray-500 dark:text-white">
+                  {(f.size / 1024).toFixed(2)} KB
+                </p>
+              </div>
+              <button type="button" onClick={() => handlePreview(f)} className="mr-2">
+                <AiOutlineEye />
+              </button>
+              {setFiles && (
+                <button 
+                  type="button" 
+                  onClick={() => setFiles(prevFiles => prevFiles.filter((_, i) => i !== index))}
+                  className="mr-2"
+                >
+                  <RxCrossCircled />
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      );
+    } else if (!multiple && file) {
+      return (
+        <div className="flex items-center gap-2">
+          <img src={fileImg} alt="file_image" className="w-[18px]" />
+          <div className="flex flex-grow flex-col">
+            <p className="text-lg font-light truncate max-w-[170px]">{file.name}</p>
+            <p className="text-xs text-gray-500 dark:text-white">
+              {(file.size / 1024).toFixed(2)} KB
+            </p>
+          </div>
+          <button type="button" onClick={() => handlePreview(file)} className="mr-4">
+            <AiOutlineEye />
+          </button>
+        </div>
+      );
+    } else {
+      return (
+        <>
+          <img src={fileImg} alt="file" className="mb-3 w-[18px]" />
+          <p className="text-sm font-normal">Max file size: 25MB</p>
+        </>
+      );
     }
   };
 
@@ -69,34 +145,14 @@ const FileUpload: React.FC<FileUploadProps> = ({
         <input
           type="file"
           accept=".png,.jpeg,.jpg,.doc,.docx,.pdf"
-          multiple
+          multiple={multiple}
           className="hidden"
           id={inputId}
           ref={fileInputRef}
           onChange={handleFileChange}
         />
         <div className="flex flex-grow flex-col dark:text-white">
-          {file ? (
-              <div className="flex items-center gap-2">
-            <img src={fileImg} alt="file_image" className="w-[18px]" />
-            <div className="flex flex-col gap-2 flex-grow">
-              <p className="text-lg font-light truncate max-w-[170px]">
-                {file.name}
-              </p>
-              <p className="text-xs text-gray-500 dark:text-white">
-                {(file.size / 1024).toFixed(2)} KB
-              </p>
-            </div>
-            <button type="button" onClick={handlePreview} className="mr-4">
-              <AiOutlineEye />
-            </button>
-          </div>
-          ) : (
-            <>
-              <img src={fileImg} alt="file" className="mb-3 w-[18px]" />
-              <p className="text-sm font-normal">Max file size: 25MB</p>
-            </>
-          )}
+          {renderFileContent()}
         </div>
         <button.PrimaryButton
           className="flex flex-shrink-0 items-center gap-2 rounded-lg bg-primary-700 p-[10px] text-white dark:bg-gray-800"
@@ -118,9 +174,9 @@ const FileUpload: React.FC<FileUploadProps> = ({
         overlayClassName="fixed inset-0 bg-black bg-opacity-50"
       >
         <div className="flex flex-col items-center">
-          {file && (
+          {previewFile && (
             <iframe
-              src={URL.createObjectURL(file)}
+              src={URL.createObjectURL(previewFile)}
               style={{ width: "80vw", height: "80vh" }}
               title="Document Preview"
             />

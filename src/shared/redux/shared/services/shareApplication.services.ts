@@ -11,6 +11,8 @@ const API_URL_CREATE_VISA_APPLICATION = process.env.REACT_APP_API_URL + "/visa";
 
 const API_URL_CREATE_INVOICE = process.env.REACT_APP_API_URL + "/invoice";
 
+const API_URL_CREATE_INVOICE_PAYMENT_STAFF = process.env.REACT_APP_API_URL + "/invoice/payment";
+
 const API_URL_CREATE_BUDGET = process.env.REACT_APP_API_URL + "/budget";
 
 const API_URL_CREATE_DRAFT = process.env.REACT_APP_API_URL + "/invoice/draft";
@@ -18,6 +20,8 @@ const API_URL_CREATE_DRAFT = process.env.REACT_APP_API_URL + "/invoice/draft";
 const API_URL_CREATE_STUDENT = process.env.REACT_APP_API_URL + "/admin/users/student";
 
 const API_URL_CREATE_STAFF = process.env.REACT_APP_API_URL + "/admin/users/staff";
+
+const API_URL_CREATE_ADMIN = process.env.REACT_APP_API_URL + "/admin/users/admin";
 
 const API_URL_CREATE_AGENT = process.env.REACT_APP_API_URL + "/admin/users/agent";
 
@@ -48,6 +52,14 @@ interface UpdateApplication {
   internationalPassportNumber?: string;
   degreeType?: string;
 }
+
+interface UpdateStaff {
+  firstName?: string;
+  lastName?: string;
+  middleName?: string;
+  gender?: string;
+}
+
 
 interface UpdateDegree {
   country?: string;
@@ -413,6 +425,18 @@ const createInvoice = async (body: any) => {
   }
 };
 
+const createInvoicePaymentForStaff = async (body: any) => {
+  try {
+    const token = sessionStorage.getItem("userData");
+    const response = await axios.post(API_URL_CREATE_INVOICE_PAYMENT_STAFF, body, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error: any) {
+    handleApiError(error);
+  }
+};
+
 const createBudget = async (body: any) => {
   try {
     const token = sessionStorage.getItem("userData");
@@ -619,6 +643,19 @@ const createStaff = async (body: any) => {
   }
 };
 
+const createAdmin = async (body: any) => {
+  try {
+    const token = sessionStorage.getItem("userData");
+    const response = await axios.post(API_URL_CREATE_ADMIN, body, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error: any) {
+    handleApiError(error);
+  }
+};
+
+
 const findStudentByEmail = async (email: string) => {
   const url = `${process.env.REACT_APP_API_URL}/admin/users/students/email`;
   try {
@@ -750,6 +787,28 @@ export const updateStudentApplication = async (
   body: UpdateApplication,
 ) => {
   const url = `${process.env.REACT_APP_API_URL}/admin/application/${id}`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "patch",
+      data: body,
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateStaff = async (
+  id: string,
+  body: UpdateStaff,
+) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/users/staff/${id}`;
   try {
     const response = await axios({
       url,
@@ -1069,6 +1128,35 @@ const getAllApplicationPayment = async (page: number, limit: number, search: str
   }
 };
 
+
+const uploadApplicationCommissionPayment = async (
+  applicationId: string,
+  data: FormData
+) => {
+  const url = `${process.env.REACT_APP_API_URL}/media/application/${applicationId}/commission`;
+  try {
+    const response = await axios({
+      url,
+      headers: {
+        ...authHeader(),
+        "Content-Type": "multipart/form-data",
+      },
+      method: "post",
+      data: data,
+    });
+
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
 const shareApplicationServices = {
   getUserProfile,
   uploadAvatar,
@@ -1113,6 +1201,9 @@ const shareApplicationServices = {
   updateRegistrationUploadedDocument,
   getAllApplicationPayment,
   createStaff,
+  createInvoicePaymentForStaff,
+  uploadApplicationCommissionPayment,
+  createAdmin,
 };
 
 export default shareApplicationServices;

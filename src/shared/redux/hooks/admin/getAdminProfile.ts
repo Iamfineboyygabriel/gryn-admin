@@ -38,11 +38,13 @@ export interface StaffDetails {
       middleName: string;
       email: string;
       userId: string;
+      gender: string;
     },
     role:string;
     phoneNumber: string;
     dateOfBirth: string;
     address: string;
+    designation:string;
     localGovtArea: string;
     state: string;
     country: string;

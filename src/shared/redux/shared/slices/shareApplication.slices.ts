@@ -225,6 +225,23 @@ export const createInvoice = createAsyncThunk(
   }
 );
 
+export const createInvoicePaymentForStaff = createAsyncThunk(
+  "shareApplication/createInvoicePaymentForStaff",
+  async (body: any, thunkAPI) => {
+    try {
+      const data = await shareApplicationServices.createInvoicePaymentForStaff(body);
+      return data;
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message ||
+        error.message ||
+        "Something went wrong!";
+      thunkAPI.dispatch(setMessage(message));
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const createBudget = createAsyncThunk(
   "shareApplication/createBudget",
   async (body: any, thunkAPI) => {
@@ -490,6 +507,32 @@ export const getAllApplicationPayment = createAsyncThunk(
   }
 );
 
+
+export const uploadCommissionPayment = createAsyncThunk(
+  "shareApplication/uploadCommissionPayment",
+  async ({ applicationId, data }: { applicationId: string; data: any }, { rejectWithValue }) => {
+    try {
+      const response = await shareApplicationServices.uploadApplicationCommissionPayment(applicationId, data);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const createAdmin = createAsyncThunk(
+  "shareApplication/createAdmin",
+  async (body: any, thunkAPI) => {
+    try {
+      const data = await shareApplicationServices.createAdmin(body);
+      return data;
+    } catch (error: any) {
+      const message = error;
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 interface ApplicationState {
   userProfile: null;
   currentUser: null;
@@ -499,6 +542,7 @@ interface ApplicationState {
   topCountries: null;
   topUniversities: null;
   registerInvoice: null;
+  registerInvoiceStaffPayment: null;
   registerBudget: null;
   registerDraft: null;
   registerApplication: null;
@@ -506,10 +550,12 @@ interface ApplicationState {
   registerStudent:null;
   registerAgent:null,
   registerStaff:null,
+  registerAdmin:null,
   updateStudent: null,
   updateAgent:null,
   updateDocStatus:null,
   updateBankDetails:null,
+  commisionPayment: any | null;
   student: null;
   staff:null;
   agent:null,
@@ -572,6 +618,7 @@ const initialState: ApplicationState = {
   updatePassword: null,
   registerStudent:null,
   registerStaff:null,
+  registerAdmin:null,
   registerAgent:null,
   topCountries: null,
   topUniversities: null,
@@ -586,8 +633,10 @@ const initialState: ApplicationState = {
   staff:null,
   findByAll:null,
   registerInvoice: null,
+  registerInvoiceStaffPayment: null,
   registerBudget: null,
   registerDraft: null,
+  commisionPayment: null,
   allDraftItems: {
     data: null,
     totalItems: 0,
@@ -783,6 +832,15 @@ export const shareApplicationSlice = createSlice({
       })
       .addCase(createInvoice.rejected, (state, action) => {
         state.registerInvoice = null;
+        const errorMessage = action.error.message || "Invoice creation failed.";
+        setMessage(errorMessage);
+      })
+      
+      .addCase(createInvoicePaymentForStaff.fulfilled, (state, action: PayloadAction<any>) => {
+        state.registerInvoiceStaffPayment = action.payload;
+      })
+      .addCase(createInvoicePaymentForStaff.rejected, (state, action) => {
+        state.registerInvoiceStaffPayment = null;
         const errorMessage = action.error.message || "Invoice creation failed.";
         setMessage(errorMessage);
       })
@@ -1079,7 +1137,32 @@ export const shareApplicationSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || "Failed to fetch payment applications";
       })
-             
+      
+      .addCase(uploadCommissionPayment.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(uploadCommissionPayment.fulfilled, (state, action) => {
+        state.loading = false;
+        state.commisionPayment = action.payload;
+      })
+      .addCase(uploadCommissionPayment.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to upload commission";
+      })
+      
+      .addCase(
+        createAdmin.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.registerAdmin = action.payload;
+        }
+      )
+      .addCase(createAdmin.rejected, (state, action) => {
+        state.registerAdmin = null;
+        const errorMessage =
+          action.error.message || "Admin creation failed.";
+        setMessage(errorMessage);
+      })
   },
 });
 

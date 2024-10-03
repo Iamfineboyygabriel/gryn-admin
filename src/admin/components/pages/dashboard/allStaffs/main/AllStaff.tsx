@@ -7,6 +7,8 @@ import { button } from "../../../../../../shared/buttons/Button";
 import plus from "../../../../../../assets/svg/plus.svg";
 import CustomPagination from "../../../../../../shared/utils/customPagination";
 import { useAllStaffForSuperAdmin } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
+import Modal from "../../../../../../shared/modal/Modal";
+import UpdateStaff from "./UpdateStaff";
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -29,7 +31,6 @@ const AllStaff = () => {
     fetchAdmins, 
     updateSearchTerm 
   } = useAllStaffForSuperAdmin();
-console.log("ddd",admins)
   const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
   const itemsPerPage = 10;
   const [isModalOpen, setModalOpen] = useState(false);
@@ -213,7 +214,12 @@ console.log("ddd",admins)
       hasMore={admins.data.length === itemsPerPage}
     />
   </div>
-)}
+   )}
+      {isModalOpen && (
+        <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
+          <UpdateStaff  onClose={handleCloseModal} />
+        </Modal>
+      )}
       </div>
     </main>
   );

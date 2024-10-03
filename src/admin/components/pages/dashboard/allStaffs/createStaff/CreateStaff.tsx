@@ -16,7 +16,6 @@ const CreateStaff = () => {
   const [middleName, setMiddleName] = useState('');
   const [email, setEmail] = useState('');
   const [gender, setGender] = useState('');
-  const [designation, setDesignation] = useState('');
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
 
@@ -40,7 +39,6 @@ const CreateStaff = () => {
         middleName,
         email,
         gender,
-        designation,
       };
       await dispatch(createStaff(body)).unwrap();
       handleOpenModal();

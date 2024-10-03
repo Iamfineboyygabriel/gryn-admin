@@ -114,9 +114,6 @@ const AdminManagement = () => {
             )}
           />
           <td className="py-[16px] px-[24px]">
-            {formatData(admin?.profile?.phoneNumber)}
-          </td>
-          <td className="py-[16px] px-[24px]">
             {formatData(admin?.role)}
           </td>
           <td 
@@ -147,16 +144,12 @@ const AdminManagement = () => {
   }, [loading, filteredAdmins, currentPage, itemsPerPage, sanitizeHTML, highlightText, localSearchTerm, formatData]);
 
   return (
-    <main>
+    <main className="font-outfit px-[1em]">
       <div className="relative">
         <header className="flex items-center justify-between">
           <h1 className="font-medium text-xl">Admin Management</h1>
           <div className="flex gap-2">
-            <button.PrimaryButton onClick={handleOpenModal} className="mt-[1em] flex gap-2 rounded-full bg-primary-200 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
-              <img src={plus} alt="plus" />
-              Update Admin
-            </button.PrimaryButton>
-            <Link to="/admin/dashboard/all_users/create_admin">
+            <Link to="/admin/dashboard/settings/admin_management/new_admin">
               <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-primary-700 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
                 <img src={plus} alt="plus" />
                 New Admin
@@ -164,7 +157,7 @@ const AdminManagement = () => {
             </Link>
           </div>
         </header>
-        <div className="flex items-center mt-3 w-64 rounded-full border-[1px] border-border bg-gray-100 dark:bg-gray-700">
+        <div className="flex px-[1em] items-center mt-3 w-64 rounded-full border-[1px] border-border bg-gray-100 dark:bg-gray-700">
           <input
             type="text"
             className="flex-grow rounded-full bg-transparent py-2 pl-4 pr-2 text-sm focus:border-grey-primary focus:outline-none"
@@ -180,7 +173,6 @@ const AdminManagement = () => {
             <tr>
               <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
               <th className="px-6 py-3 text-left text-sm font-normal">Full Name</th>
-              <th className="px-6 py-3 text-left text-sm font-normal">Phone Number</th>
               <th className="px-6 py-3 text-left text-sm font-normal">Role</th>
               <th className="px-6 py-3 text-left text-sm font-normal">Email Address</th>
             </tr>
