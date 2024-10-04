@@ -33,15 +33,15 @@ const BarChat = () => {
         </Select>
       </div>
       <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={data} margin={{ top: 20, right: 20, left: 50, bottom: 30 }}>
+        <BarChart data={data} margin={{ top: 20, right: 20, left: 50, bottom: 40 }}>
           <XAxis dataKey="day">
-            <Label value="Days of the Week" offset={-5} position="insideBottom" />
+            <Label value="Days of the Week" offset={0} position="bottom" style={{ marginTop: "20px" }} />
           </XAxis>
           <YAxis>
             <Label value="Number of Applications" angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} />
           </YAxis>
           <Tooltip />
-          <Bar dataKey="applications" fill="#8884d8" />
+          <Bar dataKey="applications" fill="#660066" />
         </BarChart>
       </ResponsiveContainer>
     </>
