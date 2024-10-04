@@ -226,6 +226,7 @@ const NewInvoice = () => {
                 items={choice}
                 selectedItem={choiceItem}
                 onSelectItem={handleChoiceItem}
+                placeholder="Select Item"
               />
             </div>
 

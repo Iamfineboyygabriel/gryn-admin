@@ -27,7 +27,7 @@ const MostApplied = () => {
               <h1 className="text-lg font-bold text-grey-primary">
                 Most Applied Countries
               </h1>
-              <p className="font-medium text-primary-700">See All</p>
+              {/* <p className="font-medium text-primary-700">See All</p> */}
             </div>
           </header>
           <div>
@@ -93,7 +93,7 @@ const MostApplied = () => {
               <h1 className="text-lg font-bold text-grey-primary">
                 Most Applied Schools
               </h1>
-              <p className="font-medium text-primary-700">See All</p>
+              {/* <p className="font-medium text-primary-700">See All</p> */}
             </div>
           </header>
 
