@@ -115,6 +115,7 @@ const DirectApplication: React.FC<DirectApplicationProps> = ({ addSchoolLink }) 
                             asterisk
                             loading={countryLoading}
                             searchVisible
+                            placeholder='Select a Country'
                         />
                         <Dropdown
                             label="University"
@@ -124,6 +125,7 @@ const DirectApplication: React.FC<DirectApplicationProps> = ({ addSchoolLink }) 
                             asterisk
                             loading={loading}
                             searchVisible
+                            placeholder='Select a University'
                         />
                     </article>
                     {error && (

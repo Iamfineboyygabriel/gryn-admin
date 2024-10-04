@@ -140,6 +140,7 @@ const FindStudentByAll: React.FC<FindStudentByAllProps> = ({ redirectTo = "/admi
             asterisk
             searchVisible
             loading={emailLoading}
+            placeholder='Select an Email'
           />
 
           <Dropdown
@@ -150,6 +151,7 @@ const FindStudentByAll: React.FC<FindStudentByAllProps> = ({ redirectTo = "/admi
             asterisk
             searchVisible
             loading={universityLoading}
+            placeholder='Select a University'
           />
           
           <Dropdown
@@ -160,6 +162,7 @@ const FindStudentByAll: React.FC<FindStudentByAllProps> = ({ redirectTo = "/admi
             selectedItem={degree ? { name: degree } : null}
             onSelectItem={handleSelectDegree}
             asterisk
+            placeholder='Select a Degree'
           />
 
           {error && <div className="mt-2 text-sm text-red-500">{error}</div>}

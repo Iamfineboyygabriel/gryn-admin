@@ -26,6 +26,7 @@ interface ToggleDropdownProps {
   useEndpointSearch?: boolean;
   onDropdownToggle?: (isOpen: boolean) => void;
   disabled?: boolean; 
+  placeholder?: string;
 }
 
 const useToggleDropdown = () => {
@@ -61,6 +62,7 @@ export const Dropdown: React.FC<ToggleDropdownProps> = ({
   useEndpointSearch = false,
   onDropdownToggle,
   disabled = false,
+  placeholder, 
 }) => {
   const { isOpen, toggleDropdown, closeDropdown } = useToggleDropdown();
   const [search, setSearch] = useState("");
@@ -135,7 +137,7 @@ export const Dropdown: React.FC<ToggleDropdownProps> = ({
           {selectedItem ? (
             defaultRenderItem(selectedItem)
           ) : (
-            <span className="text-gray-500">{label}</span>
+            <span className="text-gray-500">{`${placeholder}`}</span>
           )}
           <IoIosArrowDown className="ml-auto" />
         </button>

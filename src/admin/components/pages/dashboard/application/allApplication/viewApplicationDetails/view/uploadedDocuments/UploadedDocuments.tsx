@@ -156,42 +156,40 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
       }));
     }
   };
-
+ 
   const renderActionButton = (doc: Document, action: 'APPROVED' | 'REJECTED') => {
     const actionType: ActionType = action.toLowerCase() as ActionType;
     const isLoading = loadingStatus[doc.id]?.[actionType] || false;
-    const isCurrentStatus = doc.status === action;
-    const isPending = doc.status === 'PENDING';
-
+    
+    const isCurrentStatus = doc.remark === action;
+    const isPending = !doc.remark || doc.remark === 'PENDING';
+    const isDisabled = doc.remark === 'APPROVED' || doc.remark === 'REJECTED';
+  
     let buttonClass = "flex px-[1em] rounded-md font-medium py-[8px] items-center border gap-2 ";
-    let buttonContent;
-
-    if (action === 'APPROVED') {
+    
+    if (isPending) {
+      buttonClass += "bg-gray-200 text-gray-600 border-gray-300";
+    } else if (action === 'APPROVED') {
       buttonClass += isCurrentStatus
-        ? "bg-[#F3FBF5] text-approve border-approve"
-        : isPending
-        ? "bg-[#F3FBF5] text-approve border-approve"
-        : "bg-gray-200 text-gray-600 border-gray-300";
-      buttonContent = (
-        <>
-          {(isCurrentStatus || isPending) && <img src={approve} alt="approve_icon" />}
-          <small>{isCurrentStatus ? 'Approved' : 'Approve'}</small>
-        </>
-      );
+        ? "bg-[#F3FBF5] text-approve border-approve cursor-not-allowed opacity-50"
+        : "bg-gray-200 text-gray-600 border-gray-300 cursor-not-allowed opacity-50";
     } else {
       buttonClass += isCurrentStatus
-        ? "bg-[#FEEEEE] text-red-500 border-reject"
-        : isPending
-        ? "bg-[#FEEEEE] text-reject border-reject"
-        : "bg-gray-200 text-gray-600 border-gray-300";
-      buttonContent = (
-        <>
-          {(isCurrentStatus || isPending) && <img src={reject} alt="reject_icon" />}
-          <small>{isCurrentStatus ? 'Rejected' : 'Reject'}</small>
-        </>
-      );
+        ? "bg-[#FEEEEE] text-red-500 border-reject cursor-not-allowed opacity-50"
+        : "bg-gray-200 text-gray-600 border-gray-300 cursor-not-allowed opacity-50";
     }
-
+  
+    const buttonText = isPending
+      ? action === 'APPROVED' ? 'Approve' : 'Reject'
+      : action === 'APPROVED' ? 'Approved' : 'Rejected';
+  
+    const buttonContent = (
+      <>
+        {isCurrentStatus && <img src={action === 'APPROVED' ? approve : reject} alt={`${action.toLowerCase()}_icon`} />}
+        <small>{buttonText}</small>
+      </>
+    );
+  
     return (
       <div className="flex flex-col items-start">
         {errors[doc.id] && (
@@ -200,7 +198,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
         <button
           className={buttonClass}
           onClick={() => handleStatusUpdate(doc.id, action)}
-          disabled={isLoading || isCurrentStatus}
+          disabled={isLoading || isDisabled}
         >
           {isLoading ? (
             <ReactLoading color="#FFFFFF" width={25} height={25} type="spin" />
@@ -227,8 +225,48 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
     );
   }
 
+  const renderActionButtons = () => (
+    <div>
+      <button.PrimaryButton
+        className="m-auto mt-[5em] w-[18%] gap-2 rounded-full bg-purple-white py-[12px] text-center text-lg font-semibold text-primary-700"
+        onClick={handleAssignOpenModal}
+      >
+        Assign Application
+      </button.PrimaryButton>
+       
+      <button.PrimaryButton
+        className="m-auto mt-[5em] ml-8 w-[18%] gap-2 rounded-full bg-linear-gradient py-[12px] text-center text-lg font-medium text-white"
+        onClick={handleOpenModal}
+      >
+        Submit Response
+      </button.PrimaryButton>
+    </div>
+  );
+
+
+
   if (!documents.length) {
-    return <div className="text-red-500">No documents found 📜.</div>;
+    return (
+      <main className="font-outfit">
+        <header>
+          <h2 className="text-xl font-semibold dark:text-white">Uploaded Documents</h2>
+        </header>
+        <div className="text-red-500">No documents found 📜.</div>
+        <div>
+          <button.PrimaryButton
+            className="m-auto mt-[5em] w-[18%] gap-2 rounded-full bg-linear-gradient py-[12px] text-center text-lg font-medium text-white"
+            onClick={handleOpenModal}
+          >
+            Submit Response
+          </button.PrimaryButton>
+        </div>
+        {isModalOpen && (
+          <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
+            <StudentApplicationSummary onClose={handleCloseModal} documents={documents} />
+          </Modal>
+        )}
+      </main>
+    );
   }
 
   return (
@@ -298,42 +336,28 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
         previewFileType={previewFileType}
       />
       <div>
-      <button.PrimaryButton
-        className="m-auto mt-[5em] w-[18%] gap-2 rounded-full bg-purple-white  py-[12px] text-center text-lg font-semibold text-primary-700"
-        onClick={handleAssignOpenModal}
+        <button.PrimaryButton
+          className="m-auto mt-[5em] w-[18%] gap-2 rounded-full bg-purple-white py-[12px] text-center text-lg font-semibold text-primary-700"
+          onClick={handleAssignOpenModal}
         >
-        Assign Application
-      </button.PrimaryButton>
-       
-      <button.PrimaryButton
-        className="m-auto mt-[5em] ml-8 w-[18%] gap-2 rounded-full bg-linear-gradient py-[12px] text-center text-lg font-medium text-white"
-        onClick={handleOpenModal}
+          Assign Application
+        </button.PrimaryButton>
+         
+        <button.PrimaryButton
+          className="m-auto mt-[5em] ml-8 w-[18%] gap-2 rounded-full bg-linear-gradient py-[12px] text-center text-lg font-medium text-white"
+          onClick={handleOpenModal}
         >
-        Submit Response
-      </button.PrimaryButton>
-          </div>
+          Submit Response
+        </button.PrimaryButton>
+      </div>
       {isModalOpen && (
-        <Modal
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          data-aos="zoom-in"
-        >
-          <StudentApplicationSummary
-            onClose={handleCloseModal}
-            documents={documents}
-          />
+        <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
+          <StudentApplicationSummary onClose={handleCloseModal} documents={documents} />
         </Modal>
       )}
-        {isAssignModal && (
-        <Modal
-          isOpen={isAssignModal}
-          onClose={handleAssignCloseModal}
-          data-aos="zoom-in"
-        >
-          <AssignApplication 
-           applicationId={applicationId}
-           onClose={handleAssignCloseModal}
-           />
+      {isAssignModal && (
+        <Modal isOpen={isAssignModal} onClose={handleAssignCloseModal} data-aos="zoom-in">
+          <AssignApplication applicationId={applicationId} onClose={handleAssignCloseModal} />
         </Modal>
       )}
     </main>

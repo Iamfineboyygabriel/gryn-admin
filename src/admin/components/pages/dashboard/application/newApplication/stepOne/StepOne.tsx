@@ -70,10 +70,6 @@ const StepOne = ({ onNext }: any) => {
     }, 3000);
   };
 
-  const stateDropdownItems: any = statesData.map((state) => ({
-    name: state,
-  }));
-
   const countryDropdownItems = countries.map((country) => ({
     name: country.name,
     cca2: country.cca2,
@@ -222,9 +218,10 @@ const StepOne = ({ onNext }: any) => {
             asterisk
             searchVisible
             loading={countriesLoading}
+            placeholder="Select a Country"
           />
 
-<div className="w-full">
+          <div className="w-full">
             <label
               htmlFor="localGovtArea"
               className="flex-start flex font-medium"

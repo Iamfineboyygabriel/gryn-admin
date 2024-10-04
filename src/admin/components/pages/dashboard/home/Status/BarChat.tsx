@@ -14,7 +14,7 @@ const data = [
 
 const BarChat = () => {
   return (
-    <>
+    <main className="font-outfit">
       <div className="flex px-3 justify-between items-center mb-2">
         <h1 className="text-lg font-bold text-grey-primary">
           Registration Status
@@ -44,7 +44,7 @@ const BarChat = () => {
           <Bar dataKey="applications" fill="#660066" />
         </BarChart>
       </ResponsiveContainer>
-    </>
+    </main>
   );
 };
 
