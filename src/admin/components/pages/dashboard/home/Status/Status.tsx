@@ -99,7 +99,7 @@ const Status = () => {
   return (
     <main className="font-outfit">
       <div className="flex justify-between gap-[9px]">
-        <div className="h-[400px] overflow-y-auto w-full rounded-lg bg-white px-[1.5em] py-[1.3em]">
+        <div className="h-[414px] overflow-y-auto w-full rounded-lg bg-white px-[1.5em] py-[1.3em]">
           <header>
             <div className="flex items-center justify-between">
               <h1 className="text-lg font-bold text-grey-primary">
@@ -129,7 +129,7 @@ const Status = () => {
           </header>
         </div>
 
-        <div className="h-auto w-full rounded-lg bg-white  py-[10px]">
+        <div className="h-auto w-full rounded-lg bg-white  py-[1px]">
           <header>
             <div className="flex items-center justify-between">
              

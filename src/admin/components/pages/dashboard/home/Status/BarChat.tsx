@@ -32,8 +32,8 @@ const BarChat = () => {
           <MenuItem value="Last 7 Days">Last 7 Days</MenuItem>
         </Select>
       </div>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={data} margin={{ top: 20, right: 20, left: 50, bottom: 40 }}>
+      <ResponsiveContainer width="100%" height={350}>
+        <BarChart data={data} margin={{ top: 20, right: 20, left:10, bottom: 30 }}>
           <XAxis dataKey="day">
             <Label value="Days of the Week" offset={0} position="bottom" style={{ marginTop: "20px" }} />
           </XAxis>
