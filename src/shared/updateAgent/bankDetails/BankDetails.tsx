@@ -45,8 +45,10 @@ const BankDetails: React.FC<BankDetailsProps> = ({ onNext, agentData }) => {
         accountNumber,
         accountName,
       };
+
       await dispatch(updateAgentBankDetails({ body })).unwrap();
       onNext();
+
     } catch (error: any) {
       toast.error(error || 'An error occurred while updating the bank details');
     } finally {

@@ -1156,6 +1156,24 @@ const uploadApplicationCommissionPayment = async (
   }
 };
 
+export const approveInvoiceAdmin = async (invoiceID: string) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/users/approve/agent/${invoiceID}`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "patch",
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw handleApiError(error);
+  }
+};
+
 
 const shareApplicationServices = {
   getUserProfile,
@@ -1204,6 +1222,7 @@ const shareApplicationServices = {
   createInvoicePaymentForStaff,
   uploadApplicationCommissionPayment,
   createAdmin,
+  approveInvoiceAdmin,
 };
 
 export default shareApplicationServices;
