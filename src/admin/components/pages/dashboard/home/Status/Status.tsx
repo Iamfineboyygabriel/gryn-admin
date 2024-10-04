@@ -3,6 +3,7 @@ import { useAllApplication } from "../../../../../../shared/redux/hooks/admin/ge
 import transaction from "../../../../../../assets/svg/Transaction.svg";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
+import BarChat from "../Status/BarChat"
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -128,15 +129,14 @@ const Status = () => {
           </header>
         </div>
 
-        <div className="h-auto w-full rounded-lg bg-white px-[2.5em] py-[1.3em]">
+        <div className="h-auto w-full rounded-lg bg-white  py-[10px]">
           <header>
             <div className="flex items-center justify-between">
-              <h1 className="text-lg font-bold text-grey-primary">
-                Registration Status
-              </h1>
+             
             </div>
           </header>
-          <div className="mt-[1em] flex flex-col gap-[10px]">
+          <div className="mt-[1em] flex flex-col">
+            <BarChat/>
           </div>
         </div>
       </div>

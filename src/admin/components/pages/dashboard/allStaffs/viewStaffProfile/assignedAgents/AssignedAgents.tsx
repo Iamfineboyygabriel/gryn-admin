@@ -135,7 +135,7 @@ const AssignedAgents: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
             <div className="mt-[2em] flex flex-col items-center justify-center">
               <img src={transaction} alt="No applications" />
               <p className="mt-2 text-sm text-gray-500 dark:text-white">
-                No Agents.
+                No agents assigned.
               </p>
             </div>
           </td>

@@ -203,43 +203,7 @@ const StepOne = ({ onNext }: any) => {
             />
           </div>
 
-          <div className="w-full">
-            <label
-              htmlFor="localGovtArea"
-              className="flex-start flex font-medium"
-            >
-              L.G.A
-              <CgAsterisk className="text-red-500" />
-            </label>
-            <input
-              id="localGovtArea"
-              name="localGovtArea"
-              required
-              disabled={loading}
-              type="text"
-              onChange={(e) => setLocalGovtArea(e.target.value)}
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
-            />
-          </div>
-          <div className="w-full">
-            <label
-              htmlFor="localGovtArea"
-              className="flex-start flex font-medium"
-            >
-              State
-              <CgAsterisk className="text-red-500" />
-            </label>
-            <input
-              id="state"
-              name="state"
-              required
-              disabled={loading}
-              type="text"
-              onChange={(e) => setState(e.target.value)}
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
-            />
-           </div>
-
+          
           <Dropdown
             label="Select Country"
             items={countryDropdownItems}
@@ -259,6 +223,45 @@ const StepOne = ({ onNext }: any) => {
             searchVisible
             loading={countriesLoading}
           />
+
+<div className="w-full">
+            <label
+              htmlFor="localGovtArea"
+              className="flex-start flex font-medium"
+            >
+              State
+              <CgAsterisk className="text-red-500" />
+            </label>
+            <input
+              id="state"
+              name="state"
+              required
+              disabled={loading}
+              type="text"
+              onChange={(e) => setState(e.target.value)}
+              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
+            />
+           </div>
+
+          <div className="w-full">
+            <label
+              htmlFor="localGovtArea"
+              className="flex-start flex font-medium"
+            >
+              L.G.A
+              <CgAsterisk className="text-red-500" />
+            </label>
+            <input
+              id="localGovtArea"
+              name="localGovtArea"
+              required
+              disabled={loading}
+              type="text"
+              onChange={(e) => setLocalGovtArea(e.target.value)}
+              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
+            />
+          </div>
+
           <div className="w-full">
             <label
               htmlFor="passportNumber"

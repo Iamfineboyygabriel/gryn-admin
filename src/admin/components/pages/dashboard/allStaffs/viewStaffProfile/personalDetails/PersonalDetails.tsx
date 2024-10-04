@@ -187,7 +187,7 @@ const PersonalDetails: React.FC<{ staffEmail: any }> = ({
                   onChange={(e) => setEmail(e.target.value)}
                   readOnly
                   disabled={true}
-                  className="focus:border-border border-border mt-[1em] flex w-full rounded-lg border-[1px] bg-gray-100 p-3 focus:outline-none dark:border-gray-700 dark:text-white dark:bg-gray-700"
+                  className="focus:border-border border-border mt-[1em] flex w-full rounded-lg border-[1px] bg-gray-100 p-3 focus:outline-none"
                 />
               </div>
             </div>

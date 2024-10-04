@@ -170,8 +170,8 @@ const BasicInfo = () => {
                 value={email}
                 disabled={loading}
                 onChange={(e) => setEmail(e.target.value)}
-                readOnly={!editMode || loading}
-                className="border-border focus:border-border mt-[1em] flex w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none dark:border-gray-700 dark:text-white"
+                readOnly
+                className="border-border bg-gray-200 focus:border-border mt-[1em] flex w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
               />
             </div>
           </div>
