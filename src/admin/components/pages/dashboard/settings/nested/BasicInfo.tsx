@@ -15,7 +15,7 @@ const BasicInfo = () => {
   const [loading, setLoading] = useState(false);
   const [avatarLoading, setAvatarLoading] = useState(false);
   const [lastName, setLastName] = useState(userProfile?.lastName || "");
-  const [email, setEmail] = useState(userProfile?.email || "");
+  const [email] = useState(userProfile?.email || "");
 
   const [editMode, setEditMode] = useState(false);
   
@@ -57,7 +57,6 @@ const BasicInfo = () => {
     } else {
       setFirstName(userProfile?.firstName || "");
       setLastName(userProfile?.lastName || "");
-      setEmail(userProfile?.email || "");
       setEditMode(false);
     }
   };
@@ -65,7 +64,6 @@ const BasicInfo = () => {
   const confirmDiscardChanges = () => {
     setFirstName(userProfile?.firstName || "");
     setLastName(userProfile?.lastName || "");
-    setEmail(userProfile?.email || "");
     setEditMode(false);
     setIsConfirmDialogOpen(false);
   };
@@ -133,7 +131,7 @@ const BasicInfo = () => {
                 onChange={(e) => setFirstName(e.target.value)}
                 readOnly={!editMode || loading}
                 disabled={loading}
-                className="focus:border-border border-border mt-[1em] flex w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none dark:border-gray-700 dark:text-white"
+                className="focus:border-border border-border mt-[1em] flex w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none dark:border-gray-700 dark:text-white"
               />
             </div>
           </div>
@@ -153,7 +151,7 @@ const BasicInfo = () => {
                 disabled={loading}
                 onChange={(e) => setLastName(e.target.value)}
                 readOnly={!editMode || loading}
-                className="border-border focus:border-side mt-[1em] flex w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none dark:border-gray-700 dark:text-white"
+                className="border-border focus:border-side mt-[1em] flex w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none dark:border-gray-700 dark:text-white"
               />
             </div>
           </div>
@@ -166,14 +164,12 @@ const BasicInfo = () => {
               Email Address
             </label>
             <div className="relative flex items-center text-center">
-              <input
+            <input
                 name="emailAddress"
                 id="emailAddress"
                 value={email}
-                disabled={loading}
-                onChange={(e) => setEmail(e.target.value)}
-                readOnly={!editMode || loading}
-                className="border-border focus:border-border mt-[1em] flex w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none dark:border-gray-700 dark:text-white"
+                readOnly
+                className="border-border focus:border-border mt-[1em] flex w-full rounded-lg border-[1px] bg-gray-100 p-3 focus:outline-none cursor-not-allowed"
               />
             </div>
           </div>
