@@ -1,5 +1,5 @@
-import React from 'react';
 import { PieChart, Pie, Cell } from 'recharts';
+import eye from "../../../../../../assets/svg/eyeImg.svg";
 
 const PieChartEnquiries = () => {
   const pieData = [
@@ -54,16 +54,17 @@ const PieChartEnquiries = () => {
               <span className="ml-1 text-sm">(+20.90%)</span>
             </div>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-">
             {pieData.map((item, index) => (
               <div key={index} className="flex justify-between items-center">
                 <div className="flex items-center">
                   <div className="w-2 h-2 rounded-full mr-2" style={{ backgroundColor: item.color }}></div>
                   <span>{item.name}</span>
                 </div>
-                <div className="flex items-center space-x-4">
+                <div className="flex space-y-3 gap-2 items-center space-x-4">
                   <span className="font-semibold">{item.value.toLocaleString()}</span>
-                  <button className="text-purple-600 bg-purple-50 px-3 py-1 rounded-full text-sm hover:bg-purple-100 transition-colors">
+                  <button className="text-purple-600 flex gap-2 bg-purple-50 px-2 py-1 rounded-full text-sm hover:bg-purple-100 transition-colors">
+                    <img src={eye} alt="eye_icon"/>
                     View Details
                   </button>
                 </div>
