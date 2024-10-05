@@ -179,6 +179,18 @@ const AgentProfile: React.FC<AgentProfileProps> = ({
 
   const hasDocuments = agentData?.agentRegistrationDoc?.length > 0;
 
+  const renderInput = (id: string, name: string, value: string, placeholder: string) => (
+    <input
+      id={id}
+      name={name}
+      required
+      value={value || ''}
+      readOnly
+      placeholder={placeholder}
+      className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none placeholder-gray-400"
+    />
+  );
+
   return (
     <main className='font-outfit'>
       <div className="flex w-[85%] flex-col mt-[2em] gap-[3em]">
@@ -197,27 +209,13 @@ const AgentProfile: React.FC<AgentProfileProps> = ({
                 <label htmlFor="firstName" className="flex-start flex font-medium">
                   First Name
                 </label>
-                <input
-                  id="firstName"
-                  name="firstName"
-                  required
-                  value={agentData?.profile?.firstName || ''}
-                  readOnly
-                  className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
-                />
+                {renderInput("firstName", "firstName", agentData?.profile?.firstName, "Not provided")}
               </div>
               <div className="w-full">
                 <label htmlFor="lastName" className="flex-start flex font-medium">
                   Last Name
                 </label>
-                <input
-                  id="lastName"
-                  name="lastName"
-                  required
-                  value={agentData?.profile?.lastName || ''}
-                  readOnly
-                  className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
-                />
+                {renderInput("lastName", "lastName", agentData?.profile?.lastName, "Not provided")}
               </div>
             </div>
             <div className="mt-[1em] flex flex-row gap-[3em]">
@@ -225,26 +223,13 @@ const AgentProfile: React.FC<AgentProfileProps> = ({
                 <label htmlFor="middleName" className="flex-start font-medium">
                   Other Name <span className="text-gray-500">(Optional)</span>
                 </label>
-                <input
-                  id="middleName"
-                  name="middleName"
-                  value={agentData?.profile?.middleName || ''}
-                  readOnly
-                  className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none dark:text-white"
-                />
+                {renderInput("middleName", "middleName", agentData?.profile?.middleName, "Not provided")}
               </div>
               <div className="w-full">
                 <label htmlFor="email" className="flex-start flex font-medium">
                   Email Address
                 </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={agentData?.email || email || ''}
-                  readOnly
-                  className="border-border cursor-not-allowed focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
-                />
+                {renderInput("email", "email", agentData?.email || email, "Not provided")}
               </div>
             </div>
           </div>
@@ -258,41 +243,21 @@ const AgentProfile: React.FC<AgentProfileProps> = ({
               <label htmlFor="bankName" className="flex-start flex font-medium">
                 Bank Name
               </label>
-              <input
-                id="bankName"
-                name="bankName"
-                required
-                value={agentData?.bankAccounts?.[0]?.bankName || ''}
-                readOnly
-                className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
-              />
+              {renderInput("bankName", "bankName", agentData?.bankAccounts?.[0]?.bankName, "Not provided")}
             </div>
 
             <div className="w-full">
               <label htmlFor="accountNumber" className="flex-start flex font-medium">
                 Account Number
               </label>
-              <input
-                id="accountNumber"
-                name="accountNumber"
-                required
-                value={agentData?.bankAccounts?.[0]?.accountNumber || ''}
-                readOnly
-                className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
-              />
+              {renderInput("accountNumber", "accountNumber", agentData?.bankAccounts?.[0]?.accountNumber, "Not provided")}
             </div>
 
             <div className="w-full col-span-2 md:col-span-1">
               <label htmlFor="accountName" className="flex-start font-medium">
                 Account Name
               </label>
-              <input
-                id="accountName"
-                name="accountName"
-                value={agentData?.bankAccounts?.[0]?.accountName || ''}
-                readOnly
-                className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none dark:text-white"
-              />
+              {renderInput("accountName", "accountName", agentData?.bankAccounts?.[0]?.accountName, "Not provided")}
             </div>
           </div>
         </section>
@@ -318,12 +283,14 @@ const AgentProfile: React.FC<AgentProfileProps> = ({
                           <div className="flex gap-2">
                             <img src={fileImg} alt="file_img" />
                             <p className="text-lg truncate max-w-[170px] whitespace-nowrap font-light">
-                              {selectedFileNames[doc.documentType] || doc.name}
+                              {selectedFileNames[doc.documentType] || doc.name || "No file uploaded"}
                             </p>
                           </div>
-                          <button type="button" onClick={() => handlePreview(doc.publicURL)} className="mr-4">
-                            <AiOutlineEye />
-                          </button>
+                          {doc.publicURL && (
+                            <button type="button" onClick={() => handlePreview(doc.publicURL)} className="mr-4">
+                              <AiOutlineEye />
+                            </button>
+                          )}
                         </div>
 
                         <input

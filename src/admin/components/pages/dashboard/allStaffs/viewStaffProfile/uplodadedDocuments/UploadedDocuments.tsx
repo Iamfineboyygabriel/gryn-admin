@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { button } from "../../../../../../../shared/buttons/Button";
 import upload from "../../../../../../../assets/svg/Upload.svg";
 import fileImg from "../../../../../../../assets/svg/File.svg";
@@ -13,17 +13,26 @@ import { updateStaffRegistrationDocument } from "../../../../../../../shared/red
 
 Modal.setAppElement("#root");
 
-const SkeletonRow = () => (
+const SkeletonRow: React.FC = () => (
   <div className="mb-4 animate-pulse space-y-4">
     <div className="h-4 w-1/4 rounded bg-gray-200"></div>
     <div className="h-12 w-full rounded bg-gray-200"></div>
   </div>
 );
 
-const UploadedDocuments: React.FC<{ staffEmail: any }> = ({
-    staffEmail,
-    }) => {
-  const { staffDetail, loading:documentsLoading } = useStaffDetails(staffEmail);
+interface UploadedDocumentsProps {
+  staffEmail: any;
+}
+
+interface DocumentType {
+  id: string;
+  documentType: string;
+  name: string;
+  publicURL: string;
+}
+
+const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({ staffEmail }) => {
+  const { staffDetail, loading: documentsLoading } = useStaffDetails(staffEmail);
   const [files, setFiles] = useState<{ [key: string]: File | null }>({});
   const [fileNames, setFileNames] = useState<{ [key: string]: string }>({});
   const [editMode, setEditMode] = useState(false);
@@ -36,71 +45,53 @@ const UploadedDocuments: React.FC<{ staffEmail: any }> = ({
   const MAX_FILE_NAME_LENGTH = 15;
 
   useEffect(() => {
-    if (staffDetail?.data.staffRegistrationDoc) {
-      const documentFiles = staffDetail?.data.staffRegistrationDoc.reduce(
-        (acc: { [key: string]: File | null }, doc: any) => {
+    if (staffDetail?.data?.staffRegistrationDoc) {
+      const documentFiles = staffDetail.data.staffRegistrationDoc.reduce(
+        (acc: { [key: string]: File | null }, doc: DocumentType) => {
           acc[doc.documentType] = null;
           return acc;
         },
-        {},
+        {}
       );
 
-      const documentNames = staffDetail?.data.staffRegistrationDoc.reduce(
-        (acc: { [key: string]: string }, doc: any) => {
+      const documentNames = staffDetail.data.staffRegistrationDoc.reduce(
+        (acc: { [key: string]: string }, doc: DocumentType) => {
           acc[doc.documentType] = doc.name;
           return acc;
         },
-        {},
+        {}
       );
       setFiles(documentFiles);
       setFileNames(documentNames);
     }
-  }, [staffDetail?.data.staffRegistrationDoc]);
+  }, [staffDetail?.data?.staffRegistrationDoc]);
 
-  if (documentsLoading) {
-    return (
-      <main className="font-outfit">
-        <header>
-          <h2 className="text-xl font-semibold dark:text-white">
-            Uploaded Documents
-          </h2>
-        </header>
-        <div className="mt-[2em] grid w-[85%] grid-cols-2 gap-10">
-          {Array.from({ length: 4 }).map((_, index) => (
-            <SkeletonRow key={index} />
-          ))}
-        </div>
-      </main>
-    );
-  }
-
-  
-  const handleFileChange =
-    (documentType: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (!editMode) return;
-      const selectedFile = event.target.files?.[0];
-      if (selectedFile) {
-        if (selectedFile.name.length > MAX_FILE_NAME_LENGTH) {
-          toast.error(
-            `File name too long. Maximum length is ${MAX_FILE_NAME_LENGTH} characters.`,
-          );
-          return;
-        }
-
-        setFiles((prevFiles) => ({
-          ...prevFiles,
-          [documentType]: selectedFile,
-        }));
-        setFileNames((prevNames) => ({
-          ...prevNames,
-          [documentType]: selectedFile.name,
-        }));
+  const handleFileChange = (documentType: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!editMode) return;
+    const selectedFile = event.target.files?.[0];
+    if (selectedFile) {
+      if (selectedFile.name.length > MAX_FILE_NAME_LENGTH) {
+        toast.error(
+          `File name too long. Maximum length is ${MAX_FILE_NAME_LENGTH} characters.`
+        );
+        return;
       }
-    };
+
+      setFiles((prevFiles) => ({
+        ...prevFiles,
+        [documentType]: selectedFile,
+      }));
+      setFileNames((prevNames) => ({
+        ...prevNames,
+        [documentType]: selectedFile.name,
+      }));
+    }
+  };
 
   const handleUploadClick = (documentType: string) => () => {
     if (!editMode) return;
-    document.getElementById(documentType)?.click();
+    const inputElement = document.getElementById(documentType) as HTMLInputElement;
+    inputElement?.click();
   };
 
   const updateDetails = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -113,8 +104,8 @@ const UploadedDocuments: React.FC<{ staffEmail: any }> = ({
     try {
       await Promise.all(
         Object.entries(files).map(async ([documentType, file]) => {
-          const doc = staffDetail?.data.staffRegistrationDoc.find(
-            (d) => d?.documentType === documentType,
+          const doc = staffDetail?.data?.staffRegistrationDoc?.find(
+            (d) => d?.documentType === documentType
           );
           if (file && doc) {
             try {
@@ -131,7 +122,7 @@ const UploadedDocuments: React.FC<{ staffEmail: any }> = ({
               failedUploads.push(documentType);
             }
           }
-        }),
+        })
       );
 
       if (successfulUploads.length > 0) {
@@ -157,21 +148,21 @@ const UploadedDocuments: React.FC<{ staffEmail: any }> = ({
   };
 
   const confirmDiscardChanges = () => {
-    if (staffDetail?.data.staffRegistrationDoc) {
-      const documentFiles = staffDetail?.data.staffRegistrationDoc.reduce(
-        (acc: { [key: string]: File | null }, doc: any) => {
+    if (staffDetail?.data?.staffRegistrationDoc) {
+      const documentFiles = staffDetail.data.staffRegistrationDoc.reduce(
+        (acc: { [key: string]: File | null }, doc: DocumentType) => {
           acc[doc.documentType] = null;
           return acc;
         },
-        {},
+        {}
       );
 
-      const documentNames = staffDetail?.data.staffRegistrationDoc.reduce(
-        (acc: { [key: string]: string }, doc: any) => {
+      const documentNames = staffDetail.data.staffRegistrationDoc.reduce(
+        (acc: { [key: string]: string }, doc: DocumentType) => {
           acc[doc.documentType] = doc.name;
           return acc;
         },
-        {},
+        {}
       );
 
       setFiles(documentFiles);
@@ -181,9 +172,9 @@ const UploadedDocuments: React.FC<{ staffEmail: any }> = ({
     setIsConfirmDialogOpen(false);
   };
 
-  const getFileTypeFromUrl = (url: any) => {
+  const getFileTypeFromUrl = (url: string) => {
     const segments = url.split("/");
-    const fileExtension = segments.pop().split(".").pop();
+    const fileExtension = segments[segments.length - 1].split(".").pop()?.toLowerCase();
     switch (fileExtension) {
       case "pdf":
         return "application/pdf";
@@ -199,7 +190,7 @@ const UploadedDocuments: React.FC<{ staffEmail: any }> = ({
     }
   };
 
-  const handlePreview = (url: any) => {
+  const handlePreview = (url: string) => {
     const fileType = getFileTypeFromUrl(url);
     if (fileType === "application/pdf") {
       url += "&viewer=pdf";
@@ -215,6 +206,25 @@ const UploadedDocuments: React.FC<{ staffEmail: any }> = ({
     setPreviewFileType("");
   };
 
+  if (documentsLoading) {
+    return (
+      <main className="font-outfit">
+        <header>
+          <h2 className="text-xl font-semibold dark:text-white">
+            Uploaded Documents
+          </h2>
+        </header>
+        <div className="mt-[2em] grid w-[85%] grid-cols-2 gap-10">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <SkeletonRow key={index} />
+          ))}
+        </div>
+      </main>
+    );
+  }
+
+  const documents = staffDetail?.data?.staffRegistrationDoc || [];
+
   return (
     <main className="font-outfit">
       <header>
@@ -222,16 +232,15 @@ const UploadedDocuments: React.FC<{ staffEmail: any }> = ({
           Uploaded Documents
         </h2>
       </header>
-      {documentsLoading && (
-        <small className="mt-2 block">Please wait...</small>
-      )}
-      {!documentsLoading && (
+      {documents.length === 0 ? (
+        <p className="mt-4 text-red-500">No documents found.</p>
+      ) : (
         <form onSubmit={updateDetails}>
           <div className="mt-[2em] grid w-[85%] grid-cols-2 gap-10">
-            {staffDetail?.data?.staffRegistrationDoc?.map((doc: any) => (
+            {documents.map((doc: DocumentType) => (
               <div key={doc?.id}>
                 <div>
-                  <label className="dark:text-white" htmlFor="documentType">
+                  <label className="dark:text-white" htmlFor={doc?.documentType}>
                     {doc?.documentType}
                   </label>
                 </div>
@@ -258,15 +267,15 @@ const UploadedDocuments: React.FC<{ staffEmail: any }> = ({
                       <div className="flex gap-2">
                         <img src={fileImg} alt="file_img" />
                         <p className="text-lg font-light">
-                          {fileNames[doc?.documentType]}
+                          {fileNames[doc?.documentType] || doc?.name}
                         </p>
                       </div>
-                      <button
+                      <button.PrimaryButton
                         type="button"
                         onClick={() => handlePreview(doc?.publicURL)}
                       >
                         <AiOutlineEye />
-                      </button>
+                      </button.PrimaryButton>
                     </div>
                   </label>
                   <button.PrimaryButton
@@ -281,7 +290,7 @@ const UploadedDocuments: React.FC<{ staffEmail: any }> = ({
               </div>
             ))}
           </div>
-          {!editMode && !documentsLoading && staffDetail?.data.staffRegistrationDoc && (
+          {!editMode && documents.length > 0 && (
             <button.PrimaryButton
               className="m-auto mt-[4em] gap-2 rounded-full bg-linear-gradient px-[1.5em] py-[12px] text-center text-lg font-medium text-white"
               onClick={handleEditClick}

@@ -172,41 +172,40 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
     }
   };
 
+
   const renderActionButton = (doc: Document, action: 'APPROVED' | 'REJECTED') => {
     const actionType: ActionType = action.toLowerCase() as ActionType;
     const isLoading = loadingStatus[doc.id]?.[actionType] || false;
-    const isCurrentStatus = doc.status === action;
-    const isPending = doc.status === 'PENDING';
-
+    
+    const isCurrentStatus = doc.remark === action;
+    const isPending = !doc.remark || doc.remark === 'PENDING';
+    const isDisabled = doc.remark === 'APPROVED' || doc.remark === 'REJECTED';
+  
     let buttonClass = "flex px-[1em] rounded-md font-medium py-[8px] items-center border gap-2 ";
-    let buttonContent;
-
-    if (action === 'APPROVED') {
+    
+    if (isPending) {
+      buttonClass += "bg-gray-200 text-gray-600 border-gray-300";
+    } else if (action === 'APPROVED') {
       buttonClass += isCurrentStatus
-        ? "bg-[#F3FBF5] text-approve border-approve"
-        : isPending
-        ? "bg-[#F3FBF5] text-approve border-approve"
-        : "bg-gray-200 text-gray-600 border-gray-300";
-      buttonContent = (
-        <>
-          {(isCurrentStatus || isPending) && <img src={approve} alt="approve_icon" />}
-          <small>{isCurrentStatus ? 'Approved' : 'Approve'}</small>
-        </>
-      );
+        ? "bg-[#F3FBF5] text-approve border-approve cursor-not-allowed opacity-50"
+        : "bg-gray-200 text-gray-600 border-gray-300 cursor-not-allowed opacity-50";
     } else {
       buttonClass += isCurrentStatus
-        ? "bg-[#FEEEEE] text-red-500 border-reject"
-        : isPending
-        ? "bg-[#FEEEEE] text-reject border-reject"
-        : "bg-gray-200 text-gray-600 border-gray-300";
-      buttonContent = (
-        <>
-          {(isCurrentStatus || isPending) && <img src={reject} alt="reject_icon" />}
-          <small>{isCurrentStatus ? 'Rejected' : 'Reject'}</small>
-        </>
-      );
+        ? "bg-[#FEEEEE] text-red-500 border-reject cursor-not-allowed opacity-50"
+        : "bg-gray-200 text-gray-600 border-gray-300 cursor-not-allowed opacity-50";
     }
-
+  
+    const buttonText = isPending
+      ? action === 'APPROVED' ? 'Approve' : 'Reject'
+      : action === 'APPROVED' ? 'Approved' : 'Rejected';
+  
+    const buttonContent = (
+      <>
+        {isCurrentStatus && <img src={action === 'APPROVED' ? approve : reject} alt={`${action.toLowerCase()}_icon`} />}
+        <small>{buttonText}</small>
+      </>
+    );
+  
     return (
       <div className="flex flex-col items-start">
         {errors[doc.id] && (
@@ -215,7 +214,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
         <button
           className={buttonClass}
           onClick={() => handleStatusUpdate(doc.id, action)}
-          disabled={isLoading || isCurrentStatus}
+          disabled={isLoading || isDisabled}
         >
           {isLoading ? (
             <ReactLoading color="#FFFFFF" width={25} height={25} type="spin" />
@@ -227,20 +226,6 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
     );
   };
 
-  if (applicationLoading) {
-    return (
-      <main className="font-outfit">
-        <header>
-          <h2 className="text-xl font-semibold dark:text-white">Uploaded Documents</h2>
-        </header>
-        <div className="mt-[2em] grid w-[85%] grid-cols-2 gap-10">
-          {Array.from({ length: 4 }).map((_, index) => (
-            <SkeletonRow key={index} />
-          ))}
-        </div>
-      </main>
-    );
-  }
 
   if (!documents.length) {
     return <div className="text-red-500">No documents found 📜.</div>;

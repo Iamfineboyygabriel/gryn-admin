@@ -239,9 +239,16 @@ const AllStudentApplications: React.FC = () => {
                         {app.documents.length}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
+                      <button
+                      className={`mr-2 rounded-full px-3 py-2 text-white ${
+                        app?.status === "SUBMITTED" ? "bg-yellow-500" : "bg-green-500"
+                      }`}
+                    >
+                      {app?.status === "SUBMITTED" ? "In Progress" : "Completed"}
+                    </button>
                         <button
                           type="button"
-                          className="text-primary-700 hover:underline"
+                          className="text-primary-700 font-medium hover:underline"
                         >
                           View Details
                         </button>

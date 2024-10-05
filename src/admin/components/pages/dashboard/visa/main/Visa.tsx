@@ -256,7 +256,7 @@ const Visa: React.FC = () => {
                         alt="No applications"
                         className="mb-4"
                       />
-                      No Visa Application.
+                      No visa application.
                     </div>
                   </td>
                 </tr>
