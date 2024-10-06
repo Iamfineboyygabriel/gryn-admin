@@ -28,7 +28,7 @@ const NewRole: React.FC = () => {
   const loading = useSelector((state: RootState) => state.shareApplication.loading);
 
   const type: RoleChoice[] = [{ name: "STAFF" }, { name: "ADMIN" }];
-  const designationType: DesignationChoice[] = [{ name: "CUSTOMER_RELATIONS" }, {name: "STUDENT_OFFICER"}];
+  const designationType: DesignationChoice[] = [{ name: "CUSTOMER_RELATIONS" }];
 
   const emailItems: DropdownItem[] = useMemo(() => {
     if (Array.isArray(staffEmail)) {
@@ -50,6 +50,13 @@ const NewRole: React.FC = () => {
     setDesignation(item?.name || null);
   }, []);
 
+  const resetForm = useCallback(() => {
+    setEmail(null);
+    setRole(null);
+    setDesignation(null);
+    setError(null);
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !role || !designation) {
@@ -60,6 +67,7 @@ const NewRole: React.FC = () => {
     try {
       await dispatch(updateRole({ email, role, designation }) as any);
       toast.success("role assigned successfully")
+      resetForm();
     } catch (error: any) {
       setError(error || "An error occurred while updating the role. Please try again.");
     }
