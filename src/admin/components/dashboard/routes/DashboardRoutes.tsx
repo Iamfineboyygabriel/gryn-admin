@@ -39,6 +39,7 @@ import Payment from "../../pages/dashboard/payment/main/Payment";
 import CreateStaff from "../../pages/dashboard/allStaffs/createStaff/CreateStaff";
 import NewCommission from "../../pages/dashboard/allUsers/manageAgents/agentCommission/NewCommission";
 import NewAdmin from "../../pages/dashboard/settings/superAdmin/adminManagement/newAdmin/NewAdmin";
+import RoleDetails from "../../pages/dashboard/settings/superAdmin/roleManagement/newRole/main/RoleDetails";
 
 const ProtectedSuperAdminRoute = ({ children }:any) => {
   const { userDetails } = useCurrentUser();
@@ -161,7 +162,7 @@ const DashboardRoutes = () => {
         <Route path="settings/role_management/*" element={
           <ProtectedSuperAdminRoute>
             <Routes>
-              {/* <Route path="view_role/:roleId" element={<ViewRole />} /> */}
+            <Route path="new_role" element={<RoleDetails />} />
             </Routes>
           </ProtectedSuperAdminRoute>
         } />

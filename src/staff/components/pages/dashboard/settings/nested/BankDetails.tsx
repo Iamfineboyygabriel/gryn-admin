@@ -16,7 +16,6 @@ interface Banks {
 const BankDetails = () => {
   const { allBanks, loading: bankLoading } = useBanks();
   const { userProfile } = useUserProfile();
-  console.log("usss",userProfile)
   const banks: Banks[] = allBanks || [];
   const [bank, setBank] = useState<Banks | null>(null);
   const [accountNumber, setAccountNumber] = useState("");
@@ -113,6 +112,7 @@ const email = userProfile.email
                   asterisk
                   searchVisible
                   loading={bankLoading}
+                  placeholder="Select Bank"
                 />
 
                   <div className="w-full" key={accountName}>

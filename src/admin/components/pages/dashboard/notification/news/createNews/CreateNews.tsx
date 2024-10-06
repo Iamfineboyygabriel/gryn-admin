@@ -32,15 +32,17 @@ const CreateNews: React.FC = () => {
         if (draftData) {
             setTopic(draftData.topic || "");
             setDescription(draftData.description || "");
-            setSendTo(draftData.sendTo ? { name: draftData.sendTo[0] } : null);
-            if (draftData.date) {
-                const dateObj = new Date(draftData.date);
-                setDate(dateObj.toISOString().split('T')[0]);
-                setTime(dateObj.toTimeString().split(' ')[0].slice(0, 5));
+            
+            if (draftData.sendTo) {
+                setSendTo(draftData.sendTo); 
             }
+            
+            setDate(draftData.date || "");
+            setTime(draftData.time || "");
             setLink(draftData.link || "");
         }
     }, [location.state]);
+
 
     const handleOpenModal = () => setNewsModalOpen(true);
     const handleCloseModal = () => setNewsModalOpen(false);
@@ -193,13 +195,14 @@ const CreateNews: React.FC = () => {
 
                         <div className='w-[19em]'>
                             <Dropdown
-                                label="Send To"
-                                labelClassName="text-gray-700"
-                                className="text-purple-deep"
-                                items={send}
-                                selectedItem={sendTo}
-                                onSelectItem={handleSelectItem}
-                                asterisk
+                              label="Send To"
+                              labelClassName="text-gray-700"
+                              className="text-purple-deep"
+                              items={send}
+                              selectedItem={sendTo}
+                              onSelectItem={handleSelectItem}
+                              asterisk
+                              placeholder='To:'
                             />
                         </div>
                     </div>

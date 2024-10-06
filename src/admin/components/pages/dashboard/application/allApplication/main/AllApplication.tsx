@@ -175,7 +175,7 @@ const AllApplication: React.FC = () => {
   };
 
   return (
-    <main className="mt-[1.3em] font-outfit h-auto w-full overflow-auto rounded-lg bg-white px-[1em] py-3 pb-[10em]">
+    <main className="mt-[1.3em] font-outfit h-auto w-full bg-white px-[1em] py-3 pb-[10em]">
       <div className="flex">
         <div className="flex items-center gap-[1em]">
         <div className="relative w-full">
@@ -216,30 +216,32 @@ const AllApplication: React.FC = () => {
           </div>
         </div>
       </div>
-      <table className="mt-4 w-full table-auto overflow-x-auto">
-        <thead>
-          <tr className="text-gray-700  border-b border-gray-200">
-            <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
-            <th className="whitespace-nowrap px-6 py-3 text-left text-sm font-normal">
-              Full Name
-            </th>
-            <th className="px-6 py-3 text-left text-sm font-normal">Phone</th>
-            <th className="px-6 py-3 text-left text-sm font-normal">Email</th>
-            <th className="px-6 py-3 whitespace-nowrap text-left text-sm font-normal">
-              Degree Type
-            </th>
-            <th className="px-6 py-3 text-left text-sm font-normal">Course</th>
-            <th className="px-6 py-3 text-left text-sm font-normal">
-              Documents
-            </th>
-            <th className="px-6 py-3 text-left whitespace-nowrap text-sm font-normal">
-              Assigned Agent
-            </th>
-            <th className="px-6 py-3 text-left text-sm font-normal">Action</th>
-          </tr>
-        </thead>
-        <tbody>{renderTableBody()}</tbody>
-      </table>
+      <div className="overflow-x-auto mt-[1em]">
+        <table className="w-full table-auto">
+          <thead className="sticky top-0 bg-white">
+            <tr className="text-gray-700 border-b border-gray-200">
+              <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
+              <th className="whitespace-nowrap px-6 py-3 text-left text-sm font-normal">
+                Full Name
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-normal">Phone</th>
+              <th className="px-6 py-3 text-left text-sm font-normal">Email</th>
+              <th className="px-6 py-3 whitespace-nowrap text-left text-sm font-normal">
+                Degree Type
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-normal">Course</th>
+              <th className="px-6 py-3 text-left text-sm font-normal">
+                Documents
+              </th>
+              <th className="px-6 py-3 text-left whitespace-nowrap text-sm font-normal">
+                Assigned Agent
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-normal">Action</th>
+            </tr>
+          </thead>
+          <tbody className="overflow-y-auto">{renderTableBody()}</tbody>
+        </table>
+      </div>
       {!loading && applications?.length > 0 && (
         <div className="mt-6 flex justify-center">
             <div className="mt-6 flex justify-center">

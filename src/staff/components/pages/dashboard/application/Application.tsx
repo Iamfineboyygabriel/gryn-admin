@@ -10,7 +10,7 @@ const Application = () => {
   return (
     <main className="font-outfit">
       <h1 className="text-2xl font-bold">Application</h1>
-      <div className="mt-[1em] h-auto w-full overflow-auto rounded-lg bg-white px-[2em] py-3 pb-[10em]">
+      <div className="mt-[1em] h-auto w-full  rounded-lg bg-white px-[2em] py-3 pb-[10em]">
         <div>
           <nav>
             <div className="flex gap-[2em] border-b-[2px] border-gray-100 py-4 text-base font-semibold">

@@ -25,9 +25,10 @@ interface AgentData {
   id: string;
   email: string;
   role: string;
-//   phoneNumber?: string;
+  profile:{
   firstName:string;
   lastName:string;
+},
 }
 
 const AssignedAgents: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
@@ -65,7 +66,6 @@ const AssignedAgents: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
       agent.email.toLowerCase().includes(localSearchTerm.toLowerCase())
     );
   }, [agentDetail, localSearchTerm]);
-
   const handleViewDetails = useCallback(
     (studentId: string, firstName: string, lastName: string) => {
       navigate(
@@ -95,7 +95,7 @@ const AssignedAgents: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
             {(currentPage - 1) * itemsPerPage + index + 1}
           </td>
           <td className="py-[16px] px-[24px]">
-            {formatData(agent.firstName)}
+          {`${formatData(agent?.profile?.firstName)} ${formatData(agent?.profile?.lastName)}`}
           </td>
           {/* <td 
             className="py-[16px] gap-1 px-[24px]"
@@ -103,9 +103,6 @@ const AssignedAgents: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
               highlightText(agent.email.split('@')[0], localSearchTerm)
             )}
           /> */}
-          {/* <td className="py-[16px] px-[24px]">
-            {formatData(agent.phoneNumber)}
-          </td> */}
           <td 
             className="py-[16px] px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
@@ -117,8 +114,8 @@ const AssignedAgents: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
                onClick={() =>
                 handleViewDetails(
                   agent?.id,
-                  agent?.firstName,
-                  agent?.lastName
+                  agent?.profile?.firstName,
+                  agent?.profile?.lastName
                 )
               }
               className="text-primary-700 cursor-pointer font-[600] flex items-center gap-[8px]"

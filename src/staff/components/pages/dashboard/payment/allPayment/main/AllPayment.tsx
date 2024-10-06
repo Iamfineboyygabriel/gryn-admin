@@ -62,7 +62,7 @@ const AllPayment: React.FC = () => {
   }, [fetchApplicationPayments, itemsPerPage]);
 
   const getFileTypeFromUrl = (url: string) => {
-    const fileExtension = url.split(".").pop()?.toLowerCase();
+    const fileExtension = url?.split(".")?.pop()?.toLowerCase();
     switch (fileExtension) {
       case "pdf": return "application/pdf";
       case "jpg":
@@ -87,7 +87,7 @@ const AllPayment: React.FC = () => {
   };
 
   const renderPaymentStatus = (documents: Array<{documentType: string; publicURL: string}>, type: string) => {
-    const document = documents.find(doc => doc.documentType === type);
+    const document = documents?.find(doc => doc?.documentType === type);
     if (document) {
       return (
         <div className="flex items-center">
@@ -108,7 +108,7 @@ const AllPayment: React.FC = () => {
 
   const highlightText = (text: string, query: string) => {
     if (!query) return text;
-    const parts = text.split(new RegExp(`(${query})`, "gi"));
+    const parts = text?.split(new RegExp(`(${query})`, "gi"));
     return parts.map((part, index) =>
       part.toLowerCase() === query.toLowerCase() ? (
         <span key={index} className="bg-yellow-200">{part}</span>
@@ -162,20 +162,20 @@ const AllPayment: React.FC = () => {
             </thead>
             <tbody className="divide-y divide-gray-200">
               {loading ? (
-                Array.from({ length: 5 }).map((_, index) => (
+                Array.from({ length: 5 })?.map((_, index) => (
                   <SkeletonRow key={index} />
                 ))
-              ) : allApplicationPayment && allApplicationPayment.length > 0 ? (
-                allApplicationPayment.map((item: PaymentData, index: number) => (
+              ) : allApplicationPayment && allApplicationPayment?.length > 0 ? (
+                allApplicationPayment?.map((item: PaymentData, index: number) => (
                   <tr key={index} className="text-sm font-medium text-grey-primary font-outfit">
                     <td className="whitespace-nowrap px-6 py-4">{index + 1}</td>
-                    <td className="whitespace-nowrap px-6 py-4">{highlightText(item.degree.university, searchQuery)}</td>
-                    <td className="whitespace-nowrap px-6 py-4">{highlightText(item.degree.degreeType, searchQuery)}</td>
-                    <td className="whitespace-nowrap px-6 py-4">{highlightText(item.degree.course, searchQuery)}</td>
-                    <td className="whitespace-nowrap px-6 py-4">{highlightText(item.degree.country, searchQuery)}</td>
-                    <td className="whitespace-nowrap px-6 py-4">{renderPaymentStatus(item.payment.documents, "SERVICE_CHARGE")}</td>
-                    <td className="whitespace-nowrap px-6 py-4">{renderPaymentStatus(item.payment.documents, "APPLICATION_FEE")}</td>
-                    <td className="whitespace-nowrap px-6 py-4">{renderPaymentStatus(item.payment.documents, "TUTION_FEE")}</td>
+                    <td className="whitespace-nowrap px-6 py-4">{highlightText(item?.degree?.university, searchQuery)}</td>
+                    <td className="whitespace-nowrap px-6 py-4">{highlightText(item?.degree?.degreeType, searchQuery)}</td>
+                    <td className="whitespace-nowrap px-6 py-4">{highlightText(item?.degree?.course, searchQuery)}</td>
+                    <td className="whitespace-nowrap px-6 py-4">{highlightText(item?.degree?.country, searchQuery)}</td>
+                    <td className="whitespace-nowrap px-6 py-4">{renderPaymentStatus(item?.payment?.documents, "SERVICE_CHARGE")}</td>
+                    <td className="whitespace-nowrap px-6 py-4">{renderPaymentStatus(item?.payment?.documents, "APPLICATION_FEE")}</td>
+                    <td className="whitespace-nowrap px-6 py-4">{renderPaymentStatus(item?.payment?.documents, "TUTION_FEE")}</td>
                     <td className="whitespace-nowrap px-6 py-4">
                       <button
                         onClick={() => navigate(`/admin/dashboard/payments/view_payment/${item.id}`)}
@@ -198,12 +198,12 @@ const AllPayment: React.FC = () => {
             </tbody>
           </table>
         </section>
-        {!loading && allApplicationPayment && allApplicationPayment.length > 0 && (
+        {!loading && allApplicationPayment && allApplicationPayment?.length > 0 && (
           <div className="mt-6 flex justify-center">
             <CustomPagination
               currentPage={currentPage}
               onPageChange={handlePageChange}
-              hasMore={allApplicationPayment.length === itemsPerPage}
+              hasMore={allApplicationPayment?.length === itemsPerPage}
             />
           </div>
         )}

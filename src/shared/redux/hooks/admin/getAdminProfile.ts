@@ -51,6 +51,11 @@ export interface StaffDetails {
     internationalPassportNumber: string;
     status: string;
     userId: string;
+    bankAccounts: {
+      accountName: string
+      accountNumber: string
+      bankName:string
+    },
     staffRegistrationDoc: {
       id: string;
       name: string;
@@ -88,6 +93,16 @@ export interface StaffAssignedAgent {
   };
 }
 
+export interface StaffInvoices {
+  data:{
+    id:number,
+    invoiceDate: string,
+    invoiceNumber: string,
+    dueDate: string,
+    status: string,
+    amount: string,
+  }
+}
 
 export const selectUserActivity = createSelector(
   [(state: any) => state.application?.allActivity],
@@ -476,12 +491,11 @@ export const useStaffAssignedAgents = (staffId: string) => {
 
 export const useStaffInvoices = (staffId: string) => {
   const dispatch = useDispatch();
-
   const {
     data: staffInvoices,
     isLoading: loading,
     error,
-  } = useQuery<StaffAssignedAgent, Error>(
+  } = useQuery<StaffInvoices, Error>(
     ["staffInvoices", staffId],
     async () => {
       if (!staffId) {

@@ -203,7 +203,8 @@ const AllApplication: React.FC = () => {
           </div>
         </div>
       </div>
-      <table className="mt-4 w-full table-auto overflow-auto">
+      <div className="overflow-x-auto mt-[1em]">
+      <table className="mt-4 w-full table-auto">
         <thead>
           <tr className="text-gray-700  border-b border-gray-200">
             <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
@@ -227,6 +228,7 @@ const AllApplication: React.FC = () => {
         </thead>
         <tbody>{renderTableBody()}</tbody>
       </table>
+      </div>
       {!loading && applications?.length > 0 && (
         <div className="mt-6 flex justify-center">
             <div className="mt-6 flex justify-center">

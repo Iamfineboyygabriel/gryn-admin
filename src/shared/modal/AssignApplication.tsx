@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import { Dropdown, DropdownItem } from "../dropDown/DropDown";
 import { button } from "../../shared/buttons/Button"; 
 import StaffEmailDropdown from "./StaffEmailDropdown";
+import AgentEmailDropdown from "./AgentEmailDropdown";
 import Modal from "./Modal";
 
 interface Choice {
@@ -14,9 +15,10 @@ interface AssignApplicationProps {
 }
 
 const AssignApplication = ({ applicationId, onClose }: AssignApplicationProps) => {
-  const type: Choice[] = [{ name: "Staff" }];
+  const type: Choice[] = [{ name: "Staff" }, { name: "Agent" }];
   const [person, setPerson] = useState<string | null>(null);
   const [staffModal, setStaffModal] = useState(false);
+  const [agentModal, setAgentModal] = useState(false);
   const [isParentModalVisible, setIsParentModalVisible] = useState(true); 
 
   const handleOpenStaffModal = () => {
@@ -24,8 +26,18 @@ const AssignApplication = ({ applicationId, onClose }: AssignApplicationProps) =
     setStaffModal(true);
   };
 
+  const handleOpenAgentModal = () => {
+    setIsParentModalVisible(false); 
+    setAgentModal(true); 
+  };
+
   const handleCloseStaffModal = () => {
     setStaffModal(false);
+    onClose(); 
+  };
+
+  const handleCloseAgentModal = () => {
+    setAgentModal(false);
     onClose(); 
   };
 
@@ -36,6 +48,8 @@ const AssignApplication = ({ applicationId, onClose }: AssignApplicationProps) =
   const handleContinue = () => {
     if (person === "Staff") {
       handleOpenStaffModal();
+    } else if (person === "Agent") {
+      handleOpenAgentModal();
     }
   };
 
@@ -57,6 +71,7 @@ const AssignApplication = ({ applicationId, onClose }: AssignApplicationProps) =
             selectedItem={person ? { name: person } : null}
             onSelectItem={handleSelectPerson}
             asterisk
+            placeholder="Assign To:"
           />
           <div className="flex justify-center">
             <button.PrimaryButton
@@ -77,6 +92,16 @@ const AssignApplication = ({ applicationId, onClose }: AssignApplicationProps) =
           data-aos="zoom-in"
         >
           <StaffEmailDropdown applicationId={applicationId} />
+        </Modal>
+      )}
+
+      {agentModal && (
+        <Modal
+          isOpen={agentModal}
+          onClose={handleCloseAgentModal}
+          data-aos="zoom-in"
+        >
+          <AgentEmailDropdown applicationId={applicationId} />
         </Modal>
       )}
     </main>

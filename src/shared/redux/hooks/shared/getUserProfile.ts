@@ -565,68 +565,28 @@ export const useVisaApplicationDetails = (applicationId: string) => {
   return { applicationDetails, loading, error };
 };
 
-// export const useAllAdminForSuperAdmin = () => {
-//   const dispatch: AppDispatch = useDispatch();
-//   const adminData = useSelector((state: any) => state.application?.allAdmins);
-//   console.log("admindd",adminData)
-//   const loading = useSelector((state: any) => state.application.loading);
-//   const error = useSelector((state: any) => state.application.error);
-//   const searchTerm = useSelector((state: any) => state.application.searchTerm);
-
-//   const fetchAdmin = useCallback(
-//     (page: number, limit: number) => {
-//       dispatch(getAllAdminForSuperAdmin({ page, limit, search: searchTerm }));
-//     },
-//     [dispatch, searchTerm]
-//   );
-
-//   const updateSearchTerm = useCallback(
-//     (term: string) => {
-//       // dispatch(setSearchTerm(term));
-//     },
-//     [dispatch]
-//   );
-
-//   return {
-//     admin: adminData,
-//     // totalPages: adminData.totalPages,
-//     // currentPage: adminData.currentPage,
-//     loading,
-//     error,
-//     searchTerm,
-//     fetchAdmin,
-//     updateSearchTerm
-//   };
-// };
-
 export const useBudgetFetch = (initialPage = 1, initialLimit = 10) => {
-  const dispatch: AppDispatch = useDispatch();
-  const { allBudgets, loading, error, sort, status, month, search } = useAppSelector(
-    (state:any) => state.shareApplication
-  );
-  const [page, setPage] = useState(initialPage);
-  const [limit, setLimit] = useState(initialLimit);
-
-  const fetchBudgets = () => {
-    dispatch(getAllBudget({ page, limit, sort, status, month, search }));
-  };
+  const dispatch:AppDispatch = useDispatch();
+  const { allBudgets, loading, error, sort, status, month, search } = useSelector(
+    (state: any) => state.shareApplication);
 
   useEffect(() => {
-    fetchBudgets();
-  }, [page, limit, sort, status, month, search]);
+    dispatch(getAllBudget({ 
+      page: initialPage, 
+      limit: initialLimit, 
+      sort, 
+      status, 
+      month, 
+      search 
+    }));
+  }, [dispatch, initialPage, initialLimit, sort, status, month, search]);
 
   return {
     budgets: allBudgets,
-    // totalPages: allBudgets,
-    // currentPage: allBudgets,
     loading,
     error,
-    setPage,
-    setLimit,
-    refetch: fetchBudgets,
   };
 };
-
 
 export const useAllApplicationPayment = () => {
   const dispatch: AppDispatch = useDispatch();

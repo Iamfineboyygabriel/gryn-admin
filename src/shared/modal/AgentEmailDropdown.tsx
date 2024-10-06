@@ -8,7 +8,7 @@ import { useAppDispatch } from "../redux/hooks/shared/reduxHooks";
 import { AppDispatch } from "../redux/store";
 import ReactLoading from "react-loading";
 import ApplicationAssignedSuccessAgent from "./ApplicationAssignedSuccessAgent";
-import ApplicationAssignedSuccessStaff from "./ApplicationAssignSuccessStaff";
+// import ApplicationAssignedSuccessStaff from "./ApplicationAssignSuccessStaff";
 
 const AgentEmailDropdown = ({ applicationId }: { applicationId: string }) => {
     const dispatch:AppDispatch = useAppDispatch();
@@ -65,6 +65,7 @@ const AgentEmailDropdown = ({ applicationId }: { applicationId: string }) => {
           <p className="font-light">Select the agent to assign the application to</p>
         </header>
       </div>
+      <div className="mt-[1.5em]">
       <Dropdown
         label="Agent Email"
         items={emailItems}
@@ -73,7 +74,9 @@ const AgentEmailDropdown = ({ applicationId }: { applicationId: string }) => {
         asterisk
         searchVisible
         loading={emailLoading}
+        placeholder="Select Agent Email"
       />
+        </div>
       {error && <p className="text-red-500 mt-2">{error}</p>}
       <div className="flex justify-center">
         <button.PrimaryButton
@@ -100,7 +103,7 @@ const AgentEmailDropdown = ({ applicationId }: { applicationId: string }) => {
           onClose={handleModalClose}
           data-aos="zoom-in"
         >
-          <ApplicationAssignedSuccessStaff />
+          <ApplicationAssignedSuccessAgent />
         </Modal>
       )}
     </main>

@@ -123,6 +123,7 @@ const NewBudgets: React.FC = () => {
             items={paymentTypes}
             selectedItem={paymentTypes.find(item => item.name === formData.paymentType) || null}
             onSelectItem={handleDropdownChange('paymentType')}
+            placeholder="Type:"
           />
           <Dropdown
             label="Location"
@@ -130,6 +131,7 @@ const NewBudgets: React.FC = () => {
             items={branches}
             selectedItem={branches.find(item => item.name === formData.location) || null}
             onSelectItem={handleDropdownChange('location')}
+            placeholder="Location:"
           />
         </div>
 

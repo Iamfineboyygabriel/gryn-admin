@@ -23,6 +23,8 @@ const API_URL_CREATE_STAFF = process.env.REACT_APP_API_URL + "/admin/users/staff
 
 const API_URL_CREATE_ADMIN = process.env.REACT_APP_API_URL + "/admin/users/admin";
 
+const API_URL_UPDATE_ROLE = process.env.REACT_APP_API_URL + "/admin/users/role";
+
 const API_URL_CREATE_AGENT = process.env.REACT_APP_API_URL + "/admin/users/agent";
 
 const API_URL_FINDSTUDENTBY_EMAIL_UNIVERSITY_DEGREE = process.env.REACT_APP_API_URL + "/admin/application/byNameUniversityAndDegree";
@@ -655,6 +657,19 @@ const createAdmin = async (body: any) => {
   }
 };
 
+const updateRole = async (body: any) => {
+  try {
+    const token = sessionStorage.getItem("userData");
+    const response = await axios.patch(API_URL_UPDATE_ROLE, body, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error: any) {
+    handleApiError(error);
+  }
+};
+
+
 
 const findStudentByEmail = async (email: string) => {
   const url = `${process.env.REACT_APP_API_URL}/admin/users/students/email`;
@@ -1157,7 +1172,7 @@ const uploadApplicationCommissionPayment = async (
 };
 
 export const approveInvoiceAdmin = async (invoiceID: string) => {
-  const url = `${process.env.REACT_APP_API_URL}/admin/users/approve/agent/${invoiceID}`;
+  const url = `${process.env.REACT_APP_API_URL}/invoice/complete/${invoiceID}`;
   try {
     const response = await axios({
       url,
@@ -1173,7 +1188,6 @@ export const approveInvoiceAdmin = async (invoiceID: string) => {
     throw handleApiError(error);
   }
 };
-
 
 const shareApplicationServices = {
   getUserProfile,
@@ -1223,6 +1237,7 @@ const shareApplicationServices = {
   uploadApplicationCommissionPayment,
   createAdmin,
   approveInvoiceAdmin,
+  updateRole,
 };
 
 export default shareApplicationServices;

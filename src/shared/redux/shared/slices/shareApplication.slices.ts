@@ -533,6 +533,19 @@ export const createAdmin = createAsyncThunk(
   }
 );
 
+export const updateRole = createAsyncThunk(
+  "shareApplication/updateRole",
+  async (body: any, thunkAPI) => {
+    try {
+      const data = await shareApplicationServices.updateRole(body);
+      return data;
+    } catch (error: any) {
+      const message = error;
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 interface ApplicationState {
   userProfile: null;
   currentUser: null;
@@ -551,6 +564,7 @@ interface ApplicationState {
   registerAgent:null,
   registerStaff:null,
   registerAdmin:null,
+  registerRole:null,
   updateStudent: null,
   updateAgent:null,
   updateDocStatus:null,
@@ -619,6 +633,7 @@ const initialState: ApplicationState = {
   registerStudent:null,
   registerStaff:null,
   registerAdmin:null,
+  registerRole:null,
   registerAgent:null,
   topCountries: null,
   topUniversities: null,
@@ -674,9 +689,9 @@ const initialState: ApplicationState = {
     totalPages: 0,
     currentPage: 0,
   },
-  loading: false,
   error: null,
   sort: null,
+  loading: false,
   status: null,
   month: null,
   search: '',
@@ -1161,6 +1176,19 @@ export const shareApplicationSlice = createSlice({
         state.registerAdmin = null;
         const errorMessage =
           action.error.message || "Admin creation failed.";
+        setMessage(errorMessage);
+      })
+
+      .addCase(
+        updateRole.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.registerRole = action.payload;
+        }
+      )
+      .addCase(updateRole.rejected, (state, action) => {
+        state.registerRole = null;
+        const errorMessage =
+          action.error.message || "Role failed to update.";
         setMessage(errorMessage);
       })
   },

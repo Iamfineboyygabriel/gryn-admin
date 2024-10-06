@@ -75,6 +75,7 @@ const StaffEmailDropdown = ({applicationId}:any) =>{
             asterisk
             searchVisible
             loading={emailLoading}
+            placeholder="Select Staff Email"
           />
 
           <div className="flex justify-center">

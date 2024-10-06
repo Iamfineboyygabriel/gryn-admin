@@ -295,6 +295,7 @@ const GenerateInvoice = () => {
                     selectedItem={status}
                     onSelectItem={handleSelectStatus}
                     className="w-[12em]"
+                    placeholder="Status"
                   />
                 </div>
                 <div>
@@ -348,6 +349,7 @@ const GenerateInvoice = () => {
                   items={choice}
                   selectedItem={choiceItem}
                   onSelectItem={handleChoiceItem}
+                  placeholder="Item"
                 />
               </div>
 
@@ -370,7 +372,7 @@ const GenerateInvoice = () => {
               )}
 
               {draftItems &&
-                Array.isArray(draftItems) &&
+                Array?.isArray(draftItems) &&
                 draftItems.length === 0 && <div>No existing items found</div>}
               {items.map((item, index) => (
                 <div key={index}>

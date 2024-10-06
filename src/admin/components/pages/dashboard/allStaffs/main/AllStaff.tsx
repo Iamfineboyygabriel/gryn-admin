@@ -122,9 +122,6 @@ const AllStaff = () => {
             )}
           />
           <td className="py-[16px] px-[24px]">
-            {formatData(admin?.profile?.phoneNumber)}
-          </td>
-          <td className="py-[16px] px-[24px]">
             {formatData(admin?.role)}
           </td>
           <td 
@@ -138,8 +135,8 @@ const AllStaff = () => {
           />
             <td
               onClick={() => handleViewDetails(admin?.profile?.email)}
-              className="py-[16px] cursor-pointer px-[24px]">
-                View details
+              className="py-[16px] text-primary-700 font-medium cursor-pointer px-[24px]">
+              View details
           </td>
         </tr>
       ));
@@ -196,7 +193,6 @@ const AllStaff = () => {
             <tr>
               <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
               <th className="px-6 py-3 text-left text-sm font-normal">Full Name</th>
-              <th className="px-6 py-3 text-left text-sm font-normal">Phone Number</th>
               <th className="px-6 py-3 text-left text-sm font-normal">Role</th>
               <th className="px-6 py-3 text-left text-sm font-normal">Email Address</th>
               <th className="px-6 py-3 text-left text-sm font-normal">Action</th>

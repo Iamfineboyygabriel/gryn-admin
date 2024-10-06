@@ -399,6 +399,32 @@ export const submitBankDetails = async (
   }
 };
 
+export const updateBankDetails = async (
+  { accountNumber, accountName, bankCode, bankName }: SubmitBankDetailsParams,
+) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/users/bank_details`;
+  try {
+    const response = await axios.patch(
+      url,
+      {
+        accountNumber,
+        accountName,
+        bankCode,
+        bankName,
+      },
+      {
+        headers: authHeader(),
+      },
+    );
+    return response.data;
+  } catch (error: any) {
+    if (!error.response) {
+      throw new Error("Network Error: Please check your internet connection.");
+    }
+    throw error.response.data;
+  }
+};
+
 export const uploadApplication = async (endpoint: string, body: FormData) => {
   const url = `${API_URL}${endpoint}`;
   try {
