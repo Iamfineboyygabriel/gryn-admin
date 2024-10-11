@@ -79,8 +79,13 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
   const handleOpenModal = () => setModalOpen(true);
   const handleCloseModal = () => setModalOpen(false);
 
-  const handleAssignOpenModal = () => setIsAssignModal(true);
-  const handleAssignCloseModal = () => setIsAssignModal(false);
+  const handleAssignCloseModal = () => {
+    setIsAssignModal(false);
+  };
+
+  const handleOpenAssignModal = () => {
+    setIsAssignModal(true);
+  };
 
   const getFileTypeFromUrl = (url: string): string => {
     const segments = url.split("/");
@@ -161,8 +166,8 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
   const renderActionButton = (doc: Document, action: 'APPROVED' | 'REJECTED'): JSX.Element => {
     const actionType: ActionType = action.toLowerCase() as ActionType;
     const isLoading = loadingStatus[doc.id]?.[actionType] || false;
-    const isCurrentStatus = doc.remark === action; // Check based on doc.remark
-    const isPending = doc.remark === 'PENDING'; // Use remark to check for 'PENDING'
+    const isCurrentStatus = doc.remark === action; 
+    const isPending = doc.remark === 'PENDING'; 
   
     let buttonClass = "flex px-[1em] rounded-md font-medium py-[8px] items-center border gap-2 ";
     let buttonContent;
@@ -302,12 +307,6 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
         previewFileType={previewFileType}
       />
       <div>
-      <button.PrimaryButton
-        className="m-auto mt-[5em] w-[18%] gap-2 rounded-full bg-purple-white  py-[12px] text-center text-lg font-semibold text-primary-700"
-        onClick={handleAssignOpenModal}
-        >
-        Assign Application
-      </button.PrimaryButton>
        
       <button.PrimaryButton
         className="m-auto mt-[5em] ml-8 w-[18%] gap-2 rounded-full bg-linear-gradient py-[12px] text-center text-lg font-medium text-white"
@@ -316,7 +315,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
         Submit Response
       </button.PrimaryButton>
           </div>
-      {isModalOpen && (
+          {isModalOpen && (
         <Modal
           isOpen={isModalOpen}
           onClose={handleCloseModal}
@@ -328,16 +327,17 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
           />
         </Modal>
       )}
-        {isAssignModal && (
+      
+      {isAssignModal && (
         <Modal
           isOpen={isAssignModal}
           onClose={handleAssignCloseModal}
           data-aos="zoom-in"
         >
           <AssignApplicationToAgent
-           applicationId={applicationId}
-           onClose={handleAssignCloseModal}
-           />
+            applicationId={applicationId}
+            onClose={handleAssignCloseModal}
+          />
         </Modal>
       )}
     </main>

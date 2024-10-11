@@ -117,7 +117,7 @@ const NewRole: React.FC = () => {
 
           <div className="mt-11">
             <button.PrimaryButton
-              className="m-auto w-[100%] md:w-[37%] justify-center gap-2 rounded-full bg-linear-gradient py-[11px] text-center font-medium text-white"
+              className="m-auto w-[300%] justify-center gap-2 rounded-full bg-linear-gradient py-[11px] text-center font-medium text-white"
               type="submit"
               disabled={loading}
             >

@@ -6,7 +6,6 @@ import DOMPurify from "dompurify";
 import { button } from "../../../../../../shared/buttons/Button";
 import plus from "../../../../../../assets/svg/plus.svg";
 import CustomPagination from "../../../../../../shared/utils/customPagination";
-import { useAllAdminForSuperAdmin } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -29,10 +28,12 @@ const Payment = () => {
         <header className="flex items-center justify-between">
           <h1 className="font-medium text-xl">All Payments</h1>
           <div className="flex gap-2">
-            <button.PrimaryButton  className="mt-[1em] flex gap-2 rounded-full bg-primary-200 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
+            <Link to="/admin/dashboard/payments/new_payments">
+            <button.PrimaryButton  className="mt-[1em] flex gap-2 rounded-full bg-primary-700 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
               <img src={plus} alt="plus" />
               New Payment
             </button.PrimaryButton>
+            </Link>
           </div>
         </header>
         <div className="flex items-center mt-3 w-64 rounded-full border-[1px] border-border bg-gray-100 dark:bg-gray-700">

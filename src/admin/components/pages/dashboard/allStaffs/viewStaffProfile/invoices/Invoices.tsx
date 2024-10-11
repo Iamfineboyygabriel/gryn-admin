@@ -1,22 +1,17 @@
 import React, { useCallback, useState, useMemo } from "react";
-import transaction from "../../../../../../../assets/svg/Transaction.svg";
 import { Link } from "react-router-dom";
-import { button } from "../../../../../../../shared/buttons/Button";
-import plus from "../../../../../../../assets/svg/plus.svg";
-import { useStaffDetails, useStaffInvoices } from '../../../../../../../shared/redux/hooks/admin/getAdminProfile';
 import dayjs from "dayjs";
-import Modal from "../../../../../../../shared/modal/Modal";
-import ApproveInvoiceAdmin from "../../../../../../../shared/modal/ApproveInvoiceAdmin";
 
-const SkeletonRow: React.FC = () => (
-  <tr className="animate-pulse border-b border-gray-200">
-    {Array.from({ length: 6 }).map((_, index) => (
-      <td key={index} className="px-6 py-4">
-        <div className="h-4 bg-gray-200 rounded"></div>
-      </td>
-    ))}
-  </tr>
-);
+import transaction from "../../../../../../../assets/svg/Transaction.svg";
+import plus from "../../../../../../../assets/svg/plus.svg";
+
+import { button } from "../../../../../../../shared/buttons/Button";
+import { useStaffDetails, useStaffInvoices } from '../../../../../../../shared/redux/hooks/admin/getAdminProfile';
+import { useCurrentUser } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
+import Modal from "../../../../../../../shared/modal/Modal";
+import ApproveInvoiceModal from "../../../../../../../shared/modal/ApproveInvoiceModal";
+import ApproveInvoiceAdmin from "../../../../../../../shared/modal/ApproveInvoiceAdmin";
+import PaymentReceiptResponse from "../../../../../../../shared/modal/PaymentReceiptResponse";
 
 interface AssignedAgentsProps {
   staffEmail: any;
@@ -29,28 +24,59 @@ interface StaffData {
   email: string;
   dueDate: string;
   invoiceDate: string;
-  status: "SUBMITTED" | "APPROVED";
+  status: "SUBMITTED" | "APPROVED" | "COMPLETED";
 }
+
+const SkeletonRow: React.FC = () => (
+  <tr className="animate-pulse border-b border-gray-200">
+    {Array.from({ length: 6 }).map((_, index) => (
+      <td key={index} className="px-6 py-4">
+        <div className="h-4 bg-gray-200 rounded"></div>
+      </td>
+    ))}
+  </tr>
+);
 
 const Invoices: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
   const { staffDetail } = useStaffDetails(staffEmail);
-  const [isModalOpen, setModalOpen] = useState(false);
+  const { userDetails } = useCurrentUser();
+  const isSuperAdmin = useMemo(() => userDetails?.data?.role === "SUPER_ADMIN", [userDetails]);
+  const [isApproveModalOpen, setApproveModalOpen] = useState(false);
+  const [isReceiptModalOpen, setReceiptModalOpen] = useState(false);
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(null);
-
-  const handleOpenModal = (invoiceId: string) => {
-    setSelectedInvoiceId(invoiceId);
-    setModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedInvoiceId(null);
-    setModalOpen(false);
-  };
+  const [localSearchTerm, setLocalSearchTerm] = useState("");
+  const itemsPerPage = 10;
 
   const staffId = staffDetail?.data?.profile?.userId;
   const { staffInvoices, loading } = useStaffInvoices(staffId || '');
-  const [localSearchTerm, setLocalSearchTerm] = useState("");
-  const itemsPerPage = 10;
+
+  const handleOpenModal = (invoiceId: string, status: string) => {
+    setSelectedInvoiceId(invoiceId);
+    if (status === "COMPLETED" && isSuperAdmin) {
+      setReceiptModalOpen(true);
+    } else {
+      setApproveModalOpen(true);
+    }
+  };
+
+  const handleCloseApproveModal = () => {
+    setSelectedInvoiceId(null);
+    setApproveModalOpen(false);
+  };
+
+  const handleCloseReceiptModal = () => {
+    setSelectedInvoiceId(null);
+    setReceiptModalOpen(false);
+  };
+
+  const handleApproved = (invoiceId: string) => {
+    if (isSuperAdmin) {
+      setApproveModalOpen(false);
+      setReceiptModalOpen(true);
+    } else {
+      handleCloseApproveModal();
+    }
+  };
 
   const formatData = useCallback((data: any) => (data ? data : "-"), []);
 
@@ -62,13 +88,29 @@ const Invoices: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
   }, [staffInvoices, localSearchTerm]);
 
   const getStatusStyle = (status: string) => {
-    return status === "APPROVED"
-      ? "bg-green-500 text-white"
-      : "bg-yellow-500 text-white";
+    switch (status) {
+      case "APPROVED":
+        return "bg-pink-500 text-white";
+      case "SUBMITTED":
+        return "bg-yellow-500 text-white";
+      case "COMPLETED":
+        return "bg-green-500 text-white";
+      default:
+        return "bg-gray-500 text-white";
+    }
   };
 
   const getStatusText = (status: string) => {
-    return status === "APPROVED" ? "Completed" : "In Progress";
+    switch (status) {
+      case "APPROVED":
+        return "Approved";
+      case "SUBMITTED":
+        return "In Progress";
+      case "COMPLETED":
+        return "Completed";
+      default:
+        return "Unknown";
+    }
   };
 
   const renderTableBody = useCallback(() => {
@@ -90,7 +132,10 @@ const Invoices: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
             <button className={`mr-2 rounded-full px-3 py-2 ${getStatusStyle(staff.status)}`}>
               {getStatusText(staff.status)}
             </button>
-            <p onClick={() => handleOpenModal(staff.id)} className="cursor-pointer font-semibold text-primary-700">
+            <p 
+              onClick={() => handleOpenModal(staff.id, staff.status)} 
+              className="cursor-pointer font-semibold text-primary-700"
+            >
               View details
             </p>
           </td>
@@ -110,7 +155,7 @@ const Invoices: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
         </tr>
       );
     }
-  }, [loading, filteredInvoices, formatData]);
+  }, [loading, filteredInvoices, formatData, isSuperAdmin]);
 
   return (
     <main className="font-outfit">
@@ -140,12 +185,21 @@ const Invoices: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
           </tbody>
         </table>
       </div>
-      {isModalOpen && selectedInvoiceId && (
-        <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
+      {isApproveModalOpen && selectedInvoiceId && (
+        <ApproveInvoiceModal isOpen={isApproveModalOpen} onClose={handleCloseApproveModal} data-aos="zoom-in">
           <ApproveInvoiceAdmin
             invoiceId={selectedInvoiceId}
-            onClose={handleCloseModal}
+            onClose={handleCloseApproveModal}
             staffInvoices={staffInvoices}
+            onApproved={handleApproved}
+            isSuperAdmin={isSuperAdmin}
+          />
+        </ApproveInvoiceModal>
+      )}
+      {isReceiptModalOpen && selectedInvoiceId && isSuperAdmin && (
+        <Modal isOpen={isReceiptModalOpen} onClose={handleCloseReceiptModal} data-aos="zoom-in">
+          <PaymentReceiptResponse
+            invoiceId={selectedInvoiceId}
           />
         </Modal>
       )}

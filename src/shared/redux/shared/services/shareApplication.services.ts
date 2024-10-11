@@ -1189,6 +1189,109 @@ export const approveInvoiceAdmin = async (invoiceID: string) => {
   }
 };
 
+
+export const approveInvoiceSuperAdmin = async (invoiceID: string) => {
+  const url = `${process.env.REACT_APP_API_URL}/invoice/approve/${invoiceID}`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "patch",
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw handleApiError(error);
+  }
+};
+
+
+const uploadStaffInvoicePaymentDocument = async (
+  invoiceId: string,
+  data: FormData
+) => {
+  const url = `${process.env.REACT_APP_API_URL}/media/invoice/upload-doc/${invoiceId}`;
+  try {
+    const response = await axios({
+      url,
+      headers: {
+        ...authHeader(),
+        "Content-Type": "multipart/form-data",
+      },
+      method: "post",
+      data: data,
+    });
+
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getAllStaffPayment = async (id:string) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/users/staff/${id}/payments`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "get",
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const CreateSalary = async (staffId:any, body:any) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/users/salary/${staffId}`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "post",
+      data: body,
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
+
+const getStaffSalary = async (id:string) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/users/salary/${id}`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "get",
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const shareApplicationServices = {
   getUserProfile,
   uploadAvatar,
@@ -1238,6 +1341,10 @@ const shareApplicationServices = {
   createAdmin,
   approveInvoiceAdmin,
   updateRole,
+  uploadStaffInvoicePaymentDocument,
+  getAllStaffPayment,
+  CreateSalary,
+  getStaffSalary,
 };
 
 export default shareApplicationServices;

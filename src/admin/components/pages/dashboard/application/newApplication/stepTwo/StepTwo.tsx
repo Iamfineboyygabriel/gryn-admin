@@ -44,7 +44,6 @@ const StepTwo: React.FC<StepTwoProps> = ({
   applicationId,
   stepOneData,
 }) => {
-  console.log("step one dta",stepOneData)
   const [university, setUniversity] = useState("");
   const [course, setCourse] = useState("");
   const [degreeType, setDegreeType] = useState<DropdownItem | null>(null);

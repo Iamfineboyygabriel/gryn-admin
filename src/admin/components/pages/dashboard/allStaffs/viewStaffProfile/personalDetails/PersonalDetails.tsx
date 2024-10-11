@@ -27,7 +27,7 @@ const PersonalDetails: React.FC<{ staffEmail: any }> = ({
   staffEmail,
 }) => {
   const { staffDetail, loading } = useStaffDetails(staffEmail);
-  const staffId:any = staffDetail?.data.profile.userId;
+  const staffId:any = staffDetail?.data?.profile?.userId;
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [middleName, setMiddleName] = useState("");
@@ -86,7 +86,7 @@ const PersonalDetails: React.FC<{ staffEmail: any }> = ({
           <div>
             <div className="relative h-24 w-24 cursor-pointer overflow-hidden rounded-full bg-gray-200">
               <img
-                src={staffDetail?.data?.profile?.publicURL || user}
+                src={staffDetail?.data?.profile?.avatar.publicURL || user}
                 alt="profile"
                 className="h-full w-full object-cover"
               />

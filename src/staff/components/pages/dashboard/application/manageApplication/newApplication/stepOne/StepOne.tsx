@@ -217,14 +217,15 @@ const StepOne = ({ onNext }: any) => {
                     )?.label,
                   }
                 : null
-            }
-            onSelectItem={handleCountrySelect}
-            asterisk
-            searchVisible
-            loading={countriesLoading}
-          />
+               }
+              onSelectItem={handleCountrySelect}
+              asterisk
+              searchVisible
+              loading={countriesLoading}
+              placeholder = "Select Country"
+            />
 
-<div className="w-full">
+           <div className="w-full">
             <label
               htmlFor="localGovtArea"
               className="flex-start flex font-medium"

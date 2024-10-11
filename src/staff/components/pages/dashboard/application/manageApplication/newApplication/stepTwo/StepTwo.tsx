@@ -181,6 +181,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
                 items={bachelorTypes}
                 selectedItem={degreeType}
                 onSelectItem={handleSelectItem}
+                placeholder = "Select Degree Type"
               />
             </div>
           )}

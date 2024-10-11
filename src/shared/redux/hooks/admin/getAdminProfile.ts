@@ -39,6 +39,9 @@ export interface StaffDetails {
       email: string;
       userId: string;
       gender: string;
+      avatar:{
+        publicURL: string,
+      }
     },
     role:string;
     phoneNumber: string;

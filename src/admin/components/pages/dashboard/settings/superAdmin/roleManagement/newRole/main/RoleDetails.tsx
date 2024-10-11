@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import NewRole from "../NewRole";
 import { button } from "../../../../../../../../../shared/buttons/Button";
 import { useNavigate } from "react-router";
+import Privileges from "../../privileges/Privileges";
 
 
 const RoleDetails = () => {
@@ -42,16 +43,16 @@ const RoleDetails = () => {
                 Role
               </div>
               <div
-                className={`cursor-pointer py-3 ${activeLink === "password" ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700 dark:text-white" : "text-lg font-light text-gray-500"}`}
-                onClick={() => setActiveLink("password")}
+                className={`cursor-pointer py-3 ${activeLink === "privileges" ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700 dark:text-white" : "text-lg font-light text-gray-500"}`}
+                onClick={() => setActiveLink("privileges")}
               >
-                Password
+              Privileges
               </div>
             </div>
           </nav>
           <section className="mt-8">
             {activeLink === "role" && <NewRole />}
-            {/* {activeLink === "password" && <Password />} */}
+            {activeLink === "privileges" && <Privileges />}
           </section>
         </div>
       </div>

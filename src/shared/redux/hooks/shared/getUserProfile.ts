@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   getAllAgents,
   getAllApplicationPayment,
+  getAllStaffPayment,
   getAllBudget,
   getAllDraftItems,
   getAllInvoice,
@@ -612,4 +613,38 @@ export const useAllApplicationPayment = () => {
   );
 
   return { allApplicationPayment, totalPages, currentPage, loading, error, searchTerm, fetchApplicationPayments, updateSearchTerm };
+};
+
+
+
+export const useAllStaffPayment = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const allStaffInvoicePayment = useSelector((state: any) => state?.shareApplication?.allStaffPayment?.payments || []);
+  const loading = useSelector((state: any) => state?.shareApplication?.loading || false);
+  const error = useSelector((state: any) => state?.shareApplication?.error || null);
+
+  const fetchStaffPayments = useCallback(
+    (id: string) => {
+      dispatch(getAllStaffPayment({ id}));
+    },
+    [dispatch]
+  );
+
+  return { allStaffInvoicePayment , loading, error, fetchStaffPayments };
+};
+
+export const useStaffSalary = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const staffSalary = useSelector((state: any) => state?.shareApplication?.allStaffSalary?.payments || []);
+  const loading = useSelector((state: any) => state?.shareApplication?.loading || false);
+  const error = useSelector((state: any) => state?.shareApplication?.error || null);
+
+  const fetchStaffPayments = useCallback(
+    (id: string) => {
+      dispatch(getAllStaffPayment({ id}));
+    },
+    [dispatch]
+  );
+
+  return { staffSalary , loading, error, fetchStaffPayments };
 };

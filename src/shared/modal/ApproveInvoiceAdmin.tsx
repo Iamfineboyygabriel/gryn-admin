@@ -1,17 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { approveInvoiceAdmin } from '../redux/shared/services/shareApplication.services';
+import { approveInvoiceAdmin, approveInvoiceSuperAdmin } from '../redux/shared/services/shareApplication.services';
 import { toast } from "react-toastify";
 import ReactLoading from "react-loading";
 import { button } from "../buttons/Button";
 import { StaffInvoices } from '../../shared/redux/hooks/admin/getAdminProfile';
 
 interface ApproveInvoiceAdminProps {
-  invoiceId: any | null;
+  invoiceId: any;
   onClose: () => void;
   staffInvoices: StaffInvoices | null;
+  onApproved: (invoiceId: string) => void;
+  isSuperAdmin: boolean;
 }
 
-const ApproveInvoiceAdmin: React.FC<ApproveInvoiceAdminProps> = ({ invoiceId, onClose, staffInvoices }) => {
+const ApproveInvoiceAdmin: React.FC<ApproveInvoiceAdminProps> = ({ 
+  invoiceId, 
+  onClose, 
+  staffInvoices, 
+  onApproved,
+  isSuperAdmin
+}) => {
   const [approveLoading, setApproveLoading] = useState(false);
   const [invoice, setInvoice] = useState<any>(null);
   
@@ -29,12 +37,17 @@ const ApproveInvoiceAdmin: React.FC<ApproveInvoiceAdminProps> = ({ invoiceId, on
   }, [invoiceId, staffInvoices]);
 
   const handleApprove = async () => {
-    if (invoiceId && invoice?.status === 'SUBMITTED') {
+    if (invoiceId) {
       try {
         setApproveLoading(true);
-        await approveInvoiceAdmin(invoiceId);
+        if (isSuperAdmin) {
+          await approveInvoiceSuperAdmin(invoiceId);
+          onApproved(invoiceId);
+        } else {
+          await approveInvoiceAdmin(invoiceId);
+          setInvoice({ ...invoice, status: 'APPROVED' });
+        }
         toast.success('Invoice approved successfully!');
-        setInvoice({ ...invoice, status: 'APPROVED' });
       } catch (error: any) {
         toast.error(error.message || "An error occurred");
       } finally {
@@ -43,15 +56,40 @@ const ApproveInvoiceAdmin: React.FC<ApproveInvoiceAdminProps> = ({ invoiceId, on
     }
   };
 
+  const isSubmitted = invoice?.status === 'SUBMITTED';
   const isApproved = invoice?.status === 'APPROVED';
+  const isCompleted = invoice?.status === 'COMPLETED';
+
+  const renderButton = () => {
+    if (approveLoading) {
+      return <ReactLoading color="#FFFFFF" width={25} height={25} type="spin" />;
+    }
+    if (isSubmitted) {
+      return "Approve Payment";
+    }
+
+    if (isApproved) {
+      return isSuperAdmin ? "Proceed" : "Admin Approved";
+    }
+
+    if (isCompleted) {
+      return "Completed";
+    }
+
+    return "Unknown Status";
+  };
+
+  const handleButtonClick = () => {
+    if (isSubmitted || (isSuperAdmin && isApproved)) {
+      handleApprove();
+    }
+  };
+
+  const isButtonDisabled = isCompleted || (!isSuperAdmin && isApproved);
 
   return (
     <main className="font-outfit py-[2em]">
-      <div className="m-auto w-[24em] py-[2em] text-center">
-        <header>
-          <h1 className="text-xl font-semibold">Invoice Details</h1>
-        </header>
-      
+      <div className="m-auto w-[24em] py-[em] text-center">
         <div className="mt-[2em] flex justify-between">
           <button.PrimaryButton
             onClick={onClose}
@@ -60,21 +98,15 @@ const ApproveInvoiceAdmin: React.FC<ApproveInvoiceAdminProps> = ({ invoiceId, on
             Cancel
           </button.PrimaryButton>
           <button.PrimaryButton
-            onClick={handleApprove}
-            disabled={isApproved}
+            onClick={handleButtonClick}
+            disabled={isButtonDisabled}
             className={`rounded-full w-[45%] text-center font-semibold ${
-              isApproved
-                ? "bg-green-500 text-white cursor-not-allowed"
+              isButtonDisabled
+                ? "bg-gray-400 text-white cursor-not-allowed"
                 : "bg-primary-700 text-white hover:bg-primary-800"
             }`}
           >
-            {approveLoading ? (
-              <ReactLoading color="#FFFFFF" width={25} height={25} type="spin" />
-            ) : isApproved ? (
-              "Admin Approved"
-            ) : (
-              "Approve Payment"
-            )}
+            {renderButton()}
           </button.PrimaryButton>
         </div>
       </div>

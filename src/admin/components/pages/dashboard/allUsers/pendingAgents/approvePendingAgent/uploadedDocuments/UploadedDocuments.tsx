@@ -216,7 +216,7 @@ const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({ agentData }) => {
   return (
     <main className="font-outfit">
       <header>
-        <h2 className="text-xl font-semibold dark:text-white">Uploaded Documents</h2>
+        <h2 className="text-xl font-semibold">Uploaded Documents</h2>
       </header>
       <section>
         <div className="mt-[2em] grid w-full grid-cols-2 gap-10">

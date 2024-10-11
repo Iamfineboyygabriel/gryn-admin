@@ -546,6 +546,51 @@ export const updateRole = createAsyncThunk(
   }
 );
 
+export const UploadStaffInvoicePaymentDocument = createAsyncThunk(
+  "shareApplication/ uploadStaffInvoicePaymentDocument",
+  async ({ invoiceId, data }: { invoiceId: string; data: any }, { rejectWithValue }) => {
+    try {
+      const response = await shareApplicationServices.uploadStaffInvoicePaymentDocument(invoiceId, data);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const getAllStaffPayment = createAsyncThunk(
+  "shareApplication/getAllStaffPayment",
+  async ({ id }: { id: string; }) => {
+    const response = await shareApplicationServices.getAllStaffPayment(id);
+    return {
+      payments: response.data,
+    };
+  }
+);
+
+export const  CreateSalary  = createAsyncThunk(
+  "shareApplication/createSalary",
+  async ({ body, staffId }: { body: any; staffId: any }, thunkAPI) => {
+    try {
+      const data = await shareApplicationServices.CreateSalary(staffId, body);
+      return data;
+    } catch (error: any) {
+      const message = error;
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+export const getStaffSalary = createAsyncThunk(
+  "shareApplication/getStaffSalary",
+  async ({ id }: { id: string; }) => {
+    const response = await shareApplicationServices.getStaffSalary(id);
+    return {
+      payments: response.data,
+    };
+  }
+);
+
 interface ApplicationState {
   userProfile: null;
   currentUser: null;
@@ -556,12 +601,14 @@ interface ApplicationState {
   topUniversities: null;
   registerInvoice: null;
   registerInvoiceStaffPayment: null;
+  registerReceiptInvoiceStaffPayment: null;
   registerBudget: null;
   registerDraft: null;
   registerApplication: null;
   registerVisaApplication: any | null;
   registerStudent:null;
   registerAgent:null,
+  registerSalary:null,
   registerStaff:null,
   registerAdmin:null,
   registerRole:null,
@@ -610,6 +657,16 @@ interface ApplicationState {
     totalPages: number;
     currentPage: number;
   };
+  allStaffPayment: {
+    payments: any[];
+    // totalPages: number;
+    // currentPage: number;
+  };
+  allStaffSalary: {
+    payments: any[];
+    // totalPages: number;
+    // currentPage: number;
+  };
   allBudgets: BudgetData;
   loading: boolean;
   error: string | null;
@@ -635,6 +692,7 @@ const initialState: ApplicationState = {
   registerAdmin:null,
   registerRole:null,
   registerAgent:null,
+  registerSalary:null,
   topCountries: null,
   topUniversities: null,
   registerApplication: null,
@@ -649,6 +707,7 @@ const initialState: ApplicationState = {
   findByAll:null,
   registerInvoice: null,
   registerInvoiceStaffPayment: null,
+  registerReceiptInvoiceStaffPayment:null,
   registerBudget: null,
   registerDraft: null,
   commisionPayment: null,
@@ -678,6 +737,16 @@ const initialState: ApplicationState = {
     payments: [],
     totalPages: 0,
     currentPage: 1,
+  },
+  allStaffPayment: {
+    payments: [],
+    // totalPages: 0,
+    // currentPage: 1,
+  },
+  allStaffSalary: {
+    payments: [],
+    // totalPages: 0,
+    // currentPage: 1,
   },
   allPendingAgents: {
     allPending: [],
@@ -1190,6 +1259,68 @@ export const shareApplicationSlice = createSlice({
         const errorMessage =
           action.error.message || "Role failed to update.";
         setMessage(errorMessage);
+      })
+
+      .addCase(UploadStaffInvoicePaymentDocument.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(UploadStaffInvoicePaymentDocument.fulfilled, (state, action) => {
+        state.loading = false;
+        state.registerReceiptInvoiceStaffPayment = action.payload;
+      })
+      .addCase(UploadStaffInvoicePaymentDocument.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to upload commission";
+      })
+
+
+      .addCase(getAllStaffPayment.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllStaffPayment.fulfilled, (state, action: PayloadAction<{
+        payments: any[];
+        // totalPages: number;
+        // currentPage: number;
+      }>) => {
+        state.loading = false;
+        state.allStaffPayment = action.payload;
+      })
+      .addCase(getAllStaffPayment.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch payment applications";
+      })
+
+      .addCase(
+        CreateSalary.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.registerSalary = action.payload;
+        }
+      )
+      .addCase(CreateSalary.rejected, (state, action) => {
+        state.registerSalary = null;
+        const errorMessage =
+          action.error.message || "Student Application creation failed.";
+        setMessage(errorMessage);
+      })
+
+      
+      .addCase(getStaffSalary.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getStaffSalary.fulfilled, (state, action: PayloadAction<{
+        payments: any[];
+        // totalPages: number;
+        // currentPage: number;
+      }>) => {
+        state.loading = false;
+        state.allStaffSalary = action.payload;
+      })
+      .addCase(getStaffSalary.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch payment applications";
       })
   },
 });

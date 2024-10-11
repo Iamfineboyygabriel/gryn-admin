@@ -8,6 +8,7 @@ import AssignedAgents from "../assignedAgents/AssignedAgents";
 import StaffPayments from "../staffPayment/StaffPayments";
 import Invoices from "../invoices/Invoices";
 import Activity from "../activity/Activity";
+import Salary from "../salary/main/Salary";
 
 
 const ViewStaffProfile = () => {
@@ -40,7 +41,7 @@ const ViewStaffProfile = () => {
         </header>
         <div>
           <nav>
-            <div className="flex px-[2em] mt-[10px] gap-[2em] border-b-[3px] border-gray-100 text-base font-semibold">
+            <div className="flex px-[1em] mt-[10px] gap-[1em] border-b-[3px] border-gray-100 text-base font-semibold">
               <div
                 className={`cursor-pointer py-3 ${activeLink === "personalDetails" ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700 dark:text-white" : "text-lg font-light text-gray-500"}`}
                 onClick={() => setActiveLink("personalDetails")}
@@ -84,6 +85,13 @@ const ViewStaffProfile = () => {
               </div>
 
               <div
+                className={`cursor-pointer py-3 ${activeLink === "salary" ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700 dark:text-white" : "text-lg font-light text-gray-500"}`}
+                onClick={() => setActiveLink("salary")}
+              >
+               Salary/loan
+              </div>
+
+              <div
                 className={`cursor-pointer py-3 ${activeLink === "activity" ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700 dark:text-white" : "text-lg font-light text-gray-500"}`}
                 onClick={() => setActiveLink("activity")}
               >
@@ -98,6 +106,7 @@ const ViewStaffProfile = () => {
             {activeLink === "assignedAgents" && <AssignedAgents staffEmail={staffEmail}/>}
             {activeLink === "staffPayments" && <StaffPayments staffEmail={staffEmail}/>}
             {activeLink === "invoices" && <Invoices staffEmail={staffEmail} />}
+            {activeLink === "salary" && <Salary staffEmail={staffEmail} />}
             {activeLink === "activity" && <Activity staffEmail={staffEmail}/>}
           </section>
         </div>

@@ -40,6 +40,8 @@ import CreateStaff from "../../pages/dashboard/allStaffs/createStaff/CreateStaff
 import NewCommission from "../../pages/dashboard/allUsers/manageAgents/agentCommission/NewCommission";
 import NewAdmin from "../../pages/dashboard/settings/superAdmin/adminManagement/newAdmin/NewAdmin";
 import RoleDetails from "../../pages/dashboard/settings/superAdmin/roleManagement/newRole/main/RoleDetails";
+import NewPayment from "../../pages/dashboard/payment/newPayment/NewPayment";
+import NewSalary from "../../pages/dashboard/allStaffs/viewStaffProfile/salary/newSalary/NewSalary";
 
 const ProtectedSuperAdminRoute = ({ children }:any) => {
   const { userDetails } = useCurrentUser();
@@ -130,6 +132,7 @@ const DashboardRoutes = () => {
           <Route path="all_staffs" element={<AllStaff />} />
           <Route path="/all_staffs/view_profile/:staffEmail" element={<ViewStaffProfile />} />
           <Route path="/all_staffs/create_staff" element={<CreateStaff />} />
+          <Route path="/all_staffs/new-salary" element={<NewSalary />} />
           <Route path="/all_staffs/view_profile/:staffEmail/new_invoice" element={<NewInvoice />} />
            
           <Route path="reports" element={<Report />} />
@@ -143,6 +146,7 @@ const DashboardRoutes = () => {
           <Route path="/reports/all_pending_agents" element={<SeeAllPendingAgents />} />
 
           <Route path="payments" element={<Payment />} />
+          <Route path="/payments/new_payments" element={<NewPayment />} />
             
 
           <Route path="settings" element={<Settings />} />
