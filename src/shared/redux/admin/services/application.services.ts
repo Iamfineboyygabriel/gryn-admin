@@ -462,6 +462,20 @@ export const getAllAdminForSuperAdmin = async (page?: number, limit?: number, se
   }
 };
 
+const getAllStaffSalaryPayment = async (page: number, limit: number, search: string = '') => {
+  const url = `${API_URL}/invoice/payments?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
+  try {
+    const response = await axios.get(url, { headers: authHeader() });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const applicationServices = {
   getStats,
   getStaffDashboardStats,
@@ -485,6 +499,7 @@ const applicationServices = {
   getAllBanks,
   getAccountName,
   submitBankDetails,
+  getAllStaffSalaryPayment,
 };
 
 export default applicationServices;

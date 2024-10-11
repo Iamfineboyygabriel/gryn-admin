@@ -1,15 +1,18 @@
-import React, { useEffect, useMemo, useCallback, useState } from "react";
+import React, { useMemo, useState, useCallback, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import DOMPurify from "dompurify";
 import { FiSearch } from "react-icons/fi";
 import transaction from "../../../../../../assets/svg/Transaction.svg";
-import { Link, useNavigate } from "react-router-dom";
-import DOMPurify from "dompurify";
+import CustomPagination from "../../../../../../shared/utils/customPagination";
+import { useAllSalary } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
+import dayjs from "dayjs";
 import { button } from "../../../../../../shared/buttons/Button";
 import plus from "../../../../../../assets/svg/plus.svg";
-import CustomPagination from "../../../../../../shared/utils/customPagination";
+import AllStaffPaymentModal from "../../../../../../shared/modal/AllStaffPaymentModal";
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
-    {Array.from({ length: 6 }).map((_, index) => (
+    {Array.from({ length: 9 }).map((_, index) => (
       <td key={index} className="px-6 py-4">
         <div className="h-4 bg-gray-200 rounded"></div>
       </td>
@@ -17,55 +20,229 @@ const SkeletonRow = () => (
   </tr>
 );
 
-const Payment = () => {
+interface SalaryItem {
+  id: number;
+  lastName: string;
+  firstName: string;
+  middleName: string;
+  designation: string;
+  itemName: string;
+  amount: number;
+  documents: any[];
+  createdAt: string;
+}
+
+const Payment: React.FC = () => {
+  const { salaries, currentPage, loading, fetchSalaries, searchTerm, updateSearchTerm } = useAllSalary();
+  const [sortField, setSortField] = useState("lastName");
+  const [selectedPayment, setSelectedPayment] = useState<SalaryItem | null>(null);
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const itemsPerPage = 10;
+  const handleViewDetails = (payment: SalaryItem) => {
+    setSelectedPayment(payment);
+    setIsModalOpen(true);
+  };
+
+  useEffect(() => {
+    fetchSalaries(currentPage, itemsPerPage);
+  }, [fetchSalaries, currentPage, itemsPerPage]);
+
+  const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, page: number) => {
+    fetchSalaries(page, itemsPerPage);
+  }, [fetchSalaries, itemsPerPage]);
+
+  const filteredAndSortedApplications = useMemo(() => {
+    if (!salaries || !Array.isArray(salaries)) {
+      return [];
+    }
+
+    const filtered = salaries.filter((item: SalaryItem) =>
+      `${item.lastName || ""} ${item.firstName || ""} ${item.middleName || ""}`
+        .toLowerCase()
+        .includes((searchTerm || '').toLowerCase())
+    );
+
+    return filtered.sort((a: SalaryItem, b: SalaryItem) => {
+      const aValue = (a[sortField as keyof SalaryItem] || "").toString().toLowerCase();
+      const bValue = (b[sortField as keyof SalaryItem] || "").toString().toLowerCase();
+      if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
+      if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
+      return 0;
+    });
+  }, [salaries, searchTerm, sortField, sortOrder]);
+
+  const formatData = useCallback((data: any) => (data ? data : "-"), []);
+
+  const sanitizeHTML = useCallback((html: string) => {
+    return { __html: DOMPurify.sanitize(html) };
+  }, []);
+
+  const highlightText = useCallback(
+    (text: string) => {
+      if (!searchTerm?.trim()) return text;
+      const regex = new RegExp(`(${searchTerm})`, "gi");
+      return text.replace(
+        regex,
+        (match: string) => `<mark class="bg-yellow-300">${match}</mark>`
+      );
+    },
+    [searchTerm]
+  );
+
+  const renderTableBody = useCallback(() => {
+    if (loading) {
+      return Array.from({ length: 10 }).map((_, index) => (
+        <SkeletonRow key={index} />
+      ));
+    }
+
+    if (filteredAndSortedApplications.length > 0) {
+      return filteredAndSortedApplications.map((item: SalaryItem, index: number) => (
+        <tr
+          key={item.id}
+          className="text-sm text-grey-primary font-medium border-b border-gray-200"
+        >
+          <td className="whitespace-nowrap px-6 py-4">
+            {(currentPage - 1) * itemsPerPage + index + 1}
+          </td>
+          <td
+            className="whitespace-nowrap px-6 py-4"
+            dangerouslySetInnerHTML={sanitizeHTML(
+              highlightText(
+                `${formatData(item.lastName)} ${formatData(
+                  item.middleName
+                )} ${formatData(item.firstName)}`
+              )
+            )}
+          />
+          <td className="whitespace-nowrap px-6 py-4">
+            {formatData(item.designation)}
+          </td>
+          <td className="whitespace-nowrap px-6 py-4">
+            {formatData(item.itemName)}
+          </td>
+          <td className="whitespace-nowrap px-6 py-4">
+            {formatData(item.amount)}
+          </td>
+          <td className="whitespace-nowrap px-6 py-4">
+            {formatData(item.documents?.length)}
+          </td>
+          <td className="whitespace-nowrap px-6 py-4">
+            {item.createdAt ? dayjs(item.createdAt).format("YYYY-MM-DD") : "-"}
+          </td>
+          <td className="flex items-center whitespace-nowrap px-6 py-4">
+            <button
+              onClick={() => handleViewDetails(item)}
+              className="cursor-pointer font-semibold text-primary-700"
+            >
+              View details
+            </button>
+          </td>
+        </tr>
+      ));
+    } else {
+      return (
+        <tr>
+          <td colSpan={9} className="px-6 py-4 text-center text-gray-500">
+            <div className="mt-[2em] flex flex-col items-center justify-center">
+              <img src={transaction} alt="No applications" />
+              <p className="mt-2 text-sm text-gray-500 dark:text-white">
+                No recent applications.
+              </p>
+            </div>
+          </td>
+        </tr>
+      );
+    }
+  }, [
+    filteredAndSortedApplications,
+    currentPage,
+    itemsPerPage,
+    sanitizeHTML,
+    highlightText,
+    formatData,
+    loading,
+  ]);
+
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
+    } else {
+      setSortField(field);
+      setSortOrder("asc");
+    }
+  };
 
   return (
-    <main className="font-outfit">
-      <h1 className="text-2xl font-bold">Payments</h1>
-      <div className="mt-[1em] h-auto w-full overflow-auto rounded-lg bg-white px-[2em] py-3 pb-[10em]">
-
+    <main className="mt-[1.3em] font-outfit h-auto w-full bg-white px-[1em] py-3 pb-[10em]">
       <div className="relative">
         <header className="flex items-center justify-between">
           <h1 className="font-medium text-xl">All Payments</h1>
           <div className="flex gap-2">
             <Link to="/admin/dashboard/payments/new_payments">
-            <button.PrimaryButton  className="mt-[1em] flex gap-2 rounded-full bg-primary-700 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
-              <img src={plus} alt="plus" />
-              New Payment
-            </button.PrimaryButton>
+              <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-primary-700 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
+                <img src={plus} alt="plus" />
+                New Payment
+              </button.PrimaryButton>
             </Link>
           </div>
         </header>
         <div className="flex items-center mt-3 w-64 rounded-full border-[1px] border-border bg-gray-100 dark:bg-gray-700">
           <input
             type="text"
-            className="flex-grow rounded-full bg-transparent py-2 pl-4 pr-2 text-sm focus:border-grey-primary focus:outline-none"
+            className="w-full rounded-full bg-gray-100 py-2 pl-2 pr-[3em] text-sm"
             placeholder="Search"
-            // value={localSearchTerm}
-            // onChange={(e) => setLocalSearchTerm(e.target.value)}
+            value={searchTerm || ''}
+            onChange={(e) => updateSearchTerm(e.target.value)}
           />
           <FiSearch className="mr-3 text-lg text-gray-500" />
         </div>
-
-        <table className="w-full mt-4 border-collapse">
-          <thead className="text-gray-500 border-b border-gray-200">
-            <tr>
+      </div>
+      <div className="overflow-x-auto mt-[1em]">
+        <table className="w-full table-auto">
+          <thead className="sticky top-0 bg-white">
+            <tr className="text-gray-700 border-b border-gray-200">
               <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
-              <th className="px-6 py-3 text-left text-sm font-normal">Full Name</th>
-              <th className="px-6 py-3 text-left text-sm font-normal">Phone Number</th>
-              <th className="px-6 py-3 text-left text-sm font-normal">Role</th>
-              <th className="px-6 py-3 text-left text-sm font-normal">Email Address</th>
+              <th className="whitespace-nowrap px-6 py-3 text-left text-sm font-normal">
+                Full Name
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-normal">Designation</th>
+              <th className="px-6 py-3 text-left text-sm font-normal">Item Name</th>
+              <th className="px-6 py-3 whitespace-nowrap text-left text-sm font-normal">
+                Amount
+              </th>
+              <th className="px-6 py-3 text-left whitespace-nowrap text-sm font-normal">
+                Uploaded Documents
+              </th>
+              <th className="px-6 py-3 text-left whitespace-nowrap text-sm font-normal">
+                Payment Date
+              </th>
               <th className="px-6 py-3 text-left text-sm font-normal">Action</th>
             </tr>
           </thead>
-          {/* <tbody>{renderTableBody()}</tbody> */}
+          <tbody className="overflow-y-auto">{renderTableBody()}</tbody>
         </table>
       </div>
-
-      </div>
+      {!loading && salaries?.length > 0 && (
+        <div className="mt-6 flex justify-center">
+          <CustomPagination
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            hasMore={salaries?.length === itemsPerPage}
+          />
+        </div>
+      )}
+      {isModalOpen && selectedPayment && (
+        <AllStaffPaymentModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          payment={selectedPayment}
+        />
+      )}
     </main>
   );
 };
 
-export default Payment
-
+export default Payment;

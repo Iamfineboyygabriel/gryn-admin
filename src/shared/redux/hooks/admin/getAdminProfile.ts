@@ -18,7 +18,9 @@ import {
   setAllStaffSearchTerm,
   getAllStaffEmail,
   setAllAdminSearchTerm,
-  getAllAdminForSuperAdmin
+  getAllAdminForSuperAdmin,
+  getAllStaffSalaryPayment,
+  setAllStaffSalarySearchTerm
 } from "../../admin/slices/application.slices";
 import { setMessage } from "../../message.slices";
 import { createSelector } from "@reduxjs/toolkit";
@@ -27,6 +29,7 @@ import { getAllDraftedNews, getAllNews, setAllDraftedNewsSearchTerm, setAllNewsS
 import { getAllBanks } from "../../admin/slices/application.slices";
 import { useQuery } from "react-query";
 import { findStaffAssignedAgent, findStaffDetailByEmail, findStaffInvoices } from "../../shared/services/shareApplication.services";
+import { getAllStaffPayment } from "../../shared/slices/shareApplication.slices";
 
 export interface StaffDetails {
   status: number;
@@ -550,4 +553,33 @@ export const useAllAdminForSuperAdmin = () => {
     fetchAdmins, 
     updateSearchTerm 
   };
+};
+
+
+export const useAllSalary = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const salaries = useSelector((state: any) => state?.application.allStaffPayments.payments);
+  console.log("hook",salaries)
+  const totalPages = useSelector((state: any) => state?.application?.allStaffPaments?.totalPages);
+  const currentPage = useSelector((state: any) => state?.application?.allStaffPayments?.currentPage);
+  console.log("curent page",currentPage)
+  const loading = useSelector((state: any) => state?.application?.loading);
+  const error = useSelector((state: any) => state.application.error);
+  const searchTerm = useSelector((state: any) => state.application.allSalarySearchTerm);
+
+  const fetchSalaries = useCallback(
+    (page: number, limit: number) => {
+      dispatch(getAllStaffSalaryPayment({ page, limit, search: searchTerm || '' }));
+    },
+    [dispatch, searchTerm]
+  );
+
+  const updateSearchTerm = useCallback(
+    (term: string) => {
+      dispatch(setAllStaffSalarySearchTerm(term));
+    },
+    [dispatch]
+  );
+
+  return { salaries, totalPages, currentPage, loading, error, searchTerm, fetchSalaries, updateSearchTerm };
 };

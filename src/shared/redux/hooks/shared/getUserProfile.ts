@@ -20,6 +20,8 @@ import {
   setAllVisaApplicationSearchTerm,
   updateProfile,
   uploadAvatar,
+  getStaffSalary,
+  getAgentCommission,
 } from "../../shared/slices/shareApplication.slices";
 import { AppDispatch } from "../../store";
 import { setMessage } from "../../message.slices";
@@ -641,10 +643,26 @@ export const useStaffSalary = () => {
 
   const fetchStaffPayments = useCallback(
     (id: string) => {
-      dispatch(getAllStaffPayment({ id}));
+      dispatch(getStaffSalary({ id}));
     },
     [dispatch]
   );
 
   return { staffSalary , loading, error, fetchStaffPayments };
+};
+
+export const useAgentCommission = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const agentCommissions = useSelector((state: any) => state?.shareApplication?.allAgentCommission?.payments || []);
+  const loading = useSelector((state: any) => state?.shareApplication?.loading || false);
+  const error = useSelector((state: any) => state?.shareApplication?.error || null);
+
+  const fetchAgentPayments = useCallback(
+    (id: string) => {
+      dispatch(getAgentCommission({ id}));
+    },
+    [dispatch]
+  );
+
+  return { agentCommissions, loading, error, fetchAgentPayments };
 };

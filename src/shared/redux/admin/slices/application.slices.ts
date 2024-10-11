@@ -243,10 +243,26 @@ export const getAllAdminForSuperAdmin = createAsyncThunk(
   }
 );
 
+export const  getAllStaffSalaryPayment = createAsyncThunk(
+  "application/ getAllStaffSalaryPayment",
+  async ({ page, limit, search }: { page: number; limit: number; search: string }) => {
+    const response = await applicationServices. getAllStaffSalaryPayment(page, limit, search);
+    return {
+      payments: response.data,
+      totalPages: response.data.totalPages,
+      currentPage: page || 1
+    };
+  }
+);
 
 interface ApplicationState {
   allApplication: {
     applications: any[];
+    totalPages: number;
+    currentPage: number;
+  };
+  allStaffPayments: {
+    payments: any[];
     totalPages: number;
     currentPage: number;
   };
@@ -295,6 +311,7 @@ interface ApplicationState {
   loading: boolean;
   error: string | null;
   allApplicationSearchTerm: string;
+  allSalarySearchTerm: string;
   allStudentsSearchTerm: string;
   allPendingApplicationSearchTerm: string;
   allStaffSearchTerm: string;
@@ -326,6 +343,11 @@ const initialState: ApplicationState = {
     totalPages: 0,
     currentPage: 1,
   },
+  allStaffPayments: {
+    payments: [],
+    totalPages: 0,
+    currentPage: 1,
+  },
   allStudents: {
     students: [],
     totalPages: 0,
@@ -354,6 +376,7 @@ const initialState: ApplicationState = {
   loading: false,
   error: null,
   allApplicationSearchTerm: '',
+  allSalarySearchTerm: '',
   allStudentsSearchTerm: '',
   allPendingApplicationSearchTerm: '',
   allStaffSearchTerm: '',
@@ -368,6 +391,9 @@ export const applicationSlice = createSlice({
   reducers: {
     setAllApplicationSearchTerm: (state, action: PayloadAction<string>) => {
       state.allApplicationSearchTerm = action.payload;
+    },
+    setAllStaffSalarySearchTerm: (state, action: PayloadAction<string>) => {
+      state.allSalarySearchTerm = action.payload;
     },
     setAllStudentsSearchTerm: (state, action: PayloadAction<string>) => {
       state.allStudentsSearchTerm = action.payload;
@@ -665,13 +691,31 @@ export const applicationSlice = createSlice({
       );
       builder.addCase(getAllBanks.rejected, (state, action) => {
         state.allBanks = null;
-      });
+      })
 
+      .addCase(getAllStaffSalaryPayment.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+    .addCase(getAllStaffSalaryPayment.fulfilled, (state, action: PayloadAction<{
+      payments: any[];
+      totalPages: number;
+      currentPage: number;
+    }>) => {
+      state.loading = false;
+      state.allStaffPayments = action.payload;
+    })
+      .addCase(getAllStaffSalaryPayment.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch applications";
+      })
   },
+  
 });
 
 export const {
   setAllApplicationSearchTerm,
+  setAllStaffSalarySearchTerm,
   setAllStudentsSearchTerm,
   setAllPendingApplicationSearchTerm,
   setAllStaffSearchTerm,

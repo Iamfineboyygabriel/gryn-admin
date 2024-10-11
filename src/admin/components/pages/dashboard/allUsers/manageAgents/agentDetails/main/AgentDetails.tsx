@@ -7,6 +7,7 @@ import AgentProfile from "../agentProfile/AgentProfile";
 import AgentCommission from "../../agentCommission/AgentCommission";
 
 const AgentDetails: React.FC = () => {
+  const location = useLocation();
   const { agentId } = useParams<{ agentId: string }>();
   const { applicationDetails, loading, error } = useSingleAgentApplication(
     agentId ?? ""
@@ -14,7 +15,6 @@ const AgentDetails: React.FC = () => {
   const [activeLink, setActiveLink] = useState("manageApplication");
 
   const navigate = useNavigate();
-  const location = useLocation();
 
   const { firstName, lastName } =
     (location.state as { firstName?: string; lastName?: string }) || {};

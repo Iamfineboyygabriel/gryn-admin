@@ -591,6 +591,16 @@ export const getStaffSalary = createAsyncThunk(
   }
 );
 
+export const getAgentCommission = createAsyncThunk(
+  "shareApplication/getAgentCommission",
+  async ({ id }: { id: string; }) => {
+    const response = await shareApplicationServices.getAgentCommission(id);
+    return {
+      payments: response.data,
+    };
+  }
+);
+
 interface ApplicationState {
   userProfile: null;
   currentUser: null;
@@ -663,6 +673,11 @@ interface ApplicationState {
     // currentPage: number;
   };
   allStaffSalary: {
+    payments: any[];
+    // totalPages: number;
+    // currentPage: number;
+  };
+  allAgentCommission: {
     payments: any[];
     // totalPages: number;
     // currentPage: number;
@@ -744,6 +759,11 @@ const initialState: ApplicationState = {
     // currentPage: 1,
   },
   allStaffSalary: {
+    payments: [],
+    // totalPages: 0,
+    // currentPage: 1,
+  },
+  allAgentCommission: {
     payments: [],
     // totalPages: 0,
     // currentPage: 1,
@@ -1319,6 +1339,24 @@ export const shareApplicationSlice = createSlice({
         state.allStaffSalary = action.payload;
       })
       .addCase(getStaffSalary.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch payment applications";
+      })
+
+      
+      .addCase(getAgentCommission.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAgentCommission.fulfilled, (state, action: PayloadAction<{
+        payments: any[];
+        // totalPages: number;
+        // currentPage: number;
+      }>) => {
+        state.loading = false;
+        state.allAgentCommission = action.payload;
+      })
+      .addCase(getAgentCommission.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to fetch payment applications";
       })

@@ -1292,6 +1292,25 @@ const getStaffSalary = async (id:string) => {
   }
 };
 
+
+const getAgentCommission = async (id:string) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/application/agent/commission/${id}`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "get",
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const shareApplicationServices = {
   getUserProfile,
   uploadAvatar,
@@ -1345,6 +1364,7 @@ const shareApplicationServices = {
   getAllStaffPayment,
   CreateSalary,
   getStaffSalary,
+  getAgentCommission,
 };
 
 export default shareApplicationServices;

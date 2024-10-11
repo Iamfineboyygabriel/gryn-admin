@@ -9,7 +9,6 @@ import { AppDispatch } from '../../../../../../../../shared/redux/store';
 import { useAppDispatch } from '../../../../../../../../shared/redux/hooks/shared/reduxHooks';
 import { CreateSalary } from '../../../../../../../../shared/redux/shared/slices/shareApplication.slices';
 import Modal from '../../../../../../../../shared/modal/Modal';
-import InvoiceSent from '../../../../../../../../shared/modal/InvoiceSent';
 import SalaryPaymentCreated from '../../../../../../../../shared/modal/SalaryPaymentCreated';
 
 interface CurrentStatus {
@@ -17,7 +16,7 @@ interface CurrentStatus {
 }
 
 interface LocationState {
-  staffEmail: any;
+  staffEmail?: string;
 }
 
 const NewSalary = () => {
@@ -30,7 +29,8 @@ const NewSalary = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const { staffEmail } = location.state as LocationState;
+  const state = location.state as LocationState | null;
+  const staffEmail = state?.staffEmail || '';
 
   const dispatch: AppDispatch = useAppDispatch();
   const { staffDetail } = useStaffDetails(staffEmail);
@@ -60,14 +60,13 @@ const NewSalary = () => {
       const body = {
         status,
         paymentNo,
-        amount:  parseFloat(amount),
+        amount: parseFloat(amount),
         description
       };
       const staffId = staffDetail.data.profile.userId;
       await dispatch(CreateSalary({ body, staffId })).unwrap();
       handleOpenModal();
     } catch (error: any) {
-      console.error("Error creating salary:", error);
       toast.error(
         error.message || 'An error occurred while creating the application'
       );
@@ -75,6 +74,17 @@ const NewSalary = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!staffEmail) {
+      toast.error('Staff email is missing. Redirecting to previous page.');
+      navigate(-1);
+    }
+  }, [staffEmail, navigate]);
+
+  if (!staffEmail) {
+    return null; // or return a loading indicator
+  }
 
   return (
     <main className="font-outfit">
