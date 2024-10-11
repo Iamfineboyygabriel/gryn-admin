@@ -25,18 +25,24 @@ const AllStaffPaymentModal = ({ isOpen, onClose, payment }:any) => {
              <p className='font-semibold'>Payment Success!</p>
              <div className='bg-purple-white mt-[1em] py-[6px]'>
                  <h1>
-                   <p className="font-semibold text-primary-700 text-2xl">NGN {payment?.amount || '-'}</p>
+                    <p className="font-semibold text-red-500 text-sm">{payment.status}!</p>
+                   <p className="font-semibold text-primary-700 mt-[4px] text-2xl">NGN {payment?.amount || '-'}</p>
                  </h1>
              </div>
           </div>
           <div className="space-y-6 flex flex-col gap-[3px]">
+          <div className='flex justify-between'>
+              <p className="text-sm text-gray-500">Receipt No.</p>
+              <p className="font-semibold text-sm">NGN {payment?.receiptNo || '-'}</p>
+            </div>
+
             <div className='flex justify-between'>
-              <p className="text-sm text-gray-500">Amount.</p>
+              <p className="text-sm text-gray-500">Amount</p>
               <p className="font-semibold text-sm">NGN {payment?.amount || '-'}</p>
             </div>
-ds
+
             <div className='flex justify-between'>
-              <p className="text-sm text-gray-500">Payment Time.</p>
+              <p className="text-sm text-gray-500">Payment Time/Date.</p>
               <p className="font-medium">
               {payment?.createdAt 
                   ? dayjs(payment?.createdAt).format("DD-MM-YYYY, HH:mm:ss") 
@@ -45,7 +51,7 @@ ds
             </div>
 
             <div className='flex justify-between'>
-              <p className="text-sm text-gray-500">Sender Name.</p>
+              <p className="text-sm text-gray-500">Sender Name</p>
               <p className="font-medium">
               {payment?.senderName || '-'}
               </p>

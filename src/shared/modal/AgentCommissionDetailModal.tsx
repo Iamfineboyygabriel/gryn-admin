@@ -36,7 +36,7 @@ const AgentCommissionDetailModal = ({ isOpen, onClose, payment }:any) => {
             </div>
 
             <div className='flex justify-between'>
-              <p className="text-sm text-gray-500">Payment Time.</p>
+              <p className="text-sm text-gray-500">Payment Time/Date.</p>
               <p className="font-medium">
               {payment?.createdAt 
                   ? dayjs(payment?.createdAt).format("DD-MM-YYYY, HH:mm:ss") 

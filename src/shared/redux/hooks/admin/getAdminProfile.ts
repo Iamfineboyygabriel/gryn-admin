@@ -559,10 +559,8 @@ export const useAllAdminForSuperAdmin = () => {
 export const useAllSalary = () => {
   const dispatch: AppDispatch = useDispatch();
   const salaries = useSelector((state: any) => state?.application.allStaffPayments.payments);
-  console.log("hook",salaries)
   const totalPages = useSelector((state: any) => state?.application?.allStaffPaments?.totalPages);
   const currentPage = useSelector((state: any) => state?.application?.allStaffPayments?.currentPage);
-  console.log("curent page",currentPage)
   const loading = useSelector((state: any) => state?.application?.loading);
   const error = useSelector((state: any) => state.application.error);
   const searchTerm = useSelector((state: any) => state.application.allSalarySearchTerm);
