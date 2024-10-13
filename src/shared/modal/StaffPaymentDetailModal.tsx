@@ -99,13 +99,13 @@ const StaffPaymentDetailModal = ({ isOpen, onClose, payment }:any) => {
 
             <div className='flex justify-between'>
               <p className="text-sm text-gray-500">Payment Name</p>
-              <p className="font-medium">{payment.item?.[0]?.name || '-'}</p>
+              <p className="font-medium">{payment?.item?.[0]?.name || '-'}</p>
             </div>
 
             <div className='flex justify-between'>
               <p className="text-sm text-gray-500">Payment Time</p>
               <p className="font-medium">
-              {payment.staffPayment?.createdAt 
+              {payment?.staffPayment?.createdAt 
                   ? dayjs(payment?.staffPayment?.createdAt)?.format("DD-MM-YYYY, HH:mm:ss") 
                   : '-'}
               </p>
@@ -114,7 +114,7 @@ const StaffPaymentDetailModal = ({ isOpen, onClose, payment }:any) => {
             <div className='flex justify-between'>
               <p className="text-sm text-gray-500">Sender Name</p>
               <p className="font-medium">
-              {payment.staffPayment.senderName || '-'}
+              {payment?.staffPayment?.senderName || '-'}
               </p>
             </div>
          </div>

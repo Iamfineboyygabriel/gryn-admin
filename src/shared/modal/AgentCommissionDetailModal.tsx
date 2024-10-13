@@ -96,7 +96,7 @@ const AgentCommissionDetailModal = ({ isOpen, onClose, payment }:any) => {
             <div className='flex justify-between'>
               <p className="text-sm text-gray-500">Payment Name.</p>
               <p className="font-medium">
-              {payment?.document.uploadType || '-'}
+              {payment?.document?.uploadType || '-'}
               </p>
             </div>
 
@@ -104,7 +104,7 @@ const AgentCommissionDetailModal = ({ isOpen, onClose, payment }:any) => {
               <p className="text-sm text-gray-500">Payment Time/Date.</p>
               <p className="font-medium">
               {payment?.createdAt 
-                  ? dayjs(payment?.createdAt).format("DD-MM-YYYY, HH:mm:ss") 
+                  ? dayjs(payment?.createdAt)?.format("DD-MM-YYYY, HH:mm:ss") 
                   : '-'}
               </p>
             </div>
@@ -131,7 +131,7 @@ const AgentCommissionDetailModal = ({ isOpen, onClose, payment }:any) => {
               </button>
 
               <button
-                onClick={() => handleDownload(payment.document.publicURL, payment.document.name)}
+                onClick={() => handleDownload(payment?.document?.publicURL, payment?.document?.name)}
                 className="flex items-center gap-1 rounded-full bg-white px-2 py-[3px] text-center font-medium text-[#660066]"
               >
                 <img src={download} alt="download" />
