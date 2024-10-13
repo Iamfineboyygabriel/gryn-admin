@@ -25,7 +25,11 @@ interface StaffData {
   dueDate: string;
   invoiceDate: string;
   status: "SUBMITTED" | "APPROVED" | "COMPLETED";
+  item: {
+    amount: number; 
+  }[];
 }
+
 
 const SkeletonRow: React.FC = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -81,8 +85,8 @@ const Invoices: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
   const formatData = useCallback((data: any) => (data ? data : "-"), []);
 
   const filteredInvoices = useMemo(() => {
-    if (!staffInvoices || !Array.isArray(staffInvoices.data)) return [];
-    return staffInvoices.data.filter((staff: StaffData) =>
+    if (!staffInvoices || !Array.isArray(staffInvoices.data.invoices)) return [];
+    return staffInvoices.data.invoices.filter((staff: StaffData) =>
       staff.invoiceNumber?.toLowerCase().includes(localSearchTerm.toLowerCase())
     );
   }, [staffInvoices, localSearchTerm]);
@@ -125,7 +129,7 @@ const Invoices: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
         <tr key={staff.id} className="text-[14px] border-b border-gray-200 leading-[20px] text-grey-primary font-medium">
           <td className="py-[16px] px-[24px]">{index + 1}</td>
           <td className="py-[16px] px-[24px]">{formatData(staff.invoiceNumber)}</td>
-          <td className="py-[16px] px-[24px]">{formatData(staff.amount)}</td>
+          <td className="py-[16px] px-[24px]">{formatData(staff?.item[0]?.amount)}</td>
           <td className="py-[16px] px-[24px]">{formatData(dayjs(staff.invoiceDate).format("YYYY-MM-DD"))}</td>
           <td className="py-[16px] px-[24px]">{formatData(dayjs(staff.dueDate).format("YYYY-MM-DD"))}</td>
           <td className="flex items-center whitespace-nowrap px-6 py-4">

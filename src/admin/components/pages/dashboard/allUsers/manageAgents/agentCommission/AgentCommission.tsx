@@ -24,7 +24,12 @@ interface CommissionItem {
   applicationId: number;
   documentId: number;
   createdAt: string;
-  updatedAt: string;
+  updatedAt: string,
+  application: {
+    country: string;
+    firstName: string;
+    lastName: string;
+  }
 }
 
 const AgentCommission = () => {
@@ -35,6 +40,7 @@ const AgentCommission = () => {
 
   const handleFindByAllOpen = async () => setIsFindByModalOpen(true);
   const handleFindByAllClose = () => setIsFindByModalOpen(false);
+  const formatData = useCallback((data: any) => (data ? data : "-"), []);
 
   const { agentCommissions, loading, error, fetchAgentPayments } = useAgentCommission();
    
@@ -58,10 +64,10 @@ const AgentCommission = () => {
       return agentCommissions.map((commission: CommissionItem, index: number) => (
         <tr key={commission.id} className="text-[14px] border-b border-gray-200 leading-[20px] text-grey-primary font-medium">
           <td className="py-[16px] px-[24px]">{index + 1}</td>
+          <td className="py-[16px] px-[24px]">{commission.application.lastName} {commission.application.firstName}</td>
           <td className="py-[16px] px-[24px]">-</td>
           <td className="py-[16px] px-[24px]">-</td>
-          <td className="py-[16px] px-[24px]">-</td>
-          <td className="py-[16px] px-[24px]">-</td>
+          <td className="py-[16px] px-[24px]">{commission?.application?.country}</td>
           <td className="py-[16px] px-[24px]">{commission.amount}</td>
           <td className="flex items-center whitespace-nowrap px-6 py-4">
             <button 

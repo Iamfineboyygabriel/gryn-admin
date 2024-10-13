@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import notApproved from "../../../../../../../../assets/svg/not-approve.svg"
 import approve from "../../../../../../../../assets/svg/Approved.svg";
 import { button } from "../../../../../../../../shared/buttons/Button";
-import { useAdminEmails } from '../../../../../../../../shared/redux/hooks/admin/getAdminProfile';
+import {  useStaffEmails } from '../../../../../../../../shared/redux/hooks/admin/getAdminProfile';
 import { Dropdown, DropdownItem } from '../../../../../../../../shared/dropDown/DropDown';
 import { UpdatePagePermission } from '../../../../../../../../shared/redux/shared/slices/shareApplication.slices';
 import ReactLoading from "react-loading";
@@ -11,8 +11,8 @@ import ReactLoading from "react-loading";
 enum Features {
   DASHBOARD = 'DASHBOARD',
   APPLICATION = 'APPLICATION',
-  VISA_APPLICATION = 'VISA_APPLICATION',
   VIEW_APPLICATION = 'VIEW_APPLICATION',
+  VISA_APPLICATION = 'VISA_APPLICATION',
   ALL_USERS = 'ALL_USERS',
   ALL_STAFFS = 'ALL_STAFFS',
   PAYMENTS = 'PAYMENTS',
@@ -74,9 +74,9 @@ const PrivilegeItem: React.FC<FeaturePrivileges & {
   </tr>
 );
 
-const Privileges: React.FC = () => {
+const StaffPrivileges: React.FC = () => {
   const dispatch = useDispatch();
-  const { adminsEmail, loading: emailLoading } = useAdminEmails();
+  const { staffEmail, loading: emailLoading } = useStaffEmails();
   const [email, setEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [privilegesData, setPrivilegesData] = useState<FeaturePrivileges[]>([
@@ -184,11 +184,11 @@ const Privileges: React.FC = () => {
   ]);
 
   const emailItems: DropdownItem[] = useMemo(() => {
-    if (Array.isArray(adminsEmail)) {
-      return adminsEmail.map((item: any) => ({ name: item.email }));
+    if (Array.isArray(staffEmail)) {
+      return staffEmail.map((item: any) => ({ name: item.email }));
     }
     return [];
-  }, [adminsEmail]);
+  }, [staffEmail]);
 
   const handleSelectEmail = useCallback((item: DropdownItem) => {
     setEmail(item?.name || null);
@@ -260,7 +260,7 @@ const Privileges: React.FC = () => {
             asterisk
             searchVisible
             loading={emailLoading}
-            placeholder="Select Admin Email"
+            placeholder="Select Staff Email"
           />
         </div>
         <table className="w-full mt-[2em]">
@@ -303,6 +303,4 @@ const Privileges: React.FC = () => {
   );
 };
 
-export default Privileges;
-
-
+export default StaffPrivileges;

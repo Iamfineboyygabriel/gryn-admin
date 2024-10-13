@@ -134,7 +134,7 @@ const handleApiError = (error: any) => {
 };
 
 const getUserProfile = async () => {
-  const url = `${process.env.REACT_APP_API_URL}/users/profile`;
+  const url = `${process.env.REACT_APP_API_URL}/users/admin/profile`;
   try {
     const response = await axios({
       url,
@@ -1209,6 +1209,45 @@ export const approveInvoiceSuperAdmin = async (invoiceID: string) => {
 };
 
 
+
+export const approveBudgetAdmin = async (budgetID: string) => {
+  const url = `${process.env.REACT_APP_API_URL}/budget/complete/${budgetID}`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "patch",
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw handleApiError(error);
+  }
+};
+
+
+export const approveBudgetSuperAdmin = async (budgetID: string) => {
+  const url = `${process.env.REACT_APP_API_URL}/budget/approve/${budgetID}`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "patch",
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw handleApiError(error);
+  }
+};
+
+
 const uploadStaffInvoicePaymentDocument = async (
   invoiceId: string,
   data: FormData
@@ -1311,6 +1350,29 @@ const getAgentCommission = async (id:string) => {
   }
 };
 
+const UpdatePagePermission = async (email: string, body: any) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/users/pagePermission?email=${email}`; 
+
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(), 
+      method: "patch",
+      data: body,
+    });
+
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+
+    return response.data;
+  } catch (error) {
+    handleApiError(error); 
+  }
+};
+
+
 const shareApplicationServices = {
   getUserProfile,
   uploadAvatar,
@@ -1365,6 +1427,7 @@ const shareApplicationServices = {
   CreateSalary,
   getStaffSalary,
   getAgentCommission,
+  UpdatePagePermission,
 };
 
 export default shareApplicationServices;

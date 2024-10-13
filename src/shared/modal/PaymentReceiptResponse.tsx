@@ -117,7 +117,7 @@ const PaymentReceiptResponse = ({ invoiceId }: any) => {
 
       {isModalOpen && (
         <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
-          <InvoicePaymentCreated to="/admin/dashboard/all_staffs" onClose={handleCloseModal} />
+          <InvoicePaymentCreated to="/admin/dashboard/home" onClose={handleCloseModal} />
         </Modal>
       )}
     </main>

@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import { FiSearch } from "react-icons/fi";
 import { useDispatch } from 'react-redux';
-import { useBudgetFetch } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
+import { useBudgetFetch, useCurrentUser } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
 import { setSort, setMonth, setSearch } from '../../../../../../../shared/redux/shared/slices/shareApplication.slices';
 import noData from "../../../../../../../assets/svg/Transaction.svg";
 import { button } from "../../../../../../../shared/buttons/Button";
 import plus from "../../../../../../../assets/svg/plus.svg";
+import BudgetPaymentDetail from '../../../../../../../shared/modal/BudgetPaymentDetail';
+import Modal from '../../../../../../../shared/modal/Modal';
+import PaymentReceiptResponse from '../../../../../../../shared/modal/PaymentReceiptResponse';
 
 const Budgets: React.FC = () => {
     const dispatch = useDispatch();
@@ -14,8 +17,40 @@ const Budgets: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
     const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedPayment, setSelectedPayment] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedBudgetId, setSelectedBudgetId] = useState<string | null>(null);
+  const [isApproveModalOpen, setApproveModalOpen] = useState(false);
+  const { userDetails } = useCurrentUser();
+  const [isReceiptModalOpen, setReceiptModalOpen] = useState(false);
+  const isSuperAdmin = useMemo(() => userDetails?.data?.role === "SUPER_ADMIN", [userDetails]);
 
     const { budgets, loading } = useBudgetFetch();
+
+    const handleCloseApproveModal = () => {
+        setSelectedBudgetId(null);
+        setApproveModalOpen(false);
+      };
+
+      
+  const handleOpenModal = (invoiceId: string, status: string) => {
+    setSelectedBudgetId(invoiceId);
+    if (status === "COMPLETED" && isSuperAdmin) {
+      setReceiptModalOpen(true);
+    } else {
+      setApproveModalOpen(true);
+    }
+  };
+
+  const handleApproved = (invoiceId: string) => {
+    if (isSuperAdmin) {
+      setApproveModalOpen(false);
+      setReceiptModalOpen(true);
+    } else {
+      handleCloseApproveModal();
+    }
+  };
+
 
     const months = [
         "January", "February", "March", "April", "May", "June",
@@ -40,16 +75,37 @@ const Budgets: React.FC = () => {
         dispatch(setMonth(value));
     };
 
-    const getStatusColor = (status: string) => {
+    const handleCloseReceiptModal = () => {
+        setSelectedBudgetId(null);
+        setReceiptModalOpen(false);
+      };
+ 
+    const getStatusStyle = (status: string) => {
         switch (status) {
-          case "PAID":
-            return "bg-green-500";
-          case "PENDING":
-            return "bg-yellow-500";
-          default:
-            return "bg-gray-500";
+            case "APPROVED":
+                return "bg-pink-500 text-white";
+            case "PENDING":
+                return "bg-yellow-500 text-white";
+            case "PAID":
+                return "bg-green-500 text-white";
+            default:
+                return "bg-gray-500 text-white";
         }
     };
+
+    const getStatusText = (status: string) => {
+        switch (status) {
+            case "APPROVED":
+                return "Approved";
+            case "PENDING":
+                return "In Progress";
+            case "PAID":
+                return "Completed";
+            default:
+                return "Unknown";
+        }
+    };
+
 
     const handleBackClick = () => {
         navigate(-1);
@@ -127,6 +183,7 @@ const Budgets: React.FC = () => {
                                 <th className="px-6 py-3 text-left text-sm font-normal">Sender's Name</th>
                                 <th className="px-6 py-3 text-left text-sm font-normal">Date & Time</th>
                                 <th className="px-6 py-3 text-left text-sm font-normal">Status</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
@@ -164,10 +221,18 @@ const Budgets: React.FC = () => {
                                                 : '-'}
                                         </td>
                                         <td className="px-3 py-2">
-                                            <span className={`rounded-full px-3 py-1 text-white text-sm ${getStatusColor(budget.status)}`}>
-                                                {budget.status || '-'}
-                                            </span>
+                                        <button className={`mr-2 rounded-full px-3 py-2 ${getStatusStyle(budget.status)}`}>
+                                            {getStatusText(budget.status)}
+                                        </button>
                                         </td>
+                                        <td className="flex items-center whitespace-nowrap px-6 py-4">
+                                        <p 
+                                        onClick={() => handleOpenModal(budget.id, budget.status)} 
+                                        className="cursor-pointer font-semibold text-primary-700"
+                                        >
+                                        View details
+                                        </p>
+                                     </td>
                                     </tr>
                                 ))
                             ) : (
@@ -184,6 +249,22 @@ const Budgets: React.FC = () => {
                     </table>
                 </div>
             </header>
+         {isApproveModalOpen && selectedBudgetId && (
+          <BudgetPaymentDetail
+            budgetId={selectedBudgetId}
+            onClose={handleCloseApproveModal}
+            budgets={budgets}
+            onApproved={handleApproved}
+            isSuperAdmin={isSuperAdmin}
+          />
+      )}
+          {isReceiptModalOpen && selectedBudgetId && isSuperAdmin && (
+        <Modal isOpen={isReceiptModalOpen} onClose={handleCloseReceiptModal} data-aos="zoom-in">
+          <PaymentReceiptResponse
+            invoiceId={selectedBudgetId}
+          />
+        </Modal>
+      )}
         </main>
     );
 };

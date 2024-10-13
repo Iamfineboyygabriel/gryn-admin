@@ -42,6 +42,7 @@ import NewAdmin from "../../pages/dashboard/settings/superAdmin/adminManagement/
 import RoleDetails from "../../pages/dashboard/settings/superAdmin/roleManagement/newRole/main/RoleDetails";
 import NewPayment from "../../pages/dashboard/payment/newPayment/NewPayment";
 import NewSalary from "../../pages/dashboard/allStaffs/viewStaffProfile/salary/newSalary/NewSalary";
+import { PrivateRoute } from "../../../../shared/redux/hooks/admin/PrivateRoute";
 
 const ProtectedSuperAdminRoute = ({ children }:any) => {
   const { userDetails } = useCurrentUser();
@@ -59,8 +60,29 @@ const DashboardRoutes = () => {
   return (
     <DashboardLayout>
       <Routes>
-        <Route path="home" element={<Home />} />
-        <Route path="application" element={<Application />} />
+        {/* <Route path="home" element={<Home />} /> */}
+        <Route 
+          path="home" 
+          element={
+            <PrivateRoute
+              element={<Home />} 
+              feature="DASHBOARD" 
+              page="Overview"
+            />
+          } 
+        />
+       {/* <Route path="application" element={<Application />} />
+        */}
+         <Route 
+          path="application" 
+          element={
+            <PrivateRoute
+              element={<Application />} 
+              feature="APPLICATION" 
+              page="Application"
+            />
+          } 
+        />
         <Route
           path="/application/all_application/view_application/:applicationId"
           element={<ViewApplicationDetails />}

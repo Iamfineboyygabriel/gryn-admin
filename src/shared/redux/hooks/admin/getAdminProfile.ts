@@ -101,12 +101,16 @@ export interface StaffAssignedAgent {
 
 export interface StaffInvoices {
   data:{
-    id:number,
-    invoiceDate: string,
-    invoiceNumber: string,
-    dueDate: string,
-    status: string,
-    amount: string,
+    invoices: {
+      id:number,
+      invoiceDate: string,
+      invoiceNumber: string,
+      dueDate: string,
+      status: string,
+      item:{
+         amount: any,
+      }
+    }
   }
 }
 
@@ -267,6 +271,20 @@ export const useStudentEmails = () => {
   return { studentsEmail, loading, error };
 };
 
+export const useAdminEmails = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { adminsEmail, loading, error } = useSelector((state: RootState) => ({
+    adminsEmail: state?.application?.allAdminsEmail?.adminsEmail,
+    loading: state.application.loading,
+    error: state.application.error,
+  }));
+  useEffect(() => {
+    dispatch(getAllAdminsEmail());
+  }, [dispatch]);
+
+  return { adminsEmail, loading, error };
+};
+
 
 export const useStaffEmails = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -280,6 +298,7 @@ export const useStaffEmails = () => {
   }, [dispatch]);
 
   return { staffEmail, loading, error };
+
 };
 
 export const useAgentsEmails = () => {
@@ -507,7 +526,7 @@ export const useStaffInvoices = (staffId: string) => {
       if (!staffId) {
         throw new Error("No id provided");
       }
-      const endpoint = `/invoice/staff/${staffId}`;
+      const endpoint = `/admin/users/staff/${staffId}/invoices`;
       return await findStaffInvoices(endpoint);
     },
     {

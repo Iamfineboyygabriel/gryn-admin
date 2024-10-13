@@ -25,12 +25,12 @@ const ApproveInvoiceAdmin: React.FC<ApproveInvoiceAdminProps> = ({
   
   useEffect(() => {
     if (staffInvoices?.data && invoiceId) {
-      if (Array.isArray(staffInvoices?.data)) {
-        const foundInvoice = staffInvoices?.data.find(inv => inv?.id === invoiceId);
+      if (Array.isArray(staffInvoices?.data.invoices)) {
+        const foundInvoice = staffInvoices?.data.invoices.find(inv => inv?.id === invoiceId);
         if (foundInvoice) {
           setInvoice(foundInvoice);
         }
-      } else if (staffInvoices?.data?.id === invoiceId) {
+      } else if (staffInvoices?.data?.invoices.id === invoiceId) {
         setInvoice(staffInvoices?.data);
       }
     }

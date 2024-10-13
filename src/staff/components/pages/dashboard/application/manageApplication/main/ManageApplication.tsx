@@ -7,6 +7,7 @@ import Modal from "../../../../../../../shared/modal/Modal";
 import ApplicationDetails from "../update/modal/ApplicationDetails";
 import DirectApplication from "../../../../../../../shared/modal/DirectApplication";
 import FindStudentByAll from "../../../../../../../admin/components/pages/dashboard/application/modal/FindStudentByAll";
+import { PrivateElement } from "../../../../../../../shared/redux/hooks/admin/PrivateElement";
 
 const ManageApplication = () => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -24,6 +25,14 @@ const ManageApplication = () => {
       <header className="flex items-center justify-between">
         <h1 className="font-medium text-xl">All Application</h1>
         <div className="flex gap-2">
+          {/* <button.PrimaryButton
+            onClick={handleOpenModal}
+            className="mt-[1em] flex gap-2 rounded-full bg-approve px-[1.5em] py-[8px] font-medium text-white"
+          >
+            <img src={plus} alt="plus" />
+            Direct Application
+          </button.PrimaryButton> */}
+          <PrivateElement feature="APPLICATION" page="Direct Application">
           <button.PrimaryButton
             onClick={handleOpenModal}
             className="mt-[1em] flex gap-2 rounded-full bg-approve px-[1.5em] py-[8px] font-medium text-white"
@@ -31,18 +40,33 @@ const ManageApplication = () => {
             <img src={plus} alt="plus" />
             Direct Application
           </button.PrimaryButton>
-          <Link to="">
+             </PrivateElement>
+          {/* <Lin>
             <button.PrimaryButton onClick={handleFindByAllOpen} className="mt-[1em] flex gap-2 rounded-full bg-pink-primary  px-[1.5em] py-[8px] font-medium text-white">
               <img src={plus} alt="plus" />
               Update Application
             </button.PrimaryButton>
-          </Link>
-          <Link to="/staff/dashboard/application/manage_application/new_application">
+          </Link> */}
+              <PrivateElement feature="APPLICATION" page="Update Application">
+                <button.PrimaryButton onClick={handleFindByAllOpen} className="mt-[1em] flex gap-2 rounded-full bg-pink-primary  px-[1.5em] py-[8px] font-medium text-white">
+                  <img src={plus} alt="plus" />
+                  Update Application
+                </button.PrimaryButton>
+             </PrivateElement>
+          {/* <Link to="/staff/dashboard/application/manage_application/new_application">
+          <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-primary-700 px-[1.5em] py-[8px] font-medium text-white">
+            <img src={plus} alt="plus" />
+            New Application
+          </button.PrimaryButton>
+          </Link> */}
+            <PrivateElement feature="APPLICATION" page="New Application">
+            <Link to="/staff/dashboard/application/manage_application/new_application">
           <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-primary-700 px-[1.5em] py-[8px] font-medium text-white">
             <img src={plus} alt="plus" />
             New Application
           </button.PrimaryButton>
           </Link>
+         </PrivateElement>
         </div>
       </header>
       <AllApplication />

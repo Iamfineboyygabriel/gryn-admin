@@ -601,6 +601,20 @@ export const getAgentCommission = createAsyncThunk(
   }
 );
 
+export const  UpdatePagePermission  = createAsyncThunk(
+  "shareApplication/updatePagePermission",
+  async ({ body, email }: { body: any; email: any }, thunkAPI) => {
+    try {
+      const data = await shareApplicationServices.UpdatePagePermission(email, body);
+      return data;
+    } catch (error: any) {
+      const message = error;
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+
 interface ApplicationState {
   userProfile: null;
   currentUser: null;
@@ -619,6 +633,7 @@ interface ApplicationState {
   registerStudent:null;
   registerAgent:null,
   registerSalary:null,
+  registerPagePermission:null,
   registerStaff:null,
   registerAdmin:null,
   registerRole:null,
@@ -708,6 +723,7 @@ const initialState: ApplicationState = {
   registerRole:null,
   registerAgent:null,
   registerSalary:null,
+  registerPagePermission:null,
   topCountries: null,
   topUniversities: null,
   registerApplication: null,
@@ -1360,6 +1376,21 @@ export const shareApplicationSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || "Failed to fetch payment applications";
       })
+
+      
+      .addCase(
+        UpdatePagePermission.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.registerPagePermission = action.payload;
+        }
+      )
+      .addCase(UpdatePagePermission.rejected, (state, action) => {
+        state.registerPagePermission = null;
+        const errorMessage =
+          action.error.message || "permission creation failed.";
+        setMessage(errorMessage);
+      })
+
   },
 });
 
