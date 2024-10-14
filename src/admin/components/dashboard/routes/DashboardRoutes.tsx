@@ -60,7 +60,6 @@ const DashboardRoutes = () => {
   return (
     <DashboardLayout>
       <Routes>
-        {/* <Route path="home" element={<Home />} /> */}
         <Route 
           path="home" 
           element={
@@ -71,18 +70,8 @@ const DashboardRoutes = () => {
             />
           } 
         />
-       {/* <Route path="application" element={<Application />} />
-        */}
-         <Route 
-          path="application" 
-          element={
-            <PrivateRoute
-              element={<Application />} 
-              feature="APPLICATION" 
-              page="Application"
-            />
-          } 
-        />
+        <Route path="application" element={<Application />} />
+        
         <Route
           path="/application/all_application/view_application/:applicationId"
           element={<ViewApplicationDetails />}
@@ -157,7 +146,16 @@ const DashboardRoutes = () => {
           <Route path="/all_staffs/new-salary" element={<NewSalary />} />
           <Route path="/all_staffs/view_profile/:staffEmail/new_invoice" element={<NewInvoice />} />
            
-          <Route path="reports" element={<Report />} />
+          <Route 
+          path="reports" 
+          element={
+            <PrivateRoute
+              element={<Report />} 
+              feature="REPORTS" 
+              page="Overview"
+            />
+          } 
+        />
           <Route path="/reports/budgets" element={<Budgets />} />
           <Route path="/reports/new_budgets" element={<NewBudgets />} />
           <Route path="/reports/all_application" element={<SeeAllApplication />} />
@@ -171,8 +169,8 @@ const DashboardRoutes = () => {
           <Route path="/payments/new_payments" element={<NewPayment />} />
             
 
-          <Route path="settings" element={<Settings />} />
-
+         <Route path="settings" element={<Settings />} />
+           
           <Route path="notifications" element={<Notification />} />
           <Route path="/news/create_news" element={<CreateNews />} />
 

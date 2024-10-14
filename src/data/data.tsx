@@ -24,6 +24,8 @@ export const staffSidebarLinks = [
     text: "Dashboard",
     to: "/staff/dashboard/home",
     pathsToCheck: ["/staff/dashboard/home"],
+    feature: "DASHBOARD",
+    page: "Overview"
   },
   {
     img: application,
@@ -55,6 +57,8 @@ export const staffSidebarLinks = [
     text: "Report",
     to: "/staff/dashboard/reports",
     pathsToCheck: ["/staff/dashboard/reports"],
+    feature: "REPORTS",
+    page: "Overview"
   },
   {
     img: messaging,
@@ -79,6 +83,8 @@ export const adminSideBarLinks = [
     text: "Dashboard",
     to: "/admin/dashboard/home",
     pathsToCheck: ["/admin/dashboard/home"],
+    feature: "DASHBOARD",
+    page: "Overview"
   },
   {
     img: application,
@@ -124,6 +130,8 @@ export const adminSideBarLinks = [
     text: "Report",
     to: "/admin/dashboard/reports",
     pathsToCheck: ["/admin/dashboard/reports"],
+    feature: "REPORTS",
+    page: "Overview"
   },
   {
     img: messaging,

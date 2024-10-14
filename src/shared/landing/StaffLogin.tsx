@@ -10,11 +10,15 @@ import gryn_index_logo from "../../assets/svg/Gryn_Index _logo.svg";
 import { MdOutlineVisibilityOff, MdOutlineVisibility } from "react-icons/md";
 import { toast } from "react-toastify";
 import ReactLoading from "react-loading";
+import { usePermissions } from "../redux/hooks/admin/usePermission";
+import { handleLogout } from "../utils/auth";
+import { findFirstAccessibleRouteStaff } from "../utils/findFirstAccessibleRoute";
 
 const ROUTES = {
   STAFF_DASHBOARD: "/staff/dashboard/home",
   ADMIN_SIGNIN: "/admin_login",
   FORGOT_PASSWORD: "/forgot_password",
+  APPLICATION: "/admin/dashboard/application",
 };
 
 interface LoginFormData {
@@ -31,6 +35,10 @@ const StaffLanding = () => {
   });
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
+  const { hasPermission } = usePermissions();
+  const [showModal, setShowModal] = useState(false);
+
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -50,7 +58,12 @@ const StaffLanding = () => {
 
         if (role === "STAFF") {
           toast.success("Welcome");
-          navigate(ROUTES.STAFF_DASHBOARD);
+          const accessibleRoute = findFirstAccessibleRouteStaff(hasPermission);
+          if (accessibleRoute) {
+            navigate(accessibleRoute);
+          } else {
+            setShowModal(true);
+          }
         } else {
           toast.error("Invalid credentials");
         }
@@ -66,6 +79,25 @@ const StaffLanding = () => {
     },
     [dispatch, formData, navigate]
   );
+  
+  const Modal = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white p-8 rounded-lg shadow-lg">
+        <h2 className="text-xl font-bold mb-4">No Accessible Pages</h2>
+        <p className="mb-4">You don't have permission to access any pages. You will be logged out.</p>
+        <button
+          onClick={() => {
+            setShowModal(false);
+            handleLogout(navigate)
+          }}
+          className="bg-primary-700 text-white px-4 py-2 rounded hover:bg-primary-800"
+        >
+          OK
+        </button>
+      </div>
+    </div>
+  );
+
   return (
     <main className="fixed flex min-h-screen w-full justify-between font-outfit">
       <section
@@ -179,6 +211,7 @@ const StaffLanding = () => {
           className="h-full w-full"
         />
       </aside>
+      {showModal && <Modal />}
     </main>
   );
 };

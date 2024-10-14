@@ -28,16 +28,35 @@ import SeeAllStudents from "../../pages/dashboard/reports copy/seeAll/SeeAllStud
 import SeeAllApplication from "../../pages/dashboard/reports copy/seeAll/SeeAllApplication";
 import SeeAllPendingApplication from "../../pages/dashboard/reports copy/seeAll/SeeAllPendingApplication";
 import SeeAllAgents from "../../pages/dashboard/reports copy/seeAll/SeeAllAgents";
-
+import { PrivateRoute } from "../../../../shared/redux/hooks/admin/PrivateRoute";
 
 const DashboardRoutes = () => {
   return (
     <DashboardLayout>
       <Routes>
-        <Route path="home" element={<Home />} />
+        <Route 
+          path="home" 
+          element={
+            <PrivateRoute
+              element={<Home />} 
+              feature="DASHBOARD" 
+              page="Overview"
+            />
+          } 
+        />
         <Route path="application" element={<Application />} />
+
         <Route path="payments" element={<Payment />} />
-        <Route path="reports" element={<Report />} />
+        <Route 
+          path="reports" 
+          element={
+            <PrivateRoute
+              element={<Report />} 
+              feature="REPORTS" 
+              page="Overview"
+            />
+          } 
+        />
         <Route path="reports/all_students" element={<SeeAllStudents />} />
         <Route path="reports/all_application" element={<SeeAllApplication />} />
         <Route path="reports/all_pending_applications" element={<SeeAllPendingApplication />} />

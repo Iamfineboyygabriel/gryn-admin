@@ -5,7 +5,10 @@ import { toast } from "react-toastify";
 import { approveBudgetAdmin, approveBudgetSuperAdmin } from "../redux/shared/services/shareApplication.services";
 import ReactLoading from "react-loading";
 import { button } from "../buttons/Button";
-import background from "../../assets/svg/budget-icon.svg"
+// import background from "../../assets/svg/budget-icon.svg"
+import background from "../../assets/svg/ActiveHome.svg"
+
+
 
 interface BudgetPaymentDetailProps {
   budgetId: string;
