@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useAllStaffForSuperAdmin } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
+import { useAllStaffForSuperAdmin, useTopAgentCommisson } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
 import { useAllAgent } from "../../../../../../shared/redux/hooks/shared/getUserProfile";
 import transaction from "../../../../../../assets/svg/Transaction.svg";
 
@@ -48,14 +48,14 @@ const ListSection = ({ title, data, loading, error, renderItem }:any) => (
 
 const TopPeople = () => {
   const { admins, currentPage, loading: loadingAdmins, error: adminError, fetchAdmins } = useAllStaffForSuperAdmin();
-  const { agents, loading: loadingAgents, error: agentError, fetchAgents } = useAllAgent();
+  const { useTopCommission, loading: commissionLoading, error: commissionError, fetchCommissions } = useTopAgentCommisson();
 
   const itemsPerPage = 10;
 
   useEffect(() => {
     fetchAdmins(currentPage, itemsPerPage);
-    fetchAgents(currentPage, itemsPerPage);
-  }, [fetchAdmins, fetchAgents, currentPage, itemsPerPage]);
+    fetchCommissions(currentPage, itemsPerPage);
+  }, [fetchAdmins, fetchCommissions, currentPage, itemsPerPage]);
 
   const renderStaffItem = (admin:any, index:number) => (
     <div className="flex items-center justify-between" key={index}>
@@ -73,10 +73,10 @@ const TopPeople = () => {
     <div className="flex items-center justify-between" key={index}>
       <div className="flex font-lg items-center gap-[1em]">
         <p>{index + 1}</p>
-        <p>{agent?.profile?.lastName} {agent?.profile?.firstName}</p>
+        <p>{agent?.lastName} {agent?.firstName}</p>
       </div>
       <div>
-        <h1 className="font-bold">NGN 100,000</h1>
+        <h1 className="font-bold">NGN {agent?.commission}</h1>
       </div>
     </div>
   );
@@ -93,9 +93,9 @@ const TopPeople = () => {
         />
         <ListSection
           title="Top Agents"
-          data={agents}
-          loading={loadingAgents}
-          error={agentError}
+          data={useTopCommission}
+          loading={commissionLoading}
+          error={commissionError}
           renderItem={renderAgentItem}
         />
       </div>

@@ -9,6 +9,7 @@ import DOMPurify from "dompurify";
 import Modal from "../../../../../../../shared/modal/Modal";
 import FindStudentByEmail from "../../../../../../../shared/modal/FindStudentByEmail";
 import { useAllStudents } from "../../../../../../../shared/redux/hooks/admin/getAdminProfile";
+import { PrivateElement } from "../../../../../../../shared/redux/hooks/admin/PrivateElement";
 
 interface Student {
   profile: {
@@ -189,16 +190,23 @@ const AllStudents: React.FC = () => {
         <header className="flex items-center justify-between">
           <h1 className="font-medium text-xl">All Students</h1>
           <div className="flex gap-2">
-            <button.PrimaryButton onClick={handleOpenModal} className="mt-[1em] flex gap-2 rounded-full bg-primary-200 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
+            
+          <PrivateElement feature="ALL_USERS" page="Update Student">
+          <button.PrimaryButton onClick={handleOpenModal} className="mt-[1em] flex gap-2 rounded-full bg-primary-200 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
               <img src={plus} alt="plus" />
               Update Student
             </button.PrimaryButton>
-            <Link to="/admin/dashboard/all_users/create_student">
+             </PrivateElement>
+
+             <PrivateElement feature="ALL_USERS" page="New Student">
+             <Link to="/admin/dashboard/all_users/create_student">
               <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-primary-700 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
                 <img src={plus} alt="plus" />
                 New Student
               </button.PrimaryButton>
             </Link>
+             </PrivateElement>
+           
           </div>
         </header>
         <div className="flex items-center w-64 mt-[1em] rounded-full border-[1px] border-border bg-gray-100 dark:bg-gray-700">

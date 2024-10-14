@@ -67,6 +67,23 @@ const getAllStudents = async (page: number, limit: number, search: string = '') 
   }
 };
 
+
+
+const getTopAgentCommission = async (page: number, limit: number) => {
+  const url = `${API_URL}/admin/users/agent/commissions?page=${page}&limit=${limit}`;
+  try {
+    const response = await axios.get(url, { headers: authHeader() });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
 const getAllPendingApplication = async (page: number, limit: number, search: string = '') => {
   const url = `${API_URL}/admin/application/pending?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
   try {
@@ -476,6 +493,8 @@ const getAllStaffSalaryPayment = async (page: number, limit: number, search: str
   }
 };
 
+
+
 const applicationServices = {
   getStats,
   getStaffDashboardStats,
@@ -500,6 +519,7 @@ const applicationServices = {
   getAccountName,
   submitBankDetails,
   getAllStaffSalaryPayment,
+  getTopAgentCommission,
 };
 
 export default applicationServices;

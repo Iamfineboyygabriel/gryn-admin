@@ -53,6 +53,18 @@ export const getAllStudents = createAsyncThunk(
   }
 );
 
+export const getTopAgentCommission  = createAsyncThunk(
+  "application/getTopAgentCommission ",
+  async ({ page, limit}: { page: number; limit: number; }) => {
+    const response = await applicationServices.getTopAgentCommission (page, limit);
+    return {
+      topAgentCommission: response.data, 
+      totalPages: response.data.totalPages,
+      currentPage: page
+    };
+  }
+);
+
 export const getAllPendingApplication = createAsyncThunk(
   "application/getAllPendingApplication",
   async ({ page, limit, search }: { page: number; limit: number; search: string }) => {
@@ -255,6 +267,8 @@ export const  getAllStaffSalaryPayment = createAsyncThunk(
   }
 );
 
+
+
 interface ApplicationState {
   allApplication: {
     applications: any[];
@@ -268,6 +282,11 @@ interface ApplicationState {
   };
   allStudents: {
     students: any[];
+    totalPages: number;
+    currentPage: number;
+  };
+  allAgentCommission: {
+    topAgentCommission: any[];
     totalPages: number;
     currentPage: number;
   };
@@ -350,6 +369,11 @@ const initialState: ApplicationState = {
   },
   allStudents: {
     students: [],
+    totalPages: 0,
+    currentPage: 1,
+  },
+  allAgentCommission: {
+    topAgentCommission: [],
     totalPages: 0,
     currentPage: 1,
   },
@@ -443,6 +467,7 @@ export const applicationSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || "Failed to fetch applications";
       })
+
       .addCase(getAllStudents.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -462,6 +487,28 @@ export const applicationSlice = createSlice({
       .addCase(getAllStudents.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to fetch all students";
+      })
+
+
+      .addCase(getTopAgentCommission.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getTopAgentCommission.fulfilled, (state, action: PayloadAction<{
+        topAgentCommission: any[];
+        totalPages: number;
+        currentPage: number;
+      }>) => {
+        state.loading = false;
+        state.allAgentCommission = {
+          topAgentCommission: action.payload.topAgentCommission,
+          totalPages: action.payload.totalPages,
+          currentPage: action.payload.currentPage
+        };
+      })
+      .addCase(getTopAgentCommission.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch all agent commission";
       })
 
       .addCase(getAllPendingApplication.pending, (state) => {

@@ -114,7 +114,7 @@ const Privileges: React.FC = () => {
   privileges: [
     { name: 'Manage Students', active: false },
     { name: 'Manage Agents', active: false },
-    { name: 'Pendg Agents', active: false },
+    { name: 'Pending Agents', active: false },
     { name: 'Enquires', active: false },
     { name: 'Assign Students', active: false },
     { name: 'Update Student', active: false },

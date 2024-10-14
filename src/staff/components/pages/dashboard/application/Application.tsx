@@ -28,7 +28,7 @@ const Application = () => {
                   Manage Application
                 </button.PrimaryButton>
               </div>
-                  </PrivateElement>
+             </PrivateElement>
               <div
                 className={`${
                   activeLink === "manageStudents"

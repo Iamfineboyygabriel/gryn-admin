@@ -14,6 +14,7 @@ import download from "../../../../../../../../assets/svg/download.svg";
 import approve from "../../../../../../../../assets/svg/Approved.svg";
 import reject from "../../../../../../../../assets/svg/Rejected.svg";
 import ReactLoading from "react-loading";
+import { PrivateElement } from "../../../../../../../../shared/redux/hooks/admin/PrivateElement";
 
 interface Document {
   id: string;
@@ -279,12 +280,14 @@ const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({ agentData }) => {
         previewUrl={previewUrl}
         previewFileType={previewFileType}
       />
-      <button.PrimaryButton
+        <PrivateElement feature="ALL_USERS" page="Submit Response">
+        <button.PrimaryButton
         className="m-auto mt-[5em] w-[18%] gap-2 rounded-full bg-linear-gradient py-[12px] text-center text-lg font-medium text-white"
         onClick={handleOpenModal}
       >
         Submit Response
       </button.PrimaryButton>
+             </PrivateElement>
       {isModalOpen && (
         <Modal
           isOpen={isModalOpen}

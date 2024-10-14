@@ -9,6 +9,7 @@ import { button } from "../../../../../../shared/buttons/Button";
 import plus from "../../../../../../assets/svg/plus.svg";
 import AllStaffPaymentModal from "../../../../../../shared/modal/AllStaffPaymentModal";
 import { useCurrentUser } from "../../../../../../shared/redux/hooks/shared/getUserProfile";
+import { PrivateElement } from "../../../../../../shared/redux/hooks/admin/PrivateElement";
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -132,6 +133,7 @@ const Payment: React.FC = () => {
           <td className="whitespace-nowrap px-6 py-4">
             {formatData(item.invoice?.document?.length)}
           </td>
+          <PrivateElement feature="ALL_USERS" page="View Details">
           <td className="flex items-center whitespace-nowrap px-6 py-4">
             <button
               onClick={() => handleViewDetails(item)}
@@ -140,6 +142,8 @@ const Payment: React.FC = () => {
               View details
             </button>
           </td>
+             </PrivateElement>
+                
         </tr>
       ));
     } else {

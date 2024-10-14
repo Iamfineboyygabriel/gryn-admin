@@ -5,6 +5,7 @@ import AdminManagement from "./superAdmin/adminManagement/main/AdminManagement";
 import RoleManagement from "./superAdmin/roleManagement/main/RoleManagement";
 import { useCurrentUser } from "../../../../../shared/redux/hooks/shared/getUserProfile";
 import Activity from "./nested/Activity";
+import { PrivateElement } from "../../../../../shared/redux/hooks/admin/PrivateElement";
 
 const Settings = () => {
   const [activeLink, setActiveLink] = useState("basicInfo");
@@ -19,24 +20,32 @@ const Settings = () => {
         <div>
           <nav>
             <div className="flex px-[2em] gap-[2em] border-b-[3px] border-gray-100 text-base font-semibold dark:border-white">
+              <PrivateElement feature="SETTINGS" page="Edit Profile">
               <div
                 className={`cursor-pointer py-3 ${activeLink === "basicInfo" ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700 dark:text-white" : "text-lg font-light text-gray-500"}`}
                 onClick={() => setActiveLink("basicInfo")}
               >
                 Basic Info
               </div>
+               
+             </PrivateElement>
+
+              <PrivateElement feature="SETTINGS" page="Change Password">
               <div
                 className={`cursor-pointer py-3 ${activeLink === "password" ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700 dark:text-white" : "text-lg font-light text-gray-500"}`}
                 onClick={() => setActiveLink("password")}
               >
                 Password
               </div>
-              <div
+             </PrivateElement>
+             
+             <div
                 className={`cursor-pointer py-3 ${activeLink === "activity" ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700 dark:text-white" : "text-lg font-light text-gray-500"}`}
                 onClick={() => setActiveLink("activity")}
               >
                 Activity
               </div>
+           
               {isSuperAdmin && (
                 <>
                   <div

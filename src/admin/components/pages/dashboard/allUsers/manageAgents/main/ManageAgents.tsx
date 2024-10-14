@@ -9,6 +9,7 @@ import { button } from "../../../../../../../shared/buttons/Button";
 import plus from "../../../../../../../assets/svg/plus.svg";
 import Modal from "../../../../../../../shared/modal/Modal";
 import FindAgentByEmail from "../../../../../../../shared/modal/FindAgentByEmail";
+import { PrivateElement } from "../../../../../../../shared/redux/hooks/admin/PrivateElement";
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -181,20 +182,29 @@ const ManageAgents = () => {
       <header className="flex items-center justify-between">
           <h1 className="font-medium text-xl">All Agents</h1>
           <div className="flex gap-2">
+          
+            <PrivateElement feature="ALL_USERS" page="Assign Agents">
             <button.PrimaryButton onClick={handleAssignModal} className="mt-[1em] flex gap-2 rounded-full bg-[#9747FF] px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
               <img src={plus} alt="plus" />
               Assign Agent
             </button.PrimaryButton>
+             </PrivateElement>
+
+            <PrivateElement feature="ALL_USERS" page="Update Agents">
             <button.PrimaryButton onClick={handleOpenModal} className="mt-[1em] flex gap-2 rounded-full bg-primary-200 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
               <img src={plus} alt="plus" />
               Update Agent
             </button.PrimaryButton>
+             </PrivateElement>
+        
+            <PrivateElement feature="ALL_USERS" page="New Agents">
             <Link to="/admin/dashboard/all_users/create_agent">
               <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-primary-700 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
                 <img src={plus} alt="plus" />
                 New Agent
               </button.PrimaryButton>
             </Link>
+             </PrivateElement>
           </div>
         </header>
         <div className="flex items-center mt-3 w-64 rounded-full border-[1px] border-border bg-gray-100 dark:bg-gray-700">

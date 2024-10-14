@@ -20,7 +20,8 @@ import {
   setAllAdminSearchTerm,
   getAllAdminForSuperAdmin,
   getAllStaffSalaryPayment,
-  setAllStaffSalarySearchTerm
+  setAllStaffSalarySearchTerm,
+  getTopAgentCommission
 } from "../../admin/slices/application.slices";
 import { setMessage } from "../../message.slices";
 import { createSelector } from "@reduxjs/toolkit";
@@ -197,6 +198,27 @@ export const useAllStudents = () => {
 
   return { useAllStudent, totalPages, currentPage, loading, error, searchTerm, fetchApplications, updateSearchTerm };
 };
+
+
+
+export const useTopAgentCommisson = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const useTopCommission = useSelector((state: any) => state?.application?.allAgentCommission?.topAgentCommission);
+  const totalPages = useSelector((state: any) => state?.application?.allAgentCommission?.totalPages);
+  const currentPage = useSelector((state: any) => state?.application?.allAgentCommission?.currentPage);
+  const loading = useSelector((state: any) => state?.application?.loading);
+  const error = useSelector((state: any) => state?.application?.error);
+
+  const fetchCommissions = useCallback(
+    (page: number, limit: number) => {
+      dispatch(getTopAgentCommission({ page, limit }));
+    },
+    [dispatch]
+  );
+
+  return {useTopCommission, totalPages, currentPage, loading, error,  fetchCommissions };
+};
+
 
 export const useAllPendingApplication = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -577,12 +599,12 @@ export const useAllAdminForSuperAdmin = () => {
 
 export const useAllSalary = () => {
   const dispatch: AppDispatch = useDispatch();
-  const salaries = useSelector((state: any) => state?.application.allStaffPayments.payments);
+  const salaries = useSelector((state: any) => state?.application?.allStaffPayments?.payments);
   const totalPages = useSelector((state: any) => state?.application?.allStaffPaments?.totalPages);
   const currentPage = useSelector((state: any) => state?.application?.allStaffPayments?.currentPage);
   const loading = useSelector((state: any) => state?.application?.loading);
   const error = useSelector((state: any) => state.application.error);
-  const searchTerm = useSelector((state: any) => state.application.allSalarySearchTerm);
+  const searchTerm = useSelector((state: any) => state?.application?.allSalarySearchTerm);
 
   const fetchSalaries = useCallback(
     (page: number, limit: number) => {

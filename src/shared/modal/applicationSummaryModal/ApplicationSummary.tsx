@@ -7,6 +7,7 @@ import approve from "../../../assets/svg/Approved.svg";
 import reject from "../../../assets/svg/Rejected.svg";
 import { LuEye } from "react-icons/lu";
 import ReactLoading from "react-loading";
+import { PrivateElement } from '../../redux/hooks/admin/PrivateElement';
 
 interface Document {
   id: string;
@@ -183,6 +184,8 @@ const ApplicationSummary: React.FC<ApplicationSummaryProps> = ({
                 "Back"
               )}
             </button.PrimaryButton>
+            
+            <PrivateElement feature="ALL_USERS" page="Approve/Reject Agents">
             <button.PrimaryButton
               onClick={handleApprove}
               className="rounded-full cursor-pointer bg-linear-gradient px-[4em] py-[8px] text-center font-medium text-white"
@@ -201,6 +204,7 @@ const ApplicationSummary: React.FC<ApplicationSummaryProps> = ({
                 "Approve"
               )}
             </button.PrimaryButton>
+             </PrivateElement>
           </div>
         </div>
       </div>

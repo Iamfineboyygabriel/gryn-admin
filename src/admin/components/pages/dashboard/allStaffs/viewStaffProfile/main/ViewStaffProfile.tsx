@@ -9,6 +9,7 @@ import StaffPayments from "../staffPayment/StaffPayments";
 import Invoices from "../invoices/Invoices";
 import Activity from "../activity/Activity";
 import Salary from "../salary/main/Salary";
+import { PrivateElement } from "../../../../../../../shared/redux/hooks/admin/PrivateElement";
 
 
 const ViewStaffProfile = () => {
@@ -76,7 +77,7 @@ const ViewStaffProfile = () => {
               >
                Staff Payments
               </div>
-
+              <PrivateElement feature="ALL_USERS" page="Invoices">
               <div
                 className={`cursor-pointer py-3 ${activeLink === "invoices" ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700 dark:text-white" : "text-lg font-light text-gray-500"}`}
                 onClick={() => setActiveLink("invoices")}
@@ -84,6 +85,8 @@ const ViewStaffProfile = () => {
                Invoices
               </div>
 
+             </PrivateElement>
+              
               <div
                 className={`cursor-pointer py-3 ${activeLink === "salary" ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700 dark:text-white" : "text-lg font-light text-gray-500"}`}
                 onClick={() => setActiveLink("salary")}

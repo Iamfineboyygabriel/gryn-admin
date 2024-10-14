@@ -4,6 +4,7 @@ import ManageStudents from "../manageStudents/main/ManageStudents";
 import ManageAgents from "../manageAgents/main/ManageAgents";
 import PendingAgents from "../pendingAgents/main/PendingAgents";
 import Enquiries from "../enquiries/main/AllEnquiries";
+import { PrivateElement } from "../../../../../../shared/redux/hooks/admin/PrivateElement";
 
 const AllUsers = () => {
   const [activeLink, setActiveLink] = useState("manageStudents");
@@ -15,7 +16,8 @@ const AllUsers = () => {
         <div>
           <nav>
             <div className="flex gap-[2em] border-b-[2px] border-gray-100 py-4 text-base font-semibold">
-              <div
+            <PrivateElement feature="ALL_USERS" page="Manage Students">
+            <div
                 className={`${
                   activeLink === "manageStudents"
                     ? "bg-purple-white text-primary-700"
@@ -27,8 +29,10 @@ const AllUsers = () => {
                   Manage Student
                 </button.PrimaryButton>
               </div>
-
-              <div
+             </PrivateElement>
+      
+             <PrivateElement feature="ALL_USERS" page="Manage Agents">
+             <div
                 className={`${
                   activeLink === "manageAgents"
                     ? "bg-purple-white text-primary-700"
@@ -40,8 +44,10 @@ const AllUsers = () => {
                   Manage Agents
                 </button.PrimaryButton>
               </div>
+             </PrivateElement>
 
-              <div
+             <PrivateElement feature="ALL_USERS" page="Pending Agents">
+             <div
                 className={`${
                   activeLink === "pendingAgents"
                     ? "bg-purple-white text-primary-700"
@@ -53,8 +59,11 @@ const AllUsers = () => {
                   Pending Agents
                 </button.PrimaryButton>
               </div>
-
-              <div
+             </PrivateElement>
+                
+                
+             <PrivateElement feature="ALL_USERS" page="Enquires">
+             <div
                 className={`${
                   activeLink === "enquiries"
                     ? "bg-purple-white text-primary-700"
@@ -66,6 +75,9 @@ const AllUsers = () => {
                   Enquiries
                 </button.PrimaryButton>
               </div>
+             </PrivateElement>
+             
+            
             </div>
           </nav>
           <section className="mt-3">
