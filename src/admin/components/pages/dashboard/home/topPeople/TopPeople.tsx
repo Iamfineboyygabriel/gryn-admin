@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useAllStaffForSuperAdmin, useTopAgentCommisson } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
-import { useAllAgent } from "../../../../../../shared/redux/hooks/shared/getUserProfile";
 import transaction from "../../../../../../assets/svg/Transaction.svg";
+import { Link } from "react-router-dom";
 
 const SkeletonRow = () => (
   <div className="animate-pulse flex items-center justify-between py-2">
@@ -13,12 +13,14 @@ const SkeletonRow = () => (
   </div>
 );
 
-const ListSection = ({ title, data, loading, error, renderItem }:any) => (
+const ListSection = ({ title, data, loading, error, renderItem, seeAllLink }:any) => (
   <div className="overflow-y-auto w-full rounded-lg bg-white px-[2.5em] py-[1.3em]">
     <header>
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-bold text-grey-primary">{title}</h1>
+        <Link to={seeAllLink}>
         <p className="font-medium text-primary-700">See All</p>
+        </Link>
       </div>
     </header>
 
@@ -57,7 +59,7 @@ const TopPeople = () => {
     fetchCommissions(currentPage, itemsPerPage);
   }, [fetchAdmins, fetchCommissions, currentPage, itemsPerPage]);
 
-  const renderStaffItem = (admin:any, index:number) => (
+  const renderStaffItem = (admin: any, index: number) => (
     <div className="flex items-center justify-between" key={index}>
       <div className="flex items-center gap-[1em] font-lg">
         <p>{index + 1}</p>
@@ -69,7 +71,7 @@ const TopPeople = () => {
     </div>
   );
 
-  const renderAgentItem = (agent:any, index:number) => (
+  const renderAgentItem = (agent: any, index: number) => (
     <div className="flex items-center justify-between" key={index}>
       <div className="flex font-lg items-center gap-[1em]">
         <p>{index + 1}</p>
@@ -90,6 +92,7 @@ const TopPeople = () => {
           loading={loadingAdmins}
           error={adminError}
           renderItem={renderStaffItem}
+          seeAllLink="/admin/dashboard/all_staffs" 
         />
         <ListSection
           title="Top Agents"
@@ -97,6 +100,7 @@ const TopPeople = () => {
           loading={commissionLoading}
           error={commissionError}
           renderItem={renderAgentItem}
+          seeAllLink="/admin/dashboard/reports/all_top_agents"  
         />
       </div>
     </main>
@@ -104,3 +108,4 @@ const TopPeople = () => {
 };
 
 export default TopPeople;
+

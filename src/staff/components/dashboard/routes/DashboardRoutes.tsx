@@ -29,6 +29,7 @@ import SeeAllApplication from "../../pages/dashboard/reports copy/seeAll/SeeAllA
 import SeeAllPendingApplication from "../../pages/dashboard/reports copy/seeAll/SeeAllPendingApplication";
 import SeeAllAgents from "../../pages/dashboard/reports copy/seeAll/SeeAllAgents";
 import { PrivateRoute } from "../../../../shared/redux/hooks/admin/PrivateRoute";
+import Notification from "../../pages/dashboard/notification/main/Notification";
 
 const DashboardRoutes = () => {
   return (
@@ -44,6 +45,7 @@ const DashboardRoutes = () => {
             />
           } 
         />
+          <Route path="notifications" element={<Notification />} />
         <Route path="application" element={<Application />} />
 
         <Route path="payments" element={<Payment />} />

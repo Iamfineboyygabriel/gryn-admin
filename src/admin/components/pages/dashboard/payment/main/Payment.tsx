@@ -142,8 +142,7 @@ const Payment: React.FC = () => {
               View details
             </button>
           </td>
-             </PrivateElement>
-                
+             </PrivateElement> 
         </tr>
       ));
     } else {
@@ -210,7 +209,9 @@ const Payment: React.FC = () => {
               <th className="px-6 py-3 text-left whitespace-nowrap text-sm font-normal">
                 Uploaded Documents
               </th>
+          <PrivateElement feature="ALL_USERS" page="View Details">
               <th className="px-6 py-3 text-left text-sm font-normal">Action</th>
+          </PrivateElement>
             </tr>
           </thead>
           <tbody className="overflow-y-auto">{renderTableBody()}</tbody>

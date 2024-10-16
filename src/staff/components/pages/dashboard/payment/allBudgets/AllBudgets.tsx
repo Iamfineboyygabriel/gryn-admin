@@ -24,6 +24,8 @@ const Budgets: React.FC = () => {
             return "bg-green-500";
           case "PENDING":
             return "bg-yellow-500";
+            case "APPROVED":
+              return "bg-pink-500 text-white";
           default:
             return;
         }

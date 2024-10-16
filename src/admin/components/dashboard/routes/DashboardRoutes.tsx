@@ -43,6 +43,8 @@ import RoleDetails from "../../pages/dashboard/settings/superAdmin/roleManagemen
 import NewPayment from "../../pages/dashboard/payment/newPayment/NewPayment";
 import NewSalary from "../../pages/dashboard/allStaffs/viewStaffProfile/salary/newSalary/NewSalary";
 import { PrivateRoute } from "../../../../shared/redux/hooks/admin/PrivateRoute";
+import SeeAllTopAgent from "../../pages/dashboard/Reports/seeAll/SeeAllTopAgents";
+import SeeAllTopAgents from "../../pages/dashboard/Reports/seeAll/SeeAllTopAgents";
 
 const ProtectedSuperAdminRoute = ({ children }:any) => {
   const { userDetails } = useCurrentUser();
@@ -159,6 +161,7 @@ const DashboardRoutes = () => {
           <Route path="/reports/budgets" element={<Budgets />} />
           <Route path="/reports/new_budgets" element={<NewBudgets />} />
           <Route path="/reports/all_application" element={<SeeAllApplication />} />
+          <Route path="/reports/all_top_agents" element={<SeeAllTopAgents />} />
           <Route path="/reports/all_pending_applications" element={<SeeAllPendingApplication />} />
           <Route path="/reports/all_agents" element={<SeeAllAgents />} />
           <Route path="/reports/all_students" element={<SeeAllStudents />} />

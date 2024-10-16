@@ -287,7 +287,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
           >
             <AiOutlineEye />
           </button>
-          {!uploadedFile && (
+          {/* {!uploadedFile && (
             <button 
               type="button" 
               onClick={() => { setFile(null); onFileChange(null); }}
@@ -295,7 +295,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
             >
               <RxCrossCircled />
             </button>
-          )}
+          )} */}
         </div>
       );
     } else {
