@@ -79,6 +79,53 @@ export interface StaffDetails {
 }
 
 
+export interface AdminDetails {
+  status: number;
+  data: {
+    profile:{
+      firstName: string;
+      lastName: string;
+      publicURL:string;
+      middleName: string;
+      email: string;
+      userId: string;
+      gender: string;
+      avatar:{
+        publicURL: string,
+      }
+    },
+    role:string;
+    phoneNumber: string;
+    dateOfBirth: string;
+    address: string;
+    designation:string;
+    localGovtArea: string;
+    state: string;
+    country: string;
+    internationalPassportNumber: string;
+    status: string;
+    userId: string;
+    bankAccounts: {
+      accountName: string
+      accountNumber: string
+      bankName:string
+    },
+    staffRegistrationDoc: {
+      id: string;
+      name: string;
+      publicURL: string;
+      documentType: string;
+      uploadType: string;
+      applicationId: number;
+      paymentId: null;
+      agentId: null;
+      remark: string;
+      status: 'PENDING' | 'APPROVED' | 'REJECTED';
+    }[];
+  };
+}
+
+
 export interface StaffAssignedAgent {
   status: number;
   data: {
@@ -506,6 +553,35 @@ export const useStaffDetails = (staffEmail: string) => {
 
   return { staffDetail: staffDetail ?? null, loading, error };
 };
+
+
+export const useAdminDetails = (adminEmail: string) => {
+  const dispatch = useDispatch();
+
+  const {
+    data: adminDetail,
+    isLoading: loading,
+    error,
+  } = useQuery<AdminDetails, Error>(
+    ["adminDetail", adminEmail],
+    async () => {
+      if (!adminEmail) {
+        throw new Error("No email provided");
+      }
+      const endpoint = `/admin/users/staff/find/email?email=${adminEmail}`;
+      return await findStaffDetailByEmail(endpoint);
+    },
+    {
+      enabled: !!adminEmail, 
+      onError: (error) => {
+        dispatch(setMessage(error.message));
+      },
+    }
+  );
+
+  return { adminDetail: adminDetail ?? null, loading, error };
+};
+
 
 
 export const useStaffAssignedAgents = (staffId: string) => {

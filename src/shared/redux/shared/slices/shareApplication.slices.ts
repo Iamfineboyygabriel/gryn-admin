@@ -614,9 +614,17 @@ export const  UpdatePagePermission  = createAsyncThunk(
   }
 );
 
+export const  getUserPermittedPages = createAsyncThunk(
+  "shareApplication/getUserPermittedPages",
+  async ({ id }: { id: string; }) => {
+    const response = await shareApplicationServices.getUserPermittedPages(id);
+    return response.data
+  }
+);
 
 interface ApplicationState {
   userProfile: null;
+  permittedPages:null
   currentUser: null;
   avatarUrl: null;
   updateProfile: null;
@@ -714,6 +722,7 @@ interface ApplicationState {
 const initialState: ApplicationState = {
   userProfile: null,
   currentUser: null,
+  permittedPages: null,
   avatarUrl: null,
   updateProfile: null,
   updatePassword: null,
@@ -1376,7 +1385,6 @@ export const shareApplicationSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || "Failed to fetch payment applications";
       })
-
       
       .addCase(
         UpdatePagePermission.fulfilled,
@@ -1390,6 +1398,20 @@ export const shareApplicationSlice = createSlice({
           action.error.message || "permission creation failed.";
         setMessage(errorMessage);
       })
+
+      .addCase(
+        getUserPermittedPages.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.permittedPages = action.payload;
+        }
+      )
+      .addCase(getUserPermittedPages.rejected, (state, action) => {
+        state.permittedPages = null;
+        const errorMessage =
+          action.error.message || "Failed to fetch user profile.";
+        setMessage(errorMessage);
+      })
+
 
   },
 });

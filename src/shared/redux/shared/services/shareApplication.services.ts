@@ -1047,6 +1047,23 @@ export const findStaffDetailByEmail = async (endpoint:any) => {
   }
 };
 
+export const findAdminDetailByEmail = async (endpoint:any) => {
+  const url = `${process.env.REACT_APP_API_URL}${endpoint}`;
+  try {
+    const response = await axios({
+      url,
+      method: "get",
+      headers: authHeader(),
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 
 export const updateStaffRegistrationDocument = async (
   endpoint: string,
@@ -1373,6 +1390,25 @@ const UpdatePagePermission = async (email: string, body: any) => {
 };
 
 
+const getUserPermittedPages = async (id:string) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/users/staff/page/${id}`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "get",
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
 const shareApplicationServices = {
   getUserProfile,
   uploadAvatar,
@@ -1428,6 +1464,7 @@ const shareApplicationServices = {
   getStaffSalary,
   getAgentCommission,
   UpdatePagePermission,
+  getUserPermittedPages,
 };
 
 export default shareApplicationServices;

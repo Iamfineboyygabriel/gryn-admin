@@ -3,7 +3,6 @@ import ManageAgents from "./manageAgents/main/ManageAgent";
 import { button } from "../../../../../shared/buttons/Button";
 import ManageApplication from "./manageApplication/main/ManageApplication";
 import ManageStudents from "./manageStudents/main/ManageStudents";
-import { PrivateElement } from "../../../../../shared/redux/hooks/admin/PrivateElement";
 
 const Application = () => {
   const [activeLink, setActiveLink] = useState("manageApplication");
@@ -15,7 +14,6 @@ const Application = () => {
         <div>
           <nav>
             <div className="flex gap-[2em] border-b-[2px] border-gray-100 py-4 text-base font-semibold">
-            <PrivateElement feature="APPLICATION" page="Manage Application">
               <div
                 className={`${
                   activeLink === "manageApplication"
@@ -28,7 +26,6 @@ const Application = () => {
                   Manage Application
                 </button.PrimaryButton>
               </div>
-             </PrivateElement>
               <div
                 className={`${
                   activeLink === "manageStudents"

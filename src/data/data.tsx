@@ -76,6 +76,8 @@ export const staffSidebarLinks = [
   },
 ];
 
+
+
 export const adminSideBarLinks = [
   {
     img: home,
@@ -92,6 +94,7 @@ export const adminSideBarLinks = [
     text: "Application",
     to: "/admin/dashboard/application",
     pathsToCheck: ["/admin/dashboard/application"],
+
   },
   {
     img: visa,

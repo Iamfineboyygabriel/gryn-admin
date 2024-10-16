@@ -18,10 +18,14 @@ function App() {
         <Route path="/recovery_mail" element={<RecoveryMail />} />
         <Route path="/reset_password" element={<ResetPassword />} />
         <Route path="/staff/dashboard/*" element={
+          <DashboardGateway>
           <StaffRoutes />
+          </DashboardGateway>
           } />
         <Route path="/admin/dashboard/*" element={
+          <DashboardGateway>
           <AdminRoutes />
+          </DashboardGateway>
           } />
       </Routes>
     </Router>
