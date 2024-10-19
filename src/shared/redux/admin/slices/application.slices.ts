@@ -28,7 +28,6 @@ export const getStaffDashboardStats = createAsyncThunk("application/getStaffDash
   }
 });
 
-
 export const getAllApplication = createAsyncThunk(
   "application/getAllApplication",
   async ({ page, limit, search }: { page: number; limit: number; search: string }) => {

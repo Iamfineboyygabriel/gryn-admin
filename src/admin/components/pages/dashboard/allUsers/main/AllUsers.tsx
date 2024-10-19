@@ -1,87 +1,108 @@
-import React, { useState, useEffect } from "react";
-import { button } from "../../../../../../shared/buttons/Button";
+import React, { useState, useEffect, useMemo } from "react";
 import ManageStudents from "../manageStudents/main/ManageStudents";
 import ManageAgents from "../manageAgents/main/ManageAgents";
 import PendingAgents from "../pendingAgents/main/PendingAgents";
 import Enquiries from "../enquiries/main/AllEnquiries";
 import { PrivateElement } from "../../../../../../shared/redux/hooks/admin/PrivateElement";
+import { usePermissions } from "../../../../../../shared/redux/hooks/admin/usePermission";
+import { button } from "../../../../../../shared/buttons/Button";
 
-type LinkKey = "manageStudents" | "manageAgents" | "pendingAgents" | "enquiries";
-
-interface Link {
-  key: LinkKey;
+interface TabProps {
+  isActive: boolean;
   label: string;
-  component: React.ReactNode;
+  onClick: () => void;
 }
 
-const checkPermission = (feature: string, page: string): boolean => {
-  const permissions:any = {
-    "ALL_USERS": {
-      "Manage Students": false,
-      "Manage Agents": false,
-      "Pending Agents": true,
-      "Enquiries": false
-    }
-  };
-  return permissions[feature]?.[page] ?? false;
-};
+const Tab: React.FC<TabProps> = ({ isActive, label, onClick }) => (
+  <div
+    className={`cursor-pointer rounded-lg px-4 py-2.5 font-medium transition-colors
+      ${isActive 
+        ? "bg-purple-white text-primary-700"
+        : "bg-gray-100 text-grey-primary hover:bg-gray-200"
+      }`}
+    onClick={onClick}
+  >
+    <button.PrimaryButton 
+      className="m-auto flex justify-center gap-2 font-medium text-black"
+    >
+      {label}
+    </button.PrimaryButton>
+  </div>
+);
 
 const AllUsers: React.FC = () => {
-  const [activeLink, setActiveLink] = useState<LinkKey | null>(null);
-  const [availableLinks, setAvailableLinks] = useState<Link[]>([]);
+  const [activeTab, setActiveTab] = useState<string | null>(null);
+  const { hasPermission } = usePermissions();
 
-  const links: Link[] = [
-    { key: "manageStudents", label: "Manage Students", component: <ManageStudents /> },
-    { key: "manageAgents", label: "Manage Agents", component: <ManageAgents /> },
-    { key: "pendingAgents", label: "Pending Agents", component: <PendingAgents /> },
-    { key: "enquiries", label: "Enquiries", component: <Enquiries /> }
-  ];
+  const tabs = useMemo(() => [
+    {
+      key: "manageStudents",
+      label: "Manage Students",
+      component: <ManageStudents />,
+      feature: "ALL_USERS"
+    },
+    {
+      key: "manageAgents",
+      label: "Manage Agents",
+      component: <ManageAgents />,
+      feature: "ALL_USERS"
+    },
+    {
+      key: "pendingAgents",
+      label: "Pending Agents",
+      component: <PendingAgents />,
+      feature: "ALL_USERS"
+    },
+    {
+      key: "enquiries",
+      label: "Enquiries",
+      component: <Enquiries />,
+      feature: "ALL_USERS"
+    }
+  ], []);
+
+  const availableTabs = useMemo(() => 
+    tabs?.filter(tab => hasPermission(tab?.feature, tab?.label))
+  , [tabs, hasPermission]);
 
   useEffect(() => {
-    const permittedLinks = links.filter(link => 
-      checkPermission("ALL_USERS", link.label)
-    );
-    setAvailableLinks(permittedLinks);
-
-    if (permittedLinks?.length > 0 && !activeLink) {
-      setActiveLink(permittedLinks[0].key);
+    if (availableTabs?.length > 0 && !activeTab) {
+      setActiveTab(availableTabs[0]?.key);
     }
-  }, []);
+  }, [availableTabs, activeTab]);
 
-  const renderContent = () => {
-    const currentLink = availableLinks.find(link => link.key === activeLink);
-    return currentLink ? currentLink.component : null;
-  };
+  const activeComponent = useMemo(() => 
+    availableTabs?.find(tab => tab?.key === activeTab)?.component
+  , [availableTabs, activeTab]);
 
   return (
     <main className="font-outfit">
-      <h1 className="text-2xl font-bold">User Management</h1>
-      <div className="mt-[1em] h-auto w-full overflow-auto rounded-lg bg-white px-[2em] py-3 pb-[10em]">
-        <div>
-          <nav>
-            <div className="flex gap-[2em] border-b-[2px] border-gray-100 py-4 text-base font-semibold">
-              {availableLinks.map(link => (
-                <PrivateElement key={link.key} feature="ALL_USERS" page={link.label}>
-                  <div
-                    className={`${
-                      activeLink === link.key
-                        ? "bg-purple-white text-primary-700"
-                        : "bg-gray-100 text-grey-primary"
-                    } cursor-pointer rounded-lg px-[1em] py-[10px] font-medium`}
-                    onClick={() => setActiveLink(link.key)}
-                  >
-                    <button.PrimaryButton className="m-auto flex justify-center gap-2 font-medium text-black">
-                      {link.label}
-                    </button.PrimaryButton>
-                  </div>
-                </PrivateElement>
-              ))}
-            </div>
-          </nav>
-          <section className="mt-3">
-            {renderContent()}
-          </section>
-        </div>
+      <header className="mb-4">
+        <h1 className="text-2xl font-bold">User Management</h1>
+      </header>
+
+      <div className="h-auto w-full overflow-auto rounded-lg bg-white px-8 py-3 pb-40">
+        <nav className="mb-3">
+          <div className="flex gap-8 border-b-2 border-gray-100 py-4">
+            {availableTabs?.map(tab => (
+              <PrivateElement
+                key={tab?.key}
+                feature={tab?.feature}
+                page={tab?.label}
+              >
+                <Tab
+                  isActive={activeTab === tab?.key}
+                  label={tab?.label}
+                  onClick={() => setActiveTab(tab?.key)}
+                />
+              </PrivateElement>
+            ))}
+          </div>
+        </nav>
+
+        <section className="mt-4">
+          {activeComponent}
+        </section>
       </div>
     </main>
   );

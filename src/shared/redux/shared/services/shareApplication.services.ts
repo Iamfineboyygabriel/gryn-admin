@@ -1226,7 +1226,6 @@ export const approveInvoiceSuperAdmin = async (invoiceID: string) => {
 };
 
 
-
 export const approveBudgetAdmin = async (budgetID: string) => {
   const url = `${process.env.REACT_APP_API_URL}/budget/complete/${budgetID}`;
   try {
@@ -1329,7 +1328,6 @@ const CreateSalary = async (staffId:any, body:any) => {
   }
 };
 
-
 const getStaffSalary = async (id:string) => {
   const url = `${process.env.REACT_APP_API_URL}/admin/users/salary/${id}`;
   try {
@@ -1347,7 +1345,6 @@ const getStaffSalary = async (id:string) => {
     throw error;
   }
 };
-
 
 const getAgentCommission = async (id:string) => {
   const url = `${process.env.REACT_APP_API_URL}/admin/application/agent/commission/${id}`;
@@ -1388,7 +1385,6 @@ const UpdatePagePermission = async (email: string, body: any) => {
     handleApiError(error); 
   }
 };
-
 
 const getUserPermittedPages = async (id:string) => {
   const url = `${process.env.REACT_APP_API_URL}/admin/users/staff/page/${id}`;
