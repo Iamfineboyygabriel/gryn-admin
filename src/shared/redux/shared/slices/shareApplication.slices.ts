@@ -159,10 +159,10 @@ export const createVisaApplication = createAsyncThunk(
     try {
       const response = await shareApplicationServices.createVisaApplication(body);
       return response; 
-    } catch (error: any) {
-      console.log("slices error", error);
-      const message = error.response?.data?.message || "Something went wrong!";
-      return thunkAPI.rejectWithValue(message);
+    }  catch (error: any) {
+      console.log("err",error)
+      error.toString();
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );

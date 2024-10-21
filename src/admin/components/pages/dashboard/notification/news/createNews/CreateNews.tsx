@@ -144,10 +144,10 @@ const CreateNews: React.FC = () => {
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
                                 className='mt-[1em] w-full h-[120px] rounded-lg border border-gray-300 p-3 focus:border-primary-700 focus:outline-none'
-                                maxLength={100}
+                                maxLength={1000}
                                 required
                             ></textarea>
-                            <p className='text-pink-primary font-medium mt-2'>{description.length}/100</p>
+                            <p className='text-pink-primary font-medium mt-2'>{description.length}/1000</p>
                         </div>
 
                         <div className="w-full flex gap-4">

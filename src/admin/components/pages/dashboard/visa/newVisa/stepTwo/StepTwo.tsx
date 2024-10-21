@@ -89,6 +89,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
       };
     
       const response = await dispatch(createVisaApplication(body)).unwrap();
+      console.log("res,respo",response)
       if (response.status === 201 && response.data?.id) {
         const newApplicationId = response.data.id;
         onNext({ newApplicationId });
@@ -96,8 +97,8 @@ const StepTwo: React.FC<StepTwoProps> = ({
         throw new Error("Unexpected response format");
       }
     } catch (error:any) {
-      console.error("Error:", error); 
-      toast.error( error.message || "An error occurred while creating the application");
+      console.log("eeee",error)
+      toast.error( error || "agent not found" );
     } finally {
       setLoading(false);
     }

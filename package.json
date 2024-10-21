@@ -28,6 +28,7 @@
     "isexe": "^3.1.1",
     "jspdf": "^2.5.2",
     "lodash": "^4.17.21",
+    "lucide-react": "^0.453.0",
     "materialui-pagination-component": "^1.1.12",
     "react": "^18.3.1",
     "react-apexcharts": "^1.4.1",

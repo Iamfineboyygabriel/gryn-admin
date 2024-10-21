@@ -202,6 +202,8 @@ import plus from "../../../../../../assets/svg/plus.svg";
 import BudgetPaymentDetail from '../../../../../../shared/modal/BudgetPaymentDetail';
 import Modal from '../../../../../../shared/modal/Modal';
 import PaymentReceiptResponse from '../../../../../../shared/modal/PaymentReceiptResponse';
+import CustomPagination from '../../../../../../shared/utils/customPagination';
+// import CustomPagination from '../allBudgets/CustomPagination';
 
 const Budgets: React.FC = () => {
     const dispatch = useDispatch();
@@ -209,40 +211,38 @@ const Budgets: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
     const [selectedMonth, setSelectedMonth] = useState("");
-  const [selectedPayment, setSelectedPayment] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedBudgetId, setSelectedBudgetId] = useState<string | null>(null);
-  const [isApproveModalOpen, setApproveModalOpen] = useState(false);
-  const { userDetails } = useCurrentUser();
-  const [isReceiptModalOpen, setReceiptModalOpen] = useState(false);
-  const isSuperAdmin = useMemo(() => userDetails?.data?.role === "SUPER_ADMIN", [userDetails]);
+    const [selectedBudgetId, setSelectedBudgetId] = useState<string | null>(null);
+    const [isApproveModalOpen, setApproveModalOpen] = useState(false);
+    const { userDetails } = useCurrentUser();
+    const [isReceiptModalOpen, setReceiptModalOpen] = useState(false);
+    const isSuperAdmin = useMemo(() => userDetails?.data?.role === "SUPER_ADMIN", [userDetails]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 2;
 
-    const { budgets, loading } = useBudgetFetch();
+    const { budgets, loading } = useBudgetFetch(currentPage, itemsPerPage);
 
     const handleCloseApproveModal = () => {
         setSelectedBudgetId(null);
         setApproveModalOpen(false);
-      };
-
+    };
       
-  const handleOpenModal = (invoiceId: string, status: string) => {
-    setSelectedBudgetId(invoiceId);
-    if (status === "COMPLETED" && isSuperAdmin) {
-      setReceiptModalOpen(true);
-    } else {
-      setApproveModalOpen(true);
-    }
-  };
+    const handleOpenModal = (invoiceId: string, status: string) => {
+        setSelectedBudgetId(invoiceId);
+        if (status === "COMPLETED" && isSuperAdmin) {
+            setReceiptModalOpen(true);
+        } else {
+            setApproveModalOpen(true);
+        }
+    };
 
-  const handleApproved = (invoiceId: string) => {
-    if (isSuperAdmin) {
-      setApproveModalOpen(false);
-      setReceiptModalOpen(true);
-    } else {
-      handleCloseApproveModal();
-    }
-  };
-
+    const handleApproved = (invoiceId: string) => {
+        if (isSuperAdmin) {
+            setApproveModalOpen(false);
+            setReceiptModalOpen(true);
+        } else {
+            handleCloseApproveModal();
+        }
+    };
 
     const months = [
         "January", "February", "March", "April", "May", "June",
@@ -265,12 +265,14 @@ const Budgets: React.FC = () => {
         const value = event.target.value;
         setSelectedMonth(value);
         dispatch(setMonth(value));
+        setCurrentPage(1); 
     };
 
     const handleCloseReceiptModal = () => {
         setSelectedBudgetId(null);
         setReceiptModalOpen(false);
-      };
+              setCurrentPage(1); 
+    };
  
     const getStatusStyle = (status: string) => {
         switch (status) {
@@ -298,24 +300,23 @@ const Budgets: React.FC = () => {
         }
     };
 
-
-    const handleBackClick = () => {
-        navigate(-1);
+   
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
     };
 
     return (
         <main className="font-outfit">
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold">All Budgets</h1>
-            <Link to="/admin/dashboard/reports/new_budgets">
-                 <button.PrimaryButton className="flex gap-2 rounded-full bg-linear-gradient px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
-                  <img src={plus} alt="plus" />
-                  New Budget
-                </button.PrimaryButton>
-              </Link>
-          </div>
-            <header className="mt-[1em] h-auto w-full overflow-auto rounded-lg bg-white p-3 pb-[10em]">
-
+            <div className="flex justify-between items-center">
+                <h1 className="text-2xl font-bold">All Budgets</h1>
+                <Link to="/admin/dashboard/reports/new_budgets">
+                    <button.PrimaryButton className="flex gap-2 rounded-full bg-linear-gradient px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
+                        <img src={plus} alt="plus" />
+                        New Budget
+                    </button.PrimaryButton>
+                </Link>
+            </div>
+            <section className="mt-[1em] h-auto w-full overflow-auto rounded-lg bg-white p-3 pb-[10em]">
                 <section className="mt-[1em]">
                     <div className="flex justify-between">
                         <div className="flex items-center gap-[1em] flex-wrap">
@@ -407,18 +408,18 @@ const Budgets: React.FC = () => {
                                                 : '-'}
                                         </td>
                                         <td className="px-3 py-2">
-                                        <button className={`mr-2 rounded-full px-3 py-2 ${getStatusStyle(budget.status)}`}>
-                                            {getStatusText(budget.status)}
-                                        </button>
+                                            <button className={`mr-2 rounded-full px-3 py-2 ${getStatusStyle(budget.status)}`}>
+                                                {getStatusText(budget.status)}
+                                            </button>
                                         </td>
                                         <td className="flex items-center whitespace-nowrap px-6 py-4">
-                                        <p 
-                                        onClick={() => handleOpenModal(budget.id, budget.status)} 
-                                        className="cursor-pointer font-semibold text-primary-700"
-                                        >
-                                        View details
-                                        </p>
-                                     </td>
+                                            <p 
+                                                onClick={() => handleOpenModal(budget.id, budget.status)} 
+                                                className="cursor-pointer font-semibold text-primary-700"
+                                            >
+                                                View details
+                                            </p>
+                                        </td>
                                     </tr>
                                 ))
                             ) : (
@@ -433,24 +434,33 @@ const Budgets: React.FC = () => {
                             )}
                         </tbody>
                     </table>
+                {/* {!loading && budgets?.data?.length > 0 && (
+                <div className="mt-6 flex justify-center">
+                    <CustomPagination
+                        currentPage={currentPage}
+                        onPageChange={handlePageChange}
+                        hasMore={budgets?.data?.length === itemsPerPage}
+                    />
                 </div>
-            </header>
-         {isApproveModalOpen && selectedBudgetId && (
-          <BudgetPaymentDetail
-            budgetId={selectedBudgetId}
-            onClose={handleCloseApproveModal}
-            budgets={budgets}
-            onApproved={handleApproved}
-            isSuperAdmin={isSuperAdmin}
-          />
-      )}
-          {isReceiptModalOpen && selectedBudgetId && isSuperAdmin && (
-        <Modal isOpen={isReceiptModalOpen} onClose={handleCloseReceiptModal} data-aos="zoom-in">
-          <PaymentReceiptResponse
-            invoiceId={selectedBudgetId}
-          />
-        </Modal>
-      )}
+            )} */}
+                </div>
+            </section>
+            {isApproveModalOpen && selectedBudgetId && (
+                <BudgetPaymentDetail
+                    budgetId={selectedBudgetId}
+                    onClose={handleCloseApproveModal}
+                    budgets={budgets}
+                    onApproved={handleApproved}
+                    isSuperAdmin={isSuperAdmin}
+                />
+            )}
+            {isReceiptModalOpen && selectedBudgetId && isSuperAdmin && (
+                <Modal isOpen={isReceiptModalOpen} onClose={handleCloseReceiptModal} data-aos="zoom-in">
+                    <PaymentReceiptResponse
+                        invoiceId={selectedBudgetId}
+                    />
+                </Modal>
+            )}
         </main>
     );
 };
