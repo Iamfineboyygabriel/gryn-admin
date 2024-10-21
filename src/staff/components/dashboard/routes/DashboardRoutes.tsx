@@ -124,7 +124,7 @@ const DashboardRoutes = () => {
 
         <Route path="/payments/new_payment" element={<NewPayment />} />
         <Route path="/payments/generate_invoice" element={<GenerateInvoice />} />
-        <Route path="/payments/use_draft_information/:draftId" element={<UseDraftInformation />} />
+        <Route path="/payments/use_draft_information" element={<UseDraftInformation />} />
         <Route path="/payments/new_budget" element={<NewBudgets />} />
       </Routes>
     </DashboardLayout>

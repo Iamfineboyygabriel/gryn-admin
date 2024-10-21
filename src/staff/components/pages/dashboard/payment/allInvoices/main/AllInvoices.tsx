@@ -80,7 +80,7 @@ const AllInvoices = () => {
           <div className="flex justify-between items-center">
             <div className="flex flex-col gap-[1.5em]">
               <h1 className="font-semibold text-lg">All Invoices</h1>
-              <div className="flex items-center w-68 rounded-full border-[1px] border-border bg-gray-100 dark:bg-gray-700">
+              <div className="flex items-center w-68 rounded-full border-[1px] border-border bg-gray-100">
                 <input
                   type="text"
                   className="flex-grow rounded-full bg-transparent py-2 pl-5 pr-2 text-sm focus:border-grey-primary focus:outline-none"
@@ -98,7 +98,7 @@ const AllInvoices = () => {
             </Link>
           </div>
         </header>
-
+        <section className="overflow-auto py-6">
         <table className="w-full mt-4 border-collapse">
           <thead className="text-gray-500 border-b border-gray-200">
             <tr>
@@ -203,6 +203,7 @@ const AllInvoices = () => {
             )}
           </tbody>
         </table>
+        </section>
       </div>
 
       {!loading && useInvoice?.length > 0 && (

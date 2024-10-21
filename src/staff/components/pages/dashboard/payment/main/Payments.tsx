@@ -4,6 +4,7 @@ import AllPayment from "../allPayment/main/AllPayment";
 import AllInvoices from "../allInvoices/main/AllInvoices";
 import AllDrafts from "../drafts/main/AllDrafts";
 import AllBudgets from "../allBudgets/AllBudgets";
+import SalaryLoan from "../salaryLoan/SalaryLoan";
 
 const Payments = () => {
   const [activeLink, setActiveLink] = useState("allPayments");
@@ -65,6 +66,19 @@ const Payments = () => {
                   All Budgets
                 </button.PrimaryButton>
               </div>
+
+              <div
+                className={`${
+                  activeLink === "salaryLoan"
+                    ? "bg-purple-white text-primary-700"
+                    : "bg-gray-100 text-grey-primary"
+                } cursor-pointer rounded-lg px-[1em] py-[10px] font-medium`}
+                onClick={() => setActiveLink("salaryLoan")}
+              >
+                <button.PrimaryButton className="m-auto flex justify-center gap-2 font-medium text-black">
+                  Salary/Loan
+                </button.PrimaryButton>
+              </div>
             </div>
           </nav>
           <section className="mt-3">
@@ -72,6 +86,7 @@ const Payments = () => {
             {activeLink === "allInvoices" && <AllInvoices />}
             {activeLink === "allDrafts" && <AllDrafts />}
             {activeLink === "allBudgets" && <AllBudgets />}
+            {activeLink === "salaryLoan" && <SalaryLoan />}
           </section>
         </div>
       </div>
