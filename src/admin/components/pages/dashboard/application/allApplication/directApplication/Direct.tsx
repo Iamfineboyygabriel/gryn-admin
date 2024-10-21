@@ -51,7 +51,7 @@ const Direct: React.FC = () => {
   }, [fetchApplications, itemsPerPage]);
 
   const handleViewDetails = useCallback((applicationId: string) => {
-    navigate(`/admin/dashboard/application/all_application/view_application/${applicationId}`);
+    navigate(`/admin/dashboard/application/direct_application/view_application/${applicationId}`);
   }, [navigate]);
 
   const formatData = useCallback((data: any) => (data ? data : "-"), []);

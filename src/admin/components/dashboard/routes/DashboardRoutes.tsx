@@ -3,6 +3,7 @@ import DashboardLayout from "../layout/DasboardLayout";
 import Home from "../../pages/dashboard/home/main/Home";
 import Application from "../../pages/dashboard/application/main/Application";
 import ViewApplicationDetails from "../../pages/dashboard/application/allApplication/viewApplicationDetails/main/ViewDetails";
+import ViewDirectApplicationDetails from "../../pages/dashboard/application/allApplication/directApplication/viewApplicationDetails/main/ViewDetails";
 import NewApplication from "../../pages/dashboard/application/newApplication/main/NewApplication";
 import Settings from "../../pages/dashboard/settings/Settings";
 import Visa from "../../pages/dashboard/visa/main/Visa";
@@ -77,6 +78,10 @@ const DashboardRoutes = () => {
         <Route
           path="/application/all_application/view_application/:applicationId"
           element={<ViewApplicationDetails />}
+        />
+         <Route
+          path="/application/direct_application/view_application/:applicationId"
+          element={<ViewDirectApplicationDetails />}
         />
         <Route
           path="/application/new_application"
