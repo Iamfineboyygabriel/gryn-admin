@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
-import NewRole from "../NewRole";
+import NewRole from "../staffRole/NewRole";
+import AdminRole from "../adminRole/AdminRole";
 import { button } from "../../../../../../../../../shared/buttons/Button";
 import { useNavigate } from "react-router";
 import Privileges from "../../privileges/Privileges";
@@ -37,11 +38,17 @@ const RoleDetails = () => {
         <div>
           <nav>
             <div className="flex px-[2em] gap-[2em] border-b-[3px] border-gray-100 text-base font-semibold dark:border-white">
-              <div
-                className={`cursor-pointer py-3 ${activeLink === "role" ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700 dark:text-white" : "text-lg font-light text-gray-500"}`}
-                onClick={() => setActiveLink("role")}
+            <div
+                className={`cursor-pointer py-3 ${activeLink === "adminRole" ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700 dark:text-white" : "text-lg font-light text-gray-500"}`}
+                onClick={() => setActiveLink("adminRole")}
               >
-                Role
+                Admin Role
+              </div>
+              <div
+                className={`cursor-pointer py-3 ${activeLink === "staffRole" ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700 dark:text-white" : "text-lg font-light text-gray-500"}`}
+                onClick={() => setActiveLink("staffRole")}
+              >
+                Staff Role
               </div>
               <div
                 className={`cursor-pointer py-3 ${activeLink === "privileges" ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700 dark:text-white" : "text-lg font-light text-gray-500"}`}
@@ -58,7 +65,8 @@ const RoleDetails = () => {
             </div>
           </nav>
           <section className="mt-8">
-            {activeLink === "role" && <NewRole />}
+            {activeLink === "staffRole" && <NewRole />}
+            {activeLink === "adminRole" && <AdminRole />}
             {activeLink === "privileges" && <Privileges />}
             {activeLink === "staff" && <StaffPrivileges />}
           </section>

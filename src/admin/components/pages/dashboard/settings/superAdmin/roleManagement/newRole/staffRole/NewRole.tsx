@@ -2,12 +2,12 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import ReactLoading from 'react-loading';
-import { button } from "../../../../../../../../shared/buttons/Button";
-import { useStaffEmails } from '../../../../../../../../shared/redux/hooks/admin/getAdminProfile';
-import { Dropdown, DropdownItem } from '../../../../../../../../shared/dropDown/DropDown';
-import { RootState } from '../../../../../../../../shared/redux/store';
+import { button } from "../../../../../../../../../shared/buttons/Button";
+import { useStaffEmails } from '../../../../../../../../../shared/redux/hooks/admin/getAdminProfile';
+import { Dropdown, DropdownItem } from '../../../../../../../../../shared/dropDown/DropDown';
+import { RootState } from '../../../../../../../../../shared/redux/store';
 import {toast} from 'react-toastify'
-import { updateRole } from '../../../../../../../../shared/redux/shared/slices/shareApplication.slices';
+import { updateRole } from '../../../../../../../../../shared/redux/shared/slices/shareApplication.slices';
 
 interface RoleChoice {
   name: string;
