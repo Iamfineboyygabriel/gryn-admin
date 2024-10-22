@@ -116,6 +116,24 @@ const getActivity = async () => {
   }
 };
 
+const getUserActivity = async (userId: string) => {
+  const url = `${process.env.REACT_APP_API_URL}/activity/${userId}`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "get",
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
+
 const addNewSchool = async (body: any) => {
   try {
     const token = sessionStorage.getItem("userData");
@@ -520,6 +538,7 @@ const applicationServices = {
   submitBankDetails,
   getAllStaffSalaryPayment,
   getTopAgentCommission,
+  getUserActivity,
 };
 
 export default applicationServices;

@@ -90,6 +90,20 @@ export const getActivity = createAsyncThunk(
   },
 );
 
+export const getUserActivity = createAsyncThunk(
+  "application/getUserActivity",
+  async ({userId}: {userId: string}, thunkAPI) => {
+    try {
+      const data = await applicationServices.getUserActivity(userId);
+      return data;
+    } catch (error: any) {
+      const message = error.message;
+      error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
 export const addNewSchool = createAsyncThunk(
   "application/addNewSchool",
   async (body: any, thunkAPI) => {
@@ -335,6 +349,7 @@ interface ApplicationState {
   allStaffSearchTerm: string;
   allAdminSearchTerm: string;
   allActivity: any,
+  allUserActivity: any,
   addSchool: null,
 }
 
@@ -405,6 +420,7 @@ const initialState: ApplicationState = {
   allStaffSearchTerm: '',
   allAdminSearchTerm: '',
   allActivity: null,
+  allUserActivity: null,
   addSchool:null,
 };
 
@@ -573,6 +589,19 @@ export const applicationSlice = createSlice({
         state.allActivity = null;
         const errorMessage =
           action.error.message || "Failed to fetch student activity";
+        setMessage(errorMessage);
+      })
+
+      .addCase(
+        getUserActivity.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.allUserActivity = action.payload;
+        },
+      )
+      .addCase(getUserActivity.rejected, (state, action) => {
+        state.allUserActivity = null;
+        const errorMessage =
+          action.error.message || "Failed to fetch user activity";
         setMessage(errorMessage);
       })
 
