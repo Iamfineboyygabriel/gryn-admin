@@ -129,10 +129,10 @@ const CreateNews: React.FC = () => {
                                 value={topic}
                                 onChange={(e) => setTopic(e.target.value)}
                                 className="mt-[1em] w-full rounded-lg border border-gray-300 p-3 focus:border-primary-700 focus:outline-none"
-                                maxLength={100}
+                                maxLength={1000}
                                 required
                             />
-                            <p className='text-pink-primary font-medium mt-2'>{topic.length}/100</p>
+                            <p className='text-pink-primary font-medium mt-2'>{topic.length}/1000</p>
                         </div>
 
                         <div className="w-full">
@@ -188,9 +188,9 @@ const CreateNews: React.FC = () => {
                                 value={link}
                                 onChange={(e) => setLink(e.target.value)}
                                 className="mt-[1em] w-full rounded-lg border border-gray-300 p-3 focus:border-primary-700 focus:outline-none"
-                                maxLength={100}
+                                maxLength={1000}
                             />
-                            <p className='text-pink-primary font-medium mt-2'>{link.length}/100</p>
+                            <p className='text-pink-primary font-medium mt-2'>{link.length}/1000</p>
                         </div>
 
                         <div className='w-[19em]'>

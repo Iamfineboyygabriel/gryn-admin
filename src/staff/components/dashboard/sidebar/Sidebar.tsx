@@ -51,7 +51,7 @@
 
 // export default Sidebar;
 
-//pass second stage
+// pass second stage
 
 
 import React from 'react';
@@ -75,7 +75,7 @@ const Sidebar = () => {
             location.pathname.startsWith(path)
           );
 
-          const requiresPermission = link.feature && link.page;
+          const requiresPermission = link?.feature && link.page;
           
           const hasAccess = requiresPermission 
             ? hasPermission(link.feature, link.page)

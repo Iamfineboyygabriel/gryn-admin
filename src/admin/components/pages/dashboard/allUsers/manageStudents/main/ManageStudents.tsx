@@ -134,12 +134,6 @@ const AllStudents: React.FC = () => {
           <td 
             className="py-[16px] px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
-              highlightText(formatData(student.phoneNumber))
-            )}
-          />
-          <td 
-            className="py-[16px] px-[24px]"
-            dangerouslySetInnerHTML={sanitizeHTML(
               highlightText(student.email)
             )}
           />
@@ -226,9 +220,6 @@ const AllStudents: React.FC = () => {
               <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
               <th className="px-6 py-3 text-left text-sm font-normal">
                 Full Name
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-normal">
-                Phone Number
               </th>
               <th className="px-6 py-3 text-left text-sm font-normal">
                 Email Address

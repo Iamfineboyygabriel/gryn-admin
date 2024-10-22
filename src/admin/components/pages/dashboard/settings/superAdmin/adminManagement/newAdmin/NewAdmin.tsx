@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { AppDispatch } from '../../../../../../../../shared/redux/store';
 import { useAppDispatch } from '../../../../../../../../shared/redux/hooks/shared/reduxHooks';
@@ -10,16 +10,37 @@ import ReactLoading from 'react-loading';
 import { toast } from 'react-toastify';
 import { createAdmin } from '../../../../../../../../shared/redux/shared/slices/shareApplication.slices';
 import AdminCreated from '../../../../../../../../shared/modal/AdminCreated';
+import { Dropdown, DropdownItem } from '../../../../../../../../shared/dropDown/DropDown';
+
+interface Gender {
+  name: string;
+}
+
+interface DesignationChoice {
+  name: string;
+}
 
 const NewAdmin = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [middleName, setMiddleName] = useState('');
   const [email, setEmail] = useState('');
-  const [gender, setGender] = useState('');
-  const [designation, setDesignation] = useState('');
+  const [gender, setGender] = useState<string | null>(null);
+  const [designation, setDesignation] = useState<string | null>(null);;
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
+
+  const type: Gender[] = [{ name: "MALE" }, {name:"FEMALE"}];
+  const designationType: DesignationChoice[] = [{ name: "CUSTOMER_RELATIONS" }];
+
+  
+  const handleSelectGender = useCallback((item: DropdownItem) => {
+    setGender(item?.name || null);
+  }, []);
+
+  const handleSelectDesignation = useCallback((item: DropdownItem) => {
+    setDesignation(item?.name || null);
+  }, []);
 
   const navigate = useNavigate();
   const handleBackClick = () => {
@@ -147,36 +168,31 @@ const NewAdmin = () => {
 
           <div className="flex flex-wrap gap-[2em] mt-[1em]">
             <div className="w-full md:w-[48%]">
-              <label htmlFor="role" className="flex items-center font-medium">
-                Role <CgAsterisk className="text-red-500 ml-1" />
-              </label>
-              <input
-                id="role"
-                name="role"
-                type="text"
-                required
-                disabled={loading}
-                onChange={(e) => setDesignation(e.target.value)}
-                className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
-              />
+            <Dropdown
+            label="Designation"
+            labelClassName="text-grey-primary"
+            className="text-purple-deep"
+            items={designationType}
+            selectedItem={designation ? { name: designation } : null}
+            onSelectItem={handleSelectDesignation}
+            asterisk
+            placeholder="Select Designation"
+          />
             </div>
 
             <div className="w-full md:w-[48%]">
-              <label htmlFor="gender" className="flex items-center font-medium">
-                Gender <CgAsterisk className="text-red-500 ml-1" />
-              </label>
-              <input
-                id="gender"
-                name="gender"
-                type="text"
-                required
-                disabled={loading}
-                onChange={(e) => setGender(e.target.value)}
-                className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
-              />
-            </div>
+          <Dropdown
+            label="Gender"
+            labelClassName="text-grey-primary"
+            className="text-purple-deep"
+            items={type}
+            selectedItem={gender ? { name: gender } : null}
+            onSelectItem={handleSelectGender}
+            asterisk
+            placeholder='Select'
+          />
           </div>
-
+       </div>
           <div className="mt-11">
             <button.PrimaryButton
               className="m-auto w-[100%] md:w-[37%] justify-center gap-2 rounded-full bg-linear-gradient py-[11px] text-center font-medium text-white"

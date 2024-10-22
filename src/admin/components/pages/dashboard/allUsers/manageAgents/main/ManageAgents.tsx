@@ -132,9 +132,6 @@ const ManageAgents = () => {
               )
             )}
           />
-          <td className="py-[16px] px-[24px]">
-            {formatData(agent.phoneNumber)}
-          </td>
           <td 
             className="py-[16px] px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
@@ -223,7 +220,6 @@ const ManageAgents = () => {
             <tr>
               <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
               <th className="px-6 py-3 text-left text-sm font-normal">Full Name</th>
-              <th className="px-6 py-3 text-left text-sm font-normal">Phone Number</th>
               <th className="px-6 py-3 text-left text-sm font-normal">Email Address</th>
               <th className="px-6 py-3 text-left text-sm font-normal">Action</th>
             </tr>

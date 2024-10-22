@@ -127,9 +127,9 @@ const Drafts = () => {
               <div onClick={() => handleEditDraft(news)} className='cursor-pointer'>
                 <img src={eyeImg} alt="edit_draft" />
               </div>
-              <div>
+              {/* <div>
                 <img src={deleteImg} alt="delete_draft" />
-              </div>
+              </div> */}
             </div>
           </div>
         ))
