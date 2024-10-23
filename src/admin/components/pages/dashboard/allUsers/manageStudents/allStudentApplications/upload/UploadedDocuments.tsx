@@ -165,13 +165,10 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
       } else {
         await rejectAgent(applicationId);
       }
-      // You might want to update the application status here or refresh the data
     } catch (error) {
       console.error('Failed to approve/reject agent:', error);
-      // Handle error (e.g., show error message)
     }
   };
-
 
   const renderActionButton = (doc: Document, action: 'APPROVED' | 'REJECTED') => {
     const actionType: ActionType = action.toLowerCase() as ActionType;
@@ -241,7 +238,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
           {documents.map((doc) => (
             <div key={doc.id}>
               <div>
-                <label className="dark:text-white" htmlFor={doc.documentType}>
+                <label htmlFor={doc.documentType}>
                   {doc.documentType}
                 </label>
               </div>
@@ -303,18 +300,19 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
       >
         Submit Response
       </button.PrimaryButton>
-      {/* {isModalOpen && (
-        <Modal
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          data-aos="zoom-in"
-        >
-          <StudentApplicationSummary
-            onClose={handleCloseModal}
-            documents={documents}
-          />
-        </Modal>
-      )} */}
+      {isModalOpen && (
+      <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
+      <StudentApplicationSummary 
+        onClose={handleCloseModal} 
+        documents={documents}
+        userData={{
+          firstName: applicationDetails?.data?.firstName,
+          lastName: applicationDetails?.data?.lastName,
+          userId: applicationDetails?.data?.userId
+        }}
+      />
+    </Modal>
+  )}
     </main>
   );
 };

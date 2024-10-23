@@ -54,18 +54,22 @@ const PersonalDetails: React.FC<{ applicationId: any }> = ({
               ? dayjs(applicationDetails.data.dateOfBirth).format("YYYY-MM-DD")
               : ""
           )}
-          {renderField("Address", applicationDetails?.data?.address)}
-        </div>
-        <div className="mt-[1em] flex flex-row gap-[3em]">
-          {renderField("L.G.A", applicationDetails?.data?.localGovtArea)}
-          {renderField("State", applicationDetails?.data?.state)}
-        </div>
-        <div className="mt-[1em] flex flex-row gap-[3em]">
           {renderField("Country", applicationDetails?.data?.country)}
+
+        </div>
+        <div className="mt-[1em] flex flex-row gap-[3em]">
+          {renderField("State", applicationDetails?.data?.state)}
+          {renderField("L.G.A", applicationDetails?.data?.localGovtArea)}
+        </div>
+        <div className="mt-[1em] flex flex-row gap-[3em]">
+        {renderField("Address", applicationDetails?.data?.address)}
           {renderField(
             "International Passport Number",
             applicationDetails?.data?.internationalPassportNumber
           )}
+        </div>
+        <div className="mt-[1em] w-[47%]">
+          {renderField("Email", applicationDetails?.data?.email)}
         </div>
       </form>
     </main>

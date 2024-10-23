@@ -21,7 +21,8 @@ import {
   getAllAdminForSuperAdmin,
   getAllStaffSalaryPayment,
   setAllStaffSalarySearchTerm,
-  getTopAgentCommission
+  getTopAgentCommission,
+  setAllApplicationSort
 } from "../../admin/slices/application.slices";
 import { setMessage } from "../../message.slices";
 import { createSelector } from "@reduxjs/toolkit";
@@ -202,22 +203,35 @@ export const useAllApplication = () => {
   const loading = useSelector((state: any) => state?.application?.loading);
   const error = useSelector((state: any) => state.application.error);
   const searchTerm = useSelector((state: any) => state.application.allApplicationSearchTerm);
+  const sortTerm = useSelector((state: any) => state.application.allApplicationSort);
 
   const fetchApplications = useCallback(
     (page: number, limit: number) => {
-      dispatch(getAllApplication({ page, limit, search: searchTerm || '' }));
+      dispatch(getAllApplication({ 
+        page, 
+        limit, 
+        search: searchTerm || '',
+        sort: sortTerm || '' 
+      }));
     },
-    [dispatch, searchTerm]
+    [dispatch, searchTerm, sortTerm] 
   );
 
   const updateSearchTerm = useCallback(
     (term: string) => {
       dispatch(setAllApplicationSearchTerm(term));
     },
+    [dispatch, sortTerm]
+  );
+
+  const updateSortTerm = useCallback( 
+    (sort: string) => {
+      dispatch(setAllApplicationSort(sort));
+    },
     [dispatch]
   );
 
-  return { applications, totalPages, currentPage, loading, error, searchTerm, fetchApplications, updateSearchTerm };
+  return { applications, totalPages, currentPage, loading, error, searchTerm, updateSortTerm,  sortTerm, fetchApplications, updateSearchTerm };
 };
 
 export const useAllStudents = () => {

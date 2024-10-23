@@ -47,6 +47,7 @@ const SkeletonRow = () => (
 const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
   const dispatch:AppDispatch = useAppDispatch();
   const { applicationDetails, loading: applicationLoading } = useVisaApplicationDetails(applicationId);
+  console.log("app",applicationDetails)
   const { updateDocStatus } = useSelector((state: any) => state.shareApplication);
   
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -306,6 +307,11 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
           <VisaApplicationSummary
             onClose={handleCloseModal}
             documents={documents}
+            userData={{
+              firstName: applicationDetails?.data?.firstName,
+              lastName: applicationDetails?.data?.lastName,
+              userId: applicationDetails?.data?.agentId
+            }}
           />
         </Modal>
       )}

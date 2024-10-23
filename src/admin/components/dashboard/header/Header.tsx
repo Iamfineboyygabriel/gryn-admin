@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import userIcon from "../../../../assets/avatar.png";
 import gryn_index_logo from "../../../../assets/svg/Gryn_Index _logo.svg";
 import { IoIosNotifications } from "react-icons/io";
 import { formatDate } from "../../../../shared/utils/dateFormat";
 import useUserProfile from "../../../../shared/redux/hooks/shared/getUserProfile";
 import { Link, useNavigate } from "react-router-dom";
+import { useNotification } from "../../../../shared/redux/hooks/admin/notification";
 
 const Header: React.FC = () => {
   const today = new Date();
@@ -15,6 +16,15 @@ const Header: React.FC = () => {
   const goSettings = ()=>{
     navigate("/admin/dashboard/settings")
   }
+
+  const { notificationCount, fetchNotificationCount } = useNotification();
+
+  useEffect(() => {
+    fetchNotificationCount();
+    const interval = setInterval(fetchNotificationCount, 30000); 
+    
+    return () => clearInterval(interval);
+  }, [fetchNotificationCount]);
 
   return (
     <header className="bg-white p-2 font-outfit text-grey dark:bg-gray-800 dark:text-white">
@@ -30,18 +40,24 @@ const Header: React.FC = () => {
           className="flex items-center gap-3"
           aria-label="Secondary navigation"
         >
-          <div className="flex items-center gap-3">
-            <time dateTime={today.toISOString()}>{formattedDate}</time>
-          <Link to="/admin/dashboard/notifications">
-            <button className="relative" aria-label="View notifications">
+          <div className="mr-[1em] flex gap-[1em] items-center">
+         <time dateTime={today.toISOString()}>{formattedDate}</time>
+         <Link to="/admin/dashboard/notifications">
+         <button className="relative inline-flex items-center" aria-label="View notifications">
               <IoIosNotifications
                 className="cursor-pointer"
                 size={27}
                 aria-hidden="true"
                 />
+              {notificationCount?.data > 0 && (
+                <span className="absolute -top-2 -right-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
+                  {notificationCount.data > 99 ? '99+' : notificationCount.data}
+                </span>
+              )}
             </button>
           </Link>
-          </div>
+         </div>
+
           <div className="flex items-center gap-2">
             <div onClick={goSettings} className="relative h-12 w-12 cursor-pointer overflow-hidden rounded-full bg-gray-200">
               <img

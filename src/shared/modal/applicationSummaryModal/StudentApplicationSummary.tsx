@@ -28,7 +28,6 @@ const StudentApplicationSummary: React.FC<StudentApplicationSummaryProps> = ({
   documents,
   userData
 }) => {
-  console.log("usserdata",userData)
   const [expandedDocuments, setExpandedDocuments] = useState<string[]>([]);
   const [showSendMessage, setShowSendMessage] = useState(false);
   const [showMessageSent, setShowMessageSent] = useState(false);

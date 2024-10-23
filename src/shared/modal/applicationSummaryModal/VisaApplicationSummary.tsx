@@ -10,17 +10,23 @@ interface Document {
   id: string;
   name: string;
   documentType: string;
-  status?: 'APPROVED' | 'REJECTED' | 'PENDING';
+  remark?: 'APPROVED' | 'REJECTED' | 'PENDING';
 }
 
 interface VisaApplicationSummaryProps {
   onClose: () => void;
-  documents: Document[];
+  documents: any;
+  userData: {
+    firstName: any;
+    lastName: any;
+    userId: any;
+  };
 }
 
 const VisaApplicationSummary: React.FC<VisaApplicationSummaryProps> = ({
   onClose,
   documents,
+  userData
 }) => {
   const [expandedDocuments, setExpandedDocuments] = useState<string[]>([]);
   const [showSendMessage, setShowSendMessage] = useState(false);
@@ -33,12 +39,12 @@ const VisaApplicationSummary: React.FC<VisaApplicationSummaryProps> = ({
   };
 
   const allDocumentsApproved = documents.every(
-    (doc) => doc.status === 'APPROVED'
+    (doc:any) => doc.remark === 'APPROVED'
   );
 
-  // if (showSendMessage) {
-  //   return <SendMessage onClose={() => setShowSendMessage(false)} onSubmit={handleSendMessageSubmit} />;
-  // }
+  if (showSendMessage) {
+    return <SendMessage onClose={() => setShowSendMessage(false)} onSubmit={handleSendMessageSubmit} userData={userData} />;
+  }
 
   if (showMessageSent) {
     return <MessageSent onClose={onClose} />;
@@ -83,8 +89,8 @@ const VisaApplicationSummary: React.FC<VisaApplicationSummaryProps> = ({
                       <p>{doc.documentType}</p>
                     </div>
                     <img
-                      src={doc.status === 'APPROVED' ? approve : reject}
-                      alt={doc.status?.toLowerCase() || 'pending'}
+                      src={doc.remark === 'APPROVED' ? approve : reject}
+                      alt={doc.remark?.toLowerCase() || 'pending'}
                     />
                     {expandedDocuments.includes(doc?.id) && (
                       <p className="mt-2">{doc?.name}</p>

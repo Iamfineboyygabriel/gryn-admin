@@ -315,19 +315,19 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
         Submit Response
       </button.PrimaryButton>
           </div>
-          {/* {isModalOpen && (
-        <Modal
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          data-aos="zoom-in"
-        >
-          <StudentApplicationSummary
-            onClose={handleCloseModal}
-            documents={documents}
-          />
-        </Modal>
-      )}
-       */}
+          {isModalOpen && (
+    <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
+      <StudentApplicationSummary 
+        onClose={handleCloseModal} 
+        documents={documents}
+        userData={{
+          firstName: applicationDetails?.data?.firstName,
+          lastName: applicationDetails?.data?.lastName,
+          userId: applicationDetails?.data?.userId
+        }}
+      />
+    </Modal>
+  )}
       {isAssignModal && (
         <Modal
           isOpen={isAssignModal}

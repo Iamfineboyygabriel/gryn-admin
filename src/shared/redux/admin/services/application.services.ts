@@ -39,19 +39,46 @@ const getStaffDashboardStats = async () => {
   }
 };
 
-const getAllApplication = async (page: number, limit: number, search: string = '') => {
-  const url = `${API_URL}/admin/application?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
+// const getAllApplication = async (page: number, limit: number, search: string = '', sort= '') => {
+//   const url = `${API_URL}/admin/application?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
+//   try {
+//     const response = await axios.get(url, { headers: authHeader() });
+//     const token = response?.data?.data?.tokens?.accessToken;
+//     if (token) {
+//       sessionStorage.setItem("userData", token);
+//     }
+//     return response.data;
+//   } catch (error) {
+//     throw error;
+//   }
+// };
+
+const getAllApplication = async (
+  page: number, 
+  limit: number, 
+  search: string = '', 
+  sort: string = ''
+) => {
+  let url = `${API_URL}/admin/application?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
+  
+  if (sort) {
+    url += `&sort=${encodeURIComponent(sort)}`;
+  }
+
   try {
     const response = await axios.get(url, { headers: authHeader() });
     const token = response?.data?.data?.tokens?.accessToken;
+    
     if (token) {
       sessionStorage.setItem("userData", token);
     }
+
     return response.data;
   } catch (error) {
     throw error;
   }
 };
+
 
 const getAllStudents = async (page: number, limit: number, search: string = '') => {
   const url = `${API_URL}/admin/users/students?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;

@@ -74,10 +74,50 @@ export const createNews = createAsyncThunk(
     }
   );
 
+  export const getAllNotification = createAsyncThunk(
+    "notificationApplication/getAllNotification",
+     async ({ page, limit }: { page: number; limit: number; }) => {
+       const response = await notificationApplicationServices.getAllNotification(page, limit);
+       return {
+         notifications: response.data,
+         totalPages: response.data.totalPages,
+         currentPage: page
+       };
+     }
+   );
+
+   export const updateNotificationStatus = createAsyncThunk(
+    "notificationApplication/updateNotificationStatus",
+     async (notificationId:string, thunkAPI) => {
+      try{
+      const response = await notificationApplicationServices.updateNotificationStatus(notificationId);
+        return response.data
+      }catch (error: any) {
+      return thunkAPI.rejectWithValue(error);
+    }
+   }
+   );
+   
+   export const getNotificationCount = createAsyncThunk(
+    "notificationApplication/getNotificationCount",
+    async (_, thunkAPI) => {
+      try {
+        const data = await notificationApplicationServices.getNotificationCount();
+        return data;
+      } catch (error: any) {
+        const message = error.message;
+        error.toString();
+        return thunkAPI.rejectWithValue(message);
+      }
+    }
+  );
+
 interface ApplicationState {
     registerNews: null;
     registerNewsDraft: null;
     registerNotification: null,
+    notificationCount: null,
+    updateNotification: null,
     loading: boolean;
     error: string | null;
     sort: string | null;
@@ -87,6 +127,11 @@ interface ApplicationState {
     searchTerm: string;
     allNews: {
       news: any[];
+      totalPages: number;
+      currentPage: number;
+    };
+    allNotification: {
+      notifications: any[];
       totalPages: number;
       currentPage: number;
     };
@@ -103,6 +148,8 @@ interface ApplicationState {
     registerNews: null,
     registerNewsDraft: null,
     registerNotification: null,
+    updateNotification: null,
+    notificationCount: null,
     loading: false,
     error: null,
     sort: null,
@@ -112,6 +159,11 @@ interface ApplicationState {
     searchTerm: "",
     allNews: {
       news: [],
+      totalPages: 0,
+      currentPage: 1,
+    },
+    allNotification: {
+      notifications: [],
       totalPages: 0,
       currentPage: 1,
     },
@@ -202,6 +254,49 @@ export const notificationApplicationSlice = createSlice({
     const errorMessage =
       action.error.message || "notification failed to send.";
     setMessage(errorMessage);
+  })
+
+  .addCase(getAllNotification.pending, (state) => {
+    state.loading = true;
+    state.error = null;
+  })
+  .addCase(getAllNotification.fulfilled, (state, action: PayloadAction<{
+    notifications: any[];
+    totalPages: number;
+    currentPage: number;
+  }>) => {
+    state.loading = false;
+    state.allNotification = action.payload;
+  })
+  .addCase(getAllNotification.rejected, (state, action) => {
+    state.loading = false;
+    state.error = action.error.message || "Failed to fetch news";
+  })
+
+  .addCase(
+    getNotificationCount .fulfilled,
+    (state, action: PayloadAction<any>) => {
+      state.notificationCount = action.payload;
+    }
+  )
+  .addCase(getNotificationCount .rejected, (state, action) => {
+    state.notificationCount = null;
+    const errorMessage =
+      action.error.message || "Failed to fetch user notification.";
+    setMessage(errorMessage);
+  })
+  
+  .addCase(updateNotificationStatus.pending, (state) => {
+    state.loading = true;
+    state.error = null;
+  })
+  .addCase(updateNotificationStatus.fulfilled, (state, action: PayloadAction<any>) => {
+    state.loading = false;
+    state.updateNotification = action.payload;
+  })
+  .addCase(updateNotificationStatus.rejected, (state, action) => {
+    state.loading = false;
+    state.error = action.error.message || "Failed to update Notification";
   })
 }
 })

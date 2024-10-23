@@ -28,17 +28,30 @@ export const getStaffDashboardStats = createAsyncThunk("application/getStaffDash
   }
 });
 
+// export const getAllApplication = createAsyncThunk(
+//   "application/getAllApplication",
+//   async ({ page, limit, search }: { page: number; limit: number; search: string }) => {
+//     const response = await applicationServices.getAllApplication(page, limit, search);
+//     return {
+//       applications: response.data.applications,
+//       totalPages: response.data.totalPages,
+//       currentPage: page
+//     };
+//   }
+// );
+
 export const getAllApplication = createAsyncThunk(
   "application/getAllApplication",
-  async ({ page, limit, search }: { page: number; limit: number; search: string }) => {
-    const response = await applicationServices.getAllApplication(page, limit, search);
+  async ({ page, limit, search, sort }: { page: number; limit: number; search: string; sort: string }) => {
+    const response = await applicationServices.getAllApplication(page, limit, search, sort);
     return {
-      applications: response.data.applications,
-      totalPages: response.data.totalPages,
+      applications: response.applications,
+      totalPages: response.totalPages,
       currentPage: page
     };
   }
 );
+
 
 export const getAllStudents = createAsyncThunk(
   "application/getAllStudents",
@@ -348,6 +361,7 @@ interface ApplicationState {
   allPendingApplicationSearchTerm: string;
   allStaffSearchTerm: string;
   allAdminSearchTerm: string;
+  allApplicationSort: string;
   allActivity: any,
   allUserActivity: any,
   addSchool: null,
@@ -360,6 +374,7 @@ const initialState: ApplicationState = {
   assignAgent: null,
   assignApplicationStaff: null,
   assignApplicationAgent: null,
+  allApplicationSort: '' ,
   allBanks: null,
   allStaff: {
     staffs: [],
@@ -446,6 +461,9 @@ export const applicationSlice = createSlice({
     setAllAdminSearchTerm: (state, action: PayloadAction<string>) => {
       state.allAdminSearchTerm = action.payload;
     },
+    setAllApplicationSort: (state, action) => { 
+      state.allApplicationSort = action.payload;
+    }
   },
 
   extraReducers: (builder) => {
@@ -795,6 +813,7 @@ export const {
   setAllPendingApplicationSearchTerm,
   setAllStaffSearchTerm,
   setAllAdminSearchTerm,
+  setAllApplicationSort,
 } = applicationSlice.actions;
 
 export default applicationSlice.reducer;

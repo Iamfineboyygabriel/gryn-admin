@@ -5,7 +5,8 @@ import { toast } from 'react-toastify';
 import { CreateNotification } from '../../redux/admin/slices/notificationApplication.slices';
 import { useAppDispatch } from '../../redux/hooks/shared/reduxHooks';
 import { AppDispatch } from '../../redux/store';
-
+import MessageSent from '../MessageSent';
+import Modal from '../Modal';
 
 interface SendMessageProps {
   onClose: () => void;
@@ -14,16 +15,26 @@ interface SendMessageProps {
 }
 
 const SendMessage: React.FC<SendMessageProps> = ({ onClose, onSubmit, userData }) => {
-  console.log("mess",userData)
   const [loading, setLoading] = useState(false);
   const [header, setHeader] = useState('');
   const [description, setDescription] = useState('');
   const dispatch: AppDispatch = useAppDispatch();
+  const [isModalOpen, setModalOpen] = useState(false);  
+
+  const handleOpenModal = () => {
+    setModalOpen(true);
+    onSubmit(); 
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    onClose();
+  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!userData) {
-      toast.error('Staff details not available');
+      toast.error('user details not available');
       return;
     }
     setLoading(true);
@@ -33,7 +44,12 @@ const SendMessage: React.FC<SendMessageProps> = ({ onClose, onSubmit, userData }
         description
       };
       const userId = userData.userId;
-      await dispatch(CreateNotification({ body, userId })).unwrap();
+      const response = await dispatch(CreateNotification({ body, userId })).unwrap();
+      
+      setHeader('');
+      setDescription('');
+      handleOpenModal(); 
+      
     } catch (error: any) {
       toast.error(
         error.message || 'An error occurred while creating the application'
@@ -100,7 +116,7 @@ const SendMessage: React.FC<SendMessageProps> = ({ onClose, onSubmit, userData }
             </button.PrimaryButton>
             <button.PrimaryButton
               className="rounded-full bg-linear-gradient px-[2em] py-[8px] text-center font-medium text-white"
-               type='submit'
+              type='submit'
               disabled={loading}
             >
               {loading ? (
@@ -117,6 +133,15 @@ const SendMessage: React.FC<SendMessageProps> = ({ onClose, onSubmit, userData }
           </div>
         </form>
       </div>
+      {isModalOpen && (
+        <Modal
+          isOpen={isModalOpen}
+          data-aos="zoom-in"
+          onClose={handleCloseModal}
+        >
+          <MessageSent to="/admin/dashboard/application" onClose={handleCloseModal} />
+        </Modal>
+      )}
     </main>
   );
 };

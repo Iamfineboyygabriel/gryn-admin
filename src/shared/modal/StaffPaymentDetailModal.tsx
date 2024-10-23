@@ -90,7 +90,7 @@ const StaffPaymentDetailModal = ({ isOpen, onClose, payment }:any) => {
 
             <div className='flex justify-between'>
               <p className="text-sm text-gray-500">Amount</p>
-              <p className="font-semibold text-sm">NGN {payment?.amount || '-'}</p>
+              <p className="font-semibold text-sm">NGN {payment?.item?.amount || '-'}</p>
             </div>
 
             <div className='flex justify-between'>

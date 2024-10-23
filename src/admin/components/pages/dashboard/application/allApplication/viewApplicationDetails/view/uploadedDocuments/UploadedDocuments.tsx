@@ -48,7 +48,6 @@ const SkeletonRow = () => (
 const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
   const dispatch:AppDispatch = useAppDispatch();
   const { applicationDetails, loading: applicationLoading } = useApplicationDetails(applicationId);
-  console.log("appp",applicationDetails)
   const { updateDocStatus, error } = useSelector((state: any) => state.shareApplication);
   
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);

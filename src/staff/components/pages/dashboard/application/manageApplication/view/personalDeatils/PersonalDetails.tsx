@@ -48,24 +48,27 @@ const PersonalDetails: React.FC<{ applicationId: any }> = ({
           {renderField("Phone Number", applicationDetails?.data?.phoneNumber)}
         </div>
         <div className="mt-[1em] flex flex-row gap-[3em]">
-          {renderField(
+          {renderField("Country", applicationDetails?.data?.country)}
+          {renderField("State", applicationDetails?.data?.state)}
+        </div>
+        <div className="mt-[1em] flex flex-row gap-[3em]">
+          {renderField("L.G.A", applicationDetails?.data?.localGovtArea)}
+          {renderField("Address", applicationDetails?.data?.address)}
+        </div>
+        <div className="mt-[1em] flex flex-row gap-[3em]">
+        {renderField(
             "Date of Birth",
             applicationDetails?.data?.dateOfBirth
               ? dayjs(applicationDetails.data.dateOfBirth).format("YYYY-MM-DD")
               : ""
           )}
-          {renderField("Address", applicationDetails?.data?.address)}
-        </div>
-        <div className="mt-[1em] flex flex-row gap-[3em]">
-          {renderField("L.G.A", applicationDetails?.data?.localGovtArea)}
-          {renderField("State", applicationDetails?.data?.state)}
-        </div>
-        <div className="mt-[1em] flex flex-row gap-[3em]">
-          {renderField("Country", applicationDetails?.data?.country)}
           {renderField(
             "International Passport Number",
             applicationDetails?.data?.internationalPassportNumber
           )}
+        </div>
+        <div className="mt-[1em] w-[47%]">
+          {renderField("Email", applicationDetails?.data?.email)}
         </div>
       </form>
     </main>

@@ -103,6 +103,7 @@ export interface VisaApplicationDetails {
     middleName: string;
     localGovtArea: string;
     issuedDate:string;
+    agentId: string;
     expiryDate:string;
     document: {
       id: string;
