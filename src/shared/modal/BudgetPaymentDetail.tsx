@@ -6,8 +6,11 @@ import { approveBudgetAdmin, approveBudgetSuperAdmin } from "../redux/shared/ser
 import ReactLoading from "react-loading";
 import { button } from "../buttons/Button";
 import background from "../../assets/svg/budget-icon.svg"
+import DocumentPreviewModal from "./DocumentPreviewModal";
+import eye from "../../assets/svg/eyeImg.svg";
+import download from "../../assets/svg/download.svg";
+import file from "../../assets/svg/File.svg"
 // import background from "../../assets/svg/ActiveHome.svg"
-
 
 
 interface BudgetPaymentDetailProps {
@@ -26,6 +29,9 @@ const BudgetPaymentDetail: React.FC<BudgetPaymentDetailProps> = ({
   isSuperAdmin
 }) => {
   const [approveLoading, setApproveLoading] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewFileType, setPreviewFileType] = useState<string>("");
   const [budget, setBudget] = useState<any>(null);
 
   useEffect(() => {
@@ -79,6 +85,54 @@ const BudgetPaymentDetail: React.FC<BudgetPaymentDetailProps> = ({
 
   const isButtonDisabled = !isSuperAdmin && isApproved;
 
+  const handleDownload = (url: string, fileName: string) => {
+    fetch(url)
+      .then(response => response.blob())
+      .then(blob => {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      })
+      .catch(error => console.error('Download failed:', error));
+  };
+  
+  const getFileTypeFromUrl = (url: string) => {
+    const segments = url?.split("/");
+    const fileExtension = segments?.pop()?.split(".")?.pop();
+    switch (fileExtension) {
+      case "pdf":
+        return "application/pdf";
+      case "jpg":
+      case "jpeg":
+        return "image/jpeg";
+      case "png":
+        return "image/png";
+      case "gif":
+        return "image/gif";
+      default:
+        return "application/octet-stream";
+    }
+  };
+
+  const handlePreview = (url: string) => {
+    const fileType = getFileTypeFromUrl(url);
+    if (fileType === "application/pdf") {
+      url += "&viewer=pdf";
+    }
+    setPreviewUrl(url);
+    setPreviewFileType(fileType);
+    setIsPreviewOpen(true);
+  };
+     
+  const closePreviewModal = () => {
+    setIsPreviewOpen(false);
+    setPreviewUrl(null);
+    setPreviewFileType("");
+  };
+
   return (
     <main className="fixed font-outfit inset-y-0 overflow-auto px-4 py-4 right-0 w-[500px] bg-white shadow-lg">
       <div className="h-full flex flex-col">
@@ -121,6 +175,15 @@ const BudgetPaymentDetail: React.FC<BudgetPaymentDetailProps> = ({
                 </div>
               </div>
 
+              <hr className="mt-5"/>
+
+            <div className="mt-8 flex justify-between">
+              <p className="text-sm text-gray-500">Location</p>
+              <p className="font-medium">{budget?.location || '-'}</p>
+            </div>
+
+            <hr  className="underline mt-8 border-dashed"/>
+
               <div className="space-y-6 flex flex-col gap-[3px] mt-4">
                 {budget?.BudgetItem.map((item: any) => (
                   <div key={item.id} className="flex justify-between py-2">
@@ -132,17 +195,53 @@ const BudgetPaymentDetail: React.FC<BudgetPaymentDetailProps> = ({
             </div>
 
             <div className="mt-4 flex justify-between">
-              <p className="text-sm text-gray-500">Created At</p>
+              <p className="text-sm text-gray-500">Time/Date</p>
               <p className="font-medium">{dayjs(budget?.createdAt).format('YYYY-MM-DD HH:mm:ss')}</p>
             </div>
+            
+            <div className='flex mt-4 justify-between'>
+              <p className="text-sm text-gray-500">Sender Name</p>
+              <p className="font-medium">
+              {budget?.staffPayment?.senderName || '-'}
+              </p>
+            </div>
 
-            <div className="mt-4">
+            {/* <div className="mt-4">
               <p className="text-sm text-gray-500">Status</p>
               <p className="font-medium">{budget?.status || '-'}</p>
+            </div> */}
+               <div className="bg-gray-100 flex mt-[1.5em] px-2 items-center justify-between py-3">
+            <p className="flex items-center gap-2">
+              <img src={file} alt="file" />
+              <span className="text-sm">Document Attached</span>
+            </p>
+            <div className="flex gap-[2px]">
+              <button
+                onClick={() => handlePreview(budget?.document[0]?.publicURL)}
+                className="flex items-center gap-1 rounded-full bg-white px-2 py-[3px] text-center font-medium text-[#660066]"
+              >
+                <img src={eye} alt="eye" />
+                <span className="mr-3">View</span>
+              </button>
+
+              <button
+                onClick={() => handleDownload(budget?.document?.publicURL, budget?.document?.name)}
+                className="flex items-center gap-1 rounded-full bg-white px-2 py-[3px] text-center font-medium text-[#660066]"
+              >
+                <img src={download} alt="download" />
+                <span className="mr-3">Download</span>
+              </button>
             </div>
+          </div>
           </div>
         )}
       </div>
+      <DocumentPreviewModal
+        isOpen={isPreviewOpen}
+        onRequestClose={closePreviewModal}
+        previewUrl={previewUrl}
+        previewFileType={previewFileType}
+      />
     </main>
   );
 };

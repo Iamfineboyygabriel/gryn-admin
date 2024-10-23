@@ -293,7 +293,7 @@ import Modal from '../../../../../../../shared/modal/Modal';
 import PaymentReceiptResponse from '../../../../../../../shared/modal/PaymentReceiptResponse';
 import CustomPagination from '../../../../../../../shared/utils/customPagination';
 
-const ITEMS_PER_PAGE = 1;
+const ITEMS_PER_PAGE = 10;
 
 const Budgets: React.FC = () => {
     const dispatch = useDispatch();
@@ -346,21 +346,21 @@ const Budgets: React.FC = () => {
     const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
         setSearchTerm(value);
-        setCurrentPage(1); // Reset to first page on search
+        setCurrentPage(1); 
         dispatch(setSearch(value));
     };
 
     const toggleSortOrder = () => {
         const newOrder = sortOrder === 'asc' ? 'desc' : 'asc';
         setSortOrder(newOrder);
-        setCurrentPage(1); // Reset to first page on sort
+        setCurrentPage(1); 
         dispatch(setSort(newOrder));
     };
 
     const handleMonthChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const value = event.target.value;
         setSelectedMonth(value);
-        setCurrentPage(1); // Reset to first page on month change
+        setCurrentPage(1);
         dispatch(setMonth(value));
     };
 
@@ -477,7 +477,7 @@ const Budgets: React.FC = () => {
                                 <th className="px-6 py-3 text-left text-sm font-normal">Sender's Name</th>
                                 <th className="px-6 py-3 text-left text-sm font-normal">Date & Time</th>
                                 <th className="px-6 py-3 text-left text-sm font-normal">Status</th>
-                                <th>Action</th>
+                                <th className="px-6 py-3 text-left text-sm font-normal">Action</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
@@ -561,7 +561,7 @@ const Budgets: React.FC = () => {
                     />
                 </Modal>
             )}
-
+{/* 
             {!loading && budgets?.data?.length > 0 && (
                 <div className="mt-6 flex justify-center">
                     <CustomPagination
@@ -570,7 +570,7 @@ const Budgets: React.FC = () => {
                         hasMore={hasMore}
                     />
                 </div>
-            )}
+            )} */}
         </main>
     );
 };

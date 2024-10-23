@@ -82,31 +82,29 @@ const StaffPaymentDetailModal = ({ isOpen, onClose, payment }:any) => {
              <p className='font-semibold'>Payment Success!</p>
              <div className='bg-purple-white mt-[1em] py-[6px]'>
                  <h1>
-                   <p className="font-semibold text-primary-700 text-2xl">NGN {payment?.item?.[0]?.amount || '-'}</p>
+                   <p className="font-semibold text-primary-700 text-2xl">NGN {payment?.amount || '-'}</p>
                  </h1>
              </div>
           </div>
-          <div className="space-y-6 flex flex-col gap-[3px]">
-            <div className='flex justify-between'>
-              <p className="text-sm text-gray-500">Invoice No.</p>
-              <p className="font-medium">{payment?.staffPayment?.receiptNo || '-'}</p>
-            </div>
+          <div className="space-y-6  mt-5 flex flex-col gap-[3px]">
 
             <div className='flex justify-between'>
               <p className="text-sm text-gray-500">Amount</p>
-              <p className="font-semibold text-sm">NGN {payment?.item?.[0]?.amount || '-'}</p>
+              <p className="font-semibold text-sm">NGN {payment?.amount || '-'}</p>
             </div>
 
             <div className='flex justify-between'>
-              <p className="text-sm text-gray-500">Payment Name</p>
-              <p className="font-medium">{payment?.item?.[0]?.name || '-'}</p>
+              <p className="text-sm text-gray-500">Description</p>
+              <p className="font-medium">{payment?.description || '-'}</p>
             </div>
+
+            <hr  className="underline mt-8 border-dashed"/>
 
             <div className='flex justify-between'>
               <p className="text-sm text-gray-500">Payment Time</p>
               <p className="font-medium">
-              {payment?.staffPayment?.createdAt 
-                  ? dayjs(payment?.staffPayment?.createdAt)?.format("DD-MM-YYYY, HH:mm:ss") 
+              {payment?.createdAt 
+                  ? dayjs(payment?.createdAt)?.format("DD-MM-YYYY, HH:mm:ss") 
                   : '-'}
               </p>
             </div>
@@ -119,7 +117,7 @@ const StaffPaymentDetailModal = ({ isOpen, onClose, payment }:any) => {
             </div>
          </div>
 
-         <div className="bg-gray-100 flex px-2 items-center justify-between py-3">
+         <div className="bg-gray-100 mt-8 flex px-2 items-center justify-between py-3">
             <p className="flex items-center gap-2">
               <img src={file} alt="file" />
               <span className="text-sm">Document Attached</span>

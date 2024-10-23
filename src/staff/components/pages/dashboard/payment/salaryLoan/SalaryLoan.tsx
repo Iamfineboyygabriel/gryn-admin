@@ -31,12 +31,9 @@ interface SalaryItem {
 
 const SalaryLoan = () => {
     const { userProfile } = useUserProfile();
-    const staffEmail = userProfile?.email
-    console.log("usss",userProfile)
   const [selectedPayment, setSelectedPayment] = useState<SalaryItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { staffDetail, loading: staffLoading } = useStaffDetails(staffEmail);
-  const staffId = staffDetail?.data.profile.userId;
+  const staffId = userProfile?.userId;
   const { staffSalary, loading, error, fetchStaffPayments } = useStaffSalary();
 
   useEffect(() => {

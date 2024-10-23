@@ -67,11 +67,50 @@ const createNews = async (body: any) => {
     }
   };
 
+  const CreateNotification = async (userId:any, body:any) => {
+    const url = `${process.env.REACT_APP_API_URL}/notification/${userId}`;
+    try {
+      const response = await axios({
+        url,
+        headers: authHeader(),
+        method: "post",
+        data: body,
+      });
+      const token = response?.data?.data?.tokens?.accessToken;
+      if (token) {
+        sessionStorage.setItem("userData", token);
+      }
+      return response.data;
+    } catch (error) {
+      handleApiError(error);
+    }
+  };
+
+const getAllNotification = async (page: number, limit: number) => {
+  const url = `${process.env.REACT_APP_API_URL}/notification?page=${page}&limit=${limit}`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "get",
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const notificationApplicationServices = {
     createNews,
     createNewsDraft,
     getAllNews,
     getAllDraftedNews,
+    CreateNotification,
+    getAllNotification,
 }
 
 export default notificationApplicationServices;

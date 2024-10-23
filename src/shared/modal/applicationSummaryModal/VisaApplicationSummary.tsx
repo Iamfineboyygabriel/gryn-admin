@@ -36,9 +36,9 @@ const VisaApplicationSummary: React.FC<VisaApplicationSummaryProps> = ({
     (doc) => doc.status === 'APPROVED'
   );
 
-  if (showSendMessage) {
-    return <SendMessage onClose={() => setShowSendMessage(false)} onSubmit={handleSendMessageSubmit} />;
-  }
+  // if (showSendMessage) {
+  //   return <SendMessage onClose={() => setShowSendMessage(false)} onSubmit={handleSendMessageSubmit} />;
+  // }
 
   if (showMessageSent) {
     return <MessageSent onClose={onClose} />;

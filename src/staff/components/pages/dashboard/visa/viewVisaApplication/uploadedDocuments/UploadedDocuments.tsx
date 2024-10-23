@@ -288,7 +288,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
       >
         Submit Response
       </button.PrimaryButton>
-      {isModalOpen && (
+      {/* {isModalOpen && (
         <Modal
           isOpen={isModalOpen}
           onClose={handleCloseModal}
@@ -299,7 +299,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
             documents={documents}
           />
         </Modal>
-      )}
+      )} */}
     </main>
   );
 };

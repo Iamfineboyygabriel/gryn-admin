@@ -106,9 +106,9 @@ const ApplicationSummary: React.FC<ApplicationSummaryProps> = ({
     return <ApprovalSuccess onClose={onClose} approvalType={approvalType} />;
   }
 
-  if (showSendMessage) {
-    return <SendMessage onClose={() => setShowSendMessage(false)} onSubmit={handleSendMessageSubmit} />;
-  }
+  // if (showSendMessage) {
+  //   return <SendMessage onClose={() => setShowSendMessage(false)} onSubmit={handleSendMessageSubmit} />;
+  // }
 
   if (showMessageSent) {
     return <MessageSent onClose={onClose} />;

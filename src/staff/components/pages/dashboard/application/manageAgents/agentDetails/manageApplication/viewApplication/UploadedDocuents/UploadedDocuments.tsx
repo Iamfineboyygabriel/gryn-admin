@@ -301,7 +301,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
         Submit Response
       </button.PrimaryButton>
           </div>
-      {isModalOpen && (
+      {/* {isModalOpen && ([=]
         <Modal
           isOpen={isModalOpen}
           onClose={handleCloseModal}
@@ -312,7 +312,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
             documents={documents}
           />
         </Modal>
-      )}
+      )} */}
         {isAssignModal && (
         <Modal
           isOpen={isAssignModal}

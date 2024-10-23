@@ -48,6 +48,7 @@ const SkeletonRow = () => (
 const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
   const dispatch:AppDispatch = useAppDispatch();
   const { applicationDetails, loading: applicationLoading } = useApplicationDetails(applicationId);
+  console.log("appp",applicationDetails)
   const { updateDocStatus, error } = useSelector((state: any) => state.shareApplication);
   
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -56,6 +57,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [isAssignModal, setIsAssignModal] = useState(false);
   const [documents, setDocuments] = useState<Document[]>([]);
+  const [userName, setUserName] = useState<Document[]>([]);
   const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>({});
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
@@ -64,6 +66,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
       setDocuments(applicationDetails.data.documents);
     }
   }, [applicationDetails]);
+
 
   useEffect(() => {
     if (updateDocStatus) {
@@ -260,12 +263,20 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
             Submit Response
           </button.PrimaryButton>
         </div>
-        {isModalOpen && (
-          <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
-            <StudentApplicationSummary onClose={handleCloseModal} documents={documents} />
-          </Modal>
-        )}
-      </main>
+     {isModalOpen && (
+    <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
+      <StudentApplicationSummary 
+        onClose={handleCloseModal} 
+        documents={documents}
+        userData={{
+          firstName: applicationDetails?.data?.firstName,
+          lastName: applicationDetails?.data?.lastName,
+          userId: applicationDetails?.data?.userId
+        }}
+      />
+    </Modal>
+  )}
+        </main>
     );
   }
 
@@ -351,10 +362,18 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
         </button.PrimaryButton>
       </div>
       {isModalOpen && (
-        <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
-          <StudentApplicationSummary onClose={handleCloseModal} documents={documents} />
-        </Modal>
-      )}
+    <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
+      <StudentApplicationSummary 
+        onClose={handleCloseModal} 
+        documents={documents}
+        userData={{
+          firstName: applicationDetails?.data?.firstName,
+          lastName: applicationDetails?.data?.lastName,
+          userId: applicationDetails?.data?.userId
+        }}
+      />
+    </Modal>
+  )}
       {isAssignModal && (
         <Modal isOpen={isAssignModal} onClose={handleAssignCloseModal} data-aos="zoom-in">
           <AssignApplication applicationId={applicationId} onClose={handleAssignCloseModal} />

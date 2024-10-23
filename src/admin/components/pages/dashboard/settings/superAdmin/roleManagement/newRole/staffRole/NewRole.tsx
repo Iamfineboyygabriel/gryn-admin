@@ -28,11 +28,11 @@ const NewRole: React.FC = () => {
   const loading = useSelector((state: RootState) => state.shareApplication.loading);
 
   const type: RoleChoice[] = [{ name: "STAFF" }, { name: "ADMIN" }];
-  const designationType: DesignationChoice[] = [{ name: "CUSTOMER_RELATIONS" }];
+  const designationType: DesignationChoice[] = [{ name: "CUSTOMER_RELATIONS" }, {name: "STUDENT_RELATION_MANAGER"}, {name: "INTERNATIONAL_RELATIONAL_MANAGER"}, {name: "OFFICE_ADMIN"},{name: "EXCUTIVE_ADMIN"}];
 
   const emailItems: DropdownItem[] = useMemo(() => {
     if (Array.isArray(staffEmail)) {
-      return staffEmail.map((item: any) => ({ name: item.email }));
+      return staffEmail?.map((item: any) => ({ name: item.email }));
     }
     return [];
   }, [staffEmail]);

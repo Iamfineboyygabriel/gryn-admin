@@ -1,23 +1,43 @@
 import React, { useState } from 'react';
 import ReactLoading from "react-loading";
 import { button } from "../../buttons/Button";
+import { toast } from 'react-toastify';
+import { CreateNotification } from '../../redux/admin/slices/notificationApplication.slices';
+import { useAppDispatch } from '../../redux/hooks/shared/reduxHooks';
+import { AppDispatch } from '../../redux/store';
+
 
 interface SendMessageProps {
   onClose: () => void;
   onSubmit: () => void;
+  userData: any;
 }
 
-const SendMessage: React.FC<SendMessageProps> = ({ onClose, onSubmit }) => {
+const SendMessage: React.FC<SendMessageProps> = ({ onClose, onSubmit, userData }) => {
+  console.log("mess",userData)
   const [loading, setLoading] = useState(false);
   const [header, setHeader] = useState('');
   const [description, setDescription] = useState('');
+  const dispatch: AppDispatch = useAppDispatch();
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!userData) {
+      toast.error('Staff details not available');
+      return;
+    }
     setLoading(true);
+
     try {
-      await onSubmit();
-    } catch (error) {
-      console.error('Failed to send message:', error);
+      const body = {
+        description
+      };
+      const userId = userData.userId;
+      await dispatch(CreateNotification({ body, userId })).unwrap();
+    } catch (error: any) {
+      toast.error(
+        error.message || 'An error occurred while creating the application'
+      );
     } finally {
       setLoading(false);
     }
@@ -33,7 +53,7 @@ const SendMessage: React.FC<SendMessageProps> = ({ onClose, onSubmit }) => {
             <p>Before Proceeding.</p>
           </div>
         </header>
-        <div className="mt-[10px] flex flex-col gap-[8px]">
+        <form onSubmit={handleSubmit} className="mt-[10px] flex flex-col gap-[8px]">
           <div>
             <label htmlFor="recipient" className="text-sm font-medium">
               Send Message to
@@ -42,7 +62,7 @@ const SendMessage: React.FC<SendMessageProps> = ({ onClose, onSubmit }) => {
               type="text"
               id="recipient"
               className="mt-[1em] w-full cursor-not-allowed items-center gap-3 rounded-lg border-2 bg-grey-light px-4 py-3 focus:outline-none"
-              value="Akintola Babatunde"
+              value={`${userData.firstName} ${userData.lastName}`}
               readOnly
             />
           </div>
@@ -80,7 +100,7 @@ const SendMessage: React.FC<SendMessageProps> = ({ onClose, onSubmit }) => {
             </button.PrimaryButton>
             <button.PrimaryButton
               className="rounded-full bg-linear-gradient px-[2em] py-[8px] text-center font-medium text-white"
-              onClick={handleSubmit}
+               type='submit'
               disabled={loading}
             >
               {loading ? (
@@ -95,7 +115,7 @@ const SendMessage: React.FC<SendMessageProps> = ({ onClose, onSubmit }) => {
               )}
             </button.PrimaryButton>
           </div>
-        </div>
+        </form>
       </div>
     </main>
   );

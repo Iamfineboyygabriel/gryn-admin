@@ -10,18 +10,25 @@ interface Document {
   id: string;
   name: string;
   documentType: string;
-  status?: 'APPROVED' | 'REJECTED' | 'PENDING';
+  remark?: 'APPROVED' | 'REJECTED' | 'PENDING';
 }
 
 interface StudentApplicationSummaryProps {
   onClose: () => void;
-  documents: Document[];
+  documents: any;
+  userData: {
+    firstName: any;
+    lastName: any;
+    userId: any;
+  };
 }
 
 const StudentApplicationSummary: React.FC<StudentApplicationSummaryProps> = ({
   onClose,
   documents,
+  userData
 }) => {
+  console.log("usserdata",userData)
   const [expandedDocuments, setExpandedDocuments] = useState<string[]>([]);
   const [showSendMessage, setShowSendMessage] = useState(false);
   const [showMessageSent, setShowMessageSent] = useState(false);
@@ -33,11 +40,11 @@ const StudentApplicationSummary: React.FC<StudentApplicationSummaryProps> = ({
   };
 
   const allDocumentsApproved = documents.every(
-    (doc) => doc.status === 'APPROVED'
+    (doc:any) => doc.remark === 'APPROVED'
   );
 
   if (showSendMessage) {
-    return <SendMessage onClose={() => setShowSendMessage(false)} onSubmit={handleSendMessageSubmit} />;
+    return <SendMessage onClose={() => setShowSendMessage(false)} onSubmit={handleSendMessageSubmit} userData={userData} />;
   }
 
   if (showMessageSent) {
@@ -83,8 +90,8 @@ const StudentApplicationSummary: React.FC<StudentApplicationSummaryProps> = ({
                       <p>{doc.documentType}</p>
                     </div>
                     <img
-                      src={doc.status === 'APPROVED' ? approve : reject}
-                      alt={doc.status?.toLowerCase() || 'pending'}
+                      src={doc.remark === 'APPROVED' ? approve : reject}
+                      alt={doc.remark?.toLowerCase() || 'pending'}
                     />
                     {expandedDocuments.includes(doc?.id) && (
                       <p className="mt-2">{doc?.name}</p>

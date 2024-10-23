@@ -61,10 +61,23 @@ export const createNews = createAsyncThunk(
     }
   );
 
+  export const CreateNotification  = createAsyncThunk(
+    "notificationApplication/createNotification ",
+    async ({ body, userId }: { body: any; userId: any }, thunkAPI) => {
+      try {
+        const data = await notificationApplicationServices.CreateNotification(userId, body);
+        return data;
+      } catch (error: any) {
+        const message = error;
+        return thunkAPI.rejectWithValue(message);
+      }
+    }
+  );
 
 interface ApplicationState {
     registerNews: null;
     registerNewsDraft: null;
+    registerNotification: null,
     loading: boolean;
     error: string | null;
     sort: string | null;
@@ -89,6 +102,7 @@ interface ApplicationState {
   const initialState: ApplicationState = {
     registerNews: null,
     registerNewsDraft: null,
+    registerNotification: null,
     loading: false,
     error: null,
     sort: null,
@@ -175,6 +189,19 @@ export const notificationApplicationSlice = createSlice({
   .addCase(getAllDraftedNews.rejected, (state, action) => {
     state.loading = false;
     state.error = action.error.message || "Failed to fetch drafted news";
+  })
+
+  .addCase(
+    CreateNotification.fulfilled,
+    (state, action: PayloadAction<any>) => {
+      state.registerNotification = action.payload;
+    }
+  )
+  .addCase(CreateNotification.rejected, (state, action) => {
+    state.registerNotification = null;
+    const errorMessage =
+      action.error.message || "notification failed to send.";
+    setMessage(errorMessage);
   })
 }
 })
