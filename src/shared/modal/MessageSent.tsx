@@ -20,11 +20,6 @@ const MessageSent = ({ onClose, to }: ApplicationUpdatedProps) => {
             <p>You have successfully reviewed and responded to an application</p>
           </div>
         </article>
-        <Link to={to}>
-          <button.PrimaryButton className="m-auto mt-[2em] flex w-[60%] justify-center gap-2 rounded-full bg-linear-gradient py-[10px] text-center font-medium text-white">
-            Proceed to Dashboard
-          </button.PrimaryButton>
-        </Link>
       </div>
     </main>
   );

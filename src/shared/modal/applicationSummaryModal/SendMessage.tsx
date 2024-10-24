@@ -7,6 +7,7 @@ import { useAppDispatch } from '../../redux/hooks/shared/reduxHooks';
 import { AppDispatch } from '../../redux/store';
 import MessageSent from '../MessageSent';
 import Modal from '../Modal';
+import { useCurrentUser } from '../../redux/hooks/shared/getUserProfile';
 
 interface SendMessageProps {
   onClose: () => void;
@@ -20,6 +21,9 @@ const SendMessage: React.FC<SendMessageProps> = ({ onClose, onSubmit, userData }
   const [description, setDescription] = useState('');
   const dispatch: AppDispatch = useAppDispatch();
   const [isModalOpen, setModalOpen] = useState(false);  
+  const { userDetails } = useCurrentUser();
+  const role = userDetails?.data?.role 
+
 
   const handleOpenModal = () => {
     setModalOpen(true);

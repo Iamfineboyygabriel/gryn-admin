@@ -14,6 +14,7 @@ import download from "../../../../../../../assets/svg/download.svg";
 import approve from "../../../../../../../assets/svg/Approved.svg";
 import reject from "../../../../../../../assets/svg/Rejected.svg";
 import ReactLoading from "react-loading";
+import VisaApplicationSummary from "../../../../../../../shared/modal/applicationSummaryModal/VisaApplicationSummary";
 
 interface Document {
   id: string;
@@ -288,18 +289,23 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
       >
         Submit Response
       </button.PrimaryButton>
-      {/* {isModalOpen && (
+      {isModalOpen && (
         <Modal
           isOpen={isModalOpen}
           onClose={handleCloseModal}
           data-aos="zoom-in"
         >
-          <StudentApplicationSummary
+          <VisaApplicationSummary
             onClose={handleCloseModal}
             documents={documents}
+            userData={{
+              firstName: applicationDetails?.data?.firstName,
+              lastName: applicationDetails?.data?.lastName,
+              userId: applicationDetails?.data?.agentId
+            }}
           />
         </Modal>
-      )} */}
+      )}
     </main>
   );
 };
