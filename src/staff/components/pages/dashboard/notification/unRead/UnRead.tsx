@@ -19,7 +19,7 @@ const SkeletonRow = () => (
   </div>
 );
 
-const All = () => {
+const Unread = () => {
   const dispatch: AppDispatch = useDispatch();
   const { updates, fetchNotification, currentPage, loading } = useAllNotification();
   const [isNewsModalOpen, setNewsModalOpen] = useState(false);
@@ -27,6 +27,8 @@ const All = () => {
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const itemsPerPage = 10;
+
+  const unreadNotifications = updates?.filter((notification:any) => notification?.readStatus === false) || [];
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -71,9 +73,9 @@ const All = () => {
 
   return (
     <main className='font-outfit'>
-      {updates?.length > 0 ? (
+      {unreadNotifications.length > 0 ? (
         <>
-          {updates?.map((notification: any, index: number) => (
+          {unreadNotifications.map((notification: any, index: number) => (
             <div
               key={notification?.id}
               className={`flex justify-between px-[2em] items-center mb-2 ${
@@ -108,7 +110,7 @@ const All = () => {
             <CustomPagination
               currentPage={currentPage}
               onPageChange={handlePageChange}
-              hasMore={updates?.length === itemsPerPage}
+              hasMore={unreadNotifications?.length === itemsPerPage}
             />
           </div>
         </>
@@ -116,7 +118,7 @@ const All = () => {
         <div className="mt-[2em] flex flex-col items-center justify-center">
           <img src={transaction} alt="No applications" />
           <p className="mt-2 text-sm text-gray-500 dark:text-white">
-            No notification available.
+            No unread notifications available.
           </p>
         </div>
       )}
@@ -134,4 +136,4 @@ const All = () => {
   );
 };
 
-export default All;
+export default Unread;
