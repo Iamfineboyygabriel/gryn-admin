@@ -10,7 +10,7 @@ const Notification = () => {
 
   return (
     <main className="font-outfit">
-      <h1 className="text-2xl font-bold dark:text-white">Settings</h1>
+      <h1 className="text-2xl font-bold dark:text-white">Notification</h1>
       <div className="mt-[1em] h-auto w-full overflow-auto rounded-lg bg-white py-3 pb-[10em] dark:bg-gray-800">
         <div>
           <nav>
