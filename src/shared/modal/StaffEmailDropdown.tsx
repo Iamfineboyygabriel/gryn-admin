@@ -52,8 +52,9 @@ const StaffEmailDropdown = ({applicationId}:any) =>{
           } else if (assignApplicationToStaff.rejected.match(resultAction)) {
             setError(resultAction.payload as string || "Failed to assign application");
           }
-        } catch (err) {
-          setError("An unexpected error occurred");
+        } catch (error:any) {
+          console.log("errniiga",error)
+          setError(error);
         } finally {
           setIsAssigning(false);
         }
@@ -77,7 +78,8 @@ const StaffEmailDropdown = ({applicationId}:any) =>{
             loading={emailLoading}
             placeholder="Select Staff Email"
           />
-
+      {error && <p className="text-red-500 mt-2">{error}</p>}
+          
           <div className="flex justify-center">
             <button.PrimaryButton
             className="m-auto mt-[3em] w-[70%] justify-center gap-2 rounded-full bg-linear-gradient py-[11px] text-center font-medium text-white"

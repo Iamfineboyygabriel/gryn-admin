@@ -8,6 +8,7 @@ import download from "../../assets/svg/download.svg";
 import file from "../../assets/svg/File.svg"
 
 const StaffPaymentDetailModal = ({ isOpen, onClose, payment }:any) => {
+  console.log("PPP",payment)
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewFileType, setPreviewFileType] = useState<string>("");
@@ -82,20 +83,20 @@ const StaffPaymentDetailModal = ({ isOpen, onClose, payment }:any) => {
              <p className='font-semibold'>Payment Success!</p>
              <div className='bg-purple-white mt-[1em] py-[6px]'>
                  <h1>
-                   <p className="font-semibold text-primary-700 text-2xl">NGN {payment?.item[0]?.amount || '-'}</p>
+                   <p className="font-semibold text-primary-700 text-2xl">NGN {payment?.amount || '-'}</p>
                  </h1>
              </div>
           </div>
 
           <div className="space-y-6  mt-5 flex flex-col gap-[3px]">
              <div className='flex justify-between'>
-              <p className="text-sm text-gray-500">Invoice No</p>
-              <p className="font-medium">{payment?.invoiceNumber || '-'}</p>
+              <p className="text-sm text-gray-500">Payment No</p>
+              <p className="font-medium">{payment?.paymentNo || '-'}</p>
             </div>
 
             <div className='flex justify-between'>
               <p className="text-sm text-gray-500">Amount</p>
-              <p className="font-semibold text-sm">NGN {payment?.item[0]?.amount || '-'}</p>
+              <p className="font-semibold text-sm">NGN {payment?.amount || '-'}</p>
             </div>
 
             <hr  className="underline mt-8 border-dashed"/>
