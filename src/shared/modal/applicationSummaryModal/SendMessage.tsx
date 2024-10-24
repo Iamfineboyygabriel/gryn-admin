@@ -44,8 +44,7 @@ const SendMessage: React.FC<SendMessageProps> = ({ onClose, onSubmit, userData }
         description
       };
       const userId = userData.userId;
-      const response = await dispatch(CreateNotification({ body, userId })).unwrap();
-      
+       await dispatch(CreateNotification({ body, userId })).unwrap();
       setHeader('');
       setDescription('');
       handleOpenModal(); 
@@ -80,18 +79,6 @@ const SendMessage: React.FC<SendMessageProps> = ({ onClose, onSubmit, userData }
               className="mt-[1em] w-full cursor-not-allowed items-center gap-3 rounded-lg border-2 bg-grey-light px-4 py-3 focus:outline-none"
               value={`${userData.firstName} ${userData.lastName}`}
               readOnly
-            />
-          </div>
-          <div>
-            <label htmlFor="header" className="text-sm font-medium">
-              Header
-            </label>
-            <input
-              type="text"
-              id="header"
-              className="mt-[1em] w-full items-center gap-3 rounded-lg border-2 bg-grey-light px-4 py-3 font-medium"
-              value={header}
-              onChange={(e) => setHeader(e.target.value)}
             />
           </div>
           <div>

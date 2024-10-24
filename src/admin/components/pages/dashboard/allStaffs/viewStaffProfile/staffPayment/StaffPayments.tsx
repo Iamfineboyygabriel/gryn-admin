@@ -41,7 +41,7 @@ const StaffPayments = ({ staffEmail }:any) => {
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { staffDetail, loading: staffLoading } = useStaffDetails(staffEmail);
-  const staffId = staffDetail?.data.profile.userId;
+  const staffId = staffDetail?.data?.profile.userId;
   const { allStaffInvoicePayment, loading, error, fetchStaffPayments } = useAllStaffPayment();
 
   useEffect(() => {

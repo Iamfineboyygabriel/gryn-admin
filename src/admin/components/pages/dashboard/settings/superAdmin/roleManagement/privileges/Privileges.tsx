@@ -192,12 +192,6 @@ const Privileges: React.FC = () => {
         { name: 'Overview', active: false },
         { name: 'Edit Profile', active: false },
         { name: 'Change Password', active: false },
-        { name: 'Admin Management', active: false },
-        { name: 'Role Management', active: false },
-        { name: 'Update Admin', active: false },
-        { name: 'New Admin', active: false },
-        { name: 'Update Role', active: false },
-        { name: 'New Role', active: false },
       ],
       completed: false
     },

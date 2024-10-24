@@ -40,13 +40,14 @@ export const getStaffDashboardStats = createAsyncThunk("application/getStaffDash
 //   }
 // );
 
+
 export const getAllApplication = createAsyncThunk(
   "application/getAllApplication",
   async ({ page, limit, search, sort }: { page: number; limit: number; search: string; sort: string }) => {
     const response = await applicationServices.getAllApplication(page, limit, search, sort);
     return {
-      applications: response.applications,
-      totalPages: response.totalPages,
+      applications: response.data.applications,
+      totalPages: response.data.totalPages,
       currentPage: page
     };
   }
@@ -359,9 +360,9 @@ interface ApplicationState {
   allSalarySearchTerm: string;
   allStudentsSearchTerm: string;
   allPendingApplicationSearchTerm: string;
+  allApplicationSortTerm: string;
   allStaffSearchTerm: string;
   allAdminSearchTerm: string;
-  allApplicationSort: string;
   allActivity: any,
   allUserActivity: any,
   addSchool: null,
@@ -374,7 +375,7 @@ const initialState: ApplicationState = {
   assignAgent: null,
   assignApplicationStaff: null,
   assignApplicationAgent: null,
-  allApplicationSort: '' ,
+  allApplicationSortTerm: '',
   allBanks: null,
   allStaff: {
     staffs: [],
@@ -461,9 +462,9 @@ export const applicationSlice = createSlice({
     setAllAdminSearchTerm: (state, action: PayloadAction<string>) => {
       state.allAdminSearchTerm = action.payload;
     },
-    setAllApplicationSort: (state, action) => { 
-      state.allApplicationSort = action.payload;
-    }
+    setAllApplicationSortTerm: (state, action: PayloadAction<string>) => {
+      state.allApplicationSortTerm = action.payload;
+    },
   },
 
   extraReducers: (builder) => {
@@ -813,7 +814,7 @@ export const {
   setAllPendingApplicationSearchTerm,
   setAllStaffSearchTerm,
   setAllAdminSearchTerm,
-  setAllApplicationSort,
+  setAllApplicationSortTerm,
 } = applicationSlice.actions;
 
 export default applicationSlice.reducer;

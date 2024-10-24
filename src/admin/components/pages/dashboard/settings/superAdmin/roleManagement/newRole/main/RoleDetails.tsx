@@ -8,7 +8,7 @@ import StaffPrivileges from "../../privileges/StaffPriviledges";
 
 
 const RoleDetails = () => {
-  const [activeLink, setActiveLink] = useState("role");
+  const [activeLink, setActiveLink] = useState("adminRole");
 
   const navigate = useNavigate();
   const handleBackClick = () => {

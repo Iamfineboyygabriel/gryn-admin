@@ -53,26 +53,14 @@ const getStaffDashboardStats = async () => {
 //   }
 // };
 
-const getAllApplication = async (
-  page: number, 
-  limit: number, 
-  search: string = '', 
-  sort: string = ''
-) => {
-  let url = `${API_URL}/admin/application?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
-  
-  if (sort) {
-    url += `&sort=${encodeURIComponent(sort)}`;
-  }
-
+const getAllApplication = async (page: number, limit: number, search: string = '', sort: string = '') => {
+  const url = `${API_URL}/admin/application?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}${sort ? `&sort=${sort}` : ''}`;
   try {
     const response = await axios.get(url, { headers: authHeader() });
     const token = response?.data?.data?.tokens?.accessToken;
-    
     if (token) {
       sessionStorage.setItem("userData", token);
     }
-
     return response.data;
   } catch (error) {
     throw error;

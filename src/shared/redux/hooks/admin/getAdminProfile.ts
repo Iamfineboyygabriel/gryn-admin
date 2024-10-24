@@ -22,7 +22,7 @@ import {
   getAllStaffSalaryPayment,
   setAllStaffSalarySearchTerm,
   getTopAgentCommission,
-  setAllApplicationSort
+  setAllApplicationSortTerm,
 } from "../../admin/slices/application.slices";
 import { setMessage } from "../../message.slices";
 import { createSelector } from "@reduxjs/toolkit";
@@ -201,9 +201,9 @@ export const useAllApplication = () => {
   const totalPages = useSelector((state: any) => state?.application?.allApplication?.totalPages);
   const currentPage = useSelector((state: any) => state?.application?.allApplication?.currentPage);
   const loading = useSelector((state: any) => state?.application?.loading);
-  const error = useSelector((state: any) => state.application.error);
-  const searchTerm = useSelector((state: any) => state.application.allApplicationSearchTerm);
-  const sortTerm = useSelector((state: any) => state.application.allApplicationSort);
+  const error = useSelector((state: any) => state?.application?.error);
+  const searchTerm = useSelector((state: any) => state?.application?.allApplicationSearchTerm);
+  const sortTerm = useSelector((state: any) => state?.application?.allApplicationSortTerm);
 
   const fetchApplications = useCallback(
     (page: number, limit: number) => {
@@ -211,7 +211,7 @@ export const useAllApplication = () => {
         page, 
         limit, 
         search: searchTerm || '',
-        sort: sortTerm || '' 
+        sort: sortTerm || '',
       }));
     },
     [dispatch, searchTerm, sortTerm] 
@@ -221,18 +221,30 @@ export const useAllApplication = () => {
     (term: string) => {
       dispatch(setAllApplicationSearchTerm(term));
     },
-    [dispatch, sortTerm]
+    [dispatch]
   );
 
-  const updateSortTerm = useCallback( 
-    (sort: string) => {
-      dispatch(setAllApplicationSort(sort));
+  const updateSortTerm = useCallback(
+    (term: string) => {
+      dispatch(setAllApplicationSortTerm(term));
     },
     [dispatch]
   );
 
-  return { applications, totalPages, currentPage, loading, error, searchTerm, updateSortTerm,  sortTerm, fetchApplications, updateSearchTerm };
+  return { 
+    applications, 
+    totalPages, 
+    currentPage, 
+    loading, 
+    error, 
+    searchTerm,
+    sortTerm,
+    fetchApplications, 
+    updateSearchTerm,
+    updateSortTerm 
+  };
 };
+
 
 export const useAllStudents = () => {
   const dispatch: AppDispatch = useDispatch();

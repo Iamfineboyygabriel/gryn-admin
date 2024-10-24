@@ -6,6 +6,7 @@ import ViewApplicationDetails from "../../pages/dashboard/application/allApplica
 import ViewDirectApplicationDetails from "../../pages/dashboard/application/allApplication/directApplication/viewApplicationDetails/main/ViewDetails";
 import NewApplication from "../../pages/dashboard/application/newApplication/main/NewApplication";
 import Settings from "../../pages/dashboard/settings/Settings";
+import Messaging from "../../pages/dashboard/messaging/Message";
 import Visa from "../../pages/dashboard/visa/main/Visa";
 import NewVisaApplication from "../../pages/dashboard/visa/newVisa/main/NewApplication";
 import AllUsers from "../../pages/dashboard/allUsers/main/AllUsers";
@@ -44,8 +45,8 @@ import RoleDetails from "../../pages/dashboard/settings/superAdmin/roleManagemen
 import NewPayment from "../../pages/dashboard/payment/newPayment/NewPayment";
 import NewSalary from "../../pages/dashboard/allStaffs/viewStaffProfile/salary/newSalary/NewSalary";
 import { PrivateRoute } from "../../../../shared/redux/hooks/admin/PrivateRoute";
-import SeeAllTopAgent from "../../pages/dashboard/Reports/seeAll/SeeAllTopAgents";
 import SeeAllTopAgents from "../../pages/dashboard/Reports/seeAll/SeeAllTopAgents";
+
 
 const ProtectedSuperAdminRoute = ({ children }:any) => {
   const { userDetails } = useCurrentUser();
@@ -178,10 +179,10 @@ const DashboardRoutes = () => {
             
 
          <Route path="settings" element={<Settings />} />
-           
+         <Route path="messages" element={<Messaging />} />
+
           <Route path="notifications" element={<Notification />} />
           <Route path="/news/create_news" element={<CreateNews />} />
-
 
        <Route path="settings/admin_management/*" element={
           <ProtectedSuperAdminRoute>

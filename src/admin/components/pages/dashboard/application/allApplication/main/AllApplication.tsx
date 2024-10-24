@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router";
 import DOMPurify from "dompurify";
 import { useAllApplication } from "../../../../../../../shared/redux/hooks/admin/getAdminProfile";
@@ -24,30 +24,38 @@ const AllApplication: React.FC = () => {
     loading, 
     fetchApplications, 
     searchTerm, 
-    updateSearchTerm 
+    updateSearchTerm,
+    sortTerm,
+    updateSortTerm
   } = useAllApplication();
   
-  const [sortField, setSortField] = useState<"lastName" | "status">("lastName");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   const itemsPerPage = 10;
   const navigate = useNavigate();
 
   useEffect(() => {
+    updateSortTerm("desc");
     fetchApplications(1, itemsPerPage);
   }, []); 
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      fetchApplications(1, itemsPerPage);
+      fetchApplications(1, itemsPerPage);  
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [searchTerm]);
+  }, [searchTerm, sortOrder]);
+
+  const handleSortChange = useCallback((newOrder: "asc" | "desc") => {
+    setSortOrder(newOrder);
+    updateSortTerm(newOrder);
+    fetchApplications(currentPage, itemsPerPage);
+  }, [currentPage, itemsPerPage, updateSortTerm, fetchApplications]);
 
   const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, newPage: number) => {
-    fetchApplications(newPage, itemsPerPage);
-  }, [fetchApplications, itemsPerPage]);
+    fetchApplications(newPage, itemsPerPage); 
+  }, [fetchApplications, itemsPerPage, sortOrder]);
 
   const handleViewDetails = useCallback((applicationId: string) => {
     navigate(`/admin/dashboard/application/all_application/view_application/${applicationId}`);
@@ -68,31 +76,6 @@ const AllApplication: React.FC = () => {
     );
   }, [searchTerm]);
 
-  const sortedApplications = useMemo(() => {
-    if (!applications?.length) return [];
-
-    return [...applications]?.sort((a, b) => {
-      let aValue = '', bValue = '';
-      
-      if (sortField === 'lastName') {
-        aValue = `${a?.lastName || ''} ${a?.firstName || ''} ${a?.middleName || ''}`.toLowerCase();
-        bValue = `${b?.lastName || ''} ${b?.firstName || ''} ${b?.middleName || ''}`.toLowerCase();
-      } else {
-        aValue = (a[sortField] || '')?.toLowerCase();
-        bValue = (b[sortField] || '')?.toLowerCase();
-      }
-
-      return sortOrder === 'asc' 
-        ? aValue?.localeCompare(bValue)
-        : bValue?.localeCompare(aValue);
-    });
-  }, [applications, sortField, sortOrder]);
-
-  const handleSort = useCallback((field: "lastName" | "status") => {
-    setSortField(field);
-    setSortOrder(current => current === "asc" ? "desc" : "asc");
-  }, []);
-
   const renderTableBody = useCallback(() => {
     if (loading) {
       return Array?.from({ length: itemsPerPage })?.map((_, index) => (
@@ -100,7 +83,7 @@ const AllApplication: React.FC = () => {
       ));
     }
 
-    if (!sortedApplications?.length) {
+    if (!applications?.length) {
       return (
         <tr>
           <td colSpan={9} className="px-6 py-4 text-center text-gray-500">
@@ -115,7 +98,7 @@ const AllApplication: React.FC = () => {
       );
     }
 
-    return sortedApplications?.map((item, index) => (
+    return applications?.map((item:any, index:number) => (
       <tr key={item?.id} className="text-sm text-grey-primary font-medium border-b border-gray-200">
         <td className="whitespace-nowrap px-6 py-4">
           {((currentPage - 1) * itemsPerPage) + index + 1}
@@ -163,7 +146,7 @@ const AllApplication: React.FC = () => {
     ));
   }, [
     loading,
-    sortedApplications,
+    applications,
     currentPage,
     itemsPerPage,
     sanitizeHTML,
@@ -186,24 +169,16 @@ const AllApplication: React.FC = () => {
             />
             <FiSearch className="absolute right-[1em] top-1/2 -translate-y-1/2 transform text-lg text-gray-500" />
           </div>
-          <button
-            className="flex cursor-pointer items-center bg-gray-100 px-3 py-2 rounded"
-            onClick={() => handleSort("lastName")}
-          >
-            <span className="whitespace-nowrap text-sm">
-              Sort by Name
-              {sortField === "lastName" && (sortOrder === "asc" ? " ▲" : " ▼")}
-            </span>
-          </button>
-          <button
-            className="flex cursor-pointer items-center bg-gray-100 px-3 py-2 rounded"
-            onClick={() => handleSort("status")}
-          >
-            <span className="whitespace-nowrap text-sm">
-              Sort by Status
-              {sortField === "status" && (sortOrder === "asc" ? " ▲" : " ▼")}
-            </span>
-          </button>
+          <div className="flex gap-2">
+            <select
+              className="bg-gray-100 px-3 py-2 rounded text-sm cursor-pointer"
+              value={sortOrder}
+              onChange={(e) => handleSortChange(e.target.value as "asc" | "desc")}
+            >
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+          </div>
         </div>
       </div>
 
