@@ -81,10 +81,10 @@ const All = () => {
               }`}
             >
               <div className='flex flex-col py-2 gap-[4px]'>
-                <header>
+              <header>
                   <h1 className="font-semibold">{notification?.header}</h1>
                 </header>
-                <p className="font-medium text-gray-500">{notification?.description}</p>
+                <h1 className="font-semibold">{notification?.description}</h1>
                 <small className='text-gray-500 font-normal'>
                   {new Date(notification?.createdAt).toLocaleTimeString([], {
                     hour: '2-digit',
