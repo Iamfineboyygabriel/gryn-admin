@@ -50,9 +50,9 @@ const FindStudentByAll: React.FC<FindStudentByAllProps> = ({ redirectTo = "/admi
   const dispatch: AppDispatch = useDispatch();
   const { userTopUniversities, loading: universityLoading } = useTopUniversities();
   const { studentsEmail, loading: emailLoading } = useStudentEmails();
+  const [email, setEmail] = useState<string | null>(null);
   const [university, setUniversity] = useState<string | null>(null);
   const [degree, setDegree] = useState<string | null>(null);
-  const [email, setEmail] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
