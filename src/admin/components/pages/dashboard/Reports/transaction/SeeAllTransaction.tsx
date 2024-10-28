@@ -6,7 +6,6 @@ import CustomPagination from "../../../../../../shared/utils/customPagination";
 import { useAllSalary } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
 import { button } from "../../../../../../shared/buttons/Button";
 import AllStaffPaymentModal from "../../../../../../shared/modal/AllStaffPaymentModal";
-import { PrivateElement } from "../../../../../../shared/redux/hooks/admin/PrivateElement";
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -24,17 +23,12 @@ interface SalaryItem {
     senderName: string;
     status: string;
     invoiceId: number | null;
-    salaryId: number | null;
     createdAt: string;
     invoice?: {
       id: number;
       status: string;
       invoiceDate: string;
-      dueDate: string;
-      invoiceNumber: string;
-      userId: string;
       createdAt: string;
-      updatedAt: string;
       user?: {
         designation?: string;
         profile?: {
@@ -45,13 +39,7 @@ interface SalaryItem {
       item?: {
         id: number;
         name: string;
-        quantity: number;
-        rate: number;
         amount: number;
-        discount: number;
-        invoiceId: number;
-        budgetId: number | null;
-        isDraft: boolean;
         createdAt: string;
       }[];
       document?: {
@@ -62,20 +50,13 @@ interface SalaryItem {
         uploadType: string;
         applicationId: number | null;
         remark: string;
-        paymentId: number | null;
-        visaId: number | null;
-        agentId: number | null;
-        staffId: number | null;
-        invoiceId: number;
-        budgetId: number | null;
-        createdAt: string;
-        updatedAt: string;
       }[];
     };
 }
 
 const SeeAllTransaction: React.FC = () => {
   const { salaries, currentPage, loading, fetchSalaries, searchTerm, updateSearchTerm } = useAllSalary();
+  console.log("saa",salaries)
   const [selectedPayment, setSelectedPayment] = useState<SalaryItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -86,7 +67,6 @@ const SeeAllTransaction: React.FC = () => {
   const handleBackClick = () =>{
     navigate(-1)
   }
-
 
   const formatAmount = (amount: number) => {
     return amount?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -168,11 +148,12 @@ const SeeAllTransaction: React.FC = () => {
           </button>
           </td>
           <td className="flex items-center whitespace-nowrap px-6 py-4">
-          <button
+          <p
+         onClick={() => handleViewDetails(item)}
             className="cursor-pointer font-semibold text-primary-700"
           >
             View details
-          </button>
+          </p>
         </td>
         </tr>
       ));
@@ -275,6 +256,13 @@ const SeeAllTransaction: React.FC = () => {
         />
       )}
     </div>
+    {isModalOpen && selectedPayment && (
+        <AllStaffPaymentModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          payment={selectedPayment}
+        />
+      )}
     </main>
   );
 };

@@ -14,8 +14,19 @@ const AllStaffPaymentModal = ({ isOpen, onClose, payment }: any) => {
 
   if (!payment) return null;
 
-  const formatAmount = (amount:number) => {
+  const formatAmount = (amount: number) => {
     return amount?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "MONEY_OUT":
+        return "text-red-500";
+      case "MONEY_IN":
+        return "text-green-500";
+      default:
+        return "text-gray-500";
+    }
   };
 
   const handleDownload = (url: string, fileName: string) => {
@@ -87,10 +98,12 @@ const AllStaffPaymentModal = ({ isOpen, onClose, payment }: any) => {
             <p className='font-semibold'>Payment Success!</p>
             <div className='bg-purple-white mt-[1em] py-[6px]'>
               <h1>
-                <p className="font-semibold text-red-500 text-sm">{payment.status}!</p>
-                <p className="font-semibold text-primary-700 mt-[4px] text-2xl">NGN
-                   {payment?.invoice?.item[0]?.amount ? formatAmount(payment?.invoice?.item[0].amount) : '-'}
-                   </p>
+                <p className={`font-semibold text-sm ${getStatusColor(payment.status)}`}>
+                  {payment.status}!
+                </p>
+                <p className="font-semibold text-primary-700 mt-[4px] text-2xl">
+                  NGN {payment?.invoice?.item[0]?.amount ? formatAmount(payment?.invoice?.item[0].amount) : '-'}
+                </p>
               </h1>
             </div>
           </div>
@@ -103,7 +116,8 @@ const AllStaffPaymentModal = ({ isOpen, onClose, payment }: any) => {
 
             <div className='flex justify-between'>
               <p className="text-sm text-gray-500">Amount</p>
-              <p className="font-semibold text-sm">NGN {payment?.invoice?.item[0]?.amount ? formatAmount(payment?.invoice?.item[0].amount) : '-'}
+              <p className="font-semibold text-sm">
+                NGN {payment?.invoice?.item[0]?.amount ? formatAmount(payment?.invoice?.item[0].amount) : '-'}
               </p> 
             </div>
 
