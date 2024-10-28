@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import CustomPagination from "../../../../../shared/utils/customPagination";
 
 const RecentActivity = () => {
-  const { userActivity, loading, currentPage, handlePageChange } = useUserActivity();
+  const { userActivity, loading, currentPage, handlePageChange, limit } = useUserActivity();
 
   const handlePageChangeEvent = (event: React.ChangeEvent<unknown>, page: number) => {
     handlePageChange(page);
@@ -41,7 +41,9 @@ const RecentActivity = () => {
                     key={index}
                     className="text-sm font-medium text-grey-primary dark:text-white"
                   >
-                    <td className="whitespace-nowrap px-6 py-4">{index + 1}</td>
+                    <td className="whitespace-nowrap px-6 py-4">
+                    {((currentPage - 1) * limit) + index + 1}
+                      </td>
                     <td className="whitespace-nowrap px-6 py-4">
                       {item?.activity}
                     </td>

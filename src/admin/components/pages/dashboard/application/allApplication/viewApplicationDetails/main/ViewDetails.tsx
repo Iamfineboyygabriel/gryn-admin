@@ -5,6 +5,7 @@ import html2canvas from "html2canvas";
 import PersonalDetails from "../view/personalDetails/PersonalDetails";
 import Degree from "../view/degree/Degree";
 import UploadedDocument from "../view/uploadedDocuments/UploadedDocuments";
+import Payments from "../view/payments/Payments";
 import { button } from "../../../../../../../../shared/buttons/Button";
 import upload from "../../../../../../../../assets/svg/Upload.svg";
 
@@ -15,6 +16,7 @@ const ViewApplication: React.FC = () => {
   const personalDetailsRef = useRef<HTMLDivElement>(null);
   const degreeRef = useRef<HTMLDivElement>(null);
   const uploadedDocumentRef = useRef<HTMLDivElement>(null);
+  const paymentDocumentRef = useRef<HTMLDivElement>(null);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState<boolean>(false);
 
   const handleBackClick = () => {
@@ -28,6 +30,7 @@ const ViewApplication: React.FC = () => {
       { ref: personalDetailsRef, title: "Personal Details" },
       { ref: degreeRef, title: "Degree" },
       { ref: uploadedDocumentRef, title: "Uploaded Documents" },
+      { ref: paymentDocumentRef, title: "Payments" }, 
     ];
 
     try {
@@ -39,11 +42,11 @@ const ViewApplication: React.FC = () => {
 
           const canvas = await html2canvas(content, {
             scale: 2,
-            logging: false, 
-            useCORS: true 
+            logging: false,
+            useCORS: true
           });
 
-          const imgData = canvas.toDataURL('image/jpeg', 0.95); 
+          const imgData = canvas.toDataURL('image/jpeg', 0.95);
 
           if (i !== 0) {
             pdf.addPage();
@@ -52,7 +55,7 @@ const ViewApplication: React.FC = () => {
           pdf.setFontSize(16);
           pdf.text(title, 20, 20);
 
-          const imgWidth = 170; 
+          const imgWidth = 170;
           const imgHeight = (canvas.height * imgWidth) / canvas.width;
           pdf.addImage(imgData, 'JPEG', 20, 30, imgWidth, imgHeight);
 
@@ -68,6 +71,13 @@ const ViewApplication: React.FC = () => {
       setIsGeneratingPDF(false);
     }
   };
+
+  const navigationLinks = [
+    { id: "personalDetails", label: "Personal Details" },
+    { id: "degree", label: "Degree" },
+    { id: "uploadedDocument", label: "Uploaded Documents" },
+    { id: "payments", label: "Payments" }
+  ];
 
   return (
     <main className="font-outfit">
@@ -92,21 +102,17 @@ const ViewApplication: React.FC = () => {
           <nav className="mt-[1.5em]">
             <div className="flex items-center border-b-[3px] border-gray-100 text-base font-semibold">
               <div className="flex gap-[2em]">
-                {["personalDetails", "degree", "uploadedDocument"].map((link) => (
+                {navigationLinks.map(({ id, label }) => (
                   <div
-                    key={link}
+                    key={id}
                     className={`cursor-pointer py-3 ${
-                      activeLink === link
+                      activeLink === id
                         ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700"
                         : "text-lg font-medium text-gray-500"
                     }`}
-                    onClick={() => setActiveLink(link)}
+                    onClick={() => setActiveLink(id)}
                   >
-                    {link === "personalDetails"
-                      ? "Personal Details"
-                      : link === "degree"
-                      ? "Degree"
-                      : "Uploaded Documents"}
+                    {label}
                   </div>
                 ))}
               </div>
@@ -127,7 +133,10 @@ const ViewApplication: React.FC = () => {
               <Degree applicationId={applicationId} />
             </div>
             <div ref={uploadedDocumentRef} style={{display: activeLink === "uploadedDocument" ? "block" : "none"}}>
-              <UploadedDocument applicationId={applicationId}/>
+              <UploadedDocument applicationId={applicationId} />
+            </div>
+            <div ref={paymentDocumentRef} style={{display: activeLink === "payments" ? "block" : "none"}}>
+              <Payments applicationId={applicationId} />
             </div>
           </section>
         </div>

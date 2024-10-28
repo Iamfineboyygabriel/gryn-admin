@@ -76,6 +76,7 @@ export const getAllPendingApplication = createAsyncThunk(
     };
   }
 );
+
 export const getActivity = createAsyncThunk(
   "application/getActivity",
   async ({page, limit}: {page: number; limit: number;}, thunkAPI) => {

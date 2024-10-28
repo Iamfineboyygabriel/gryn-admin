@@ -88,6 +88,23 @@ export interface ApplicationDetails {
       remark: string;
       status: 'PENDING' | 'APPROVED' | 'REJECTED';
     }[];
+    payment: {
+      id?: string;
+      documents: {
+        id: string;
+        name: string;
+        publicURL: string;
+        documentType: string;
+        uploadType: string;
+        applicationId: number;
+        paymentId: null;
+        agentId: null;
+        createdAt: string;
+        updatedAt: string;
+        remark: string;
+        status: 'PENDING' | 'APPROVED' | 'REJECTED';
+      }[];
+    };  
   };
 }
 

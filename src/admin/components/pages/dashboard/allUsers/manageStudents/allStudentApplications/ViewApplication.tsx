@@ -10,6 +10,7 @@ import Error from "../../../../../../../shared/error/Error";
 import { useApplicationDetails } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
+import Payments from "../../../application/allApplication/viewApplicationDetails/view/payments/Payments";
 
 const ViewApplication: React.FC = () => {
   const [activeLink, setActiveLink] = useState("personalDetails");
@@ -19,6 +20,7 @@ const ViewApplication: React.FC = () => {
   const personalDetailsRef = useRef<HTMLDivElement>(null);
   const degreeRef = useRef<HTMLDivElement>(null);
   const uploadedDocumentRef = useRef<HTMLDivElement>(null);
+  const paymentDocumentRef = useRef<HTMLDivElement>(null);
 
   const { applicationDetails, loading, error } = useApplicationDetails(
     applicationId && applicationId.trim() !== "" ? applicationId : null
@@ -35,6 +37,7 @@ const ViewApplication: React.FC = () => {
       { ref: personalDetailsRef, title: "Personal Details" },
       { ref: degreeRef, title: "Degree" },
       { ref: uploadedDocumentRef, title: "Uploaded Documents" },
+      { ref: paymentDocumentRef, title: "Payments" }, 
     ];
 
     try {
@@ -143,6 +146,16 @@ const ViewApplication: React.FC = () => {
                 >
                   Uploaded Documents
                 </div>
+                <div
+                  className={`cursor-pointer py-3 ${
+                    activeLink === "payments"
+                      ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700"
+                      : "text-lg font-light text-gray-500"
+                  }`}
+                  onClick={() => setActiveLink("payments")}
+                >
+                  Payments
+                </div>
               </div>
               <button.PrimaryButton 
                 onClick={downloadPDF}
@@ -162,6 +175,9 @@ const ViewApplication: React.FC = () => {
             </div>
             <div ref={uploadedDocumentRef} style={{display: activeLink === "uploadedDocument" ? "block" : "none"}}>
               <UploadedDocument applicationId={applicationId}/>
+            </div>
+            <div ref={uploadedDocumentRef} style={{display: activeLink === "payments" ? "block" : "none"}}>
+              <Payments applicationId={applicationId}/>
             </div>
           </section>
         </div>

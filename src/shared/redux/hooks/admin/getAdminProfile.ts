@@ -335,15 +335,16 @@ export const useUserActivity = () => {
   const dispatch: AppDispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [limit, setLimit] = useState(10); 
 
   const userActivity = useSelector(selectUserActivity);
   const userToken = sessionStorage.getItem("userData");
 
   const fetchActivity = useCallback(
-    (page: number = 1, limit: number = 10) => {
+    (page: number = 1, itemsLimit: number = 10) => {
       if (userToken) {
         setLoading(true);
-        dispatch(getActivity({ page: Number(page), limit: Number(limit) }))
+        dispatch(getActivity({ page: Number(page), limit: Number(itemsLimit) }))
           .unwrap()
           .then(() => setLoading(false))
           .catch((error: any) => {
@@ -360,23 +361,25 @@ export const useUserActivity = () => {
 
   const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page);
-    fetchActivity(page, 10);
-  }, [fetchActivity]);
+    fetchActivity(page, limit);
+  }, [fetchActivity, limit]); 
 
   useEffect(() => {
-    fetchActivity(currentPage, 10);
-  }, [fetchActivity, currentPage]);
+    fetchActivity(currentPage, limit);
+  }, [fetchActivity, currentPage, limit]); 
 
   return useMemo(
     () => ({
       userActivity,
       loading,
       currentPage,
+      limit,
       handlePageChange
     }),
-    [userActivity, loading, currentPage, handlePageChange]
+    [userActivity, loading, currentPage, limit, handlePageChange] 
   );
 };
+
 
 export const useStudentEmails = () => {
   const dispatch = useDispatch<AppDispatch>();
