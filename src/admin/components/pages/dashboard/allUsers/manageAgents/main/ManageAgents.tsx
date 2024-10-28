@@ -24,7 +24,6 @@ const SkeletonRow = () => (
 const ManageAgents = () => {
   const { 
     agents, 
-    totalPages, 
     currentPage, 
     loading, 
     fetchAgents, 
@@ -35,7 +34,6 @@ const ManageAgents = () => {
   const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
   const itemsPerPage = 10;
 
-  
   const [isModalOpen, setModalOpen] = useState(false);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const navigate = useNavigate()
@@ -98,11 +96,11 @@ const ManageAgents = () => {
   const formatData = useCallback((data: any) => (data ? data : "-"), []);
 
   const filteredAgents = useMemo(() => {
-    return (agents || []).filter((agent: any) => {
-      const fullName = `${agent.profile.firstName} ${agent.profile.lastName}`.toLowerCase();
+    return (agents || [])?.filter((agent: any) => {
+      const fullName = `${agent?.profile?.firstName} ${agent?.profile?.lastName}`.toLowerCase();
       return (
         fullName.includes(localSearchTerm.toLowerCase()) ||
-        agent.email.toLowerCase().includes(localSearchTerm.toLowerCase())
+        agent?.email?.toLowerCase()?.includes(localSearchTerm?.toLowerCase())
       );
     });
   }, [agents, localSearchTerm]);
@@ -114,10 +112,10 @@ const ManageAgents = () => {
       ));
     }
 
-    if (filteredAgents.length > 0) {
-      return filteredAgents.map((agent: any, index: number) => (
+    if (filteredAgents?.length > 0) {
+      return filteredAgents?.map((agent: any, index: number) => (
         <tr
-          key={agent.id}
+          key={agent?.id}
           className="text-[14px] border-b border-gray-200 leading-[20px] text-grey-primary font-medium"
         >
           <td className="py-[16px] px-[24px]">
@@ -127,7 +125,7 @@ const ManageAgents = () => {
             className="py-[16px] gap-1 px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
               highlightText(
-                `${agent.profile.firstName} ${agent.profile.lastName}`,
+                `${agent?.profile?.firstName} ${agent?.profile?.lastName}`,
                 localSearchTerm
               )
             )}
@@ -146,8 +144,8 @@ const ManageAgents = () => {
                onClick={() =>
                 handleViewDetails(
                   agent?.id,
-                  agent?.profile.firstName,
-                  agent?.profile.lastName
+                  agent?.profile?.firstName,
+                  agent?.profile?.lastName
                 )
               }
               className="text-primary-700 cursor-pointer font-[600] flex items-center gap-[8px]"
@@ -204,6 +202,7 @@ const ManageAgents = () => {
              </PrivateElement>
           </div>
         </header>
+
         <div className="flex items-center mt-3 w-64 rounded-full border-[1px] border-border bg-gray-100 dark:bg-gray-700">
           <input
             type="text"
@@ -228,7 +227,7 @@ const ManageAgents = () => {
         </table>
       </div>
 
-      {!loading && agents.length > 0 && (
+      {!loading && agents?.length > 0 && (
         <div className="mt-6 flex justify-center">
           <CustomPagination
             currentPage={currentPage}

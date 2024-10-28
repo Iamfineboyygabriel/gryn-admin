@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { button } from "../buttons/Button";
-import { CgAsterisk } from "react-icons/cg";
 import ReactLoading from 'react-loading';
 import { RootState } from "../redux/store"; 
 import { findStaffByEmail } from "../redux/shared/slices/shareApplication.slices";
 import { assignAgentToStaff } from "../redux/admin/slices/application.slices";
 import AgentAssigned from "./AgentAssigned";
 import Modal from "./Modal";
+import { useStaffEmails } from "../redux/hooks/admin/getAdminProfile";
+import { Dropdown, DropdownItem } from "../dropDown/DropDown";
 
 interface FindStaffByEmailProps {
   onClose: () => void;
@@ -15,12 +16,30 @@ interface FindStaffByEmailProps {
   agentId: string;
 }
 
+interface StaffEmail {
+  email: string;
+}
+
 const FindStaffByEmail: React.FC<FindStaffByEmailProps> = ({ onClose, redirect, agentId }) => {
-  const [email, setEmail] = useState("");
+  const { staffEmail, loading: emailLoading } = useStaffEmails();
+  const [email, setEmail] = useState<string>('');
   const dispatch = useDispatch();
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [isSuccessModalOpen, setSuccessModalOpen] = useState(false);
-  const { loading, error } = useSelector((state: RootState) => state.application);
+  const [isModalOpen, setModalOpen] = useState<boolean>(false);
+  const [isSuccessModalOpen, setSuccessModalOpen] = useState<boolean>(false);
+  const { loading, error } = useSelector((state: RootState) => state?.application);
+  const [errorStaff, setErrorStaff] = useState<string>('');
+
+  const emailItems: DropdownItem[] = useMemo(() => {
+    if (Array?.isArray(staffEmail)) {
+      return staffEmail.map((item: StaffEmail) => ({ name: item?.email }));
+    }
+    return [];
+  }, [staffEmail]);
+
+  const handleSelectEmail = useCallback((item: DropdownItem | null) => {
+    setEmail(item?.name || '');
+    setErrorStaff('');
+  }, []);
 
   const handleOpenModal = () => setModalOpen(true);
   const handleCloseModal = () => setModalOpen(false);
@@ -28,23 +47,35 @@ const FindStaffByEmail: React.FC<FindStaffByEmailProps> = ({ onClose, redirect, 
   const handleOpenSuccessModal = () => setSuccessModalOpen(true);
   const handleCloseSuccessModal = () => {
     setSuccessModalOpen(false);
-    onClose(); 
+    onClose();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!email) {
+      setErrorStaff('Please select a staff email');
+      return;
+    }
+
     try {
-      await dispatch(findStaffByEmail(email) as any);
-      const response = await dispatch(assignAgentToStaff({ agentId, email }) as any);
+      const staffResponse = await dispatch(findStaffByEmail(email) as any);
       
-      if (response.payload && !response.error) {
+      if (staffResponse.error) {
+        setErrorStaff('Staff not found');
+        return;
+      }
+
+      const assignResponse = await dispatch(assignAgentToStaff({ agentId, email }) as any);
+      
+      if (assignResponse.payload && !assignResponse.error) {
         handleOpenSuccessModal();
       } else {
-        handleOpenModal(); 
+        handleOpenModal();
       }
     } catch (err) {
-      handleOpenModal(); 
-    } 
+      handleOpenModal();
+    }
   };
 
   return (
@@ -57,21 +88,19 @@ const FindStaffByEmail: React.FC<FindStaffByEmailProps> = ({ onClose, redirect, 
         <form onSubmit={handleSubmit}>
           <article>
             <div className="w-full mt-[2em]">
-              <label htmlFor="email" className="flex-start flex font-medium">
-                Email Address
-                <CgAsterisk className="text-red-500" />
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
+              <Dropdown
+                label="Staff Email"
+                items={emailItems}
+                selectedItem={email ? { name: email } : null}
+                onSelectItem={handleSelectEmail}
+                asterisk
+                searchVisible
+                loading={emailLoading}
+                placeholder="Select Staff Email"
               />
             </div>
           </article>
+          {errorStaff && <p className="text-red-500 mt-2">{errorStaff}</p>}
           <button.PrimaryButton
             className="m-auto mt-[2em] w-[70%] justify-center gap-2 rounded-full bg-linear-gradient py-[11px] text-center font-medium text-white"
             type="submit"
@@ -98,7 +127,9 @@ const FindStaffByEmail: React.FC<FindStaffByEmailProps> = ({ onClose, redirect, 
         >
           <div className="p-4">
             <h2 className="text-xl font-bold mb-2">Error</h2>
-            <p className="text-red-500 font-semibold">{error || "An error occurred while assigning the agent."}</p>
+            <p className="text-red-500 font-semibold">
+              {error || "An error occurred while assigning the agent."}
+            </p>
           </div>
         </Modal>
       )}

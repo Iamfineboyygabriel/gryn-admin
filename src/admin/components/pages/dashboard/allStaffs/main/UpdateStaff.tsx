@@ -1,20 +1,37 @@
-import React, { useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { button } from "../../../../../../shared/buttons/Button";
 import { CgAsterisk } from "react-icons/cg";
 import ReactLoading from 'react-loading';
-import Modal from "../../../../../../shared/modal/Modal";
-import { RootState } from "../../../../../../shared/redux/store";
 import { findStaffByEmail } from "../../../../../../shared/redux/shared/slices/shareApplication.slices";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
+import { useStaffEmails } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
+import { Dropdown, DropdownItem } from "../../../../../../shared/dropDown/DropDown";
 
 interface UpdateStaffByEmailProps {
   onClose: () => void;
 }
 
+interface StaffEmail {
+  email: string;
+}
+
 const UpdateStaff: React.FC<UpdateStaffByEmailProps> = ({ onClose }) => {
-  const [email, setEmail] = useState("");
+  const { staffEmail, loading: emailLoading } = useStaffEmails();
+  const [email, setEmail] = useState<string>('');
+
+  const emailItems: DropdownItem[] = useMemo(() => {
+    if (Array?.isArray(staffEmail)) {
+      return staffEmail.map((item: StaffEmail) => ({ name: item?.email }));
+    }
+    return [];
+  }, [staffEmail]);
+
+  const handleSelectEmail = useCallback((item: DropdownItem | null) => {
+    setEmail(item?.name || '');
+  }, []);
+
   const [loading,setLoading] = useState(false)
   const dispatch = useDispatch();
   const navigate = useNavigate()
@@ -44,18 +61,15 @@ const UpdateStaff: React.FC<UpdateStaffByEmailProps> = ({ onClose }) => {
         <form onSubmit={handleSubmit}>
           <article>
             <div className="w-full mt-[2em]">
-              <label htmlFor="email" className="flex-start flex font-medium">
-                Email Address
-                <CgAsterisk className="text-red-500" />
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
+            <Dropdown
+                label="Staff Email"
+                items={emailItems}
+                selectedItem={email ? { name: email } : null}
+                onSelectItem={handleSelectEmail}
+                asterisk
+                searchVisible
+                loading={emailLoading}
+                placeholder="Select Staff Email"
               />
             </div>
           </article>

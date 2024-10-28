@@ -1,28 +1,53 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { button } from "../buttons/Button";
-import { CgAsterisk } from "react-icons/cg";
 import { findAgentByEmail } from "../redux/shared/slices/shareApplication.slices";
 import ReactLoading from 'react-loading';
+import { Dropdown, DropdownItem } from "../dropDown/DropDown";
+import { useAgentsEmails } from "../redux/hooks/admin/getAdminProfile";
+import { useAppDispatch } from "../redux/hooks/shared/reduxHooks";
+import { AppDispatch } from "../redux/store";
 
 interface FindAgentByEmailProps {
   onClose: () => void;
-  redirect?: string;  
+  redirect?: string;
+}
+
+interface AgentEmail {
+  email: string;
 }
 
 const FindAgentByEmail: React.FC<FindAgentByEmailProps> = ({ onClose, redirect }) => {
-  const [email, setEmail] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const dispatch = useDispatch();
+  const { agentsEmail, loading: emailLoading } = useAgentsEmails();
+  const [email, setEmail] = useState<string>('');
+  const [error, setError] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const dispatch: AppDispatch = useAppDispatch();
   const navigate = useNavigate();
+  
+  const emailItems: DropdownItem[] = useMemo(() => {
+    if (Array?.isArray(agentsEmail)) {
+      return agentsEmail?.map((item: AgentEmail) => ({ name: item?.email }));
+    }
+    return [];
+  }, [agentsEmail]);
+
+  const handleSelectEmail = useCallback((item: DropdownItem | null) => {
+    setEmail(item?.name || '');
+    setError(''); 
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!email) {
+      setError('Please select an email');
+      return;
+    }
+
     setLoading(true);
     try {
-      const response = await dispatch(findAgentByEmail(email) as any);
+      const response = await dispatch(findAgentByEmail(email));
       onClose();
 
       navigate(redirect || "/admin/dashboard/all_users/update_agent", {
@@ -45,18 +70,15 @@ const FindAgentByEmail: React.FC<FindAgentByEmailProps> = ({ onClose, redirect }
         <form onSubmit={handleSubmit}>
           <article>
             <div className="w-full mt-[2em]">
-              <label htmlFor="email" className="flex-start flex font-medium">
-                Email Address
-                <CgAsterisk className="text-red-500" />
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
+              <Dropdown
+                label="Agent Email"
+                items={emailItems}
+                selectedItem={email ? { name: email } : null}
+                onSelectItem={handleSelectEmail}
+                asterisk
+                searchVisible
+                loading={emailLoading}
+                placeholder="Select Agent Email"
               />
             </div>
           </article>
