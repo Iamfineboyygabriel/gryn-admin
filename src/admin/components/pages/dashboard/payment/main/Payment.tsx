@@ -59,11 +59,11 @@ const Payment: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchSalaries(currentPage, itemsPerPage);
+    fetchSalaries(currentPage, itemsPerPage, "COMPLETED");
   }, [fetchSalaries, currentPage, itemsPerPage]);
 
   const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, page: number) => {
-    fetchSalaries(page, itemsPerPage);
+    fetchSalaries(page, itemsPerPage, "COMPLETED");
   }, [fetchSalaries, itemsPerPage]);
 
   const filteredAndSortedSalaries = useMemo(() => {
@@ -134,15 +134,15 @@ const Payment: React.FC = () => {
             {formatData(item.invoice?.document?.length)}
           </td>
           <PrivateElement feature="ALL_USERS" page="View Details">
-          <td className="flex items-center whitespace-nowrap px-6 py-4">
-            <button
-              onClick={() => handleViewDetails(item)}
-              className="cursor-pointer font-semibold text-primary-700"
-            >
-              View details
-            </button>
-          </td>
-             </PrivateElement> 
+            <td className="flex items-center whitespace-nowrap px-6 py-4">
+              <button
+                onClick={() => handleViewDetails(item)}
+                className="cursor-pointer font-semibold text-primary-700"
+              >
+                View details
+              </button>
+            </td>
+          </PrivateElement>
         </tr>
       ));
     } else {
@@ -175,16 +175,16 @@ const Payment: React.FC = () => {
         <header className="flex items-center justify-between">
           <h1 className="font-medium text-xl">All Payments</h1>
           {/**after creating invoice its not returning the id for us to contine the process so i have to comment it out */}
-           <div className="flex gap-2">
-          {isSuperAdmin && (  
-            <Link to="/admin/dashboard/payments/new_payments">
-              <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-primary-700 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
-                <img src={plus} alt="plus" />
-                New Payment
-              </button.PrimaryButton>
-            </Link>
-          )}
-          </div> 
+          <div className="flex gap-2">
+            {isSuperAdmin && (
+              <Link to="/admin/dashboard/payments/new_payments">
+                <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-primary-700 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
+                  <img src={plus} alt="plus" />
+                  New Payment
+                </button.PrimaryButton>
+              </Link>
+            )}
+          </div>
         </header>
         <div className="flex items-center mt-3 w-64 rounded-full border-[1px] border-border bg-gray-100 dark:bg-gray-700">
           <input
@@ -209,9 +209,9 @@ const Payment: React.FC = () => {
               <th className="px-6 py-3 text-left whitespace-nowrap text-sm font-normal">
                 Uploaded Documents
               </th>
-          <PrivateElement feature="ALL_USERS" page="View Details">
-              <th className="px-6 py-3 text-left text-sm font-normal">Action</th>
-          </PrivateElement>
+              <PrivateElement feature="ALL_USERS" page="View Details">
+                <th className="px-6 py-3 text-left text-sm font-normal">Action</th>
+              </PrivateElement>
             </tr>
           </thead>
           <tbody className="overflow-y-auto">{renderTableBody()}</tbody>

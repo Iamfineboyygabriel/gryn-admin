@@ -178,7 +178,7 @@ const SeeAllApplication: React.FC = () => {
     <main className="mt-[1.3em] font-outfit">
            <header>
       <div className="flex items-center justify-between">
-       <h1 className="text-2xl font-bold">Application</h1>
+       <h1 className="text-2xl font-bold">Reports</h1>
         </div>
        </header>
         <div className="mt-[1.3em] h-auto w-full overflow-auto rounded-lg bg-white px-[1em] py-3 pb-[10em]">

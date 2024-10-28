@@ -172,15 +172,15 @@ const SeeAllStudents: React.FC = () => {
   ]);
 
   return (
-    <main>
-          <h1 className="font-medium text-xl">All Students</h1>
+    <main className="font-outfit">
+          <h1 className="font-bold text-2xl">Reports</h1>
         <div className="mt-[1.3em] h-auto w-full overflow-auto rounded-lg bg-white px-[1em] py-3 pb-[10em]">
         <header>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="font-medium dark:text-gray-700">
+              <h1 className="font-medium">
                 Reports /
-                <span className="ml-1 font-medium text-primary-700 dark:text-white">
+                <span className="ml-1 font-medium text-primary-700">
                   All Students
                 </span>
               </h1>

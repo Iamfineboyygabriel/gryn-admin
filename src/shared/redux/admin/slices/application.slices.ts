@@ -271,7 +271,7 @@ export const getAllAdminForSuperAdmin = createAsyncThunk(
 
 export const  getAllStaffSalaryPayment = createAsyncThunk(
   "application/ getAllStaffSalaryPayment",
-  async ({ page, limit, search }: { page: number; limit: number; search: string }) => {
+  async ({ page, limit, search, status }: { page: number; limit: number; search: string, status:string }) => {
     const response = await applicationServices. getAllStaffSalaryPayment(page, limit, search);
     return {
       payments: response.data,

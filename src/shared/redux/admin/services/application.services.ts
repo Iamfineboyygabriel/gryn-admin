@@ -498,8 +498,8 @@ export const getAllAdminForSuperAdmin = async (page?: number, limit?: number, se
   }
 };
 
-const getAllStaffSalaryPayment = async (page: number, limit: number, search: string = '') => {
-  const url = `${API_URL}/invoice/payments?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
+const getAllStaffSalaryPayment = async (page: number, limit: number, search: string = '', status = '') => {
+  const url = `${API_URL}/invoice/payments?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}&status=${status}`;
   try {
     const response = await axios.get(url, { headers: authHeader() });
     const token = response?.data?.data?.tokens?.accessToken;
@@ -511,8 +511,6 @@ const getAllStaffSalaryPayment = async (page: number, limit: number, search: str
     throw error;
   }
 };
-
-
 
 const applicationServices = {
   getStats,

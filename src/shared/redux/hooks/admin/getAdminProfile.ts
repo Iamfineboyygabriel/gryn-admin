@@ -731,7 +731,6 @@ export const useAllAdminForSuperAdmin = () => {
   };
 };
 
-
 export const useAllSalary = () => {
   const dispatch: AppDispatch = useDispatch();
   const salaries = useSelector((state: any) => state?.application?.allStaffPayments?.payments);
@@ -742,8 +741,8 @@ export const useAllSalary = () => {
   const searchTerm = useSelector((state: any) => state?.application?.allSalarySearchTerm);
 
   const fetchSalaries = useCallback(
-    (page: number, limit: number) => {
-      dispatch(getAllStaffSalaryPayment({ page, limit, search: searchTerm || '' }));
+    (page: number, limit: number, status: string) => {
+      dispatch(getAllStaffSalaryPayment({ page, limit, search: searchTerm || "", status }));
     },
     [dispatch, searchTerm]
   );
@@ -755,5 +754,5 @@ export const useAllSalary = () => {
     [dispatch]
   );
 
-  return { salaries, totalPages, currentPage, loading, error, searchTerm, fetchSalaries, updateSearchTerm };
+  return { salaries, totalPages, currentPage, loading, error,  searchTerm, fetchSalaries, updateSearchTerm };
 };

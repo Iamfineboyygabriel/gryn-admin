@@ -162,15 +162,15 @@ const SeeAllAgents = () => {
   }, [loading, filteredAgents, currentPage, itemsPerPage, sanitizeHTML, highlightText, localSearchTerm, formatData]);
 
   return (
-    <main>
-          <h1 className="font-medium text-xl">All Agents</h1>
+    <main className="font-outfit">
+      <h1 className="font-bold text-2xl">Reports</h1>
     <div className="mt-[1.3em] h-auto w-full overflow-auto rounded-lg bg-white px-[1em] py-3 pb-[10em]">
     <header>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="font-medium dark:text-gray-700">
+              <h1 className="font-medium">
                 Reports /
-                <span className="ml-1 font-medium text-primary-700 dark:text-white">
+                <span className="ml-1 font-medium text-primary-700">
                   All Agents
                 </span>
               </h1>
@@ -180,7 +180,7 @@ const SeeAllAgents = () => {
             </button.PrimaryButton>
           </div>
         </header>
-        <div className="flex items-center mt-3 w-64 rounded-full border-[1px] border-border bg-gray-100 dark:bg-gray-700">
+        <div className="flex items-center mt-3 w-64 rounded-full border-[1px] border-border bg-gray-100">
           <input
             type="text"
             className="flex-grow rounded-full bg-transparent py-2 pl-4 pr-2 text-sm focus:border-grey-primary focus:outline-none"

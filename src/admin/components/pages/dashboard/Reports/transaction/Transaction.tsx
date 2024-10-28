@@ -26,7 +26,9 @@ const Transaction = () => {
           <header>
             <div className="flex items-center justify-between">
               <h1 className="text-lg font-bold text-grey-primary">Transactions</h1>
-              <p className="font-medium text-primary-700">See All</p>
+              <Link to="/admin/dashboard/reports/all_transaction">
+              <p className="font-medium text-primary-700 cursor-pointer">See All</p>
+              </Link>
             </div>
           </header>
         </div>
