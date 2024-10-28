@@ -1,0 +1,141 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+::-webkit-scrollbar {
+  width: 7px;
+  height: 1px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #070105 !important;
+  border-radius: 40px !important;
+}
+::-webkit-scrollbar-track {
+  background-color: transparent !important;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.gradient-text {
+  background: linear-gradient(to right, #660066 33%, #c43e85 66%, #ff6699 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+::-webkit-scrollbar {
+  width: 7px;
+  height: 2px;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    to bottom,
+    #660066 33%,
+    #c43e85 66%,
+    #ff6699 100%
+  ) !important;
+  border-radius: 40px !important;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent !important;
+}
+
+.btn-2 {
+  position: relative;
+  background: linear-gradient(
+    0deg,
+    rgba(255, 102, 153, 1) 0%,
+    rgba(240, 9, 96, 1) 100%
+  );
+  border: none;
+  padding: 0.5em 2em;
+  color: #fff;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.btn-2:before {
+  content: "";
+  position: absolute;
+  height: 0;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.5);
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  transition: height 0.4s ease;
+  z-index: 0;
+}
+
+.btn-2:hover:before {
+  height: 100%;
+}
+
+.btn-2:hover {
+  box-shadow: 4px 4px 6px 0 rgba(255, 255, 255, 0.5),
+    -4px -4px 6px 0 rgba(116, 125, 136, 0.5),
+    inset -4px -4px 6px 0 rgba(255, 255, 255, 0.2),
+    inset 4px 4px 6px 0 rgba(0, 0, 0, 0.4);
+}
+
+.btn-2:active {
+  transform: scale(0.95);
+}
+
+.btn-auth {
+  position: relative;
+  background: linear-gradient(
+    0deg,
+    rgba(255, 102, 153, 1) 0%,
+    rgba(240, 9, 96, 1) 100%
+  );
+  border: none;
+  color: #fff;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.btn-auth:before {
+  content: "";
+  position: absolute;
+  height: 0;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.5);
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  transition: height 0.4s ease;
+  z-index: 0;
+}
+
+.btn-auth:hover:before {
+  height: 100%;
+}
+
+.btn-auth:hover {
+  box-shadow: 4px 4px 6px 0 rgba(255, 255, 255, 0.5),
+    -4px -4px 6px 0 rgba(116, 125, 136, 0.5),
+    inset -4px -4px 6px 0 rgba(255, 255, 255, 0.2),
+    inset 4px 4px 6px 0 rgba(0, 0, 0, 0.4);
+}
+
+.btn-auth:active {
+  transform: scale(0.95);
+}
