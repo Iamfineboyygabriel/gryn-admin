@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { AppDispatch } from '../../../../../../shared/redux/store';
 import { useAppDispatch } from '../../../../../../shared/redux/hooks/shared/reduxHooks';
@@ -9,15 +9,27 @@ import { CgAsterisk } from 'react-icons/cg';
 import ReactLoading from 'react-loading';
 import { toast } from 'react-toastify';
 import { createStaff } from '../../../../../../shared/redux/shared/slices/shareApplication.slices';
+import { Dropdown, DropdownItem } from '../../../../../../shared/dropDown/DropDown';
+
+interface Gender {
+  name: string;
+}
 
 const CreateStaff = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [middleName, setMiddleName] = useState('');
   const [email, setEmail] = useState('');
-  const [gender, setGender] = useState('');
+  const [gender, setGender] = useState<string | null>(null);
+
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
+
+  const type: Gender[] = [{ name: "MALE" }, {name:"FEMALE"}];
+
+  const handleSelectGender = useCallback((item: DropdownItem) => {
+    setGender(item?.name || null);
+  }, []);
 
   const navigate = useNavigate();
   const handleBackClick = () => {
@@ -143,18 +155,16 @@ const CreateStaff = () => {
 
           <div className="flex flex-wrap gap-[2em] mt-[1em]">
             <div className="w-full md:w-[48%]">
-              <label htmlFor="gender" className="flex items-center font-medium">
-                Gender <CgAsterisk className="text-red-500 ml-1" />
-              </label>
-              <input
-                id="gender"
-                name="gender"
-                type="text"
-                required
-                disabled={loading}
-                onChange={(e) => setGender(e.target.value)}
-                className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
-              />
+            <Dropdown
+            label="Gender"
+            labelClassName="text-grey-primary"
+            className="text-purple-deep"
+            items={type}
+            selectedItem={gender ? { name: gender } : null}
+            onSelectItem={handleSelectGender}
+            asterisk
+            placeholder='Select'
+          />
             </div>
           </div>
 

@@ -1,5 +1,6 @@
 import { button } from "../../../../shared/buttons/Button";
 import Success from "../../../../assets/svg/ResetPassword.svg";
+import { Link } from "react-router-dom";
 
 const PasswordSuccessful = () => {
   return (
@@ -18,9 +19,11 @@ const PasswordSuccessful = () => {
           <p>You can proceed to login to your dashboard.</p>
         </div>
       </header>
+      <Link to="/">
       <button.PrimaryButton className="mt-[2em] w-[25%] rounded-full bg-linear-gradient py-[13px] text-lg font-semibold text-white">
         Proceed to Login
       </button.PrimaryButton>
+      </Link>
     </main>
   );
 };

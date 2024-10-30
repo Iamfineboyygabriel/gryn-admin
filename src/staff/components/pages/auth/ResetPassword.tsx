@@ -50,7 +50,7 @@ const ResetPassword = () => {
     try {
       setLoading(true);
       await dispatch(resetPassword({ token, email, password })).unwrap();
-      navigate("/login");
+      navigate("/");
     } catch (err: any) {
       setError(err?.message || "Password reset failed. Please try again.");
     } finally {

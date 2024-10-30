@@ -43,6 +43,7 @@ const NewAdmin = () => {
   }, []);
 
   const navigate = useNavigate();
+  
   const handleBackClick = () => {
     navigate(-1);
   };
