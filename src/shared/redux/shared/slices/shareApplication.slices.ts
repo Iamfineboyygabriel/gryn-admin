@@ -559,10 +559,12 @@ export const UploadStaffInvoicePaymentDocument = createAsyncThunk(
 
 export const getAllStaffPayment = createAsyncThunk(
   "shareApplication/getAllStaffPayment",
-  async ({ id }: { id: string; }) => {
-    const response = await shareApplicationServices.getAllStaffPayment(id);
+  async ({ id, page, limit, }: { id: string; page: number; limit: number; }) => {
+    const response = await shareApplicationServices.getAllStaffPayment(id, page, limit,);
     return {
       payments: response.data,
+      totalPages: response.data.totalPages,
+      currentPage: page
     };
   }
 );
@@ -698,8 +700,8 @@ interface ApplicationState {
   };
   allStaffPayment: {
     payments: any[];
-    // totalPages: number;
-    // currentPage: number;
+    totalPages: number;
+    currentPage: number;
   };
   allStaffSalary: {
     payments: any[];
@@ -786,8 +788,8 @@ const initialState: ApplicationState = {
   },
   allStaffPayment: {
     payments: [],
-    // totalPages: 0,
-    // currentPage: 1,
+    totalPages: 0,
+    currentPage: 1,
   },
   allStaffSalary: {
     payments: [],
@@ -852,7 +854,7 @@ export const shareApplicationSlice = createSlice({
     setAllPendingAgentSearchTerm: (state, action: PayloadAction<string>) => {
       state.allPendingAgentSearchTerm = action.payload;
     },
-    clearPaymentData: (state) => {
+    clearPaymentData: (state:any) => {
       state.allStaffPayment = { payments: [] };
       state.allStaffSalary = { payments: [] };
       state.loading = false;
@@ -1338,8 +1340,8 @@ export const shareApplicationSlice = createSlice({
       })
       .addCase(getAllStaffPayment.fulfilled, (state, action: PayloadAction<{
         payments: any[];
-        // totalPages: number;
-        // currentPage: number;
+        totalPages: number;
+        currentPage: number;
       }>) => {
         state.loading = false;
         state.allStaffPayment = action.payload;
@@ -1348,7 +1350,7 @@ export const shareApplicationSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || "Failed to fetch payment applications";
       })
-      .addCase(clearStaffPayment.fulfilled, (state) => {
+      .addCase(clearStaffPayment.fulfilled, (state:any) => {
        state.allStaffPayment = { payments: [] };
         state.loading = false;
         state.error = null;

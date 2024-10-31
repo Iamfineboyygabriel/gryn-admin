@@ -49,7 +49,7 @@ const CreateNews: React.FC = () => {
     
     const handleBackClick = () => navigate(-1);
 
-    const send: DropdownItem[] = [{ name: "STUDENTS" }];
+    const send: DropdownItem[] = [{ name: "STUDENTS" }, {name: "STAFFS"},  ];
 
     const handleSelectItem = (item: DropdownItem | null) => setSendTo(item);
 

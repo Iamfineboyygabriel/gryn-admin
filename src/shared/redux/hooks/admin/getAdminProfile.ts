@@ -671,7 +671,7 @@ export const useStaffAssignedAgents = (staffId: string) => {
   return { agentDetail: agentDetail ?? null, loading, error, clearAgentData };
 };
 
-export const useStaffInvoices = (staffId: string) => {
+export const useStaffInvoices = (staffId: string, page: number, limit: number) => {
   const dispatch = useDispatch();
   const {
     data: staffInvoices,
@@ -683,11 +683,12 @@ export const useStaffInvoices = (staffId: string) => {
       if (!staffId) {
         throw new Error("No id provided");
       }
-      const endpoint = `/admin/users/staff/${staffId}/invoices`;
+      const endpoint = `/admin/users/staff/${staffId}/invoices?page=${page}&limit=${limit}`;
       return await findStaffInvoices(endpoint);
     },
     {
       enabled: !!staffId, 
+      keepPreviousData: true,
       onError: (error) => {
         dispatch(setMessage(error.message));
       },

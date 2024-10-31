@@ -25,6 +25,13 @@ interface Chat {
   user: ChatUser;
   lastMessage?: Message;
   unreadCount: number;
+  receiver:{
+    profile:{
+      avatar: string;
+      email: string;
+      profilePic?: string;
+    }
+  }
 }
 
 const MessageList: React.FC = () => {
@@ -80,23 +87,24 @@ const MessageList: React.FC = () => {
       );
     }
 
-    return chats?.map((chat: Chat) => (
+    return chats?.map((chat: any) => (
       <div 
-        className={`flex cursor-pointer gap-2 rounded-lg p-2 ${
-          selectedChatId === chat?.id ? 'bg-gray-100 dark:bg-gray-700' : ''
-        }`}
-        key={chat?.id}
-        onClick={() => setSelectedChatId(chat?.id)}
-      >
+      className={`flex cursor-pointer gap-2 rounded-lg p-2 ${
+        selectedChatId === chat?.id ? 'bg-gray-100 dark:bg-gray-700' : ''
+      }`}
+      key={chat?.id}
+      onClick={() => handleUserSelect(chat?.receiverId)}
+
+    >
         <img 
-          src={chat?.user?.profilePic || profile} 
+          src={chat?.receiver?.profile?.avatar?.publicURL || profile} 
           alt="profile_pic"
           className="h-12 w-12 rounded-full"
         />
         <div className="flex flex-1 flex-col gap-1">
-          <h1 className="font-semibold">{chat?.user?.email}</h1>
+          <h1 className="font-semibold">{chat?.receiver?.profile?.email}</h1>
           <p className="font-light text-gray-500 dark:text-gray-300">
-            {chat.lastMessage?.content || 'No messages yet'}
+            {chat?.messages[0]?.message || 'No messages yet'}
           </p>
           <small className="text-primary-700 dark:text-gray-400">
             {chat?.lastMessage ? formatMessageTime(chat?.lastMessage?.timestamp) : ''}

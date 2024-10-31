@@ -24,6 +24,16 @@ interface Message {
   content: string;
   timestamp: string;
   read: boolean;
+  message: string;
+  createdAt: string;
+  sender:{
+    profile:{
+      email: string;
+      avatar:{
+        publicURL: string;
+      }
+    }
+  }
 }
 
 interface MessageState {
@@ -35,6 +45,7 @@ interface MessageState {
   loading: boolean;
   error: string | null;
   unreadCount: number;
+
 }
 
 const initialState: MessageState = {
@@ -73,11 +84,12 @@ export const createChat = createAsyncThunk(
   }
 );
 
-export const fetchChatById = createAsyncThunk(
+export const fetchChatByUserId = createAsyncThunk(
   "message/fetchChatById",
-  async (chatId: string, thunkAPI) => {
+  async (userId: string, thunkAPI) => {
     try {
-      const response = await messageServices.findChatById(chatId);
+      const response = await messageServices.findChatByUserId(userId);
+      console.log("res",response)
       return response.data;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.message);
@@ -113,9 +125,14 @@ export const sendMessage = createAsyncThunk(
   "message/sendMessage",
   async ({ chatId, body }: { chatId: string; body: any }, thunkAPI) => {
     try {
+      console.log('Sending message with:', { chatId, body });
       const response = await messageServices.SendMessage(chatId, body);
-      return response.data;
+            return {
+        ...response.data,
+        chatId, 
+      };
     } catch (error: any) {
+      console.error('Message send error:', error);
       return thunkAPI.rejectWithValue(error.message);
     }
   }
@@ -181,16 +198,16 @@ export const messageSlice = createSlice({
         setMessage(state.error || "Failed to create chat");
       })
 
-      .addCase(fetchChatById.pending, (state) => {
+      .addCase(fetchChatByUserId.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchChatById.fulfilled, (state, action) => {
+      .addCase(fetchChatByUserId.fulfilled, (state, action) => {
         state.loading = false;
         state.currentChat = action.payload;
         state.messages = action.payload.messages || [];
       })
-      .addCase(fetchChatById.rejected, (state, action) => {
+      .addCase(fetchChatByUserId.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
         setMessage(state.error || "Failed to fetch chat");
@@ -219,15 +236,14 @@ export const messageSlice = createSlice({
         state.error = null;
       })
       .addCase(sendMessage.fulfilled, (state, action) => {
-        state.loading = false;
+        state.loading = false;        
         if (state.currentChat?.id === action.payload.chatId) {
-          state.messages.push(action.payload);
+          state.messages = [...state.messages, action.payload];
         }
       })
       .addCase(sendMessage.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
-        setMessage(state.error || "Failed to send message");
       })
 
       .addCase(updateReadStatus.fulfilled, (state, action) => {
@@ -246,3 +262,4 @@ export const selectMessageState = (state: { message: MessageState }) => state.me
 
 const { reducer } = messageSlice;
 export default reducer;
+

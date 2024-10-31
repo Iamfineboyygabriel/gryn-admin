@@ -663,12 +663,14 @@ export const useAllApplicationPayment = () => {
 export const useAllStaffPayment = () => {
   const dispatch: AppDispatch = useDispatch();
   const allStaffInvoicePayment = useSelector((state: any) => state?.shareApplication?.allStaffPayment?.payments || []);
+  const totalPages = useSelector((state: any) => state?.shareApplication?.allStaffPayment?.totalPages || 0);
+  const currentPage = useSelector((state: any) => state?.shareApplication?.allStaffPayment?.currentPage || 1);
   const loading = useSelector((state: any) => state?.shareApplication?.loading || false);
   const error = useSelector((state: any) => state?.shareApplication?.error || null);
 
   const fetchStaffPayments = useCallback(
-    (id: string) => {
-      dispatch(getAllStaffPayment({ id }));
+    (id: string, page: number, limit: number) => {
+      dispatch(getAllStaffPayment({ id, page, limit, }));
     },
     [dispatch]
   );
@@ -677,7 +679,7 @@ export const useAllStaffPayment = () => {
     dispatch(clearPaymentData()); 
   }, [dispatch]);
 
-  return { allStaffInvoicePayment, loading, error, fetchStaffPayments, clearPayments };
+  return { allStaffInvoicePayment, totalPages, currentPage, loading, error, fetchStaffPayments, clearPayments };
 };
 
 export const useStaffSalary = () => {

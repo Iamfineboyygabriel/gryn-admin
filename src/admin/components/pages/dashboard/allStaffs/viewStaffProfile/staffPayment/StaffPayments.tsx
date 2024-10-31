@@ -4,6 +4,7 @@ import { useStaffDetails } from '../../../../../../../shared/redux/hooks/admin/g
 import transaction from "../../../../../../../assets/svg/Transaction.svg";
 import dayjs from "dayjs";
 import StaffPaymentDetailModal from '../../../../../../../shared/modal/StaffPaymentDetailModal';
+import CustomPagination from '../../../../../../../shared/utils/customPagination';
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -18,9 +19,18 @@ const SkeletonRow = () => (
 const StaffPayments = ({ staffEmail }:any) => {
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const itemsPerPage = 10;
+
   const { staffDetail, loading: staffLoading } = useStaffDetails(staffEmail);
   const staffId = staffDetail?.data?.profile.userId;
-  const { allStaffInvoicePayment, loading, fetchStaffPayments, clearPayments } = useAllStaffPayment();
+  const { 
+    allStaffInvoicePayment, 
+    loading, 
+    fetchStaffPayments, 
+    clearPayments, 
+    currentPage, 
+    totalPages 
+  } = useAllStaffPayment();
 
   useEffect(() => {
     return () => {
@@ -40,11 +50,17 @@ const StaffPayments = ({ staffEmail }:any) => {
 
   useEffect(() => {
     if (staffId) {
-      fetchStaffPayments(staffId);
+      fetchStaffPayments(staffId, currentPage, itemsPerPage);
     } else {
       clearPayments(); 
     }
-  }, [staffId, fetchStaffPayments, clearPayments]);
+  }, [staffId, currentPage, fetchStaffPayments, clearPayments, itemsPerPage]);
+
+  const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, value: number) => {
+    if (staffId) {
+      fetchStaffPayments(staffId, value, itemsPerPage);
+    }
+  }, [fetchStaffPayments, staffId, itemsPerPage]);
 
   const formatAmount = (amount:number) => {
     if (!amount && amount !== 0) return "-";
@@ -77,13 +93,15 @@ const StaffPayments = ({ staffEmail }:any) => {
     }
 
     if (loading) {
-      return Array.from({ length: 6 }).map((_, index) => <SkeletonRow key={index} />);
+      return Array.from({ length: itemsPerPage }).map((_, index) => <SkeletonRow key={index} />);
     }
 
     if (filteredInvoicePayment?.length > 0) {
-      return filteredInvoicePayment.map((staff:any, index:number) => (
+      return filteredInvoicePayment?.map((staff:any, index:number) => (
         <tr key={`${staff.id}-${staffId}`} className="text-[14px] border-b border-gray-200 leading-[20px] text-grey-primary font-medium">
-          <td className="py-[16px] px-[24px]">{index + 1}</td>
+          <td className="py-[16px] px-[24px]">
+            {((currentPage - 1) * itemsPerPage) + index + 1}
+          </td>
           <td className="py-[16px] px-[24px]">{formatData(staff?.invoiceNumber)}</td>
           <td className="py-[16px] px-[24px]">{formatData(staff?.item?.[0]?.name)}</td>
           <td className="py-[16px] px-[24px]">
@@ -114,7 +132,7 @@ const StaffPayments = ({ staffEmail }:any) => {
         </td>
       </tr>
     );
-  }, [loading, filteredInvoicePayment, formatData, handleViewDetails, staffId]);
+  }, [loading, filteredInvoicePayment, formatData, handleViewDetails, staffId, currentPage, itemsPerPage]);
 
   return (
     <main className="font-outfit">
@@ -135,6 +153,16 @@ const StaffPayments = ({ staffEmail }:any) => {
           </thead>
           <tbody>{renderTableBody()}</tbody>
         </table>
+
+        {!loading && filteredInvoicePayment && filteredInvoicePayment?.length > 0 && (
+          <div className="mt-6 flex justify-center">
+            <CustomPagination
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+              hasMore={filteredInvoicePayment?.length === itemsPerPage}
+            />
+          </div>
+        )}
       </div>
       <StaffPaymentDetailModal
         isOpen={isModalOpen}

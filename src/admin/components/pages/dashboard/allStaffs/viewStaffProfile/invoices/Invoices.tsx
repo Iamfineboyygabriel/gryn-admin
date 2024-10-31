@@ -12,6 +12,7 @@ import Modal from "../../../../../../../shared/modal/Modal";
 import ApproveInvoiceModal from "../../../../../../../shared/modal/ApproveInvoiceModal";
 import ApproveInvoiceAdmin from "../../../../../../../shared/modal/ApproveInvoiceAdmin";
 import PaymentReceiptResponse from "../../../../../../../shared/modal/PaymentReceiptResponse";
+import CustomPagination from "../../../../../../../shared/utils/customPagination";
 
 interface AssignedAgentsProps {
   staffEmail: any;
@@ -29,7 +30,6 @@ interface StaffData {
     amount: number; 
   }[];
 }
-
 
 const SkeletonRow: React.FC = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -49,6 +49,7 @@ const Invoices: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
   const [isReceiptModalOpen, setReceiptModalOpen] = useState(false);
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(null);
   const [localSearchTerm, setLocalSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   const formatAmount = (amount:number) => {
@@ -56,7 +57,11 @@ const Invoices: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
   };
 
   const staffId = staffDetail?.data?.profile?.userId;
-  const { staffInvoices, loading } = useStaffInvoices(staffId || '');
+  const { staffInvoices, loading } = useStaffInvoices(staffId || '', currentPage, itemsPerPage);
+
+  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setCurrentPage(value);
+  };
 
   const handleOpenModal = (invoiceId: string, status: string) => {
     setSelectedInvoiceId(invoiceId);
@@ -131,9 +136,11 @@ const Invoices: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
     if (filteredInvoices?.length > 0) {
       return filteredInvoices?.map((staff: StaffData, index: number) => (
         <tr key={staff.id} className="text-[14px] border-b border-gray-200 leading-[20px] text-grey-primary font-medium">
-          <td className="py-[16px] px-[24px]">{index + 1}</td>
+          <td className="py-[16px] px-[24px]">
+            {((currentPage - 1) * itemsPerPage) + index + 1}
+          </td>
           <td className="py-[16px] px-[24px]">{formatData(staff?.invoiceNumber)}</td>
-          <td className="py-[16px] px-[24px]"> {`${formatData(formatAmount(staff?.item?.[0]?.amount))}`}</td>
+          <td className="py-[16px] px-[24px]">{`${formatData(formatAmount(staff?.item?.[0]?.amount))}`}</td>
           <td className="py-[16px] px-[24px]">{formatData(dayjs(staff?.invoiceDate)?.format("YYYY-MM-DD"))}</td>
           <td className="py-[16px] px-[24px]">{formatData(dayjs(staff?.dueDate)?.format("YYYY-MM-DD"))}</td>
           <td className="flex items-center whitespace-nowrap px-6 py-4">
@@ -163,7 +170,7 @@ const Invoices: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
         </tr>
       );
     }
-  }, [loading, filteredInvoices, formatData, isSuperAdmin]);
+  }, [loading, filteredInvoices, formatData, currentPage, itemsPerPage]);
 
   return (
     <main className="font-outfit">
@@ -192,7 +199,18 @@ const Invoices: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
             {renderTableBody()}
           </tbody>
         </table>
+
+        {!loading && filteredInvoices && filteredInvoices?.length > 0 && (
+          <div className="mt-6 flex justify-center">
+            <CustomPagination
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+              hasMore={filteredInvoices?.length === itemsPerPage}
+            />
+          </div>
+        )}
       </div>
+
       {isApproveModalOpen && selectedInvoiceId && (
         <ApproveInvoiceModal isOpen={isApproveModalOpen} onClose={handleCloseApproveModal} data-aos="zoom-in">
           <ApproveInvoiceAdmin

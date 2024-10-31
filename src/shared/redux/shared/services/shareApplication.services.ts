@@ -1291,8 +1291,8 @@ const uploadStaffInvoicePaymentDocument = async (
   }
 };
 
-const getAllStaffPayment = async (id:string) => {
-  const url = `${process.env.REACT_APP_API_URL}/admin/users/staff/${id}/payments`;
+const getAllStaffPayment = async (id:string, page: number, limit: number) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/users/staff/${id}/payments?page=${page}&limit=${limit}`;
   try {
     const response = await axios({
       url,
