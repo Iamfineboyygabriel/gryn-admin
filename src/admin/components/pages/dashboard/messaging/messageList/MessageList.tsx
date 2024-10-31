@@ -38,11 +38,10 @@ const MessageList: React.FC = () => {
   const { 
     chats, 
     users,
-    loading, 
+    // loading, 
     search, 
     handleSearch, 
     selectedChatId,
-    setSelectedChatId,
     handleCreateChat 
   } = useMessage();
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -72,9 +71,9 @@ const MessageList: React.FC = () => {
   };
 
   const renderContent = () => {
-    if (loading) {
-      return <div className="text-center text-gray-500">Loading chats...</div>;
-    }
+    // if (loading) {
+    //   return <div className="text-center text-gray-500">Loading chats...</div>;
+    // }
 
     if (!chats || chats?.length === 0) {
       return (
