@@ -10,6 +10,7 @@ interface User {
 }
 
 interface Chat {
+  senderId: any;
   user: any;
   id: string;
   participants: User[];
