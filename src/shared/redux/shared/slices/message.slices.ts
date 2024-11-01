@@ -9,7 +9,8 @@ interface User {
   name: string;
 }
 
-interface Chat {
+export interface Chat {
+  messages: any;
   senderId: any;
   user: any;
   id: string;

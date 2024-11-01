@@ -5,9 +5,9 @@ import { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 
 interface Message {
-  id: string;
+  id: number | string;
   senderId: string;
-  message: string;
+  message: any;
   createdAt: string;
   sender?: {
     profile?: {
@@ -19,6 +19,11 @@ interface Message {
   };
 }
 
+interface Chat {
+  id: string;
+  messages: any;
+}
+
 const MessageChat = () => {
   const { userDetails } = useCurrentUser();
   const { 
@@ -27,7 +32,8 @@ const MessageChat = () => {
     loading,
     handleSendMessage 
   } = useMessage();
-  
+  console.log("oppen")
+  console.log("cc",currentChat)
   const [message, setMessage] = useState('');
   const [sendingMessage, setSendingMessage] = useState(false);
   const [localMessages, setLocalMessages] = useState<Message[]>([]);
@@ -57,8 +63,14 @@ const MessageChat = () => {
   }, []);
 
   useEffect(() => {
+    if (currentChat?.messages) {
+      setLocalMessages(currentChat.messages);
+    }
+  }, [currentChat?.messages]);
+
+  useEffect(() => {
     if (reduxMessages?.length) {
-      setLocalMessages(reduxMessages);
+      setLocalMessages(reduxMessages as Message[]);
     }
   }, [reduxMessages]);
 
@@ -68,16 +80,6 @@ const MessageChat = () => {
     }
   }, [currentChat?.id]);
 
-  // Auto-scroll to bottom when new messages arrive
-  // const scrollToBottom = () => {
-  //   messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  // };
-
-  // useEffect(() => {
-  //   scrollToBottom();
-  // }, [localMessages]);
-
-  // Format timestamp with proper timezone handling
   const formatMessageTime = (timestamp: string) => {
     try {
       if (!timestamp) return '';
@@ -108,7 +110,6 @@ const MessageChat = () => {
     try {
       setSendingMessage(true);
       
-      // Create temporary message for optimistic update
       const tempMessage: Message = {
         id: `temp-${Date.now()}`,
         senderId: currentUserId || '',
@@ -117,7 +118,6 @@ const MessageChat = () => {
         sender: userDetails?.data
       };
 
-      // Add to local messages immediately
       setLocalMessages(prev => [...prev, tempMessage]);
       
       const messageData = {
