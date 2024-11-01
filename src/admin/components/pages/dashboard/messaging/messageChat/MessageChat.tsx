@@ -138,14 +138,14 @@ const MessageChat = () => {
       setMessage('');
     } catch (error) {
       console.error('Failed to send message:', error);
-      setLocalMessages(prev => prev.filter(msg => msg.id !== `temp-${Date.now()}`));
+      setLocalMessages(prev => prev?.filter(msg => msg?.id !== `temp-${Date.now()}`));
     } finally {
       setSendingMessage(false);
     }
   };
 
   const otherUser = localMessages?.find((message: Message) => 
-    message.senderId !== currentUserId
+    message?.senderId !== currentUserId
   )?.sender;
 
   if (!currentChat) {
@@ -162,7 +162,7 @@ const MessageChat = () => {
         {otherUser && (
           <nav className="flex items-center gap-4 border-b-2 border-gray-100 py-3 dark:border-gray-700">
             <img 
-              src={otherUser.profile?.avatar?.publicURL || profile} 
+              src={otherUser?.profile?.avatar?.publicURL || profile} 
               alt="profile"
               className="h-12 w-12 rounded-full object-cover"
             />
@@ -172,18 +172,18 @@ const MessageChat = () => {
       </header>
 
       <section className="flex-1 flex flex-col gap-4 py-4 overflow-y-auto">
-        {loading && !localMessages.length ? (
+        {loading && !localMessages?.length ? (
           <div className="text-center">Loading messages...</div>
         ) : (
           <>
-            {localMessages.map((message: Message) => (
+            {localMessages?.map((message: Message) => (
               <div
                 key={message?.id}
                 className={`flex gap-4 ${
                   message?.senderId === currentUserId ? 'flex-row-reverse' : ''
                 }`}
               >
-                {message.senderId !== currentUserId && (
+                {message?.senderId !== currentUserId && (
                   <img 
                     src={message?.sender?.profile?.avatar?.publicURL || profile} 
                     alt="profile" 
