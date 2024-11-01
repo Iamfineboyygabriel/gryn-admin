@@ -128,7 +128,7 @@ const MessageList = () => {
     try {
       const result = await handleCreateChat(userId);
       setShowSuggestions(false);
-      if (result && !localChats.find(chat => chat.id === result.id)) {
+      if (result && !localChats?.find(chat => chat?.id === result?.id)) {
         setLocalChats(prev => [result, ...prev]);
       }
     } catch (error) {
@@ -137,19 +137,19 @@ const MessageList = () => {
   };
 
   const getLastMessage = (chat: Chat): Message | null => {
-    return chat.messages.length > 0 ? chat.messages[chat.messages.length - 1] : null;
+    return chat?.messages?.length > 0 ? chat?.messages[chat?.messages?.length - 1] : null;
   };
 
   const getUnreadCount = (chat: Chat): number => {
-    return chat.messages.filter(msg => !msg.read && msg.senderId !== currentUserId).length;
+    return chat?.messages?.filter(msg => !msg?.read && msg?.senderId !== currentUserId)?.length;
   };
 
   const getOtherUser = (chat: Chat) => {
-    return chat.sender.id === currentUserId ? chat.receiver : chat.sender;
+    return chat?.sender?.id === currentUserId ? chat?.receiver : chat?.sender;
   };
 
   const renderContent = () => {
-    if (localChats.length === 0) {
+    if (localChats?.length === 0) {
       return (
         <div className="flex flex-col items-center justify-center mt-12">
           <div className="w-48 h-48 bg-gray-200 rounded-full" />
@@ -160,7 +160,7 @@ const MessageList = () => {
       );
     }
 
-    return localChats.map((chat) => {
+    return localChats?.map((chat) => {
       const otherUser = getOtherUser(chat);
       const lastMessage = getLastMessage(chat);
       const unreadCount = getUnreadCount(chat);
@@ -169,14 +169,14 @@ const MessageList = () => {
         <div
           key={chat.id}
           className={`flex cursor-pointer gap-2 rounded-lg p-2 hover:bg-gray-50 dark:hover:bg-gray-700 ${
-            selectedChatId === chat.id ? 'bg-gray-100 dark:bg-gray-700' : ''
+            selectedChatId === chat?.id ? 'bg-gray-100 dark:bg-gray-700' : ''
           }`}
           onClick={() => handleUserSelect(otherUser.id)}
         >
           <div className="h-12 w-12 rounded-full bg-gray-200 overflow-hidden">
             {otherUser.profile?.avatar?.publicURL && (
               <img
-                src={otherUser.profile.avatar.publicURL || profile}
+                src={otherUser?.profile?.avatar?.publicURL || profile}
                 alt="profile"
                 className="h-full w-full object-cover"
               />
@@ -184,13 +184,13 @@ const MessageList = () => {
           </div>
 
           <div className="flex flex-1 flex-col gap-1">
-            <h1 className="font-semibold">{otherUser.profile?.email || 'Unknown User'}</h1>
+            <h1 className="font-semibold">{otherUser?.profile?.email || 'Unknown User'}</h1>
             <p className="font-light text-gray-500 dark:text-gray-300 text-sm">
               {lastMessage?.message || 'Start a conversation'}
             </p>
             {lastMessage && (
               <small className="text-primary-700 dark:text-gray-400">
-                {formatMessageTime(lastMessage.createdAt)}
+                {formatMessageTime(lastMessage?.createdAt)}
               </small>
             )}
           </div>
