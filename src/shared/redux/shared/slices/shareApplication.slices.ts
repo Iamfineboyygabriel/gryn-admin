@@ -609,8 +609,7 @@ export const  UpdatePagePermission  = createAsyncThunk(
       const data = await shareApplicationServices.UpdatePagePermission(email, body);
       return data;
     } catch (error: any) {
-      const message = error;
-      return thunkAPI.rejectWithValue(message);
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );
@@ -1413,9 +1412,8 @@ export const shareApplicationSlice = createSlice({
       )
       .addCase(UpdatePagePermission.rejected, (state, action) => {
         state.registerPagePermission = null;
-        const errorMessage =
-          action.error.message || "permission creation failed.";
-        setMessage(errorMessage);
+        const error = action.error || "permission creation failed.";
+        setMessage(error);
       })
 
       .addCase(

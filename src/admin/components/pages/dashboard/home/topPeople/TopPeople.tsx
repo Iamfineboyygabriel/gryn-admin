@@ -59,6 +59,11 @@ const TopPeople = () => {
     fetchCommissions(currentPage, itemsPerPage);
   }, [fetchAdmins, fetchCommissions, currentPage, itemsPerPage]);
 
+  const formatAmount = (amount:number) => {
+    return amount?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
+  
   const renderStaffItem = (admin: any, index: number) => (
     <div className="flex items-center justify-between" key={index}>
       <div className="flex items-center gap-[1em] font-lg">
@@ -78,7 +83,7 @@ const TopPeople = () => {
         <p>{agent?.lastName} {agent?.firstName}</p>
       </div>
       <div>
-        <h1 className="font-bold">NGN {agent?.commission}</h1>
+        <h1 className="font-bold">NGN {agent?.commission ? formatAmount(agent?.commission) : '0'}</h1>
       </div>
     </div>
   );

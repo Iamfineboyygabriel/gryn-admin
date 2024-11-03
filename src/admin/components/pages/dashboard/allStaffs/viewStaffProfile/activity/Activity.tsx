@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from 'react'
+import React, { useEffect, useCallback, useState } from 'react'
 import { useStaffDetails } from '../../../../../../../shared/redux/hooks/admin/getAdminProfile'
 import { useDispatch, useSelector } from 'react-redux'
 import { clearData, getUserActivity } from '../../../../../../../shared/redux/admin/slices/application.slices'
@@ -6,7 +6,7 @@ import { AppDispatch } from '../../../../../../../shared/redux/store'
 import empty from "../../../../../../../assets/svg/Transaction.svg"
 import CustomPagination from '../../../../../../../shared/utils/customPagination'
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 10
 
 const SkeletonRow: React.FC = () => (
   <div className="animate-pulse px-[2em] py-4 border-b border-gray-100">
@@ -46,15 +46,16 @@ const Activity: React.FC<{ staffEmail: any | null }> = ({
   staffEmail,
 }) => {
   const dispatch: AppDispatch = useDispatch();
+  const [page, setPage] = useState(1);
   const { staffDetail, loading: staffLoading } = useStaffDetails(staffEmail);
   const staffId = staffDetail?.data?.profile?.userId;
   const { allUserActivity, loading } = useSelector(
     (state: any) => state?.application
   );
-  const currentPage = allUserActivity?.currentPage || 1;
 
   useEffect(() => {
     dispatch(clearData());
+    setPage(1);
     
     if (staffId) {
       dispatch(getUserActivity({ 
@@ -67,6 +68,7 @@ const Activity: React.FC<{ staffEmail: any | null }> = ({
 
   const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, newPage: number) => {
     if (staffId) {
+      setPage(newPage);
       dispatch(getUserActivity({ 
         userId: staffId,
         page: newPage,
@@ -86,8 +88,9 @@ const Activity: React.FC<{ staffEmail: any | null }> = ({
   }
 
   const activities = allUserActivity?.data || [];
+  const shouldShowEmptyState = !loading && activities.length === 0 && page === 1;
 
-  if (!activities.length) {  
+  if (shouldShowEmptyState) {  
     return (
       <div className="px-[2em] flex flex-col justify-center py-8 text-center">
         <img src={empty} alt="empty" className="w-[8em] m-auto"/>
@@ -106,12 +109,12 @@ const Activity: React.FC<{ staffEmail: any | null }> = ({
         />
       ))}
       
-      {!loading && activities?.length > 0 && (
+      {!loading && (
         <div className="mt-6 flex justify-center">
           <CustomPagination
-            currentPage={currentPage}
+            currentPage={page}
             onPageChange={handlePageChange}
-            hasMore={activities?.length === ITEMS_PER_PAGE}
+            hasMore={activities?.length >= ITEMS_PER_PAGE}
           />
         </div>
       )}

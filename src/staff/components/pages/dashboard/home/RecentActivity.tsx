@@ -42,8 +42,8 @@ const RecentActivity = () => {
                     className="text-sm font-medium text-grey-primary dark:text-white"
                   >
                     <td className="whitespace-nowrap px-6 py-4">
-                    {((currentPage - 1) * limit) + index + 1}
-                      </td>
+                      {((currentPage - 1) * limit) + index + 1}
+                    </td>
                     <td className="whitespace-nowrap px-6 py-4">
                       {item?.activity}
                     </td>
@@ -77,12 +77,12 @@ const RecentActivity = () => {
         </div>
       </div>
       
-      {!loading && userActivity?.data?.length > 0 && (
+      {!loading && (
         <div className="mt-6 flex justify-center">
           <CustomPagination
             currentPage={currentPage}
             onPageChange={handlePageChangeEvent}
-            hasMore={userActivity?.data?.length === 10}
+            hasMore={userActivity?.data?.length >= limit}
           />
         </div>
       )}

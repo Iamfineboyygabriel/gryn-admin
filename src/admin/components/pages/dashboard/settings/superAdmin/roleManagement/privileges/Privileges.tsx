@@ -99,7 +99,9 @@ const Privileges: React.FC = () => {
   const { adminDetail } = useAdminDetails(selectedEmail || "");
   const adminId: any = adminDetail?.data?.profile?.userId;
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [privilegesLoading, setPrivilegesLoading] = useState(false);
+  const [hasNoPrivileges, setHasNoPrivileges] = useState(false);
    
   const [privilegesData, setPrivilegesData] = useState<FeaturePrivileges[]>([
     {
@@ -208,15 +210,23 @@ const Privileges: React.FC = () => {
     setEmail(item?.name || null);
     setSelectedEmail(item?.name || null);
     setError("");
+    setSuccess("");
+    setHasNoPrivileges(false);
   }, []);
 
   useEffect(() => {
     if (adminId) {
       setPrivilegesLoading(true);
       setError("");
+      setSuccess("");
+      setHasNoPrivileges(false);
       dispatch(getUserPermittedPages({ id: adminId }) as any)
         .then((response: any) => {
           if (response?.payload && response?.payload?.pages) {
+            if (response.payload.pages.length === 0) {
+              setHasNoPrivileges(true);
+              return;
+            }
             const updatedPrivilegesData = privilegesData?.map(feature => {
               const permittedFeature = response?.payload?.pages?.find((p: any) => p?.feature === feature?.features);
               if (permittedFeature) {
@@ -233,6 +243,8 @@ const Privileges: React.FC = () => {
               return feature;
             });
             setPrivilegesData(updatedPrivilegesData);
+          } else {
+            setHasNoPrivileges(true);
           }
         })
         .catch((error: any) => {
@@ -247,32 +259,44 @@ const Privileges: React.FC = () => {
 
   const handleToggle = useCallback((feature: Features) => {
     setPrivilegesData(prev => 
-      prev.map(item => 
-        item.features === feature 
-          ? { ...item, completed: !item.completed }
-          : item
-      )
+      prev.map(item => {
+        if (item.features === feature) {
+          const newCompleted = !item.completed;
+          return {
+            ...item,
+            completed: newCompleted,
+            privileges: item.privileges.map(p => ({
+              ...p,
+              active: newCompleted
+            }))
+          };
+        }
+        return item;
+      })
     );
   }, []);
 
   const handlePrivilegeToggle = useCallback((feature: Features, privilegeName: string) => {
     setPrivilegesData(prev => 
-      prev.map(item => 
-        item.features === feature 
-          ? { 
-              ...item, 
-              privileges: item.privileges.map(p => 
-                p.name === privilegeName ? { ...p, active: !p.active } : p
-              )
-            } 
-          : item
-      )
+      prev.map(item => {
+        if (item.features === feature) {
+          const updatedPrivileges = item.privileges.map(p => 
+            p.name === privilegeName ? { ...p, active: !p.active } : p
+          );
+          return {
+            ...item,
+            privileges: updatedPrivileges,
+            completed: updatedPrivileges.some(p => p.active)
+          };
+        }
+        return item;
+      })
     );
   }, []);
 
-  const handleSave = useCallback(() => {
+  const handleSave = useCallback(async () => {
     if (!email) {
-      alert('Please select an admin email');
+      setError('Please select an admin email');
       return;
     }
   
@@ -286,23 +310,29 @@ const Privileges: React.FC = () => {
     };
   
     setLoading(true);
-    setError(""); 
-    dispatch(UpdatePagePermission({ body, email }) as any)
-      .then(() => {
-        setLoading(false);
-        alert('Privileges updated successfully');
-      })
-      .catch((error:any) => {
-        setLoading(false);
-        setError('Failed to update privileges: ' + error.message);
-      });
+    setError("");
+    setSuccess("");
+    
+    try {
+      const response = await dispatch(UpdatePagePermission({ body, email }) as any);
+      
+      if (response?.error) {
+        throw new Error(response.error.message || 'Failed to update privileges');
+      }
+      
+      setSuccess('Privileges updated successfully');
+    } catch (error: any) {
+      setError(error.message || 'Failed to update privileges. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   }, [email, privilegesData, dispatch]);
   
   return (
     <div>
       <h1 className="text-2xl font-semibold mb-6">Privileges</h1>
       <div className="overflow-hidden">
-        <div className='w-[250px] mt-[1em]'>
+        <div className='w-[550px] mt-[1em]'>
           <Dropdown
             label="Admin Email"
             items={emailItems}
@@ -312,10 +342,19 @@ const Privileges: React.FC = () => {
             searchVisible
             loading={emailLoading}
             placeholder="Select Admin Email"
+            className='w-auto'
           />
         </div>
         {error && (
           <Alert severity="error" className="mt-4 mb-4">{error}</Alert>
+        )}
+        {success && (
+          <Alert severity="success" className="mt-4 mb-4">{success}</Alert>
+        )}
+        {hasNoPrivileges && selectedEmail && (
+          <Alert severity="info" className="mt-4 mb-4">
+            This user currently has no privileges assigned.
+          </Alert>
         )}
         <table className="w-full mt-[2em]">
           <thead>
@@ -327,7 +366,7 @@ const Privileges: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-          {privilegesLoading ? (
+            {privilegesLoading ? (
               [...Array(5)].map((_, index) => <SkeletonRow key={index} />)
             ) : (
               privilegesData.map((item) => (

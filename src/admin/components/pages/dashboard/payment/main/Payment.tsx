@@ -8,7 +8,7 @@ import { useAllSalary } from "../../../../../../shared/redux/hooks/admin/getAdmi
 import { button } from "../../../../../../shared/buttons/Button";
 import plus from "../../../../../../assets/svg/plus.svg";
 import AllStaffPaymentModal from "../../../../../../shared/modal/AllStaffPaymentModal";
-import { useCurrentUser } from "../../../../../../shared/redux/hooks/shared/getUserProfile";
+import useUserProfile, { useCurrentUser } from "../../../../../../shared/redux/hooks/shared/getUserProfile";
 import { PrivateElement } from "../../../../../../shared/redux/hooks/admin/PrivateElement";
 
 const SkeletonRow = () => (
@@ -47,9 +47,9 @@ const Payment: React.FC = () => {
   const [sortOrder, setSortOrder] = useState("asc");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { userDetails } = useCurrentUser();
+  const { userProfile } = useUserProfile();
 
-  const isSuperAdmin = useMemo(() => userDetails?.data?.role === "SUPER_ADMIN", [userDetails]);
+  const isSuperAdmin = useMemo(() => userProfile?.user?.role === "SUPER_ADMIN", [userProfile]);
 
   const itemsPerPage = 10;
 
@@ -175,7 +175,7 @@ const Payment: React.FC = () => {
         <header className="flex items-center justify-between">
           <h1 className="font-medium text-xl">All Payments</h1>
           {/**after creating invoice its not returning the id for us to contine the process so i have to comment it out */}
-          <div className="flex gap-2">
+           <div className="flex gap-2">
             {isSuperAdmin && (
               <Link to="/admin/dashboard/payments/new_payments">
                 <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-primary-700 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">

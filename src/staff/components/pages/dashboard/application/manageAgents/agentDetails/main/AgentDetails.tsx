@@ -5,6 +5,7 @@ import AgentProfile from "../agentProfile/AgentProfile";
 import ManageApplication from "../manageApplication/main/ManageApplication";
 import ManageStudents from "../manageStudents/main/ManageStudents";
 import { useSingleAgentApplication } from "../../../../../../../../shared/redux/hooks/shared/getUserProfile";
+import AgentCommission from "../../agentCommission/AgentCommission";
 
 
 const AgentDetails: React.FC = () => {
@@ -106,7 +107,7 @@ const AgentDetails: React.FC = () => {
             {activeLink === "manageApplication" && (
               <ManageApplication error={error} loading={loading} applicationDetails={applicationDetails}/>)}
             {activeLink === "agentProfile" && <AgentProfile error={error} loading={loading}  applicationDetails={applicationDetails}/>}
-            {activeLink === "manageStudents" && <ManageStudents error={error} loading={loading} applicationDetails={applicationDetails}/>}
+            {activeLink === "agentCommission" && <AgentCommission />}
 
           </section>
         </div>

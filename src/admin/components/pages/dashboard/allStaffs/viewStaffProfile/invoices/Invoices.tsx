@@ -7,7 +7,7 @@ import plus from "../../../../../../../assets/svg/plus.svg";
 
 import { button } from "../../../../../../../shared/buttons/Button";
 import { useStaffDetails, useStaffInvoices } from '../../../../../../../shared/redux/hooks/admin/getAdminProfile';
-import { useCurrentUser } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
+import useUserProfile, { useCurrentUser } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
 import Modal from "../../../../../../../shared/modal/Modal";
 import ApproveInvoiceModal from "../../../../../../../shared/modal/ApproveInvoiceModal";
 import ApproveInvoiceAdmin from "../../../../../../../shared/modal/ApproveInvoiceAdmin";
@@ -43,8 +43,8 @@ const SkeletonRow: React.FC = () => (
 
 const Invoices: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
   const { staffDetail } = useStaffDetails(staffEmail);
-  const { userDetails } = useCurrentUser();
-  const isSuperAdmin = useMemo(() => userDetails?.data?.role === "SUPER_ADMIN", [userDetails]);
+  const { userProfile } = useUserProfile();
+  const isSuperAdmin = useMemo(() => userProfile?.user?.role === "SUPER_ADMIN", [userProfile]);
   const [isApproveModalOpen, setApproveModalOpen] = useState(false);
   const [isReceiptModalOpen, setReceiptModalOpen] = useState(false);
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(null);

@@ -1,11 +1,66 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../redux/store';
+import { getAdminApexChartStats } from '../redux/admin/slices/application.slices';
 
-const ApexChart: React.FC = () => {
-  const series: ApexAxisChartSeries = [{
+interface DayData {
+  day: string;
+  count: number;
+}
+
+interface ChartResponse {
+  status: number;
+  message: string;
+  data: DayData[];
+}
+
+const ApexChart = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const chartStats = useSelector((state: RootState) => state.application.getApexChatStats) as ChartResponse;
+  const [selectedStatus, setSelectedStatus] = useState('SUBMITTED');
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+
+  const statusOptions = ['COMPLETED', 'SUBMITTED', 'DECLINED'];
+  const monthOptions = Array.from({ length: 12 }, (_, i) => ({
+    value: i + 1,
+    label: new Date(0, i).toLocaleString('default', { month: 'long' })
+  }));
+
+  // Generate year options (e.g., from 2000 to current year + 1)
+  const currentYear = new Date().getFullYear();
+  const yearOptions = Array.from(
+    { length: currentYear - 1999 }, 
+    (_, i) => currentYear - i
+  );
+
+  useEffect(() => {
+    dispatch(getAdminApexChartStats({
+      month: selectedMonth,
+      year: selectedYear,
+      status: selectedStatus
+    }) as any);
+  }, [dispatch, selectedMonth, selectedYear, selectedStatus]);
+
+  const processData = () => {
+    if (!chartStats?.data) {
+      return [0, 0, 0, 0, 0, 0, 0];
+    }
+
+    const daysOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const orderedData = daysOrder.map(day => {
+      const dayData = chartStats.data.find(d => d.day === day);
+      return dayData ? dayData.count : 0;
+    });
+
+    return orderedData;
+  };
+
+  const series = [{
     name: 'Applications',
-    data: [10, 20, 15, 25, 30, 35, 40, 45, 30, 25, 20, 15]
+    data: processData()
   }];
 
   const options: ApexOptions = {
@@ -23,7 +78,7 @@ const ApexChart: React.FC = () => {
     stroke: {
       curve: 'smooth',
       width: 3,
-      colors: ['#660066'] 
+      colors: ['#660066']
     },
     fill: {
       type: 'gradient',
@@ -58,21 +113,36 @@ const ApexChart: React.FC = () => {
       labels: {
         style: {
           colors: '#64748b',
-          fontSize: '12px'
+          fontSize: '12px',
+          fontFamily: 'outfit'
+        }
+      },
+      title: {
+        text: 'Days of the Week',
+        style: {
+          fontSize: '14px',
+          color: '#660066'
         }
       }
     },
     yaxis: {
       labels: {
         style: {
-          colors: '#64748b',
+          colors: '#660066',
           fontSize: '12px'
+        }
+      },
+      title: {
+        text: 'Number of Applications',
+        style: {
+          fontSize: '14px',
+          color: '#660066'
         }
       }
     },
     grid: {
       show: true,
-      borderColor: '#660066"',
+      borderColor: '#660066',
       strokeDashArray: 4,
       position: 'back'
     },
@@ -87,14 +157,50 @@ const ApexChart: React.FC = () => {
   };
 
   return (
-    <div className="apex-chart-container" style={{backgroundColor: 'white', padding: '1rem', borderRadius: '0.5rem', boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'}}>
-    <div className="flex justify-between items-center">
-      <h1 className='font-semibold text-lg'>Insights</h1>
-      <div className='flex gap-[1.5em]'>
-        <div className='px-[1em] rounded-md py-[2px] border-[1px] border-gray-500 text-primary-700'>Application</div>
-        <div className='px-[1em] rounded-md py-[2px] border-[1px] border-gray-500 text-primary-700'>Completed</div>
+    <div className="w-full bg-white p-4 rounded-lg shadow-sm">
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="font-semibold text-lg">Insights</h1>
+        <div className="flex gap-4 items-center">
+          <select
+            className="px-3 py-1.5 rounded-md border border-gray-500 text-primary-700 text-sm"
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+          >
+            {statusOptions.map(status => (
+              <option key={status} value={status}>{status}</option>
+            ))}
+          </select>
+          
+          <select
+            className="px-3 py-1.5 rounded-md border border-gray-500 text-primary-700 text-sm"
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(Number(e.target.value))}
+          >
+            {monthOptions.map(month => (
+              <option key={month.value} value={month.value}>{month.label}</option>
+            ))}
+          </select>
+          
+          <select
+            className="px-3 py-1.5 rounded-md border border-gray-500 text-primary-700 text-sm"
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(Number(e.target.value))}
+          >
+            {yearOptions.map(year => (
+              <option key={year} value={year}>{year}</option>
+            ))}
+          </select>
+        </div>
+        
+        <div className="flex gap-6">
+          <div className="px-4 rounded-md py-0.5 border border-gray-500 text-primary-700">
+            Applications ({chartStats?.data?.reduce((acc, curr) => acc + curr.count, 0) ?? 0})
+          </div>
+          <div className="px-4 rounded-md py-0.5 border border-gray-500 text-primary-700">
+            {selectedStatus} ({chartStats?.data?.reduce((acc, curr) => acc + curr.count, 0) ?? 0})
+          </div>
+        </div>
       </div>
-    </div>
       <ReactApexChart options={options} series={series} type="area" height={350} />
     </div>
   );

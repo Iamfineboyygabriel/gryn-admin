@@ -231,9 +231,9 @@ export const assignApplicationToStaff = createAsyncThunk(
 
 export const assignApplicationToAgent = createAsyncThunk(
   "application/assignApplicationToAgent",
-  async ({ applicationId, email }: { applicationId: string; email: string }, thunkAPI) => {
+  async ({ applicationId, agentEmail, staffEmail }: { applicationId: string; agentEmail: string, staffEmail: string }, thunkAPI) => {
     try {
-      const data = await applicationServices.assignApplicationToAgent( applicationId, email);
+      const data = await applicationServices.assignApplicationToAgent( applicationId, agentEmail, staffEmail);
       return data;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.message);
@@ -281,6 +281,22 @@ export const  getAllStaffSalaryPayment = createAsyncThunk(
   }
 );
 
+export const  getAdminApplicationStatsBar = createAsyncThunk(
+  "application/getAdminApplicationStatsBar",
+  async ({ days }: { days: number; }) => {
+    const response = await applicationServices.getAdminApplicationStatsBar (days);
+    return   response.data
+  }
+);
+
+export const  getAdminApexChartStats = createAsyncThunk(
+  "application/getApexChartStats",
+  async ({ month, year, status }: { month: number; year: number;  status:string }) => {
+    const response = await applicationServices.getAdminApexChartStats(month, year, status);
+    return response
+  }
+);
+
 export const clearStaffPayment = createAsyncThunk(
   "application/clearStaffPayment",
   async () => {
@@ -315,6 +331,8 @@ interface ApplicationState {
     currentPage: number;
   };
   getStats: any;
+  getBarChatStats: any;
+  getApexChatStats: any;
   getStaffStats: any;
   registerSchool:null;
   assignAgent: null;
@@ -369,6 +387,8 @@ interface ApplicationState {
 
 const initialState: ApplicationState = {
   getStats: null,
+  getBarChatStats: null,
+  getApexChatStats: null,
   getStaffStats: null,
   registerSchool:null,
   assignAgent: null,
@@ -491,6 +511,24 @@ export const applicationSlice = createSlice({
         const errorMessage = action.error.message || "Failed to fetch admin stats.";
         setMessage(errorMessage);
       })
+      .addCase(getAdminApplicationStatsBar.fulfilled, (state, action: PayloadAction<any>) => {
+        state.getBarChatStats = action.payload;
+      })
+      .addCase(getAdminApplicationStatsBar.rejected, (state, action) => {
+        state.getBarChatStats = null;
+        const errorMessage = action.error.message || "Failed to fetch admin stats.";
+        setMessage(errorMessage);
+      })
+      
+      .addCase(getAdminApexChartStats.fulfilled, (state, action: PayloadAction<any>) => {
+        state.getApexChatStats = action.payload;
+      })
+      .addCase(getAdminApexChartStats.rejected, (state, action) => {
+        state.getApexChatStats = null;
+        const errorMessage = action.error.message || "Failed to fetch admin stats.";
+        setMessage(errorMessage);
+      })
+
       .addCase(getStaffDashboardStats.fulfilled, (state, action: PayloadAction<any>) => {
         state.getStaffStats = action.payload;
       })

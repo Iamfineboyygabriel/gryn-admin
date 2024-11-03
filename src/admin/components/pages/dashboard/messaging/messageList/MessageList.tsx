@@ -141,11 +141,11 @@ const MessageList = () => {
   };
 
   const getUnreadCount = (chat: Chat): number => {
-    return chat.messages.filter(msg => !msg.read && msg.senderId !== currentUserId).length;
+    return chat.messages.filter(msg => !msg.read && msg?.senderId !== currentUserId).length;
   };
 
   const getOtherUser = (chat: Chat) => {
-    return chat.sender.id === currentUserId ? chat.receiver : chat.sender;
+    return chat?.sender?.id === currentUserId ? chat?.receiver : chat?.sender;
   };
 
   const renderContent = () => {

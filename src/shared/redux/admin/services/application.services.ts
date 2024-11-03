@@ -353,8 +353,8 @@ const assignApplicationToStaff = async (applicationId: string, email: string) =>
   }
 };
 
-const assignApplicationToAgent = async (applicationId: string, email: string) => {
-  const url = `${process.env.REACT_APP_API_URL}/admin/application/agent/assign/${applicationId}?email=${email}`;
+const assignApplicationToAgent = async (applicationId: string, agentEmail: string, staffEmail: string) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/application/agent/assign/${applicationId}?agentEmail=${agentEmail}&staffEmail=${staffEmail}`;
   try {
     const response = await axios({
       url,
@@ -512,6 +512,36 @@ const getAllStaffSalaryPayment = async (page: number, limit: number, search: str
   }
 };
 
+const getAdminApplicationStatsBar = async (days: number) => {
+  const url = `${API_URL}/admin/application/stats/bar?days=${days}`;
+  try {
+    const response = await axios.get(url, { headers: authHeader() });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getAdminApexChartStats = async (month: number, year: number, status = '') => {
+  const url = `${API_URL}/admin/application/stats/weekly?month=${month}&year=${year}&status=${status}`;
+  try {
+    const response = await axios.get(url, { headers: authHeader() });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+
 const applicationServices = {
   getStats,
   getStaffDashboardStats,
@@ -538,6 +568,8 @@ const applicationServices = {
   getAllStaffSalaryPayment,
   getTopAgentCommission,
   getUserActivity,
+  getAdminApplicationStatsBar,
+  getAdminApexChartStats,
 };
 
 export default applicationServices;

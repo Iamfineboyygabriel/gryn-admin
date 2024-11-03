@@ -20,7 +20,7 @@ const SkeletonRow = () => (
 
 const AdminManagement = () => {
   const { 
-    admins, 
+    admins = { data: [] }, 
     totalPages, 
     currentPage, 
     loading, 
@@ -30,12 +30,8 @@ const AdminManagement = () => {
     updateSearchTerm 
   } = useAllAdminForSuperAdmin();
 
-  const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
+  const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm || "");
   const itemsPerPage = 10;
-  const [isModalOpen, setModalOpen] = useState(false);
-
-  const handleOpenModal = () => setModalOpen(true);
-  const handleCloseModal = () => setModalOpen(false);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -78,15 +74,20 @@ const AdminManagement = () => {
 
   const filteredAdmins = useMemo(() => {
     if (!admins?.data) return [];
-    return admins?.data?.filter((admin: any) => {
-      const fullName = `${admin?.profile?.firstName} ${admin?.profile?.lastName}`?.toLowerCase();
+    
+    return admins.data.filter((admin: any) => {
+      if (!localSearchTerm) return true;
+      
+      const fullName = `${admin?.profile?.firstName || ''} ${admin?.profile?.lastName || ''}`.toLowerCase();
+      const searchLower = localSearchTerm.toLowerCase();
+      
       return (
-        fullName?.includes(localSearchTerm?.toLowerCase()) ||
-        admin?.email.toLowerCase()?.includes(localSearchTerm?.toLowerCase()) ||
-        admin?.role?.toLowerCase()?.includes(localSearchTerm?.toLowerCase())
+        fullName.includes(searchLower) ||
+        admin?.email?.toLowerCase()?.includes(searchLower) ||
+        admin?.role?.toLowerCase()?.includes(searchLower)
       );
     });
-  }, [admins, localSearchTerm]);
+  }, [admins?.data, localSearchTerm]);
 
   const renderTableBody = useCallback(() => {
     if (loading) {
@@ -105,10 +106,10 @@ const AdminManagement = () => {
             {(currentPage - 1) * itemsPerPage + index + 1}
           </td>
           <td 
-            className="py-[16px] gap-1 px-[24px]"
+            className="py-[16px] px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
               highlightText(
-                `${admin?.profile?.firstName} ${admin?.profile?.lastName}`,
+                `${admin?.profile?.firstName || ''} ${admin?.profile?.lastName || ''}`,
                 localSearchTerm
               )
             )}
@@ -127,20 +128,20 @@ const AdminManagement = () => {
           />
         </tr>
       ));
-    } else {
-      return (
-        <tr>
-          <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
-            <div className="mt-[2em] flex flex-col items-center justify-center">
-              <img src={transaction} alt="No admins" />
-              <p className="mt-2 text-sm text-gray-500 dark:text-white">
-                No Admins found.
-              </p>
-            </div>
-          </td>
-        </tr>
-      );
     }
+
+    return (
+      <tr>
+        <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+          <div className="mt-[2em] flex flex-col items-center justify-center">
+            <img src={transaction} alt="No admins" />
+            <p className="mt-2 text-sm text-gray-500 dark:text-white">
+              No Admins found.
+            </p>
+          </div>
+        </td>
+      </tr>
+    );
   }, [loading, filteredAdmins, currentPage, itemsPerPage, sanitizeHTML, highlightText, localSearchTerm, formatData]);
 
   return (
@@ -157,6 +158,7 @@ const AdminManagement = () => {
             </Link>
           </div>
         </header>
+
         <div className="flex px-[1em] items-center mt-3 w-64 rounded-full border-[1px] border-border bg-gray-100 dark:bg-gray-700">
           <input
             type="text"
@@ -181,12 +183,12 @@ const AdminManagement = () => {
         </table>
       </div>
 
-      {!loading && admins && admins?.data && admins?.data?.length > 0 && (
+      {!loading && filteredAdmins.length > 0 && (
         <div className="mt-6 flex justify-center">
           <CustomPagination
             currentPage={currentPage}
             onPageChange={handlePageChange}
-            hasMore={admins?.data?.length === itemsPerPage}
+            hasMore={filteredAdmins.length === itemsPerPage}
           />
         </div>
       )}

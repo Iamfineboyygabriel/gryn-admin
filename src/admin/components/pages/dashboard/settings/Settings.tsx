@@ -3,15 +3,15 @@ import BasicInfo from "./nested/BasicInfo";
 import Password from "./nested/Password";
 import AdminManagement from "./superAdmin/adminManagement/main/AdminManagement";
 import RoleManagement from "./superAdmin/roleManagement/main/RoleManagement";
-import { useCurrentUser } from "../../../../../shared/redux/hooks/shared/getUserProfile";
+import useUserProfile, { useCurrentUser } from "../../../../../shared/redux/hooks/shared/getUserProfile";
 import Activity from "./nested/Activity";
 import { PrivateElement } from "../../../../../shared/redux/hooks/admin/PrivateElement";
 
 const Settings = () => {
   const [activeLink, setActiveLink] = useState("basicInfo");
-  const { userDetails } = useCurrentUser();
+  const { userProfile } = useUserProfile();
 
-  const isSuperAdmin = useMemo(() => userDetails?.data?.role === "SUPER_ADMIN", [userDetails]);
+  const isSuperAdmin = useMemo(() => userProfile?.user?.role === "SUPER_ADMIN", [userProfile]);
 
   return (
     <main className="font-outfit">

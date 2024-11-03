@@ -5,8 +5,8 @@ import { useAgentCommission } from '../../../../../../../shared/redux/hooks/shar
 import { button } from "../../../../../../../shared/buttons/Button";
 import plus from "../../../../../../../assets/svg/plus.svg";
 import Modal from '../../../../../../../shared/modal/Modal';
-import FindStudentByAll from '../../../application/modal/FindStudentByAll';
 import AgentCommissionDetailModal from '../../../../../../../shared/modal/AgentCommissionDetailModal';
+import FindStudentByAll from '../../../../../../../admin/components/pages/dashboard/application/modal/FindStudentByAll';
 
 const SkeletonRow: React.FC = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -26,14 +26,10 @@ interface CommissionItem {
   createdAt: string;
   updatedAt: string,
   application: {
-    degree: any;
     country: string;
     firstName: string;
     lastName: string;
     middleName: string;
-  }
-  degree: {
-    univerisity: string;
   }
 }
 
@@ -53,7 +49,7 @@ const AgentCommission = () => {
   };
 
   const { agentCommissions, loading, error, fetchAgentPayments } = useAgentCommission();
-   console.log("agg",agentCommissions)
+   
   const handleViewDetails = (payment: CommissionItem) => {
     setSelectedPayment(payment);
     setIsModalOpen(true);
@@ -75,8 +71,8 @@ const AgentCommission = () => {
         <tr key={commission?.id} className="text-[14px] border-b border-gray-200 leading-[20px] text-grey-primary font-medium">
           <td className="py-[16px] px-[24px]">{index + 1}</td>
           <td className="py-[16px] px-[24px]">{commission?.application?.lastName} {commission?.application?.middleName} {commission?.application?.firstName}</td>
-          <td className="py-[16px] px-[24px]">{commission?.application?.degree?.university}</td>
-          <td className="py-[16px] px-[24px]">{commission?.application?.degree?.degreeType}</td>
+          <td className="py-[16px] px-[24px]">-</td>
+          <td className="py-[16px] px-[24px]">-</td>
           <td className="py-[16px] px-[24px]">{commission?.application?.country}</td>
           <td className="py-[16px] px-[24px]">
             {commission?.amount ? formatAmount(commission?.amount) : '-'}
@@ -110,12 +106,6 @@ const AgentCommission = () => {
       <div className="relative">
         <header className="flex items-center justify-between">
           <h1 className="font-semibold text-xl">All Payments</h1>
-          <div className="flex gap-2">
-            <button.PrimaryButton onClick={handleFindByAllOpen} className="mt-[1em] flex gap-2 rounded-full bg-primary-700 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
-              <img src={plus} alt="plus" />
-              New Commission
-            </button.PrimaryButton>
-          </div>
         </header>
         <table className="w-full mt-4 border-collapse">
           <thead className="text-gray-500 border-b border-gray-200">

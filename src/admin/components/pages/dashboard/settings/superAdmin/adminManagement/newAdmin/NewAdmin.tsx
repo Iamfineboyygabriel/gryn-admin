@@ -31,7 +31,7 @@ const NewAdmin = () => {
   const [isModalOpen, setModalOpen] = useState(false);
 
   const type: Gender[] = [{ name: "MALE" }, {name:"FEMALE"}];
-  const designationType: DesignationChoice[] = [{ name: "CUSTOMER_RELATIONS" }, {name: "STUDENT_RELATION_MANAGER"}, {name: "INTERNATIONAL_RELATIONAL_MANAGER"}, {name: "OFFICE_ADMIN"},{name: "EXCUTIVE_ADMIN"}];
+  const designationType: DesignationChoice[] = [{ name: "CUSTOMER_RELATIONS" }, {name: "STUDENT_RELATION_MANAGER"}, {name: "INTERNATIONAL_RELATIONAL_MANAGER"}, {name: "OFFICE_ADMIN"},{name: "EXECUTIVE_ADMIN"}];
 
   
   const handleSelectGender = useCallback((item: DropdownItem) => {

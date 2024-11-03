@@ -10,8 +10,6 @@ import ConfirmDiscard from "../../../../../../shared/modal/ConfirmDiscard";
 
 const BasicInfo = () => {
   const { userProfile, updateUserProfile, uploadUserAvatar } = useUserProfile();
-  const { userDetails } = useCurrentUser();
-  console.log("current",userDetails)
   const [firstName, setFirstName] = useState(userProfile?.firstName || "");
   const [loading, setLoading] = useState(false);
   const [avatarLoading, setAvatarLoading] = useState(false);
@@ -111,7 +109,7 @@ const BasicInfo = () => {
             {userProfile?.lastName} {userProfile?.firstName}
           </h1>
           <p className="mt-[1.5em] text-xs font-semibold tracking-wide text-completed">
-            {userDetails?.data?.role || ""}
+            {userProfile?.user?.role || ""}
           </p>
         </div>
       </div>
