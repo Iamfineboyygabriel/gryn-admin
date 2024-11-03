@@ -406,10 +406,14 @@ export const findStudentByEmail = createAsyncThunk(
 
  export const findAgentByEmail = createAsyncThunk(
   "shareApplication/findAgentByEmail",
-   async (email:string) => {
-     const response = await shareApplicationServices.findAgentByEmail(email);
-     return response.data
-   }
+   async (email:string, thunkAPI) => {
+    try{
+    const response = await shareApplicationServices.findAgentByEmail(email);
+      return response.data
+    }catch (error: any) {
+    return thunkAPI.rejectWithValue(error);
+  }
+ }
  );
 
  export const findStaffByEmail = createAsyncThunk(

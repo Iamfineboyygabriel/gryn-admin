@@ -6,12 +6,16 @@ import ManageApplication from "../manageApplication/ManageApplication";
 import AgentProfile from "../agentProfile/AgentProfile";
 import AgentCommission from "../../agentCommission/AgentCommission";
 
+interface LocationState {
+  agentId: string;
+  email: string;
+}
+
 const AgentDetails: React.FC = () => {
   const location = useLocation();
-  const { agentId } = useParams<{ agentId: string }>();
+  const { agentId, email } = location.state as LocationState;
   const [activeLink, setActiveLink] = useState("manageApplication");
   
-  // Add pagination and filter states
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
@@ -28,7 +32,6 @@ const AgentDetails: React.FC = () => {
       status: status
     }
   );
-
   const navigate = useNavigate();
 
   const { firstName, lastName } =
@@ -38,7 +41,6 @@ const AgentDetails: React.FC = () => {
     navigate(-1);
   };
 
-  // Add handlers for pagination and filters
   const handleSearchChange = (newSearch: string) => {
     setSearchTerm(newSearch);
     setCurrentPage(1);
@@ -145,7 +147,7 @@ const AgentDetails: React.FC = () => {
                 onPageChange={handlePageChange}
               />
             )}
-            {activeLink === "agentProfile" && <AgentProfile error={error} loading={loading} applicationDetails={applicationDetails}/>}
+            {activeLink === "agentProfile" && <AgentProfile error={error} loading={loading} email={email}/>}
             {activeLink === "agentCommission" && <AgentCommission/>}
           </section>
         </div>

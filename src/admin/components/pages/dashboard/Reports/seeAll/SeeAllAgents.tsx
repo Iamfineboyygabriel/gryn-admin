@@ -46,11 +46,11 @@ const SeeAllAgents = () => {
   }, [localSearchTerm, updateSearchTerm, fetchAgents, itemsPerPage, searchTerm]);
 
   const handleViewDetails = useCallback(
-    (studentId: string, firstName: string, lastName: string) => {
+    (agentId: string, firstName: string, lastName: string, email: string) => {
       navigate(
-        `/admin/dashboard/all_users/agent_details/${studentId}`,
+        `/admin/dashboard/all_users/agent_details`,
         {
-          state: { firstName, lastName },
+          state: { firstName, lastName, agentId, email },
         }
       );
     },
@@ -134,8 +134,9 @@ const SeeAllAgents = () => {
                onClick={() =>
                 handleViewDetails(
                   agent?.id,
-                  agent?.profile.firstName,
-                  agent?.profile.lastName
+                  agent?.profile?.firstName,
+                  agent?.profile?.lastName,
+                  agent?.profile?.email
                 )
               }
               className="text-primary-700 cursor-pointer font-[600] flex items-center gap-[8px]"

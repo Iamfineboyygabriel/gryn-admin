@@ -21,6 +21,11 @@ interface Application {
   status: string;
 }
 
+interface LocationState {
+  studentId: string;
+}
+
+
 const SkeletonRow: React.FC = () => (
   <tr className="animate-pulse border-b border-gray-200">
     {Array.from({ length: 8 }).map((_, index) => (
@@ -32,7 +37,8 @@ const SkeletonRow: React.FC = () => (
 );
 
 const AllStudentApplications: React.FC = () => {
-  const { studentId } = useParams<{ studentId: string }>();
+  const location = useLocation();
+  const { studentId } = location.state as LocationState;
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [currentPage, setCurrentPage] = useState(1);
@@ -51,7 +57,6 @@ const AllStudentApplications: React.FC = () => {
   );
 
   const navigate = useNavigate();
-  const location = useLocation();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -102,9 +107,14 @@ const AllStudentApplications: React.FC = () => {
     setCurrentPage(newPage);
   };
 
-  const handleViewDetails = (applicationId: number) => {
-    navigate(`/admin/dashboard/all_users/view_Application/${applicationId}`);
-  };
+  const handleViewDetails = useCallback(
+    (applicationId: number) => {
+      navigate("/admin/dashboard/all_users/view_Application", {
+        state: { applicationId: applicationId }
+      });
+    },
+    [navigate]
+  );
 
   if (error) return <Error error={error} />;
 

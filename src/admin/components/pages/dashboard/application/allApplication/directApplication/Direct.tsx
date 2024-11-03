@@ -71,9 +71,18 @@ const AllApplication: React.FC = () => {
     fetchApplications(newPage, itemsPerPage); 
   }, [fetchApplications, itemsPerPage, sortOrder]);
 
-  const handleViewDetails = useCallback((applicationId: string) => {
-    navigate(`/admin/dashboard/application/direct_application/view_application/${applicationId}`);
-  }, [navigate]);
+  // const handleViewDetails = useCallback((applicationId: string) => {
+  //   navigate(`/admin/dashboard/application/direct_application/view_application/${applicationId}`);
+  // }, [navigate]);
+
+  const handleViewDetails = useCallback(
+    (applicationId: number) => {
+      navigate("/admin/dashboard/application/direct_application/view_application", {
+        state: { applicationId: applicationId }
+      });
+    },
+    [navigate]
+  );
 
   const formatData = useCallback((data: any) => (data ? data : "-"), []);
 

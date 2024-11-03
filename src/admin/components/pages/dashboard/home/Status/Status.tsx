@@ -20,8 +20,10 @@ const Status = () => {
   const navigate = useNavigate()
 
   const handleViewDetails = useCallback(
-    (applicationId: string) => {
-      navigate(`/admin/dashboard/application/all_application/view_application/${applicationId}`);
+    (applicationId: number) => {
+      navigate("/admin/dashboard/application/all_application/view_application", {
+        state: { applicationId: applicationId }
+      });
     },
     [navigate]
   );

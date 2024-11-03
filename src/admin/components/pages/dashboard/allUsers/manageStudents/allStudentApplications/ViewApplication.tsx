@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import PersonalDetails from "../allStudentApplications/personalDeatils/PersonalDetails";
 import Degree from "../allStudentApplications/degree/Degree";
 import UploadedDocument from "../allStudentApplications/upload/UploadedDocuments";
@@ -12,18 +12,23 @@ import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import Payments from "../../../application/allApplication/viewApplicationDetails/view/payments/Payments";
 
+interface LocationState {
+  applicationId: any;
+}
+
 const ViewApplication: React.FC = () => {
+  const location = useLocation();
+  const { applicationId } = location.state as LocationState;
   const [activeLink, setActiveLink] = useState("personalDetails");
   const [isGeneratingPDF, setIsGeneratingPDF] = useState<boolean>(false);
   const navigate = useNavigate();
-  const { applicationId } = useParams<{ applicationId: any }>();
   const personalDetailsRef = useRef<HTMLDivElement>(null);
   const degreeRef = useRef<HTMLDivElement>(null);
   const uploadedDocumentRef = useRef<HTMLDivElement>(null);
   const paymentDocumentRef = useRef<HTMLDivElement>(null);
-
+  
   const { applicationDetails, loading, error } = useApplicationDetails(
-    applicationId && applicationId.trim() !== "" ? applicationId : null
+    applicationId !== "" ? applicationId : null
   );
 
   const handleBackClick = () => {

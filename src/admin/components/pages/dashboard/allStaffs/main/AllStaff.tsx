@@ -89,9 +89,18 @@ const AllStaff = () => {
     });
   }, [admins, localSearchTerm]);
 
+  // const handleViewDetails = useCallback(
+  //   (staffEmail: string) => {
+  //     navigate(`/admin/dashboard/all_staffs/view_profile/${staffEmail}`);
+  //   },
+  //   [navigate]
+  // );
+
   const handleViewDetails = useCallback(
     (staffEmail: string) => {
-      navigate(`/admin/dashboard/all_staffs/view_profile/${staffEmail}`);
+      navigate("/admin/dashboard/all_staffs/view_profile", {
+        state: { staffEmail: staffEmail }
+      });
     },
     [navigate]
   );

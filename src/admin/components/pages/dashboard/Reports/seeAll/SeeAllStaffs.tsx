@@ -86,7 +86,12 @@ const AllStaff = () => {
 
   const handleViewDetails = useCallback(
     (staffEmail: string) => {
-      navigate(`/admin/dashboard/all_staffs/view_profile/${staffEmail}`);
+      navigate(
+        `/admin/dashboard/all_staffs/view_profile`,
+        {
+          state: { staffEmail },
+        }
+      );
     },
     [navigate]
   );

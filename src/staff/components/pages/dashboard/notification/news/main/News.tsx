@@ -35,6 +35,10 @@ const News = () => {
     fetchNews(page, itemsPerPage);
   }, [fetchNews, itemsPerPage]);
 
+  const handleDeleteSuccess = useCallback(() => {
+    fetchNews(currentPage, itemsPerPage);
+  }, [fetchNews, currentPage, itemsPerPage]);
+
   const sanitizeHTML = useCallback((html: string) => {
     return { __html: DOMPurify.sanitize(html) };
   }, []);
@@ -130,7 +134,11 @@ const News = () => {
           onClose={handleCloseModal}
           data-aos="zoom-in"
         >
-          <ViewNews onClose={handleCloseModal} news={selectedNews} />
+        <ViewNews 
+            onClose={handleCloseModal} 
+            news={selectedNews} 
+            onDelete={handleDeleteSuccess}
+          />
         </MainNewsModal>
       )}
     </main>

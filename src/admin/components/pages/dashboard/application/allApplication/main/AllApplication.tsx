@@ -28,7 +28,8 @@ const AllApplication: React.FC = () => {
     updateSortTerm,
     updateStatusTerm
   } = useAllApplication();
-  
+
+
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [status, setStatus] = useState<string>("");
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
@@ -69,9 +70,14 @@ const AllApplication: React.FC = () => {
     fetchApplications(newPage, itemsPerPage); 
   }, [fetchApplications, itemsPerPage, sortOrder]);
 
-  const handleViewDetails = useCallback((applicationId: string) => {
-    navigate(`/admin/dashboard/application/all_application/view_application/${applicationId}`);
-  }, [navigate]);
+  const handleViewDetails = useCallback(
+    (applicationId: number) => {
+      navigate("/admin/dashboard/application/all_application/view_application", {
+        state: { applicationId: applicationId }
+      });
+    },
+    [navigate]
+  );
 
   const formatData = useCallback((data: any) => (data ? data : "-"), []);
 
@@ -240,7 +246,7 @@ const AllApplication: React.FC = () => {
                 Documents
               </th>
               <th className="px-6 py-3 text-left whitespace-nowrap text-sm font-normal">
-                Assigned Agent
+                Assigned To
               </th>
               <th className="px-6 py-3 text-left text-sm font-normal">Action</th>
             </tr>

@@ -141,6 +141,26 @@ const getNotificationCount = async () => {
     }
 };
 
+
+const deleteNews = async (newsId: any) => {
+  const url = `${process.env.REACT_APP_API_URL}/news/${newsId}`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "delete",
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
 const notificationApplicationServices = {
     createNews,
     createNewsDraft,
@@ -149,7 +169,8 @@ const notificationApplicationServices = {
     CreateNotification,
     getAllNotification,
     getNotificationCount,
-    updateNotificationStatus
+    updateNotificationStatus,
+    deleteNews,
 }
 
 export default notificationApplicationServices;

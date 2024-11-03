@@ -34,7 +34,6 @@ const PendingAgents = () => {
 
   const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
   const itemsPerPage = 10;
-
     
   const [isModalOpen, setModalOpen] = useState(false);
 

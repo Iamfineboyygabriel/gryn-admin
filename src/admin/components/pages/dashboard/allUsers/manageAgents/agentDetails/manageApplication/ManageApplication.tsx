@@ -64,6 +64,16 @@ const ManageApplication: React.FC<ManageApplicationProps> = ({
 }) => {
   const navigate = useNavigate();
 
+  const handleViewDetails = useCallback(
+    (applicationId: number) => {
+      navigate("/admin/dashboard/all_users/view_Application", {
+        state: { applicationId: applicationId }
+      });
+    },
+    [navigate]
+  );
+
+
   const highlightText = useCallback(
     (text: string, query: string): React.ReactNode => {
       if (!query.trim()) return text;
@@ -85,9 +95,21 @@ const ManageApplication: React.FC<ManageApplicationProps> = ({
 
   if (error) return <Error error={error} />;
 
-  const handleViewDetails = (applicationId: number) => {
-    navigate(`/admin/dashboard/all_users/view_Application/${applicationId}`);
-  };
+
+  if (!applicationDetails?.application || applicationDetails?.application?.length === 0) {
+    return (
+      <div className="flex justify-center">
+      <tr>
+        <td colSpan={8} className="px- py-4 flex justify-center text-center text-gray-500">
+          <div className="flex flex-col items-center justify-center mt-8">
+            <img src={noData} alt="No applications" className="mb-4" />
+            <p>No applications found</p>
+          </div>
+        </td>
+      </tr>
+      </div>
+    );
+  }
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onSearchChange(e.target.value);
@@ -104,19 +126,7 @@ const ManageApplication: React.FC<ManageApplicationProps> = ({
       ));
     }
 
-    if (!applicationDetails?.application || applicationDetails?.application?.length === 0) {
-      return (
-        <tr>
-          <td colSpan={8} className="px-6 py-4 text-center text-gray-500">
-            <div className="flex flex-col items-center justify-center mt-8">
-              <img src={noData} alt="No applications" className="mb-4" />
-              <p>No applications found</p>
-            </div>
-          </td>
-        </tr>
-      );
-    }
-
+  
     return applicationDetails?.application?.map((app, index) => (
       <tr
         key={app?.id}

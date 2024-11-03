@@ -78,11 +78,11 @@ const DashboardRoutes = () => {
         <Route path="application" element={<Application />} />
         
         <Route
-          path="/application/all_application/view_application/:applicationId"
+          path="/application/all_application/view_application"
           element={<ViewApplicationDetails />}
         />
          <Route
-          path="/application/direct_application/view_application/:applicationId"
+          path="/application/direct_application/view_application"
           element={<ViewDirectApplicationDetails />}
         />
         <Route
@@ -115,11 +115,11 @@ const DashboardRoutes = () => {
         />
 
           <Route
-          path="/all_users/student_applications/:studentId"
+          path="/all_users/student_applications"
           element={<AllStudentApplications />}
         />
           <Route
-          path="/all_users/agent_details/:agentId"
+          path="/all_users/agent_details"
           element={<AgentDetails />}
         />
           <Route
@@ -127,7 +127,7 @@ const DashboardRoutes = () => {
           element={<NewCommission />}
         />
           <Route
-          path="/all_users/view_application/:applicationId"
+          path="/all_users/view_application"
           element={<ViewApplication />}
         />
 
@@ -150,7 +150,7 @@ const DashboardRoutes = () => {
         />
 
           <Route path="all_staffs" element={<AllStaff />} />
-          <Route path="/all_staffs/view_profile/:staffEmail" element={<ViewStaffProfile />} />
+          <Route path="/all_staffs/view_profile" element={<ViewStaffProfile />} />
           <Route path="/all_staffs/create_staff" element={<CreateStaff />} />
           <Route path="/all_staffs/new-salary" element={<NewSalary />} />
           <Route path="/all_staffs/view_profile/:staffEmail/new_invoice" element={<NewInvoice />} />

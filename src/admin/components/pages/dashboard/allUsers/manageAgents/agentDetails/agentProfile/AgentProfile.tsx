@@ -10,6 +10,7 @@ import upload from "../../../../../../../../assets/svg/Upload.svg";
 import ReactLoading from "react-loading";
 import { toast } from "react-toastify";
 import { updateRegistrationUploadedDocument } from '../../../../../../../../shared/redux/shared/services/shareApplication.services';
+import { useLocation } from 'react-router';
 
 interface Application {
   id: number;
@@ -17,9 +18,7 @@ interface Application {
 }
 
 interface AgentProfileProps {
-  applicationDetails: {
-    application: Application[];
-  };
+  email: string
   loading: boolean;
   error: string | null;
 }
@@ -34,8 +33,10 @@ const SkeletonRow: React.FC = () => (
   </tr>
 );
 
+
+
 const AgentProfile: React.FC<AgentProfileProps> = ({
-  applicationDetails,
+  email,
   loading: initialLoading,
   error,
 }) => {
@@ -50,13 +51,12 @@ const AgentProfile: React.FC<AgentProfileProps> = ({
   const [files, setFiles] = useState<{ [key: string]: File }>({});
   const [selectedFileNames, setSelectedFileNames] = useState<{ [key: string]: string }>({});
 
-  const email = applicationDetails?.application[0]?.email;
-
   const handleSubmit = async () => {
     if (email) {
       try {
         setLoading(true);
         const response = await dispatch(findAgentByEmail(email) as any);
+        console.log("res",response)
         if (response?.payload) {
           setAgentData(response.payload);
         }

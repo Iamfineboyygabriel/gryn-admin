@@ -112,12 +112,25 @@ export const createNews = createAsyncThunk(
     }
   );
 
+  export const deleteNews = createAsyncThunk(
+    "notificationApplication/deleteNews",
+     async (newsId: any, thunkAPI) => {
+      try{
+      const response = await notificationApplicationServices.deleteNews(newsId);
+        return response.data
+      }catch (error: any) {
+      return thunkAPI.rejectWithValue(error);
+    }
+   }
+   );
+
 interface ApplicationState {
     registerNews: null;
     registerNewsDraft: null;
     registerNotification: null,
     notificationCount: null,
     updateNotification: null,
+    removeNews:null,
     loading: boolean;
     error: string | null;
     sort: string | null;
@@ -146,6 +159,7 @@ interface ApplicationState {
   
   const initialState: ApplicationState = {
     registerNews: null,
+    removeNews: null,
     registerNewsDraft: null,
     registerNotification: null,
     updateNotification: null,
@@ -295,6 +309,19 @@ export const notificationApplicationSlice = createSlice({
     state.updateNotification = action.payload;
   })
   .addCase(updateNotificationStatus.rejected, (state, action) => {
+    state.loading = false;
+    state.error = action.error.message || "Failed to update Notification";
+  })
+
+  .addCase(deleteNews.pending, (state) => {
+    state.loading = true;
+    state.error = null;
+  })
+  .addCase(deleteNews.fulfilled, (state, action: PayloadAction<any>) => {
+    state.loading = false;
+    state.removeNews = action.payload;
+  })
+  .addCase(deleteNews.rejected, (state, action) => {
     state.loading = false;
     state.error = action.error.message || "Failed to update Notification";
   })

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import transaction from "../../../../../../../assets/svg/Transaction.svg";
 import { useAgentCommission } from '../../../../../../../shared/redux/hooks/shared/getUserProfile';
 import { button } from "../../../../../../../shared/buttons/Button";
@@ -36,9 +36,13 @@ interface CommissionItem {
     univerisity: string;
   }
 }
+interface LocationState {
+  agentId: string;
+}
 
 const AgentCommission = () => {
-  const { agentId } = useParams<{ agentId: string }>();
+  const location = useLocation();
+  const { agentId } = location.state as LocationState;
   const [isFindByModalOpen, setIsFindByModalOpen] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState<CommissionItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);

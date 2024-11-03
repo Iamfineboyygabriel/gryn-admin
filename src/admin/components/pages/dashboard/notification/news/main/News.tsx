@@ -61,6 +61,10 @@ const News = () => {
     setSelectedNews(null);
   };
 
+  const handleDeleteSuccess = useCallback(() => {
+    fetchNews(currentPage, itemsPerPage);
+  }, [fetchNews, currentPage, itemsPerPage]);
+
   return (
     <main className='font-outfit'>
       <div className="flex justify-between px-[2em] mb-4">
@@ -136,7 +140,11 @@ const News = () => {
           onClose={handleCloseModal}
           data-aos="zoom-in"
         >
-          <ViewNews onClose={handleCloseModal} news={selectedNews} />
+             <ViewNews 
+            onClose={handleCloseModal} 
+            news={selectedNews} 
+            onDelete={handleDeleteSuccess}
+          />
         </MainNewsModal>
       )}
     </main>
