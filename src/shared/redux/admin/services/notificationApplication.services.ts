@@ -141,7 +141,6 @@ const getNotificationCount = async () => {
     }
 };
 
-
 const deleteNews = async (newsId: any) => {
   const url = `${process.env.REACT_APP_API_URL}/news/${newsId}`;
   try {

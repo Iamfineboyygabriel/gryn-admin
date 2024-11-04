@@ -66,7 +66,7 @@ const DashboardRoutes = () => {
         <Route path="messages" element={<Messaging />} />
         <Route path="settings" element={<Settings />} />
         <Route
-          path="/application/manage_application/view_application/:applicationId"
+          path="/application/manage_application/view_application"
           element={<ViewApplication />}
         />
         
@@ -99,7 +99,7 @@ const DashboardRoutes = () => {
         />
 
         <Route
-          path="/application/manage_agent/agent_details/:agentId"
+          path="/application/manage_agent/agent_details"
           element={<AgentDetails />}
         />
          <Route
@@ -120,7 +120,7 @@ const DashboardRoutes = () => {
         />
         <Route path="/visa" element={<Visa />} />
         <Route path="/visa/new_application" element={<NewVisaApplication />} />
-        <Route path="/visa/view_visa_application/:applicationId" element={<ViewVisaApplication />} />
+        <Route path="/visa/view_visa_application" element={<ViewVisaApplication />} />
 
         <Route path="/payments/new_payment" element={<NewPayment />} />
         <Route path="/payments/generate_invoice" element={<GenerateInvoice />} />

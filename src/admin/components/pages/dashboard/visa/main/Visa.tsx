@@ -133,8 +133,10 @@ const Visa: React.FC = () => {
   }, [fetchApplications]);
 
   const handleViewDetails = useCallback(
-    (applicationId: string) => {
-      navigate(`/admin/dashboard/visa/view_visa_application/${applicationId}`);
+    (applicationId: any) => {
+      navigate("/admin/dashboard/visa/view_visa_application", {
+        state: { applicationId: applicationId }
+      });
     },
     [navigate]
   );

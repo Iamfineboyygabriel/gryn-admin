@@ -27,6 +27,7 @@ interface AgentData {
   firstName:string;
   lastName:string;
   profile:{
+    email(userId: string, firstName: string, lastName: string, email: any): void;
     firstName: string;
     lastName: string;
     userId: string;
@@ -67,13 +68,13 @@ const ManageAgents = () => {
       agent.email.toLowerCase().includes(localSearchTerm.toLowerCase())
     );
   }, [agentDetail, localSearchTerm]);
-
+  
   const handleViewDetails = useCallback(
-    (userId: string, firstName: string, lastName: string) => {
+    (agentId: string, firstName: string, lastName: string, email: any) => {
       navigate(
-        `/staff/dashboard/application/manage_agent/agent_details/${userId}`,
+        `/staff/dashboard/application/manage_agent/agent_details`,
         {
-          state: { firstName, lastName },
+          state: { firstName, lastName, agentId, email },
         }
       );
     },
@@ -114,7 +115,8 @@ const ManageAgents = () => {
                 handleViewDetails(
                   agent.profile.userId,  
                   agent.profile.firstName,
-                  agent.profile.lastName
+                  agent.profile.lastName,
+                  agent?.profile?.email
                 )
               }
               className="text-primary-700 cursor-pointer font-[600] flex items-center gap-[8px]"

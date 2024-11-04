@@ -8,11 +8,17 @@ import { useSingleAgentApplication } from "../../../../../../../../shared/redux/
 import AgentCommission from "../../agentCommission/AgentCommission";
 
 
+interface LocationState {
+  agentId: string;
+}
+
 const AgentDetails: React.FC = () => {
   const location = useLocation();
-  const { agentId } = useParams<{ agentId: string }>();
   const [activeLink, setActiveLink] = useState("manageApplication");
   
+  const { firstName, lastName, agentId, email } =
+    (location.state as { firstName?: string; lastName?: string, agentId: any, email: any }) || {};
+
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
@@ -31,9 +37,6 @@ const AgentDetails: React.FC = () => {
   );
 
   const navigate = useNavigate();
-
-  const { firstName, lastName } =
-    (location.state as { firstName?: string; lastName?: string }) || {};
 
   const handleBackClick = () => {
     navigate(-1);
@@ -106,7 +109,7 @@ const AgentDetails: React.FC = () => {
           <section className="mt-3">
             {activeLink === "manageApplication" && (
               <ManageApplication error={error} loading={loading} applicationDetails={applicationDetails}/>)}
-            {activeLink === "agentProfile" && <AgentProfile error={error} loading={loading}  applicationDetails={applicationDetails}/>}
+            {activeLink === "agentProfile" && <AgentProfile error={error} loading={loading} email={email}/>}
             {activeLink === "agentCommission" && <AgentCommission />}
 
           </section>

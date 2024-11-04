@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import PersonalDetails from "../personalDetails/PersonalDetails";
@@ -8,10 +8,16 @@ import UploadedDocuments from "../uploadedDocuments/UploadedDocuments";
 import { button } from "../../../../../../../shared/buttons/Button";
 import upload from "../../../../../../../assets/svg/Upload.svg";
 
-const ViewApplication: React.FC = () => {
+
+interface LocationState {
+  applicationId: string;
+}
+
+const ViewApplication = () => {
+  const location = useLocation();
+  const { applicationId } = location.state as LocationState;
   const [activeLink, setActiveLink] = useState<string>("personalDetails");
   const [isGeneratingPDF, setIsGeneratingPDF] = useState<boolean>(false);
-  const { applicationId } = useParams<{ applicationId: string }>();
   const navigate = useNavigate();
 
   const personalDetailsRef = useRef<HTMLDivElement>(null);

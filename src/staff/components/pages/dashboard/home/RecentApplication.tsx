@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useNavigate } from "react-router";
 import DOMPurify from "dompurify";
 import transaction from "../../../../../assets/svg/Transaction.svg";
@@ -23,9 +23,15 @@ const AllApplication = () => {
     fetchApplications(1, 5);  
   }, []); 
 
-  const handleViewDetails = (applicationId: string) => {
-    navigate(`/staff/dashboard/application/manage_application/view_application/${applicationId}`);
-  };
+ 
+  const handleViewDetails = useCallback(
+    (applicationId: number) => {
+      navigate("/staff/dashboard/application/manage_application/view_application", {
+        state: { applicationId: applicationId }
+      });
+    },
+    [navigate]
+  );
 
   const formatData = (data: any) => data || "-";
 

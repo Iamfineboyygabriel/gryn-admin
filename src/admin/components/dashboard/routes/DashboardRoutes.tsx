@@ -102,7 +102,7 @@ const DashboardRoutes = () => {
         
         <Route path="/visa" element={<Visa />} />
         <Route path="/visa/new_application" element={<NewVisaApplication />} />
-        <Route path="/visa/view_visa_application/:applicationId" element={<ViewVisaApplication />} />
+        <Route path="/visa/view_visa_application" element={<ViewVisaApplication />} />
 
         <Route path="all_users" element={<AllUsers />} />
         <Route

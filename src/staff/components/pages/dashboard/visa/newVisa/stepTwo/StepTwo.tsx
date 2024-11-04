@@ -464,6 +464,7 @@ const StepTwo = ({
                 asterisk
                 searchVisible
                 loading={countriesLoading}
+                placeholder="Destination"
               />
             </div>
           </div>

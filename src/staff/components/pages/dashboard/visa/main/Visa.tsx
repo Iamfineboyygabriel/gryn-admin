@@ -104,12 +104,13 @@ const Visa: React.FC = () => {
   };
 
   const handleViewDetails = useCallback(
-    (applicationId: string) => {
-      navigate(`/staff/dashboard/visa/view_visa_application/${applicationId}`);
+    (applicationId: any) => {
+      navigate("/staff/dashboard/visa/view_visa_application", {
+        state: { applicationId: applicationId }
+      });
     },
     [navigate]
   );
-
 
   const renderPaymentStatus = (documents: Array<{documentType: string; publicURL: string}>, type: string) => {
     const document = documents.find(doc => doc.documentType === type);

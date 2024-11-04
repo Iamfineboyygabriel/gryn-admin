@@ -17,16 +17,14 @@ interface Application {
 }
 
 interface AgentProfileProps {
-  applicationDetails: {
-    application: Application[];
-  };
   loading: boolean;
   error: string | null;
+  email: any
 }
 
 const SkeletonRow: React.FC = () => (
   <tr className="animate-pulse border-b border-gray-200">
-    {Array.from({ length: 5 }).map((_, index) => (
+    {Array.from({ length: 2 }).map((_, index) => (
       <td key={index} className="px-6 py-4">
         <div className="h-4 bg-gray-200 rounded"></div>
       </td>
@@ -35,9 +33,9 @@ const SkeletonRow: React.FC = () => (
 );
 
 const AgentProfile: React.FC<AgentProfileProps> = ({
-  applicationDetails,
   loading: initialLoading,
   error,
+  email
 }) => {
   const dispatch = useAppDispatch();
   const [agentData, setAgentData] = useState<any>(null);
@@ -50,7 +48,6 @@ const AgentProfile: React.FC<AgentProfileProps> = ({
   const [files, setFiles] = useState<{ [key: string]: File }>({});
   const [selectedFileNames, setSelectedFileNames] = useState<{ [key: string]: string }>({});
 
-  const email = applicationDetails?.application[0]?.email;
 
   const handleSubmit = async () => {
     if (email) {

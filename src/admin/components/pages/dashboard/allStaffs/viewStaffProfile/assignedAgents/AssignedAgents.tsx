@@ -86,11 +86,11 @@ const AssignedAgents: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
     );
   }, [agentDetail, localSearchTerm]);
   const handleViewDetails = useCallback(
-    (studentId: string, firstName: string, lastName: string) => {
+    (agentId: string, firstName: string, lastName: string) => {
       navigate(
-        `/admin/dashboard/all_users/agent_details/${studentId}`,
+        `/admin/dashboard/all_users/agent_details`,
         {
-          state: { firstName, lastName },
+          state: { firstName, lastName, agentId },
         }
       );
     },

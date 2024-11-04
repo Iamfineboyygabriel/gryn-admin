@@ -76,7 +76,7 @@ const AssignApplicationToAgent = ({ applicationId, onClose }: AssignApplicationP
           onClose={handleCloseAgentModal}
           data-aos="zoom-in"
         >
-          <AgentEmailDropdown applicationId={applicationId} />
+          <AgentEmailDropdown onClose={onClose} applicationId={applicationId} />
         </Modal>
       )}
     </main>

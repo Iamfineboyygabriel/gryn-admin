@@ -9,7 +9,7 @@ import { AppDispatch } from "../redux/store";
 import ReactLoading from "react-loading";
 import ApplicationAssignedSuccessAgent from "./ApplicationAssignedSuccessAgent";
 
-const AgentEmailDropdown = ({ applicationId }: { applicationId: string }) => {
+const AgentEmailDropdown = ({ applicationId, onClose }: { applicationId: any, onClose: any }) => {
   const dispatch: AppDispatch = useAppDispatch();
   const { agentsEmail, loading: agentEmailLoading } = useAgentsEmails();
   const { staffEmail: staffsEmail, loading: staffLoading } = useStaffEmails();
@@ -48,7 +48,6 @@ const AgentEmailDropdown = ({ applicationId }: { applicationId: string }) => {
   }, []);
 
   const handleContinue = async () => {
-    // Validate both emails are selected
     if (!selectedAgentEmail) {
       setError("Please select an agent email");
       return;
@@ -69,6 +68,7 @@ const AgentEmailDropdown = ({ applicationId }: { applicationId: string }) => {
       
       if (assignApplicationToAgent.fulfilled.match(resultAction)) {
         handleModalOpen();
+        onClose();
       } else if (assignApplicationToAgent.rejected.match(resultAction)) {
         setError(resultAction.payload as string || "Failed to assign application");
       }
