@@ -26,6 +26,7 @@ interface CommissionItem {
   createdAt: string;
   updatedAt: string,
   application: {
+    degree: any;
     country: string;
     firstName: string;
     lastName: string;
@@ -77,7 +78,7 @@ const AgentCommission = () => {
         <tr key={commission?.id} className="text-[14px] border-b border-gray-200 leading-[20px] text-grey-primary font-medium">
           <td className="py-[16px] px-[24px]">{index + 1}</td>
           <td className="py-[16px] px-[24px]">{commission?.application?.lastName} {commission?.application?.middleName} {commission?.application?.firstName}</td>
-          <td className="py-[16px] px-[24px]">-</td>
+          <td className="py-[16px] px-[24px]">{commission?.application?.degree?.university}</td>
           <td className="py-[16px] px-[24px]">-</td>
           <td className="py-[16px] px-[24px]">{commission?.application?.country}</td>
           <td className="py-[16px] px-[24px]">

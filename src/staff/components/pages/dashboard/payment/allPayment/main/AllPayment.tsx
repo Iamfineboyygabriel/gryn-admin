@@ -10,6 +10,9 @@ import { useAllApplicationPayment } from "../../../../../../../shared/redux/hook
 import plus from "../../../../../../../assets/svg/plus.svg";
 import eye from "../../../../../../../assets/svg/eyeImg.svg";
 import noData from "../../../../../../../assets/svg/Transaction.svg"
+import approved from "../../../../../../../assets/svg/Approved.svg"
+import rejected from "../../../../../../../assets/svg/Rejected.svg"
+import pending from "../../../../../../../assets/svg/Pending.svg"
 
 interface PaymentData {
   id: string;
@@ -25,6 +28,7 @@ interface PaymentData {
     documents: Array<{
       documentType: string;
       publicURL: string;
+      remark: string;
     }>;
   };
 }
@@ -48,7 +52,6 @@ const AllPayment: React.FC = () => {
 
   const navigate = useNavigate();
   const { allApplicationPayment, loading, totalPages, currentPage, fetchApplicationPayments } = useAllApplicationPayment();
-
   const itemsPerPage = 10;
 
   useEffect(() => {
@@ -74,37 +77,50 @@ const AllPayment: React.FC = () => {
     }
   };
 
-  const handlePreview = (url: string) => {
-    const fileType = getFileTypeFromUrl(url);
-    setPreviewUrl(url);
-    setPreviewFileType(fileType);
-    setIsPreviewOpen(true);
+  const getStatusClassAndIcon = (status: string) => {
+    switch (status) {
+      case "APPROVED":
+        return { class: "text-green-500", icon: approved };
+      case "REJECTED":
+        return { class: "text-red-500", icon: rejected };
+      case "PENDING":
+        return { class: "text-yellow-500", icon: pending };
+      default:
+        return { class: "text-gray-500", icon: undefined };
+    }
   };
 
-  const closePreviewModal = () => {
-    setIsPreviewOpen(false);
-    setPreviewUrl(null);
-    setPreviewFileType("");
-  };
-
-  const renderPaymentStatus = (documents: Array<{documentType: string; publicURL: string}>, type: string) => {
+  const renderPaymentStatus = (documents: Array<{documentType: string; publicURL: string; remark: string}>, type: string) => {
     const document = documents?.find(doc => doc?.documentType === type);
-    if (document) {
-      return (
-        <div className="flex items-center">
-          <span className="mr-3">Paid</span>
+    
+    if (!document?.remark || !document?.publicURL) {
+      return <span>-</span>;
+    }
+
+    const { class: statusClass, icon } = getStatusClassAndIcon(document.remark);
+
+    return (
+      <div className={`flex flex-col items-start text-xs ${statusClass}`}>
+        <div className="flex items-center gap-2 text-black dark:text-white">
+          <p>Paid</p>
           <button
-            type="button"
+            onClick={() => {
+              setPreviewUrl(document.publicURL);
+              setPreviewFileType(getFileTypeFromUrl(document.publicURL));
+              setIsPreviewOpen(true);
+            }}
             className="flex items-center gap-1 rounded-full bg-purple-white px-3 py-[4px] text-center font-medium text-[#660066] dark:bg-gray-600 dark:text-white"
-            onClick={() => handlePreview(document.publicURL)}
           >
             <img src={eye} alt="eye" />
-            <span className="mr-6">View</span>
+            <span className="mr-3">View</span>
           </button>
         </div>
-      );
-    }
-    return "-";
+        <div className="flex items-center gap-2">
+          {icon && <img src={icon} alt="Status Icon" />}
+          <p>{document.remark}</p>
+        </div>
+      </div>
+    );
   };
 
   const highlightText = (text: string, query: string) => {
@@ -116,6 +132,22 @@ const AllPayment: React.FC = () => {
       ) : part
     );
   };
+
+  const handleViewPaymentDetails = (item: PaymentData) => {
+    console.log("Item data:", item);
+    console.log("Degree data:", item.degree);
+    console.log("Payment data:", item.payment);
+    
+    navigate("/staff/dashboard/payments/update_payment", {
+      state: {
+        selectedUniversity: item.degree.university,
+        selectedDegree: item.degree.degreeType,
+        applicationId: item.id,
+        paymentId: item.id,
+        document: item.payment.documents,
+      },
+    });
+  }
 
   return (
     <main>
@@ -179,7 +211,7 @@ const AllPayment: React.FC = () => {
                     <td className="whitespace-nowrap px-6 py-4">{renderPaymentStatus(item?.payment?.documents, "TUTION_FEE")}</td>
                     <td className="whitespace-nowrap px-6 py-4">
                       <button
-                        onClick={() => navigate(`/staff/dashboard/payments/view_payment/${item.id}`)}
+                      onClick={() => handleViewPaymentDetails(item)}
                         className="font-medium text-primary-700 dark:text-gray-500"
                       >
                         View Details
@@ -221,7 +253,7 @@ const AllPayment: React.FC = () => {
       )}
       <DocumentPreviewModal
         isOpen={isPreviewOpen}
-        onRequestClose={closePreviewModal}
+        onRequestClose={() => setIsPreviewOpen(false)}
         previewUrl={previewUrl}
         previewFileType={previewFileType}
       />

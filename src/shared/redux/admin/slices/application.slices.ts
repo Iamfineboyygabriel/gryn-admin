@@ -297,6 +297,19 @@ export const  getAdminApexChartStats = createAsyncThunk(
   }
 );
 
+export const updateApplicationToCompleted = createAsyncThunk(
+  "shareApllication/updateApplicationToCompleted",
+  async ({body ,applicationId}:{body:any, applicationId:any}, thunkAPI) => {
+    try {
+      const data = await applicationServices.updateApplicationToCompleted(body, applicationId);
+      return data;
+    } catch (error: any) {
+      error.toString();
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
 export const clearStaffPayment = createAsyncThunk(
   "application/clearStaffPayment",
   async () => {
@@ -334,6 +347,7 @@ interface ApplicationState {
   getBarChatStats: any;
   getApexChatStats: any;
   getStaffStats: any;
+  markCompleted: null;
   registerSchool:null;
   assignAgent: null;
   assignApplicationStaff: null;
@@ -390,6 +404,7 @@ const initialState: ApplicationState = {
   getBarChatStats: null,
   getApexChatStats: null,
   getStaffStats: null,
+  markCompleted: null,
   registerSchool:null,
   assignAgent: null,
   assignApplicationStaff: null,
@@ -860,6 +875,19 @@ export const applicationSlice = createSlice({
       .addCase(getAllStaffSalaryPayment.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to fetch applications";
+      })
+       
+      .addCase(updateApplicationToCompleted.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateApplicationToCompleted.fulfilled, (state, action) => {
+        state.loading = false;
+        state.markCompleted = action.payload as null;
+      })
+      .addCase(updateApplicationToCompleted.rejected, (state) => {
+        state.loading = false;
+        state.markCompleted = null;
       })
   },
   

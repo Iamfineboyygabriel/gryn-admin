@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import BasicInfo from "./nested/BasicInfo";
 import Password from "./nested/Password";
 import AdminManagement from "./superAdmin/adminManagement/main/AdminManagement";
-import RoleManagement from "./superAdmin/roleManagement/main/RoleManagement";
+import RoleDetails from "./superAdmin/roleManagement/newRole/main/RoleDetails";
 import useUserProfile, { useCurrentUser } from "../../../../../shared/redux/hooks/shared/getUserProfile";
 import Activity from "./nested/Activity";
 import { PrivateElement } from "../../../../../shared/redux/hooks/admin/PrivateElement";
@@ -65,7 +65,7 @@ const Settings = () => {
             {activeLink === "password" && <Password />}
             {activeLink === "activity" && <Activity />}
             {isSuperAdmin && activeLink === "adminManagement" && <AdminManagement />}
-            {isSuperAdmin && activeLink === "roleManagement" && <RoleManagement />}
+            {isSuperAdmin && activeLink === "roleManagement" && <RoleDetails />}
           </section>
         </div>
       </div>

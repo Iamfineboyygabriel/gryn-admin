@@ -540,6 +540,38 @@ const getAdminApexChartStats = async (month: number, year: number, status = '') 
   }
 };
 
+const updateApplicationToCompleted = async (body: any, applicationId: any) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/application/${applicationId}`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "patch",
+      data: body,
+    });
+    const token = response.data.data?.accessTokenEncrypt;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error: any) {
+    handleApiError(error);
+  }
+};
+
+export async function updatePayment(endpoint: string, body: FormData) {
+  const url = `${process.env.REACT_APP_API_URL}${endpoint}`;
+  try {
+    const token = sessionStorage.getItem("userData");
+    const headers = {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
+    const response = await axios.patch(url, body, { headers });
+    return response.data;
+  } catch (error: any) {
+    handleApiError(error);
+  }
+}
 
 
 const applicationServices = {
@@ -570,6 +602,7 @@ const applicationServices = {
   getUserActivity,
   getAdminApplicationStatsBar,
   getAdminApexChartStats,
+  updateApplicationToCompleted,
 };
 
 export default applicationServices;

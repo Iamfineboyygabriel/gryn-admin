@@ -175,7 +175,7 @@ const Payment: React.FC = () => {
         <header className="flex items-center justify-between">
           <h1 className="font-medium text-xl">All Payments</h1>
           {/**after creating invoice its not returning the id for us to contine the process so i have to comment it out */}
-           <div className="flex gap-2">
+           {/* <div className="flex gap-2">
             {isSuperAdmin && (
               <Link to="/admin/dashboard/payments/new_payments">
                 <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-primary-700 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
@@ -184,7 +184,7 @@ const Payment: React.FC = () => {
                 </button.PrimaryButton>
               </Link>
             )}
-          </div>
+          </div> */}
         </header>
         <div className="flex items-center mt-3 w-64 rounded-full border-[1px] border-border bg-gray-100 dark:bg-gray-700">
           <input

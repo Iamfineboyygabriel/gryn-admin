@@ -15,6 +15,9 @@ import reject from "../../../../../../../../../assets/svg/Rejected.svg";
 import ReactLoading from "react-loading";
 import StudentApplicationSummary from "../../../../../../../../../shared/modal/applicationSummaryModal/StudentApplicationSummary";
 import AssignApplication from "../../../../../../../../../shared/modal/AssignApplication";
+import { updateApplicationToCompleted } from "../../../../../../../../../shared/redux/admin/slices/application.slices";
+import { Alert, Snackbar } from "@mui/material";
+
 
 interface Document {
   id: string;
@@ -48,17 +51,29 @@ const SkeletonRow = () => (
 const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
   const dispatch:AppDispatch = useAppDispatch();
   const { applicationDetails, loading: applicationLoading } = useApplicationDetails(applicationId);
-  const { updateDocStatus, error } = useSelector((state: any) => state.shareApplication);
-  
+  const { updateDocStatus } = useSelector((state: any) => state.shareApplication);
+  const [isMarkingCompleted, setIsMarkingCompleted] = useState(false);
+
+
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewFileType, setPreviewFileType] = useState<string>("");
   const [isModalOpen, setModalOpen] = useState(false);
   const [isAssignModal, setIsAssignModal] = useState(false);
   const [documents, setDocuments] = useState<Document[]>([]);
-  const [userName, setUserName] = useState<Document[]>([]);
   const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>({});
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+  const [alertState, setAlertState] = useState<{
+    open: boolean;
+    message: string;
+    severity: 'success' | 'error';
+  }>({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
+
 
   useEffect(() => {
     if (applicationDetails?.data?.documents) {
@@ -149,7 +164,6 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
         throw new Error('Failed to update document status');
       }
     } catch (error) {
-      console.error('Failed to update document status:', error);
       setErrors((prev) => ({ ...prev, [id]: 'Failed to update status. Please try again.' }));
     } finally {
       setLoadingStatus((prev) => ({
@@ -159,6 +173,40 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
     }
   };
  
+  const handleUpdateApplicationToCompleted = async () => {
+    setIsMarkingCompleted(true);
+    try {
+      const response = await dispatch(updateApplicationToCompleted({ 
+        body: { status: 'COMPLETED' }, 
+        applicationId 
+      }));
+      
+      if (response.meta.requestStatus === 'fulfilled' && response.payload?.status === 200) {
+        setAlertState({
+          open: true,
+          message: 'Application successfully marked as completed',
+          severity: 'success'
+        });
+      } else {
+        throw new Error('Failed to update application status to COMPLETED');
+      }
+    } catch (error) {
+      setAlertState({
+        open: true,
+        message: 'Failed to update application status. Please try again.',
+        severity: 'error'
+      });
+    } finally {
+      setIsMarkingCompleted(false);
+    }
+  };
+
+
+  const handleCloseAlert = () => {
+    setAlertState(prev => ({ ...prev, open: false }));
+  };
+
+
   const renderActionButton = (doc: Document, action: 'APPROVED' | 'REJECTED') => {
     const actionType: ActionType = action.toLowerCase() as ActionType;
     const isLoading = loadingStatus[doc.id]?.[actionType] || false;
@@ -226,25 +274,6 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
       </main>
     );
   }
-
-  const renderActionButtons = () => (
-    <div>
-      <button.PrimaryButton
-        className="m-auto mt-[5em] w-[18%] gap-2 rounded-full bg-purple-white py-[12px] text-center text-lg font-semibold text-primary-700"
-        onClick={handleAssignOpenModal}
-      >
-        Assign Application
-      </button.PrimaryButton>
-       
-      <button.PrimaryButton
-        className="m-auto mt-[5em] ml-8 w-[18%] gap-2 rounded-full bg-linear-gradient py-[12px] text-center text-lg font-medium text-white"
-        onClick={handleOpenModal}
-      >
-        Submit Response
-      </button.PrimaryButton>
-    </div>
-  );
-
 
 
   if (!documents.length) {
@@ -339,6 +368,25 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
           ))}
         </div>
       </section>
+
+      <div className="w-full mt-8">
+        {alertState.open && (
+          <Alert 
+            severity={alertState.severity}
+            onClose={handleCloseAlert}
+            className="w-1/2"
+            sx={{
+              '& .MuiAlert-message': {
+                width: '100%',
+                textAlign: 'center'
+              }
+            }}
+          >
+            {alertState.message}
+          </Alert>
+        )}
+      </div>
+
       <DocumentPreviewModal
         isOpen={isPreviewOpen}
         onRequestClose={closePreviewModal}
@@ -359,6 +407,24 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
         >
           Submit Response
         </button.PrimaryButton>
+
+        <button.PrimaryButton
+        className="m-auto mt-[5em] ml-8 w-[18%] gap-2 rounded-full bg-linear-gradient py-[12px] text-center text-lg font-medium text-white"
+        onClick={handleUpdateApplicationToCompleted}
+      >
+            {isMarkingCompleted ? (
+            <div className="flex items-center">
+              <ReactLoading
+                color="#FFFFFF"
+                width={25}
+                height={25}
+                type="spin"
+              />
+            </div>
+          ) : (
+            "Mark as Completed"
+          )}
+      </button.PrimaryButton>
       </div>
       {isModalOpen && (
     <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">

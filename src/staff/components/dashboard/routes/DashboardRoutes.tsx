@@ -30,6 +30,7 @@ import SeeAllPendingApplication from "../../pages/dashboard/reports copy/seeAll/
 import SeeAllAgents from "../../pages/dashboard/reports copy/seeAll/SeeAllAgents";
 import { PrivateRoute } from "../../../../shared/redux/hooks/admin/PrivateRoute";
 import Notification from "../../pages/dashboard/notification/main/Notification";
+import UpdatePayment from "../../pages/dashboard/payment/allPayment/updatePayment/UpdatePayment";
 
 const DashboardRoutes = () => {
   return (
@@ -123,6 +124,7 @@ const DashboardRoutes = () => {
         <Route path="/visa/view_visa_application" element={<ViewVisaApplication />} />
 
         <Route path="/payments/new_payment" element={<NewPayment />} />
+        <Route path="/payments/update_payment" element={<UpdatePayment />} />
         <Route path="/payments/generate_invoice" element={<GenerateInvoice />} />
         <Route path="/payments/use_draft_information" element={<UseDraftInformation />} />
         <Route path="/payments/new_budget" element={<NewBudgets />} />

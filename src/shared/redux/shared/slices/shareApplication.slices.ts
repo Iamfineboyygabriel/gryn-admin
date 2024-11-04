@@ -139,6 +139,7 @@ export const updateProfile = createAsyncThunk(
     }
   }
 );
+
 export const updatePassword = createAsyncThunk(
   "shareApllication/updatePassword",
   async (body: any, thunkAPI) => {
