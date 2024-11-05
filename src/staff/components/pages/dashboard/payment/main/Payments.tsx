@@ -11,7 +11,7 @@ const Payments = () => {
 
   return (
     <main className="font-outfit">
-      <h1 className="text-2xl font-bold">Application</h1>
+      <h1 className="text-2xl font-bold">Payments</h1>
       <div className="mt-[1em] h-auto w-full overflow-auto rounded-lg bg-white px-[2em] py-3 pb-[10em]">
         <div>
           <nav>

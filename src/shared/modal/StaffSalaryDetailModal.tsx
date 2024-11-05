@@ -62,6 +62,10 @@ const StaffSalaryDetailModal = ({ isOpen, onClose, payment }:any) => {
     setPreviewFileType("");
   };
 
+  const formatAmount = (amount:number) => {
+    return amount?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
   return (
     <main className={`fixed font-outfit inset-y-0 right-0 w-[500px] bg-white shadow-lg transform ${isOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out`}>
       <div className="h-full flex flex-col">
@@ -82,7 +86,7 @@ const StaffSalaryDetailModal = ({ isOpen, onClose, payment }:any) => {
              <p className='font-semibold'>Payment Success!</p>
              <div className='bg-purple-white mt-[1em] py-[6px]'>
                  <h1>
-                   <p className="font-semibold text-primary-700 text-2xl">NGN {payment?.amount || '-'}</p>
+                   <p className="font-semibold text-primary-700 text-2xl">NGN  {payment?.amount ? formatAmount(payment?.amount) : '-'}</p>
                  </h1>
              </div>
           </div>
@@ -95,7 +99,7 @@ const StaffSalaryDetailModal = ({ isOpen, onClose, payment }:any) => {
 
             <div className='flex justify-between'>
               <p className="text-sm text-gray-500">Amount</p>
-              <p className="font-semibold text-sm">NGN {payment?.amount || '-'}</p>
+              <p className="font-semibold text-sm">NGN {payment?.amount ? formatAmount(payment?.amount) : '-'}</p>
             </div>
 
             <hr  className="underline mt-8 border-dashed"/>

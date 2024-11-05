@@ -1291,6 +1291,34 @@ const uploadStaffInvoicePaymentDocument = async (
   }
 };
 
+
+const budgetUploadPaymentDocument = async (
+  budgetId: string,
+  data: FormData
+) => {
+  const url = `${process.env.REACT_APP_API_URL}/media/budget/upload-doc/${budgetId}`;
+  try {
+    const response = await axios({
+      url,
+      headers: {
+        ...authHeader(),
+        "Content-Type": "multipart/form-data",
+      },
+      method: "post",
+      data: data,
+    });
+
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const getAllStaffPayment = async (id:string, page: number, limit: number) => {
   const url = `${process.env.REACT_APP_API_URL}/admin/users/staff/${id}/payments?page=${page}&limit=${limit}`;
   try {
@@ -1328,8 +1356,8 @@ const CreateSalary = async (staffId:any, body:any) => {
   }
 };
 
-const getStaffSalary = async (id:string) => {
-  const url = `${process.env.REACT_APP_API_URL}/admin/users/salary/${id}`;
+const getStaffSalary = async (id:string, page: number,) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/users/salary/${id}?page=${page}`;
   try {
     const response = await axios({
       url,
@@ -1461,6 +1489,7 @@ const shareApplicationServices = {
   getAgentCommission,
   UpdatePagePermission,
   getUserPermittedPages,
+  budgetUploadPaymentDocument,
 };
 
 export default shareApplicationServices;

@@ -79,7 +79,7 @@ const AgentCommission = () => {
           <td className="py-[16px] px-[24px]">{index + 1}</td>
           <td className="py-[16px] px-[24px]">{commission?.application?.lastName} {commission?.application?.middleName} {commission?.application?.firstName}</td>
           <td className="py-[16px] px-[24px]">{commission?.application?.degree?.university}</td>
-          <td className="py-[16px] px-[24px]">-</td>
+          <td className="py-[16px] px-[24px]">{commission?.application?.degree?.degreeType}</td>
           <td className="py-[16px] px-[24px]">{commission?.application?.country}</td>
           <td className="py-[16px] px-[24px]">
             {commission?.amount ? formatAmount(commission?.amount) : '-'}

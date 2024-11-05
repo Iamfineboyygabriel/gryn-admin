@@ -61,10 +61,16 @@ const NewBudgets: React.FC = () => {
     setFormData(prev => ({ ...prev, [key]: item?.name || "" }));
   };
 
-  const handleBudgetItemChange = (index: number, field: keyof BudgetItem, value: string | number) => {
+  const handleBudgetItemChange = (index: number, field: keyof BudgetItem, value: string) => {
     const updatedBudgetItems = formData.BudgetItem.map((item, i) => {
       if (i === index) {
-        return { ...item, [field]: value === '' ? '' : Number(value) };
+        if (field === 'productName') {
+          return { ...item, [field]: value };
+        } else {
+          // Only convert to number for numeric fields
+          const numValue = value === '' ? '' : Number(value);
+          return { ...item, [field]: numValue };
+        }
       }
       return item;
     });
@@ -79,11 +85,13 @@ const NewBudgets: React.FC = () => {
   };
 
   const calculateTotalRate = (): number => {
-    return formData.BudgetItem.reduce((sum, item) => sum + (typeof item.rate === 'number' ? item.rate : 0), 0);
+    return formData.BudgetItem.reduce((sum, item) => 
+      sum + (typeof item.rate === 'number' ? item.rate : 0), 0);
   };
 
   const calculateTotalAmount = (): number => {
-    return formData.BudgetItem.reduce((sum, item) => sum + (typeof item.amount === 'number' ? item.amount : 0), 0);
+    return formData.BudgetItem.reduce((sum, item) => 
+      sum + (typeof item.amount === 'number' ? item.amount : 0), 0);
   };
 
   const submitBudget = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -94,7 +102,7 @@ const NewBudgets: React.FC = () => {
       await dispatch(createBudget(formData)).unwrap();
       setModalOpen(true);
     } catch (error: any) {
-      toast.error(error || "An error occurred while creating the budget.");
+      toast.error(error?.message || "An error occurred while creating the budget.");
     } finally {
       setBudgetLoading(false);
     }
@@ -103,20 +111,22 @@ const NewBudgets: React.FC = () => {
   return (
     <main className="font-outfit">
       <h1 className="text-2xl font-bold">Reports</h1>
-      <form onSubmit={submitBudget} className="mt-[1em] flex flex-col gap-[1.2em] h-auto w-full overflow-auto rounded-lg py-4 bg-white p-3 pb-[10em]">
+      <form onSubmit={submitBudget} className="mt-4 flex flex-col gap-5 h-auto w-full overflow-auto rounded-lg bg-white p-3 pb-10">
         <div className="flex items-center justify-between">
           <h2 className="font-medium">
-            Budget / <span className="ml-1 mr-1 font-medium">All Budgets</span> /{" "}
+            Budget / <span className="mx-1 font-medium">All Budgets</span> /{" "}
             <span className="ml-1 font-medium text-primary-700">New Budget</span>
           </h2>
           <button type="button" className="btn-2" onClick={handleBackClick}>
             Back
           </button>
         </div>
+        
         <header>
           <h1 className="font-semibold text-xl">Generate Payment</h1>
         </header>
-        <div className="w-[42%] flex flex-col gap-[1.2em]">
+        
+        <div className="w-[42%] flex flex-col gap-5">
           <Dropdown
             label="Payment Type"
             labelClassName="text-grey-primary"
@@ -135,94 +145,75 @@ const NewBudgets: React.FC = () => {
           />
         </div>
 
-        <div className="flex flex-col gap-[1em]">
+        <div className="flex flex-col gap-4">
           <h3 className="text-gray-500 font-medium">Budget Items</h3>
           {formData.BudgetItem.map((item, index) => (
-            <div key={index} className="flex justify-between items-start gap-[1em]">
-              <div className="w-[25%]">
-                <label htmlFor={`productName-${index}`} className="flex-start flex font-medium">Product Name</label>
+            <div key={index} className="flex justify-between items-start gap-4">
+              <div className="w-1/4">
+                <label htmlFor={`productName-${index}`} className="block font-medium">
+                  Product Name
+                </label>
                 <input
                   id={`productName-${index}`}
                   type="text"
                   value={item.productName}
                   onChange={(e) => handleBudgetItemChange(index, 'productName', e.target.value)}
-                  className="mt-[11px] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
+                  className="mt-2 w-full rounded-lg border-2 p-3 focus:outline-none"
                 />
               </div>
-              <div className="flex w-[75%] gap-[1em]">
-                <div className="w-1/5">
-                  <label htmlFor={`quantity-${index}`} className="flex-start flex font-medium">Quantity</label>
-                  <input
-                    id={`quantity-${index}`}
-                    type="number"
-                    value={item.quantity}
-                    onChange={(e) => handleBudgetItemChange(index, 'quantity', e.target.value)}
-                    className="mt-[11px] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
-                  />
-                </div>
-                <div className="w-1/5">
-                  <label htmlFor={`rate-${index}`} className="flex-start flex font-medium">Rate</label>
-                  <input
-                    id={`rate-${index}`}
-                    type="number"
-                    value={item.rate}
-                    onChange={(e) => handleBudgetItemChange(index, 'rate', e.target.value)}
-                    className="mt-[11px] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
-                  />
-                </div>
-                <div className="w-1/5">
-                  <label htmlFor={`amount-${index}`} className="flex-start flex font-medium">Amount</label>
-                  <input
-                    id={`amount-${index}`}
-                    type="number"
-                    value={item.amount}
-                    onChange={(e) => handleBudgetItemChange(index, 'amount', e.target.value)}
-                    className="mt-[11px] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
-                  />
-                </div>
-                <div className="w-1/5">
-                  <label htmlFor={`discount-${index}`} className="flex-start flex font-medium">Discount</label>
-                  <input
-                    id={`discount-${index}`}
-                    type="number"
-                    value={item.discount}
-                    onChange={(e) => handleBudgetItemChange(index, 'discount', e.target.value)}
-                    className="mt-[11px] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
-                  />
-                </div>
+              <div className="flex w-3/4 gap-4">
+                {['quantity', 'rate', 'amount', 'discount'].map((field) => (
+                  <div key={field} className="w-1/4">
+                    <label htmlFor={`${field}-${index}`} className="block font-medium capitalize">
+                      {field}
+                    </label>
+                    <input
+                      id={`${field}-${index}`}
+                      type="number"
+                      value={item[field as keyof BudgetItem]}
+                      onChange={(e) => handleBudgetItemChange(index, field as keyof BudgetItem, e.target.value)}
+                      className="mt-2 w-full rounded-lg border-2 p-3 focus:outline-none"
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           ))}
-          <button type="button" onClick={addNewBudgetItem} className="flex gap-2 mt-[1.5em] items-center">
+          
+          <button 
+            type="button" 
+            onClick={addNewBudgetItem} 
+            className="flex items-center gap-2 mt-6"
+          >
             <img src={addItemSvg} alt="Add item" />
             <span className="font-medium text-primary-700">Add New Item</span>
           </button>
 
-          <div className="w-[10em]">
-            <label htmlFor="totalRate" className="flex-start flex font-medium">Total Rate</label>
+          <div className="w-40">
+            <label htmlFor="totalRate" className="block font-medium">Total Rate</label>
             <input
               id="totalRate"
               type="number"
               value={calculateTotalRate()}
               readOnly
-              className="mt-[11px] cursor-not-allowed w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
+              className="mt-2 w-full rounded-lg border-2 p-3 bg-gray-100 cursor-not-allowed focus:outline-none"
             />
           </div>
 
-          <div className="w-[10em]">
-            <label htmlFor="totalAmount" className="flex-start flex font-medium">Total Amount</label>
+          <div className="w-40">
+            <label htmlFor="totalAmount" className="block font-medium">Total Amount</label>
             <input
               id="totalAmount"
               type="number"
               value={calculateTotalAmount()}
               readOnly
-              className="mt-[11px] cursor-not-allowed bg-gray-200 w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
+              className="mt-2 w-full rounded-lg border-2 p-3 bg-gray-100 cursor-not-allowed focus:outline-none"
             />
           </div>
 
           <button.PrimaryButton
             type="submit"
-            className="bg-linear-gradient rounded-full mt-[2em] w-[30%] py-[12px] text-center text-lg font-semibold text-white"
+            className="bg-linear-gradient rounded-full mt-8 w-[30%] py-3 text-lg font-semibold text-white"
             disabled={budgetLoading}
           >
             {budgetLoading ? (
@@ -233,6 +224,7 @@ const NewBudgets: React.FC = () => {
           </button.PrimaryButton>
         </div>
       </form>
+
       {isModalOpen && (
         <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)} data-aos="zoom-in">
           <InvoiceSent to="/admin/dashboard/reports/budgets" onClose={() => setModalOpen(false)} />

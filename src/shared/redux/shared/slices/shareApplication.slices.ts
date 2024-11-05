@@ -562,6 +562,19 @@ export const UploadStaffInvoicePaymentDocument = createAsyncThunk(
   }
 );
 
+export const  budgetUploadPaymentDocument = createAsyncThunk(
+  "shareApplication/budgetUploadPaymentDocument",
+  async ({ budgetId, data }: { budgetId: string; data: any }, { rejectWithValue }) => {
+    try {
+      const response = await shareApplicationServices.budgetUploadPaymentDocument(budgetId, data);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+
 export const getAllStaffPayment = createAsyncThunk(
   "shareApplication/getAllStaffPayment",
   async ({ id, page, limit, }: { id: string; page: number; limit: number; }) => {
@@ -589,10 +602,11 @@ export const  CreateSalary  = createAsyncThunk(
 
 export const getStaffSalary = createAsyncThunk(
   "shareApplication/getStaffSalary",
-  async ({ id }: { id: string; }) => {
-    const response = await shareApplicationServices.getStaffSalary(id);
+  async ({ id, page }: { id: string, page: number }) => {
+    const response = await shareApplicationServices.getStaffSalary(id, page);
     return {
       payments: response.data,
+      currentPage: page
     };
   }
 );
@@ -646,6 +660,7 @@ interface ApplicationState {
   registerInvoice: null;
   registerInvoiceStaffPayment: null;
   registerReceiptInvoiceStaffPayment: null;
+  registerBudgetPayment:null,
   registerBudget: null;
   registerDraft: null;
   registerApplication: null;
@@ -709,8 +724,8 @@ interface ApplicationState {
   };
   allStaffSalary: {
     payments: any[];
+    currentPage: number;
     // totalPages: number;
-    // currentPage: number;
   };
   allAgentCommission: {
     payments: any[];
@@ -760,6 +775,7 @@ const initialState: ApplicationState = {
   registerInvoice: null,
   registerInvoiceStaffPayment: null,
   registerReceiptInvoiceStaffPayment:null,
+  registerBudgetPayment:null,
   registerBudget: null,
   registerDraft: null,
   commisionPayment: null,
@@ -797,8 +813,8 @@ const initialState: ApplicationState = {
   },
   allStaffSalary: {
     payments: [],
+    currentPage: 1,
     // totalPages: 0,
-    // currentPage: 1,
   },
   allAgentCommission: {
     payments: [],
@@ -1337,6 +1353,19 @@ export const shareApplicationSlice = createSlice({
         state.error = action.error.message || "Failed to upload commission";
       })
 
+      .addCase(budgetUploadPaymentDocument.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(budgetUploadPaymentDocument.fulfilled, (state, action) => {
+        state.loading = false;
+        state.registerBudgetPayment = action.payload;
+      })
+      .addCase(budgetUploadPaymentDocument.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to upload commission";
+      })
+
 
       .addCase(getAllStaffPayment.pending, (state) => {
         state.loading = true;
@@ -1380,8 +1409,8 @@ export const shareApplicationSlice = createSlice({
       })
       .addCase(getStaffSalary.fulfilled, (state, action: PayloadAction<{
         payments: any[];
+        currentPage: number;
         // totalPages: number;
-        // currentPage: number;
       }>) => {
         state.loading = false;
         state.allStaffSalary = action.payload;

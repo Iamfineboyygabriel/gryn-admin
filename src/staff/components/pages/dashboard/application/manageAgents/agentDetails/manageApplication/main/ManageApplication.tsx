@@ -85,17 +85,25 @@ const ManageApplication: React.FC<ManageApplicationProps> = ({
     []
   );
 
-  if (error) return <Error error={error} />;
-
   const handleBackClick = () => navigate(-1);
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value);
   const handleSortChange = (criteria: "order" | "status") => {
     setSortBy(criteria);
     setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
   };
-  const handleViewDetails = (applicationId: number) => {
-    navigate(`/staff/dashboard/application/manage_application/view_application/${applicationId}`);
-  };
+
+  const handleViewDetails = useCallback(
+    (applicationId: number) => {
+      if (applicationId) {
+        navigate("/staff/dashboard/application/manage_application/view_application", {
+          state: { applicationId: applicationId }
+        });
+      }
+    },
+    [navigate]
+  );
+
+  if (error) return <Error error={error} />;
 
   if (!loading && (!applicationDetails?.application || applicationDetails.application.length === 0)) {
     return (

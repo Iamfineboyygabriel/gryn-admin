@@ -11,6 +11,7 @@ import BudgetPaymentDetail from '../../../../../../../shared/modal/BudgetPayment
 import Modal from '../../../../../../../shared/modal/Modal';
 import PaymentReceiptResponse from '../../../../../../../shared/modal/PaymentReceiptResponse';
 import CustomPagination from '../../../../../../../shared/utils/customPagination';
+import BudgetPaymentReceiptResponse from '../../../../../../../shared/modal/BudgetPaymentReceiptResponse';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -31,16 +32,19 @@ const Budgets: React.FC = () => {
     const { budgets, loading } = useBudgetFetch(currentPage, ITEMS_PER_PAGE);
 
     const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, newPage: number) => {
-        setCurrentPage(newPage);
+        if (newPage >= 1) {
+            setCurrentPage(newPage);
+        }
     }, []);
+
 
     const handleCloseApproveModal = () => {
         setSelectedBudgetId(null);
         setApproveModalOpen(false);
     };
 
-    const handleOpenModal = (invoiceId: string, status: string) => {
-        setSelectedBudgetId(invoiceId);
+    const handleOpenModal = (budgetId: string, status: string) => {
+        setSelectedBudgetId(budgetId);
         if (status === "COMPLETED" && isSuperAdmin) {
             setReceiptModalOpen(true);
         } else {
@@ -286,8 +290,8 @@ const Budgets: React.FC = () => {
 
             {isReceiptModalOpen && selectedBudgetId && isSuperAdmin && (
                 <Modal isOpen={isReceiptModalOpen} onClose={handleCloseReceiptModal} data-aos="zoom-in">
-                    <PaymentReceiptResponse
-                        invoiceId={selectedBudgetId}
+                    <BudgetPaymentReceiptResponse
+                        budgetId={selectedBudgetId}
                     />
                 </Modal>
             )}

@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import transaction from "../../../../../../assets/svg/Transaction.svg";
 import dayjs from "dayjs";
-import { Link } from 'react-router-dom';
-import { button } from "../../../../../../shared/buttons/Button";
-import plus from "../../../../../../assets/svg/plus.svg";
-import { useStaffDetails } from '../../../../../../shared/redux/hooks/admin/getAdminProfile';
 import useUserProfile, { useStaffSalary } from '../../../../../../shared/redux/hooks/shared/getUserProfile';
-import StaffPaymentDetailModal from '../../../../../../shared/modal/StaffPaymentDetailModal';
+import StaffSalaryDetailModal from '../../../../../../shared/modal/StaffSalaryDetailModal';
+import CustomPagination from '../../../../../../shared/utils/customPagination';
+
+const ITEMS_PER_PAGE = 10; 
 
 const SkeletonRow: React.FC = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -30,17 +29,24 @@ interface SalaryItem {
 }
 
 const SalaryLoan = () => {
-    const { userProfile } = useUserProfile();
+  const { userProfile } = useUserProfile();
   const [selectedPayment, setSelectedPayment] = useState<SalaryItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const staffId = userProfile?.userId;
   const { staffSalary, loading, error, fetchStaffPayments } = useStaffSalary();
 
   useEffect(() => {
     if (staffId) {
-      fetchStaffPayments(staffId);
+      fetchStaffPayments(staffId, currentPage);
     }
-  }, [staffId, fetchStaffPayments]);
+  }, [staffId, currentPage, fetchStaffPayments]);
+
+  const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, newPage: number) => {
+    if (newPage >= 1) {
+      setCurrentPage(newPage);
+    }
+  }, []);
 
   const filteredSalary = staffSalary && staffSalary[0]?.salary ? staffSalary[0].salary : [];
 
@@ -51,6 +57,12 @@ const SalaryLoan = () => {
     setIsModalOpen(true);
   };
 
+  const formatAmount = (amount: number) => {
+    return amount?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
+  const shouldShowPagination = !loading && (currentPage > 1 || (filteredSalary?.length ?? 0) > 0);
+
   const renderTableBody = useCallback(() => {
     if (loading) {
       return Array.from({ length: 6 }).map((_, index) => <SkeletonRow key={index} />);
@@ -58,11 +70,11 @@ const SalaryLoan = () => {
 
     if (filteredSalary.length > 0) {
       return filteredSalary.map((salary: SalaryItem, index: number) => (
-        <tr key={salary.id} className="text-[14px] border-b border-gray-200 leading-[20px] text-grey-primary font-medium">
-          <td className="py-[16px] px-[24px]">{index + 1}</td>
-          <td className="py-[16px] px-[24px]">{formatData(salary.paymentNo)}</td>
+        <tr key={salary?.id} className="text-[14px] border-b border-gray-200 leading-[20px] text-grey-primary font-medium">
+          <td className="py-[16px] px-[24px]">{((currentPage - 1) * ITEMS_PER_PAGE) + index + 1}</td>
+          <td className="py-[16px] px-[24px]">{formatData(salary?.paymentNo)}</td>
           <td className="py-[16px] px-[24px]">{formatData(salary.description)}</td>
-          <td className="py-[16px] px-[24px]">{formatData(salary.amount)}</td>
+          <td className="py-[16px] px-[24px]">{formatAmount(salary.amount)}</td>
           <td className="py-[16px] px-[24px]">
             {salary.createdAt ? dayjs(salary.createdAt).format("YYYY-MM-DD") : "-"}
           </td>
@@ -89,7 +101,7 @@ const SalaryLoan = () => {
         </tr>
       );
     }
-  }, [loading, filteredSalary, formatData, handleViewDetails]);
+  }, [loading, filteredSalary, formatData, handleViewDetails, currentPage]);
 
   return (
     <main className="font-outfit">
@@ -111,9 +123,18 @@ const SalaryLoan = () => {
           </thead>
           <tbody>{renderTableBody()}</tbody>
         </table>
+        {shouldShowPagination && (
+          <div className="mt-6 flex justify-center">
+            <CustomPagination
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+              hasMore={filteredSalary.length === ITEMS_PER_PAGE}
+            />
+          </div>
+        )}
       </div>
       {isModalOpen && selectedPayment && (
-        <StaffPaymentDetailModal
+        <StaffSalaryDetailModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           payment={selectedPayment}

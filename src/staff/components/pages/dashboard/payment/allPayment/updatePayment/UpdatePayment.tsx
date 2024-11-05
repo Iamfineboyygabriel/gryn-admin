@@ -266,16 +266,17 @@ const UpdatePayment = () => {
                 {Object.entries(documents).map(([docType, docState]) => (
                   <div key={docType}>
                      <FileUpload
-                label={docType.replace(/_/g, " ").toLowerCase()}
-                inputId={docType.toLowerCase()}
-                file={docState.file}
-                onFileChange={(file) => handleFileChange(docType as DocumentType, file)}
-                onBrowseClick={() => handleBrowseFileClick(docType.toLowerCase())}
-                error={errors[docType as DocumentType]}
-                success={successes[docType as DocumentType]}
-                disabled={!docState.canUpdate}
-                setFile={setFileForDocument(docType as DocumentType)}
-              />
+                        label={docType.replace(/_/g, " ").toLowerCase()}
+                        inputId={docType.toLowerCase()}
+                        file={docState.file}
+                        onFileChange={(file) => handleFileChange(docType as DocumentType, file)}
+                        onBrowseClick={() => handleBrowseFileClick(docType.toLowerCase())}
+                        error={errors[docType as DocumentType]}
+                        success={successes[docType as DocumentType]}
+                        disabled={!docState.canUpdate}
+                        setFile={setFileForDocument(docType as DocumentType)}
+                        originalFileName={docState.originalName}
+                      />
                     {renderStatusLabel(docType as DocumentType)}
                   </div>
                 ))}

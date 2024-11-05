@@ -685,17 +685,18 @@ export const useAllStaffPayment = () => {
 export const useStaffSalary = () => {
   const dispatch: AppDispatch = useDispatch();
   const staffSalary = useSelector((state: any) => state?.shareApplication?.allStaffSalary?.payments || []);
+  const currentPage = useSelector((state: any) => state?.shareApplication?.allStaffSalary?.currentPage || 1);
   const loading = useSelector((state: any) => state?.shareApplication?.loading || false);
   const error = useSelector((state: any) => state?.shareApplication?.error || null);
 
   const fetchStaffPayments = useCallback(
-    (id: string) => {
-      dispatch(getStaffSalary({ id}));
+    (id: string, page: number) => {
+      dispatch(getStaffSalary({ id, page}));
     },
     [dispatch]
   );
 
-  return { staffSalary , loading, error, fetchStaffPayments };
+  return { staffSalary , loading, error, fetchStaffPayments, currentPage };
 };
 
 export const useAgentCommission = () => {
