@@ -204,7 +204,7 @@ const SeeAllAgents = () => {
           <tbody>{renderTableBody()}</tbody>
         </table>
 
-      {!loading && agents?.length > 0 && (
+      {!loading && (
         <div className="mt-6 flex justify-center">
           <CustomPagination
             currentPage={currentPage}

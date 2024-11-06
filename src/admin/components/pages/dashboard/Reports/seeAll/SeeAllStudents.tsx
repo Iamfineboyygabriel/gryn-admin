@@ -221,7 +221,7 @@ const SeeAllStudents: React.FC = () => {
           </tbody>
         </table>
 
-      {!loading && studentsData?.length > 0 && (
+      {!loading &&  (
         <div className="mt-6 flex justify-center">
            <CustomPagination
             currentPage={currentPage}

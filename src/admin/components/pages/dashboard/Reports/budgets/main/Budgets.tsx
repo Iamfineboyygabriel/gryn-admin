@@ -9,7 +9,6 @@ import { button } from "../../../../../../../shared/buttons/Button";
 import plus from "../../../../../../../assets/svg/plus.svg";
 import BudgetPaymentDetail from '../../../../../../../shared/modal/BudgetPaymentDetail';
 import Modal from '../../../../../../../shared/modal/Modal';
-import PaymentReceiptResponse from '../../../../../../../shared/modal/PaymentReceiptResponse';
 import CustomPagination from '../../../../../../../shared/utils/customPagination';
 import BudgetPaymentReceiptResponse from '../../../../../../../shared/modal/BudgetPaymentReceiptResponse';
 
@@ -272,7 +271,7 @@ const Budgets: React.FC = () => {
                     </table>
                 </div>
 
-                {!loading && budgets?.data?.length > 0 && (
+                {!loading && (
                     <div className="mt-6 flex justify-center">
                         <CustomPagination
                             currentPage={currentPage}

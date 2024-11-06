@@ -82,10 +82,10 @@ const PendingAgents = () => {
 
   const filteredAgents = useMemo(() => {
     return (agents || []).filter((agent: any) => {
-      const fullName = `${agent.profile.firstName} ${agent.profile.lastName}`.toLowerCase();
+      const fullName = `${agent?.profile?.firstName} ${agent?.profile?.lastName}`?.toLowerCase();
       return (
-        fullName.includes(localSearchTerm.toLowerCase()) ||
-        agent.email.toLowerCase().includes(localSearchTerm.toLowerCase())
+        fullName?.includes(localSearchTerm.toLowerCase()) ||
+        agent?.email?.toLowerCase()?.includes(localSearchTerm?.toLowerCase())
       );
     });
   }, [agents, localSearchTerm]);
@@ -94,13 +94,13 @@ const PendingAgents = () => {
 
   const renderTableBody = useCallback(() => {
     if (loading) {
-      return Array.from({ length: itemsPerPage }).map((_, index) => (
+      return Array?.from({ length: itemsPerPage })?.map((_, index) => (
         <SkeletonRow key={index} />
       ));
     }
 
-    if (filteredAgents.length > 0) {
-      return filteredAgents.map((agent: any, index: number) => (
+    if (filteredAgents?.length > 0) {
+      return filteredAgents?.map((agent: any, index: number) => (
         <tr
           key={agent.id}
           className="text-[14px] border-b border-gray-200 leading-[20px] text-grey-primary font-medium"
@@ -112,7 +112,7 @@ const PendingAgents = () => {
             className="py-[16px] gap-1 px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
               highlightText(
-                `${agent.profile.firstName} ${agent.profile.lastName}`,
+                `${agent?.profile?.firstName} ${agent?.profile?.lastName}`,
                 localSearchTerm
               )
             )}
@@ -121,14 +121,14 @@ const PendingAgents = () => {
             className="py-[16px] px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
               highlightText(
-                formatData(agent.email),
+                formatData(agent?.email),
                 localSearchTerm
               )
             )}
           />
           <td className="py-[16px] px-[24px]">
             <Link
-              to={`/admin/dashboard/all_users/approve_agents/${agent.email}`}
+              to={`/admin/dashboard/all_users/approve_agents/${agent?.email}`}
               className="text-primary-700 font-[600] flex items-center gap-[8px]"
             >
               View Application
@@ -199,12 +199,12 @@ const PendingAgents = () => {
         </table>
       </div>
 
-      {!loading && agents.length > 0 && (
+      {!loading && (
         <div className="mt-6 flex justify-center">
             <CustomPagination
             currentPage={currentPage}
             onPageChange={handlePageChange}
-            hasMore={agents.length === itemsPerPage}
+            hasMore={agents?.length === itemsPerPage}
           />
         </div>
       )}

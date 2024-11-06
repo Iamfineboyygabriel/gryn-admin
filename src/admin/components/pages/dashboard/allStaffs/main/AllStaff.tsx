@@ -211,7 +211,7 @@ const AllStaff = () => {
         </table>
       </div>
 
-   {!loading && admins && admins.data && admins.data.length > 0 && (
+   {!loading && (
   <div className="mt-6 flex justify-center">
     <CustomPagination
       currentPage={currentPage}

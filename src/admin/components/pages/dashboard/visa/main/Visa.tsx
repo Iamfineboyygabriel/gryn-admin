@@ -262,7 +262,7 @@ const Visa: React.FC = () => {
                       {renderHighlightedText(`${item?.agent?.profile?.lastName} ${item?.agent?.profile?.firstName}`)}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
-                      {renderHighlightedText(item.destination || "-")}
+                      {renderHighlightedText(item?.destination || "-")}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
                       {renderPaymentStatus(item?.document, "SERVICE_CHARGE")}
@@ -278,7 +278,7 @@ const Visa: React.FC = () => {
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
                       <button
-                        onClick={() => handleViewDetails(item.id)}
+                        onClick={() => handleViewDetails(item?.id)}
                         className="font-medium text-primary-700 dark:text-gray-500"
                       >
                         View Details
@@ -306,7 +306,7 @@ const Visa: React.FC = () => {
             </tbody>
           </table>
         </section>
-        {!loading && visa && visa.length > 0 && (
+        {!loading && (
           <div className="mt-6 flex justify-center">
             <CustomPagination
               currentPage={currentPage}
