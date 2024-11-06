@@ -93,6 +93,13 @@ const Invoices: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
 
   const formatData = useCallback((data: any) => (data ? data : "-"), []);
 
+  const calculateInvoiceTotal = (items: any[]) => {
+    return items?.reduce((total, item) => {
+      const itemAmount = item.amount || 0;
+      return total + itemAmount;
+    }, 0);
+  };
+
   const filteredInvoices = useMemo(() => {
     if (!staffInvoices || !Array.isArray(staffInvoices.data.invoices)) return [];
     return staffInvoices?.data?.invoices.filter((staff: StaffData) =>
@@ -140,7 +147,9 @@ const Invoices: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
             {((currentPage - 1) * itemsPerPage) + index + 1}
           </td>
           <td className="py-[16px] px-[24px]">{formatData(staff?.invoiceNumber)}</td>
-          <td className="py-[16px] px-[24px]">{`${formatData(formatAmount(staff?.item?.[0]?.amount))}`}</td>
+          <td className="py-[16px] px-[24px]">
+             NGN {formatAmount(calculateInvoiceTotal(staff?.item))}
+          </td>
           <td className="py-[16px] px-[24px]">{formatData(dayjs(staff?.invoiceDate)?.format("YYYY-MM-DD"))}</td>
           <td className="py-[16px] px-[24px]">{formatData(dayjs(staff?.dueDate)?.format("YYYY-MM-DD"))}</td>
           <td className="flex items-center whitespace-nowrap px-6 py-4">
