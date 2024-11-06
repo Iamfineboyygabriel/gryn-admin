@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useMemo, useCallback } from 'react';
+import { Link } from "react-router-dom";
 import { FiSearch } from "react-icons/fi";
 import { useDispatch } from 'react-redux';
 import { useBudgetFetch, useCurrentUser } from "../../../../../../shared/redux/hooks/shared/getUserProfile";
@@ -16,7 +16,6 @@ const ITEMS_PER_PAGE = 10;
 
 const AllBudgets: React.FC = () => {
     const dispatch = useDispatch();
-    const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState("");
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
     const [selectedMonth, setSelectedMonth] = useState("");
@@ -116,6 +115,10 @@ const AllBudgets: React.FC = () => {
         }
     };
 
+    const calculateTotalAmount = (budgetItems: any[]) => {
+        return budgetItems?.reduce((sum: number, item: any) => sum + (item?.amount || 0), 0) || 0;
+    };
+
     const formatAmount = (amount: number) => {
         return amount?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     };
@@ -169,8 +172,8 @@ const AllBudgets: React.FC = () => {
                                 className="bg-gray-100 px-5 py-3 rounded text-gray-500 text-sm font-medium cursor-pointer"
                             >
                                 <option value="">Select Month</option>
-                                {months.map((month, index) => (
-                                    <option key={index} value={month.toLowerCase()}>
+                                {months?.map((month, index) => (
+                                    <option key={index} value={month?.toLowerCase()}>
                                         {month}
                                     </option>
                                 ))}
@@ -193,9 +196,9 @@ const AllBudgets: React.FC = () => {
                         </thead>
                         <tbody className="divide-y divide-gray-200">
                             {loading ? (
-                                Array.from({ length: 5 }).map((_, index) => (
+                                Array?.from({ length: 5 })?.map((_, index) => (
                                     <tr key={index} className="animate-pulse">
-                                        {Array.from({ length: 6 }).map((_, cellIndex) => (
+                                        {Array.from({ length: 6 })?.map((_, cellIndex) => (
                                             <td key={cellIndex} className="px-6 py-4">
                                                 <div className="h-4 bg-gray-200 rounded"></div>
                                             </td>
@@ -207,31 +210,31 @@ const AllBudgets: React.FC = () => {
                                     <tr key={budget.id} className="text-sm text-grey-primary font-medium">
                                         <td className="whitespace-nowrap px-6 py-4">{startIndex + index + 1}</td>
                                         <td className="px-3 py-2 text-sm">
-                                            {budget.BudgetItem.length > 0
-                                                ? `${budget?.BudgetItem[0]?.amount ? formatAmount(budget.BudgetItem[0].amount) : '-'}`
+                                            {budget.BudgetItem?.length > 0
+                                                ? `NGN ${formatAmount(calculateTotalAmount(budget?.BudgetItem))}`
                                                 : '-'}
                                         </td>
-                                        <td className="px-3 py-2 text-sm">{budget.location || '-'}</td>
+                                        <td className="px-3 py-2 text-sm">{budget?.location || '-'}</td>
                                         <td className="px-3 py-2 text-sm">
-                                            {budget.updatedAt
-                                                ? new Date(budget.updatedAt).toLocaleString('en-GB', {
+                                            {budget?.updatedAt
+                                                ? new Date(budget?.updatedAt)?.toLocaleString('en-GB', {
                                                     day: '2-digit',
                                                     month: '2-digit',
                                                     year: 'numeric',
                                                     hour: 'numeric',
                                                     minute: 'numeric',
                                                     hour12: true
-                                                }).replace(',', '').toLowerCase()
+                                                }).replace(',', '')?.toLowerCase()
                                                 : '-'}
                                         </td>
                                         <td className="px-3 py-2">
-                                            <button className={`mr-2 rounded-full px-3 py-2 ${getStatusStyle(budget.status)}`}>
-                                                {getStatusText(budget.status)}
+                                            <button className={`mr-2 rounded-full px-3 py-2 ${getStatusStyle(budget?.status)}`}>
+                                                {getStatusText(budget?.status)}
                                             </button>
                                         </td>
                                         <td className="flex items-center whitespace-nowrap px-6 py-4">
                                             <p 
-                                                onClick={() => handleOpenModal(budget.id, budget.status)} 
+                                                onClick={() => handleOpenModal(budget?.id, budget?.status)} 
                                                 className="cursor-pointer font-semibold text-primary-700"
                                             >
                                                 View details
@@ -264,7 +267,7 @@ const AllBudgets: React.FC = () => {
                 )}
             </header>
 
-                {isApproveModalOpen && selectedBudgetId && (
+            {isApproveModalOpen && selectedBudgetId && (
                 <StaffBudgetPaymentDetail
                     budgetId={selectedBudgetId}
                     onClose={handleCloseApproveModal}
