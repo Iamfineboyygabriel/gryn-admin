@@ -32,13 +32,17 @@ const BudgetPaymentDetail: React.FC<BudgetPaymentDetailProps> = ({
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewFileType, setPreviewFileType] = useState<string>("");
+  const [totalAmount, setTotalAmount] = useState<number>(0);
+
   const [budget, setBudget] = useState<any>(null);
 
   useEffect(() => {
     if (budgets?.data && budgetId) {
-      const foundBudget = budgets.data.find((b: any) => b.id === budgetId);
+      const foundBudget = budgets?.data?.find((b: any) => b?.id === budgetId);
       if (foundBudget) {
         setBudget(foundBudget);
+        const total = foundBudget?.BudgetItem.reduce((sum: number, item: any) => sum + (item.amount || 0), 0);
+        setTotalAmount(total);
       }
     }
   }, [budgetId, budgets]);
@@ -133,6 +137,10 @@ const BudgetPaymentDetail: React.FC<BudgetPaymentDetailProps> = ({
     setPreviewFileType("");
   };
 
+  const formatAmount = (amount: number) => {
+    return amount?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
   return (
     <main className="fixed font-outfit inset-y-0 overflow-auto px-4 py-4 right-0 w-[500px] bg-white shadow-lg">
       <div className="h-full flex flex-col">
@@ -170,7 +178,8 @@ const BudgetPaymentDetail: React.FC<BudgetPaymentDetailProps> = ({
                 </p>
                 <div>
                   <p className="font-semibold text-primary-700 text-2xl">
-                    NGN {budget?.BudgetItem[0]?.amount || '-'}
+                    NGN {formatAmount(totalAmount)}
+                  
                   </p>
                 </div>
               </div>

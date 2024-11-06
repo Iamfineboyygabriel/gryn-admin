@@ -122,6 +122,11 @@ const Budgets: React.FC = () => {
         navigate(-1);
     };
 
+    const calculateTotalAmount = (budgetItems: any[]) => {
+        return budgetItems?.reduce((sum: number, item: any) => sum + (item?.amount || 0), 0) || 0;
+    };
+
+
     const formatAmount = (amount: number) => {
         return amount?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     };
@@ -220,8 +225,8 @@ const Budgets: React.FC = () => {
                                     <tr key={budget.id} className="text-sm text-grey-primary font-medium">
                                         <td className="whitespace-nowrap px-6 py-4">{startIndex + index + 1}</td>
                                         <td className="px-3 py-2 text-sm">
-                                            {budget.BudgetItem.length > 0
-                                                ? `NGN ${budget?.BudgetItem[0]?.amount ? formatAmount(budget.BudgetItem[0].amount) : '-'}`
+                                        {budget.BudgetItem?.length > 0
+                                                ? `NGN ${formatAmount(calculateTotalAmount(budget?.BudgetItem))}`
                                                 : '-'}
                                         </td>
                                         <td className="px-3 py-2 text-sm">{budget.location || '-'}</td>
