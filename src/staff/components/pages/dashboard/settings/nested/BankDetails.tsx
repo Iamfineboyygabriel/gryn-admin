@@ -3,7 +3,7 @@ import { useBanks } from '../../../../../../shared/redux/hooks/admin/getAdminPro
 import { Dropdown, DropdownItem } from '../../../../../../shared/dropDown/DropDown';
 import ReactLoading from "react-loading";
 import { button } from "../../../../../../shared/buttons/Button";
-import { getAccountName, updateBankDetails } from '../../../../../../shared/redux/admin/services/application.services';
+import { getAccountName, submitBankDetails, updateBankDetails } from '../../../../../../shared/redux/admin/services/application.services';
 import { toast } from "react-toastify";
 import useUserProfile from "../../../../../../shared/redux/hooks/shared/getUserProfile";
 
@@ -128,7 +128,12 @@ const BankDetails = () => {
     };
 
     try {
-      const response = await updateBankDetails(body);
+      let response;
+      if (originalBankDetails.accountNumber) {
+        response = await updateBankDetails(body);
+      } else {
+        response = await submitBankDetails(userProfile.email, body);
+      }
       if (response.status === 200) {
         toast.success("Bank details updated successfully");
         setIsEditing(false);
@@ -187,7 +192,7 @@ const BankDetails = () => {
 
         <div className="w-full">
           <label htmlFor="accountNumber" className="flex-start flex gap-3 font-medium text-grey-primary">
-            Account Number
+            Account Numberr
           </label>
           <div className="relative flex text-center">
             <input
