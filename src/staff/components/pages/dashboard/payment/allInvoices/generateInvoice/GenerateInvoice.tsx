@@ -367,6 +367,7 @@ const GenerateInvoice = () => {
                       )!
                     )
                   }
+                  placeholder="Products"
                 />
               )}
 
