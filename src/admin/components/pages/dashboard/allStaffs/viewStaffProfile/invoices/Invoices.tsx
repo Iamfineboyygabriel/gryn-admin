@@ -101,9 +101,9 @@ const Invoices: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
   };
 
   const filteredInvoices = useMemo(() => {
-    if (!staffInvoices || !Array.isArray(staffInvoices.data.invoices)) return [];
+    if (!staffInvoices || !Array.isArray(staffInvoices?.data?.invoices)) return [];
     return staffInvoices?.data?.invoices.filter((staff: StaffData) =>
-      staff.invoiceNumber?.toLowerCase().includes(localSearchTerm.toLowerCase())
+      staff.invoiceNumber?.toLowerCase().includes(localSearchTerm?.toLowerCase())
     );
   }, [staffInvoices, localSearchTerm]);
 

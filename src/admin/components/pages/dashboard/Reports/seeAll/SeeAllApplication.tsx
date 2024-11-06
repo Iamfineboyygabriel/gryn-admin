@@ -278,12 +278,12 @@ const SeeAllApplication: React.FC = () => {
         </table>
       </div>
 
-      {!loading && applications?.length > 0 && (
+      {!loading && (
         <div className="mt-6 flex justify-center">
           <CustomPagination
             currentPage={currentPage}
             onPageChange={handlePageChange}
-            hasMore={applications?.length === itemsPerPage}
+            hasMore={applications?.length >= itemsPerPage}
           />
         </div>
       )}

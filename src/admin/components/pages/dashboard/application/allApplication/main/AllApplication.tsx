@@ -29,7 +29,6 @@ const AllApplication: React.FC = () => {
     updateStatusTerm
   } = useAllApplication();
 
-
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [status, setStatus] = useState<string>("");
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
@@ -255,7 +254,7 @@ const AllApplication: React.FC = () => {
         </table>
       </div>
 
-      {!loading && applications?.length > 0 && (
+      {!loading && (
         <div className="mt-6 flex justify-center">
           <CustomPagination
             currentPage={currentPage}
