@@ -193,14 +193,14 @@ const BudgetPaymentDetail: React.FC<BudgetPaymentDetailProps> = ({
 
             <hr  className="underline mt-8 border-dashed"/>
 
-              <div className="space-y-6 flex flex-col gap-[3px] mt-4">
-                {budget?.BudgetItem.map((item: any) => (
-                  <div key={item.id} className="flex justify-between py-2">
-                    <p className="text-sm text-gray-500">{item.name}</p>
-                    <p className="font-medium">NGN {item.amount}</p>
-                  </div>
-                ))}
-              </div>
+            <div className="space-y-6 flex flex-col gap-[3px] mt-4">
+              {budget?.BudgetItem?.map((item: any) => (
+                <div key={item.id} className="flex justify-between py-2">
+                  <p className="text-sm text-gray-500">{item?.name}</p>
+                  <p className="font-medium">NGN {formatAmount(item?.amount)}</p>
+                </div>
+              ))}
+            </div>
             </div>
 
             <div className="mt-4 flex justify-between">
@@ -208,12 +208,12 @@ const BudgetPaymentDetail: React.FC<BudgetPaymentDetailProps> = ({
               <p className="font-medium">{dayjs(budget?.createdAt).format('YYYY-MM-DD HH:mm:ss')}</p>
             </div>
             
-            <div className='flex mt-4 justify-between'>
+            {/* <div className='flex mt-4 justify-between'>
               <p className="text-sm text-gray-500">Sender Name</p>
               <p className="font-medium">
               {budget?.staffPayment?.senderName || '-'}
               </p>
-            </div>
+            </div> */}
 
             {/* <div className="mt-4">
               <p className="text-sm text-gray-500">Status</p>

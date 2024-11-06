@@ -203,7 +203,7 @@ const Budgets: React.FC = () => {
                                 <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
                                 <th className="px-6 py-3 text-left text-sm font-normal">Amount</th>
                                 <th className="px-6 py-3 text-left text-sm font-normal">Location</th>
-                                <th className="px-6 py-3 text-left text-sm font-normal">Sender's Name</th>
+                                {/* <th className="px-6 py-3 text-left text-sm font-normal">Sender's Name</th> */}
                                 <th className="px-6 py-3 text-left text-sm font-normal">Date & Time</th>
                                 <th className="px-6 py-3 text-left text-sm font-normal">Status</th>
                                 <th className="px-6 py-3 text-left text-sm font-normal">Action</th>
@@ -230,7 +230,7 @@ const Budgets: React.FC = () => {
                                                 : '-'}
                                         </td>
                                         <td className="px-3 py-2 text-sm">{budget.location || '-'}</td>
-                                        <td className="px-3 py-2 text-sm">-</td>
+                                        {/* <td className="px-3 py-2 text-sm">-</td> */}
                                         <td className="px-3 py-2 text-sm">
                                             {budget.updatedAt
                                                 ? new Date(budget.updatedAt).toLocaleString('en-GB', {

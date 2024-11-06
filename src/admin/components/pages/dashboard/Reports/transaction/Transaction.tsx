@@ -5,7 +5,6 @@ import { MdKeyboardArrowRight } from "react-icons/md";
 import transaction from "../../../../../../assets/svg/Transaction.svg";
 import { useCallback, useEffect, useMemo } from "react";
 
-// Types and Interfaces
 interface SalaryItem {
   id: number;
   receiptNo: string;
@@ -62,17 +61,21 @@ const Transaction = () => {
   const itemsPerPage = 10;
   const STATUS_COMPLETED = "COMPLETED";
 
-  const formatAmount = (amount: number) => {
-    return amount?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  };
+  const calculateTotalAmount = (budgetItems: any[]) => {
+    return budgetItems?.reduce((sum: number, item: any) => sum + (item?.amount || 0), 0) || 0;
+};
 
+const formatAmount = (amount: number) => {
+    return amount?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
+  
   useEffect(() => {
     fetchSalaries(currentPage, itemsPerPage, STATUS_COMPLETED);
   }, [fetchSalaries, currentPage]);
 
   const filteredAndSortedSalaries = useMemo(() => {
-    if (!salaries || !Array.isArray(salaries)) return [];
-    return salaries.filter((item: SalaryItem) => 
+    if (!salaries || !Array?.isArray(salaries)) return [];
+    return salaries?.filter((item: SalaryItem) => 
       item.invoice?.status === STATUS_COMPLETED
     );
   }, [salaries]);
@@ -108,11 +111,11 @@ const Transaction = () => {
           {(currentPage - 1) * itemsPerPage + index + 1}
         </td>
         <td className="whitespace-nowrap px-3 py-2">
-          {item.receiptNo}
+          {item?.receiptNo}
         </td>
         <td className="whitespace-nowrap px-3 py-2">
-          {formatData(item.invoice?.item?.[0]?.amount ? 
-            formatAmount(item.invoice.item[0].amount) : "-")}
+          {formatData(item?.invoice?.item?.[0]?.amount ? 
+            formatAmount(item?.invoice.item[0].amount) : "-")}
         </td>
         <td className="whitespace-nowrap px-3 py-2">
           <button
@@ -137,19 +140,20 @@ const Transaction = () => {
       </thead>
       <tbody>
         {budgets?.data?.length ? (
-          budgets.data.map((budget: Budget, index: number) => (
-            <tr className="border-b border-gray-200" key={budget.id}>
+          budgets?.data?.map((budget: Budget, index: number) => (
+            <tr className="border-b border-gray-200" key={budget?.id}>
               <td className="px-3 py-2 text-sm">{index + 1}</td>
               <td className="px-3 py-2 text-sm">
-                {budget?.BudgetItem?.length ? 
-                  `NGN ${budget.BudgetItem[0].amount}` : '-'}
+              {budget?.BudgetItem?.length
+                ? `${formatAmount(calculateTotalAmount(budget?.BudgetItem))}`
+                : '-'}
               </td>
-              <td className="px-3 py-2 text-sm">{budget.location || '-'}</td>
+              <td className="px-3 py-2 text-sm">{budget?.location || '-'}</td>
               <td className="px-3 py-2">
                 <span
-                  className={`rounded-full px-3 py-1 text-white text-sm ${getStatusColor(budget.status)}`}
+                  className={`rounded-full px-3 py-1 text-white text-sm ${getStatusColor(budget?.status)}`}
                 >
-                  {budget.status || '-'}
+                  {budget?.status || '-'}
                 </span>
               </td>
             </tr>
