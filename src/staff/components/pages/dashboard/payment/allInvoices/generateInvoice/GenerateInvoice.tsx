@@ -77,7 +77,6 @@ const GenerateInvoice = () => {
       if (draftId) {
         try {
           const response = await getDraftItemById(`/invoice/item/${draftId}`);
-          console.log("response",response)
           const draftData = response.data; 
           if (draftData) {
             setStatus({ name: draftData?.status });

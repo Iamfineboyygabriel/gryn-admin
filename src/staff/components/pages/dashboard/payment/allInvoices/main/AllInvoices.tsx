@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { FiSearch } from "react-icons/fi";
 import transaction from "../../../../../../../assets/svg/Transaction.svg";
 import { Link, useNavigate } from "react-router-dom";
@@ -26,7 +26,6 @@ const AllInvoices = () => {
   const itemsPerPage = 10;
   
   const invoiceData = useMemo(() => useInvoice || [], [useInvoice]);
-  const totalAmount = invoiceData?.item?.reduce((sum:any, item:any) => sum + item.amount, 0) || 0;
 
   useEffect(() => {
     fetchInvoice(page, itemsPerPage);
@@ -51,6 +50,17 @@ const AllInvoices = () => {
     );
   };
 
+  const formatAmount = (amount:number) => {
+    return amount.toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  };
+
+  const calculateInvoiceTotal = (items:any[]) => {
+    return items?.reduce((sum, item) => sum + (item.amount || 0), 0) || 0;
+  };
+
   const filteredInvoice = useMemo(
     () =>
       (invoiceData || [])?.filter(
@@ -59,7 +69,7 @@ const AllInvoices = () => {
             .toLowerCase()
             .includes(searchQuery?.toLowerCase()) ||
           invoice?.item?.some((item:any) =>
-            (item?.productName || "")
+            (item?.name || "")
               .toLowerCase()
               .includes(searchQuery.toLowerCase())
           )
@@ -124,15 +134,6 @@ const AllInvoices = () => {
                   Invoice No
                 </th>
                 <th className="whitespace-nowrap px-6 py-3 text-left text-sm font-normal">
-                  Product Name
-                </th>
-                <th className="whitespace-nowrap px-6 py-3 text-left text-sm font-normal">
-                  Quantity
-                </th>
-                <th className="whitespace-nowrap px-6 py-3 text-left text-sm font-normal">
-                  Rate
-                </th>
-                <th className="whitespace-nowrap px-6 py-3 text-left text-sm font-normal">
                   Amount
                 </th>
                 <th className="whitespace-nowrap px-6 py-3 text-left text-sm font-normal">
@@ -157,9 +158,11 @@ const AllInvoices = () => {
                     .slice(0, invoiceIndex)
                     .reduce((acc:any, inv:any) => acc + inv?.item?.length, 0);
 
+                  const totalInvoiceAmount = calculateInvoiceTotal(invoice?.item);
+
                   return invoice?.item?.map((item:any, itemIndex:any) => (
                     <tr
-                      key={`${invoice.id}-${itemIndex}`}
+                      key={`${invoice?.id}-${itemIndex}`}
                       className="text-[14px] leading-[20px] text-grey-primary font-medium"
                     >
                       <td className="py-[16px] px-[24px]">
@@ -167,30 +170,21 @@ const AllInvoices = () => {
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
                         {highlightText(
-                          formatData(invoice.invoiceNumber),
+                          formatData(invoice?.invoiceNumber),
                           searchQuery
                         )}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
-                        {highlightText(formatData(item.name), searchQuery)}
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4">
-                        {formatData(item.quantity)}
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4">
-                        {formatData(item.rate)}
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4">
-                        {totalAmount}
+                        NGN {formatAmount(totalInvoiceAmount)}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
                         {formatData(
-                          new Date(invoice.invoiceDate).toLocaleDateString()
+                          new Date(invoice?.invoiceDate).toLocaleDateString()
                         )}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
                         {formatData(
-                          new Date(invoice.dueDate).toLocaleDateString()
+                          new Date(invoice?.dueDate).toLocaleDateString()
                         )}
                       </td>
                       <td className="flex items-center whitespace-nowrap px-6 py-4">
@@ -201,16 +195,16 @@ const AllInvoices = () => {
                               : "bg-green-500"
                           }`}
                         >
-                          {formatData(invoice.status) === "SUBMITTED"
+                          {formatData(invoice?.status) === "SUBMITTED"
                             ? "In Progress"
                             : "Completed"}
                         </button>
-                     <p 
-                        className="cursor-pointer font-semibold text-primary-700"
-                        onClick={() => handleViewDetails(invoice)}
-                      >
-                        View details
-                      </p>
+                        <p 
+                          className="cursor-pointer font-semibold text-primary-700"
+                          onClick={() => handleViewDetails(invoice)}
+                        >
+                          View details
+                        </p>
                       </td>
                     </tr>
                   ));
