@@ -12,7 +12,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       <Header />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />
-        <main className="h-auto flex-1 overflow-y-auto bg-gray-100 px-[1.3em] py-[1.5em] font-outfit lg:px-[1.5em] dark:bg-gray-700">
+        <main className="h-auto flex-1 overflow-y-auto bg-gray-100 px-[1.3em] py-[1.5em] font-outfit lg:px-[1.5em]">
           {children}
         </main>
       </div>

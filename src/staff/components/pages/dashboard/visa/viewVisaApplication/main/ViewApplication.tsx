@@ -85,7 +85,7 @@ const ViewApplication = () => {
             <div>
               <h1 className="font-medium dark:text-gray-700">
                 Manage Application /
-                <span className="ml-1 font-medium text-primary-700 dark:text-white">
+                <span className="ml-1 font-medium text-primary-700">
                   View Application
                 </span>
               </h1>

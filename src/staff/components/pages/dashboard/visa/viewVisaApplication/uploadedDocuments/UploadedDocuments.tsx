@@ -48,7 +48,7 @@ const SkeletonRow = () => (
 const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
   const dispatch:AppDispatch = useAppDispatch();
   const { applicationDetails, loading: applicationLoading } = useVisaApplicationDetails(applicationId);
-  const { updateDocStatus } = useSelector((state: any) => state.shareApplication);
+  const { updateDocStatus } = useSelector((state: any) => state?.shareApplication);
   
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -60,7 +60,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
 
   useEffect(() => {
     if (applicationDetails?.data?.document) {
-      setDocuments(applicationDetails.data.document);
+      setDocuments(applicationDetails?.data?.document);
     }
   }, [applicationDetails]);
 
@@ -79,7 +79,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
 
   const getFileTypeFromUrl = (url: string): string => {
     const segments = url.split("/");
-    const fileExtension = segments[segments.length - 1].split(".").pop()?.toLowerCase();
+    const fileExtension = segments[segments?.length - 1]?.split(".")?.pop()?.toLowerCase();
     switch (fileExtension) {
       case "pdf":
         return "application/pdf";
@@ -133,7 +133,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
     try {
       const response = await dispatch(updateDocumentStatus({ id, remark }));
       
-      if (response.meta.requestStatus === 'fulfilled' && response.payload?.status === 200) {
+      if (response.meta.requestStatus === 'fulfilled' && response?.payload?.status === 200) {
         setDocuments((prevDocs) =>
           prevDocs.map((doc) =>
             doc.id === id ? { ...doc, status: remark, remark: remark } : doc
@@ -191,7 +191,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
     return (
       <div className="flex flex-col items-start">
         {errors[doc.id] && (
-          <small className="text-red-500 mb-1">{errors[doc.id]}</small>
+          <small className="text-red-500 mb-1">{errors[doc?.id]}</small>
         )}
         <button
           className={buttonClass}
@@ -212,7 +212,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
     return (
       <main className="font-outfit">
         <header>
-          <h2 className="text-xl font-semibold dark:text-white">Uploaded Documents</h2>
+          <h2 className="text-xl font-semibold">Uploaded Documents</h2>
         </header>
         <div className="mt-[2em] grid w-[85%] grid-cols-2 gap-10">
           {Array.from({ length: 4 }).map((_, index) => (
@@ -234,15 +234,15 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
       </header>
       <section>
         <div className="mt-[2em] grid w-full grid-cols-2 gap-10">
-          {documents.map((doc) => (
-            <div key={doc.id}>
+          {documents?.map((doc) => (
+            <div key={doc?.id}>
               <div>
-                <label className="dark:text-white" htmlFor={doc.documentType}>
+                <label htmlFor={doc.documentType}>
                   {doc.documentType}
                 </label>
               </div>
               <div className="mt-2 flex items-center justify-between rounded-lg border-[1px] border-gray-300 px-[1em] py-5">
-                <label htmlFor={doc.documentType} className="flex flex-grow flex-col dark:text-white cursor-pointer">
+                <label htmlFor={doc.documentType} className="flex flex-grow flex-col cursor-pointer">
                   <div className="flex items-center gap-5">
                     <div className="flex gap-2">
                       <img src={fileImg} alt="file_img" />
@@ -254,7 +254,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
                 </label>
                 <div className="flex gap-[2px]">
                   <button
-                    onClick={() => handlePreview(doc.publicURL)}
+                    onClick={() => handlePreview(doc?.publicURL)}
                     className="flex items-center gap-1 rounded-full bg-purple-white px-3 py-[5px] text-center font-medium text-[#660066]"
                   >
                     <img src={eye} alt="eye" />

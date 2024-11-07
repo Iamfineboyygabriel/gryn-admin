@@ -477,7 +477,7 @@ const StepTwo = ({
                 id="schoolName"
                 name="schoolName"
                 onChange={(e) => setSchoolName(e.target.value)}
-                className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none dark:text-white"
+                className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
               />
             </div>
             <div className="w-full">
@@ -494,7 +494,7 @@ const StepTwo = ({
                 required
                 disabled={loading}
                 onChange={(e) => setAgentEmail(e.target.value)}
-                className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none dark:text-white"
+                className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
               />
             </div>
           </div>

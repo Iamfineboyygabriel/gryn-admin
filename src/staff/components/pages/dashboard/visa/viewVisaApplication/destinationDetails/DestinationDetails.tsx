@@ -15,7 +15,7 @@ const DestinationDetails: React.FC<{ applicationId: any }> = ({
 
   const renderField = (label: string, value: string | undefined) => (
     <div className="w-full">
-      <label className="flex-start flex font-medium dark:text-white">
+      <label className="flex-start flex font-medium">
         {label}
       </label>
       {loading ? (
@@ -24,7 +24,7 @@ const DestinationDetails: React.FC<{ applicationId: any }> = ({
         <input
           value={value || ""}
           readOnly
-          className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none dark:text-white"
+          className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
         />
       )}
     </div>
@@ -33,11 +33,11 @@ const DestinationDetails: React.FC<{ applicationId: any }> = ({
   return (
     <main className="font-outfit">
       <header>
-        <h2 className="text-xl font-semibold dark:text-white">
+        <h2 className="text-xl font-semibold">
           Destination Details
         </h2>
       </header>
-      <form className="mt-[2em] w-[77%] dark:text-white">
+      <form className="mt-[2em] w-[77%]">
         <div className="flex flex-row gap-[3em]">
           {renderField("Passport Number", applicationDetails?.data?.passportNumber)}
           {renderField("Issued Date", applicationDetails?.data?.issuedDate)}

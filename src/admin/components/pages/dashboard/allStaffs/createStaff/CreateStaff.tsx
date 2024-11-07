@@ -134,7 +134,7 @@ const CreateStaff = () => {
                 id="middleName"
                 name="middleName"
                 onChange={(e) => setMiddleName(e.target.value)}
-                className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none dark:text-white"
+                className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-noneiojn   "
               />
             </div>
             <div className="w-full md:w-[48%]">
