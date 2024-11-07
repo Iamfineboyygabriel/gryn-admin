@@ -14,8 +14,9 @@ import { updateDocumentStatus } from "../../../../../../../../shared/redux/share
 import DocumentPreviewModal from "../../../../../../../../shared/modal/DocumentPreviewModal";
 import Modal from "../../../../../../../../shared/modal/Modal";
 import StudentApplicationSummary from "../../../../../../../../shared/modal/applicationSummaryModal/StudentApplicationSummary";
-import AssignApplication from "../../../../../../../../shared/modal/AssignApplication";
 import AssignApplicationToAgent from "../../../../../../../../shared/modal/AssignApplicationToAgent";
+import { Alert, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { updateApplicationToCompleted } from "../../../../../../../../shared/redux/admin/slices/application.slices";
 
 interface Document {
   id: string;
@@ -50,6 +51,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
   const dispatch:AppDispatch = useAppDispatch();
   const { applicationDetails, loading: applicationLoading } = useApplicationDetails(applicationId);
   const { updateDocStatus, error } = useSelector((state: any) => state.shareApplication);
+
   
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -59,6 +61,18 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>({});
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [newApplicationStatus, setNewApplicationStatus] = useState<'COMPLETED' | 'DECLINED' | null>(null);
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const [alertState, setAlertState] = useState<{
+    open: boolean;
+    message: string;
+    severity: 'success' | 'error';
+  }>({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
+
 
   useEffect(() => {
     if (applicationDetails?.data?.documents) {
@@ -78,14 +92,6 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
 
   const handleOpenModal = () => setModalOpen(true);
   const handleCloseModal = () => setModalOpen(false);
-
-  const handleAssignCloseModal = () => {
-    setIsAssignModal(false);
-  };
-
-  const handleOpenAssignModal = () => {
-    setIsAssignModal(true);
-  };
 
   const getFileTypeFromUrl = (url: string): string => {
     const segments = url.split("/");
@@ -161,6 +167,41 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
         [id]: { ...prev[id], [action]: false }
       }));
     }
+  };
+
+  const handleUpdateApplicationStatus = async () => {
+    if (!newApplicationStatus) return;
+
+    setIsUpdatingStatus(true);
+    try {
+      const response = await dispatch(updateApplicationToCompleted({
+        body: { status: newApplicationStatus },
+        applicationId
+      }));
+
+      if (response.meta.requestStatus === 'fulfilled' && response.payload?.status === 200) {
+        setAlertState({
+          open: true,
+          message: `Application successfully marked as ${newApplicationStatus.toLowerCase()}`,
+          severity: 'success'
+        });
+      } else {
+        throw new Error(`Failed to update application status to ${newApplicationStatus}`);
+      }
+    } catch (error) {
+      setAlertState({
+        open: true,
+        message: 'Failed to update application status. Please try again.',
+        severity: 'error'
+      });
+    } finally {
+      setIsUpdatingStatus(false);
+      setNewApplicationStatus(null);
+    }
+  };
+
+  const handleCloseAlert = () => {
+    setAlertState(prev => ({ ...prev, open: false }));
   };
 
   const renderActionButton = (doc: Document, action: 'APPROVED' | 'REJECTED'): JSX.Element => {
@@ -308,12 +349,66 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
       />
       <div>
        
-      <button.PrimaryButton
-        className="m-auto mt-[5em] ml-8 w-[18%] gap-2 rounded-full bg-linear-gradient py-[12px] text-center text-lg font-medium text-white"
-        onClick={handleOpenModal}
+      <div className="w-full mt-8">
+        {alertState.open && (
+          <Alert
+            severity={alertState.severity}
+            onClose={handleCloseAlert}
+            className="w-1/2"
+            sx={{
+              '& .MuiAlert-message': {
+                width: '100%',
+                textAlign: 'center'
+              }
+            }}
+          >
+            {alertState.message}
+          </Alert>
+        )}
+      </div>
+
+        <div className="flex flex-wrap w-full gap-4 mt-[5em]">
+        <button.PrimaryButton
+          className="w-auto rounded-full px-3 bg-linear-gradient py-[9px] text-center text-lg font-medium text-white"
+          onClick={handleOpenModal}
         >
-        Submit Response
-      </button.PrimaryButton>
+          Submit Response
+        </button.PrimaryButton>
+
+        <div className="flex items-center gap-4 w-full md:w-auto">
+          <FormControl className="flex-grow md:w-48">
+            <InputLabel id="application-status-select-label">Application Status</InputLabel>
+            <Select
+              labelId="application-status-select-label"
+              value={newApplicationStatus || ''}
+              onChange={(e) => setNewApplicationStatus(e.target.value as 'COMPLETED' | 'DECLINED')}
+            >
+              <MenuItem value="">Select an action</MenuItem>
+              <MenuItem value="COMPLETED">Mark as Completed</MenuItem>
+              <MenuItem value="DECLINED">Mark as Declined</MenuItem>
+            </Select>
+          </FormControl>
+
+          <button.PrimaryButton
+            className="w-[8em] rounded-full bg-linear-gradient py-[9px] px-3 text-center text-lg font-medium text-white"
+            onClick={handleUpdateApplicationStatus}
+            disabled={!newApplicationStatus || isUpdatingStatus}
+          >
+            {isUpdatingStatus ? (
+              <div>
+                <ReactLoading
+                  color="#FFFFFF"
+                  width={25}
+                  height={25}
+                  type="spin"
+                />
+              </div>
+            ) : (
+              "Update Status"
+            )}
+          </button.PrimaryButton>
+        </div>
+      </div>
           </div>
           {isModalOpen && (
     <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
@@ -328,18 +423,6 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
       />
     </Modal>
   )}
-      {isAssignModal && (
-        <Modal
-          isOpen={isAssignModal}
-          onClose={handleAssignCloseModal}
-          data-aos="zoom-in"
-        >
-          <AssignApplicationToAgent
-            applicationId={applicationId}
-            onClose={handleAssignCloseModal}
-          />
-        </Modal>
-      )}
     </main>
   );
 };

@@ -216,7 +216,7 @@ const AllStaff = () => {
     <CustomPagination
       currentPage={currentPage}
       onPageChange={handlePageChange}
-      hasMore={admins.data.length === itemsPerPage}
+      hasMore={admins?.data?.length === itemsPerPage}
     />
   </div>
    )}

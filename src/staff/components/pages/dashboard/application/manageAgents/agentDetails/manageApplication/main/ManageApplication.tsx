@@ -194,18 +194,25 @@ const ManageApplication: React.FC<ManageApplicationProps> = ({
                     <td className="whitespace-nowrap px-6 py-4">
                       {app.documents?.length ?? 0}
                     </td>
-                    <td className="whitespace-nowrap px-6 py-4">
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleViewDetails(app.id);
-                        }}
-                        type="button" 
-                        className="text-primary-700 hover:underline"
-                      >
-                        View Details
-                      </button>
-                    </td>
+                    <td className="flex items-center whitespace-nowrap px-6 py-4">
+                    <button
+                      className={`mr-2 rounded-full w-[7em] px-3 py-2 text-white ${
+                        app?.status === "SUBMITTED" ? "bg-yellow-500" : 
+                        app?.status === "COMPLETED" ? "bg-green-500" :
+                        "bg-red-500"
+                      }`}
+                    >
+                      {app?.status === "SUBMITTED" ? "In Progress" : 
+                      app?.status === "COMPLETED" ? "Completed" :
+                      "Declined"}
+                    </button>
+                    <button
+                      onClick={() => handleViewDetails(app?.id)}
+                      className="cursor-pointer font-semibold text-primary-700"
+                    >
+                      View details
+                    </button>
+                  </td>
                   </tr>
                 ))
               ) : (

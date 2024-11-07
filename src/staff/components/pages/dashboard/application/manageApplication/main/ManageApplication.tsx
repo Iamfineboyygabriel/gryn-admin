@@ -163,7 +163,7 @@ const AllApplication: React.FC = () => {
         </td>
         <td className="flex items-center whitespace-nowrap px-6 py-4">
           <button
-            className={`mr-2 rounded-full px-3 py-2 text-white ${
+            className={`mr-2 rounded-full w-[7em] px-3 py-2 text-white ${
               item?.status === "SUBMITTED" ? "bg-yellow-500" : 
               item?.status === "COMPLETED" ? "bg-green-500" :
               "bg-red-500"

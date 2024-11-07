@@ -84,7 +84,7 @@ const All = () => {
               <header>
                   <h1 className="font-semibold">{notification?.header}</h1>
                 </header>
-                <h1 className="font-semibold">{notification?.description}</h1>
+                <h1 className="font-semibold text-gray-600">{notification?.description}</h1>
                 <small className='text-gray-500 font-normal'>
                   {new Date(notification?.createdAt).toLocaleTimeString([], {
                     hour: '2-digit',

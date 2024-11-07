@@ -40,8 +40,8 @@ const ListSection = ({ title, data, loading, error, renderItem, seeAllLink }:any
         data.map((item:any, index:number) => renderItem(item, index))
       ) : (
         <div className="mt-[2em] flex flex-col items-center justify-center">
-          <img src={transaction} alt={`No ${title.toLowerCase()}`} />
-          <p className="mt-2 text-sm text-gray-500 dark:text-white">No {title.slice(4)} found.</p>
+          <img src={transaction} alt={`No ${title?.toLowerCase()}`} />
+          <p className="mt-2 text-sm text-gray-500">No {title?.slice(4)} found.</p>
         </div>
       )}
     </div>
@@ -71,7 +71,7 @@ const TopPeople = () => {
         <p>{admin?.profile?.lastName} {admin?.profile?.firstName}</p>
       </div>
       <div>
-        <h1 className="font-bold">{admin.role}</h1>
+       <h1 className="font-bold">{admin?.designation || "STAFF"}</h1>
       </div>
     </div>
   );
