@@ -223,7 +223,7 @@ const Privileges: React.FC = () => {
       dispatch(getUserPermittedPages({ id: adminId }) as any)
         .then((response: any) => {
           if (response?.payload && response?.payload?.pages) {
-            if (response.payload.pages.length === 0) {
+            if (response?.payload?.pages?.length === 0) {
               setHasNoPrivileges(true);
               return;
             }
@@ -248,7 +248,6 @@ const Privileges: React.FC = () => {
           }
         })
         .catch((error: any) => {
-          console.error("Error fetching user permitted pages:", error);
           setError("Failed to fetch user privileges. Please try again.");
         })
         .finally(() => {
@@ -260,12 +259,12 @@ const Privileges: React.FC = () => {
   const handleToggle = useCallback((feature: Features) => {
     setPrivilegesData(prev => 
       prev.map(item => {
-        if (item.features === feature) {
-          const newCompleted = !item.completed;
+        if (item?.features === feature) {
+          const newCompleted = !item?.completed;
           return {
             ...item,
             completed: newCompleted,
-            privileges: item.privileges.map(p => ({
+            privileges: item?.privileges?.map(p => ({
               ...p,
               active: newCompleted
             }))
@@ -280,13 +279,13 @@ const Privileges: React.FC = () => {
     setPrivilegesData(prev => 
       prev.map(item => {
         if (item.features === feature) {
-          const updatedPrivileges = item.privileges.map(p => 
+          const updatedPrivileges = item?.privileges?.map(p => 
             p.name === privilegeName ? { ...p, active: !p.active } : p
           );
           return {
             ...item,
             privileges: updatedPrivileges,
-            completed: updatedPrivileges.some(p => p.active)
+            completed: updatedPrivileges?.some(p => p.active)
           };
         }
         return item;
@@ -302,10 +301,10 @@ const Privileges: React.FC = () => {
   
     const body = {
       pages: privilegesData
-        .filter(item => item.completed && item.privileges.some(p => p.active))
+        .filter(item => item?.completed && item?.privileges?.some(p => p?.active))
         .map(item => ({
-          feature: item.features,
-          pages: item.privileges.filter(p => p.active).map(p => p.name)
+          feature: item?.features,
+          pages: item?.privileges?.filter(p => p?.active)?.map(p => p?.name)
         }))
     };
   
@@ -345,17 +344,21 @@ const Privileges: React.FC = () => {
             className='w-auto'
           />
         </div>
+        
         {error && (
           <Alert severity="error" className="mt-4 mb-4">{error}</Alert>
         )}
+
         {success && (
           <Alert severity="success" className="mt-4 mb-4">{success}</Alert>
         )}
+
         {hasNoPrivileges && selectedEmail && (
           <Alert severity="info" className="mt-4 mb-4">
             This user currently has no privileges assigned.
           </Alert>
         )}
+
         <table className="w-full mt-[2em]">
           <thead>
             <tr className='border-gray-200 border-border'>
@@ -365,11 +368,12 @@ const Privileges: React.FC = () => {
               <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Completed</th>
             </tr>
           </thead>
+
           <tbody>
             {privilegesLoading ? (
-              [...Array(5)].map((_, index) => <SkeletonRow key={index} />)
+              [...Array(5)]?.map((_, index) => <SkeletonRow key={index} />)
             ) : (
-              privilegesData.map((item) => (
+              privilegesData?.map((item) => (
                 <PrivilegeItem 
                   key={item.sn} 
                   {...item} 
@@ -381,6 +385,7 @@ const Privileges: React.FC = () => {
           </tbody>
         </table>
       </div>
+
       <button.PrimaryButton
         disabled={loading || privilegesLoading}
         className="m-auto mt-[5em] w-[35%] gap-2 rounded-full bg-linear-gradient py-[12px] text-center text-lg font-medium text-white"

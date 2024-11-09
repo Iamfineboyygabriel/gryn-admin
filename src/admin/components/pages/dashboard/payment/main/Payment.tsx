@@ -42,7 +42,6 @@ interface SalaryItem {
 
 const Payment: React.FC = () => {
   const { salaries, currentPage, loading, fetchSalaries, searchTerm, updateSearchTerm } = useAllSalary();
-  const [sortField, setSortField] = useState("lastName");
   const [selectedPayment, setSelectedPayment] = useState<SalaryItem | null>(null);
   const [sortOrder, setSortOrder] = useState("asc");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -67,18 +66,18 @@ const Payment: React.FC = () => {
   }, [fetchSalaries, itemsPerPage]);
 
   const filteredAndSortedSalaries = useMemo(() => {
-    if (!salaries || !Array.isArray(salaries)) {
+    if (!salaries || !Array?.isArray(salaries)) {
       return [];
     }
 
-    const filtered = salaries.filter((item: SalaryItem) => {
-      const fullName = `${item.invoice?.user?.profile?.lastName || ""} ${item.invoice?.user?.profile?.firstName || ""}`.toLowerCase();
-      return fullName.includes((searchTerm || '').toLowerCase());
+    const filtered = salaries?.filter((item: SalaryItem) => {
+      const fullName = `${item?.invoice?.user?.profile?.lastName || ""} ${item?.invoice?.user?.profile?.firstName || ""}`.toLowerCase();
+      return fullName?.includes((searchTerm || '').toLowerCase());
     });
 
     return filtered.sort((a: SalaryItem, b: SalaryItem) => {
-      const aValue = (a.invoice?.user?.profile?.lastName || "").toString().toLowerCase();
-      const bValue = (b.invoice?.user?.profile?.lastName || "").toString().toLowerCase();
+      const aValue = (a?.invoice?.user?.profile?.lastName || "").toString().toLowerCase();
+      const bValue = (b?.invoice?.user?.profile?.lastName || "").toString().toLowerCase();
       if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
       if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
       return 0;
@@ -110,10 +109,10 @@ const Payment: React.FC = () => {
       ));
     }
 
-    if (filteredAndSortedSalaries.length > 0) {
-      return filteredAndSortedSalaries.map((item: SalaryItem, index: number) => (
+    if (filteredAndSortedSalaries?.length > 0) {
+      return filteredAndSortedSalaries?.map((item: SalaryItem, index: number) => (
         <tr
-          key={item.id}
+          key={item?.id}
           className="text-sm text-grey-primary font-medium border-b border-gray-200"
         >
           <td className="whitespace-nowrap px-6 py-4">
@@ -123,12 +122,12 @@ const Payment: React.FC = () => {
             className="whitespace-nowrap px-6 py-4"
             dangerouslySetInnerHTML={sanitizeHTML(
               highlightText(
-                `${formatData(item.invoice?.user?.profile?.lastName)} ${formatData(item.invoice?.user?.profile?.firstName)}`
+                `${formatData(item?.invoice?.user?.profile?.lastName)} ${formatData(item?.invoice?.user?.profile?.firstName)}`
               )
             )}
           />
           <td className="whitespace-nowrap px-6 py-4">
-            {formatData(item.invoice?.user?.designation)}
+            {formatData(item?.invoice?.user?.designation)}
           </td>
           <td className="whitespace-nowrap px-6 py-4">
             {formatData(item?.invoice?.document?.length)}

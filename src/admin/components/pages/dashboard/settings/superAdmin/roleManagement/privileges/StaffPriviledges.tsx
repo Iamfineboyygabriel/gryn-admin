@@ -59,7 +59,7 @@ const PrivilegeItem: React.FC<FeaturePrivileges & {
     <td className="py-5 px-6 text-sm whitespace-nowrap font-medium">{features}</td>
     <td className="py-5 px-6">
       <div className="flex flex-wrap gap-2">
-        {privileges.map((privilege, index) => (
+        {privileges?.map((privilege, index) => (
           <span 
             key={index} 
             className={`flex px-[8px] rounded-md font-normal py-[6px] items-center border gap-2 cursor-pointer ${
@@ -111,6 +111,7 @@ const Privileges: React.FC = () => {
       privileges: [{ name: 'Overview', active: false }],
       completed: false
     },
+    
     {
       sn: 2,
       features: Features.APPLICATION,
@@ -122,6 +123,7 @@ const Privileges: React.FC = () => {
       ],
       completed: false
     },
+
     {
       sn: 3,
       features: Features.VISA_APPLICATION,
@@ -132,6 +134,7 @@ const Privileges: React.FC = () => {
       ],
       completed: false
     },
+
     {
       sn: 4,
       features: Features.ALL_USERS,
@@ -151,6 +154,7 @@ const Privileges: React.FC = () => {
       ],
       completed: false
     },
+
     {
       sn: 5,
       features: Features.ALL_STAFFS,
@@ -161,6 +165,7 @@ const Privileges: React.FC = () => {
       ],
       completed: false
     },
+
     {
       sn: 6,
       features: Features.PAYMENTS,
@@ -172,6 +177,7 @@ const Privileges: React.FC = () => {
       ],
       completed: false
     },
+
     {
       sn: 7,
       features: Features.REPORTS,
@@ -180,6 +186,7 @@ const Privileges: React.FC = () => {
       ],
       completed: false
     },
+
     {
       sn: 8,
       features: Features.MESSAGINGS,
@@ -188,6 +195,7 @@ const Privileges: React.FC = () => {
       ],
       completed: false
     },
+
     {
       sn: 9,
       features: Features.SETTINGS,

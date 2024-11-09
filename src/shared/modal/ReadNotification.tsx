@@ -1,12 +1,5 @@
 import trashCan from "../../assets/svg/trash.svg"
 
-interface NewsSentProps {
-  onClose?: () => void;
-  news: {
-    topic: string;
-    description: string;
-  };
-}
 
 const ReadNotification = ({onClose,news}:any) => {
   return (
@@ -18,21 +11,21 @@ const ReadNotification = ({onClose,news}:any) => {
             </span>
             </p>
             <header className="ml-2">
-                <h1 className="font-semibold">{news.topic}</h1>
+                <h1 className="font-semibold">{news?.topic}</h1>
             </header>
             <hr />
             <div>
                 <article className="text-gray-500 font-normal">
                     <p>
-                 {news.description}
+                 {news?.description}
                     </p>
                 </article>
             </div>
         </div>
       <div className="flex justify-between py-[1.5em] mt-[2em] items-center px-[1em] bg-purple-white">
-        <div>
+        {/* <div>
          <img src={trashCan} alt="trash_icon" />
-        </div>
+        </div> */}
       </div>
       </div>
     </main>

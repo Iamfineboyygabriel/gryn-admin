@@ -73,9 +73,9 @@ const Unread = () => {
 
   return (
     <main className='font-outfit'>
-      {unreadNotifications.length > 0 ? (
+      {unreadNotifications?.length > 0 ? (
         <>
-          {unreadNotifications.map((notification: any, index: number) => (
+          {unreadNotifications?.map((notification: any, index: number) => (
             <div
               key={notification?.id}
               className={`flex justify-between px-[2em] items-center mb-2 ${
@@ -83,14 +83,14 @@ const Unread = () => {
               }`}
             >
               <div className='flex flex-col py-2 gap-[4px]'>
-                <h1 className="font-semibold">{notification?.description}</h1>
+                <h1 className="font-semibold text-gray-500">{notification?.description}</h1>
                 <small className='text-gray-500 font-normal'>
-                  {new Date(notification?.createdAt).toLocaleTimeString([], {
+                  {new Date(notification?.createdAt)?.toLocaleTimeString([], {
                     hour: '2-digit',
                     minute: '2-digit',
                     hour12: true
                   }).toUpperCase()}{" "}
-                  {new Date(notification?.createdAt).toLocaleDateString()}
+                  {new Date(notification?.createdAt)?.toLocaleDateString()}
                 </small>
               </div>
               <div 
