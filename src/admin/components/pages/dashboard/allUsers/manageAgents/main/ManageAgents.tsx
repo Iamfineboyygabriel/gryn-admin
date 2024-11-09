@@ -13,7 +13,7 @@ import { PrivateElement } from "../../../../../../../shared/redux/hooks/admin/Pr
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
-    {Array.from({ length: 5 }).map((_, index) => (
+    {Array.from({ length: 4 }).map((_, index) => (
       <td key={index} className="px-6 py-4">
         <div className="h-4 bg-gray-200 rounded"></div>
       </td>

@@ -15,6 +15,7 @@ import reject from "../../../../../../../../../../assets/svg/Rejected.svg";
 import ReactLoading from "react-loading";
 import { updateStudentApplication } from "../../../../../../../../../../shared/redux/shared/slices/shareApplication.slices";
 import DirectApplicationSuccessful from "../../../../../../../../../../shared/modal/DirectApplicationSuccessful";
+import { toast } from "react-toastify";
 
 interface Document {
   id: string;
@@ -167,9 +168,9 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
       if (response.status===200) {
         handleOpenModal()
       }
-    } catch (error) {
+    } catch (error:any) {
       setDirectLoading(false)
-      console.error('Failed to update application:', error);
+      toast.error('Failed to update application:', error);
     }
   };
  

@@ -14,7 +14,7 @@ interface LocationState {
 const AgentDetails: React.FC = () => {
   const location = useLocation();
   const { agentId, email } = location.state as LocationState;
-  const [activeLink, setActiveLink] = useState("manageApplication");
+  const [activeLink, setActiveLink] = useState("agentProfile");
   
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -89,6 +89,19 @@ const AgentDetails: React.FC = () => {
         <div>
           <nav>
             <div className="flex gap-[2em] border-b-[2px] border-gray-100 py-4 text-base font-semibold">
+            <div
+                className={`${
+                  activeLink === "agentProfile"
+                    ? "bg-purple-white text-primary-700"
+                    : "bg-gray-100 text-grey-primary"
+                } cursor-pointer rounded-lg px-[1em] py-[10px] font-medium`}
+                onClick={() => setActiveLink("agentProfile")}
+              >
+                <button.PrimaryButton className="m-auto flex justify-center gap-2 font-medium text-black">
+                  Agents Profile
+                </button.PrimaryButton>
+              </div>
+
               <div
                 className={`${
                   activeLink === "manageApplication"
@@ -99,19 +112,6 @@ const AgentDetails: React.FC = () => {
               >
                 <button.PrimaryButton className="m-auto flex justify-center gap-2 font-medium text-black">
                   Manage Application
-                </button.PrimaryButton>
-              </div>
-
-              <div
-                className={`${
-                  activeLink === "agentProfile"
-                    ? "bg-purple-white text-primary-700"
-                    : "bg-gray-100 text-grey-primary"
-                } cursor-pointer rounded-lg px-[1em] py-[10px] font-medium`}
-                onClick={() => setActiveLink("agentProfile")}
-              >
-                <button.PrimaryButton className="m-auto flex justify-center gap-2 font-medium text-black">
-                  Agents Profile
                 </button.PrimaryButton>
               </div>
 
