@@ -13,8 +13,8 @@ import download from "../../../../../../../../../../assets/svg/download.svg";
 import approve from "../../../../../../../../../../assets/svg/Approved.svg";
 import reject from "../../../../../../../../../../assets/svg/Rejected.svg";
 import ReactLoading from "react-loading";
-import AssignApplication from "../../../../../../../../../../shared/modal/AssignApplication";
-import DirectCompleted from "../../../../../../../../../../shared/modal/DirectCompleted";
+import { updateStudentApplication } from "../../../../../../../../../../shared/redux/shared/slices/shareApplication.slices";
+import DirectApplicationSuccessful from "../../../../../../../../../../shared/modal/DirectApplicationSuccessful";
 
 interface Document {
   id: string;
@@ -49,15 +49,14 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
   const dispatch:AppDispatch = useAppDispatch();
   const { applicationDetails, loading: applicationLoading } = useApplicationDetails(applicationId);
   const { updateDocStatus, error } = useSelector((state: any) => state.shareApplication);
-  
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewFileType, setPreviewFileType] = useState<string>("");
   const [isModalOpen, setModalOpen] = useState(false);
-  const [isCompletedModal, setIsCompletedModal] = useState(false);
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>({});
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [directLoading, setDirectLoading] = useState(false)
 
   useEffect(() => {
     if (applicationDetails?.data?.documents) {
@@ -76,10 +75,8 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
   }, [updateDocStatus]);
 
   const handleOpenModal = () => setModalOpen(true);
-  const handleCloseModal = () => setModalOpen(false);
+  const handleCloseModal:any = () => setModalOpen(false);
 
-  const handleAssignOpenModal = () => setIsCompletedModal(true);
-  const handleAssignCloseModal = () => setIsCompletedModal(false);
 
   const getFileTypeFromUrl = (url: string): string => {
     const segments = url.split("/");
@@ -156,6 +153,25 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
       }));
     }
   };
+  const handleDirectApproval = async () => {
+    try {
+      setDirectLoading(true)
+      const response = await dispatch(updateStudentApplication({
+        id: applicationId,
+        body: {
+          isDirect: 'APPROVED',
+          status: 'COMPLETED'
+        }
+      })).unwrap();
+      setDirectLoading(false)
+      if (response.status===200) {
+        handleOpenModal()
+      }
+    } catch (error) {
+      setDirectLoading(false)
+      console.error('Failed to update application:', error);
+    }
+  };
  
   const renderActionButton = (doc: Document, action: 'APPROVED' | 'REJECTED') => {
     const actionType: ActionType = action.toLowerCase() as ActionType;
@@ -224,18 +240,6 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
       </main>
     );
   }
-
-  const renderActionButtons = () => (
-    <div>
-      <button.PrimaryButton
-        className="m-auto mt-[5em] w-[18%] gap-2 rounded-full bg-purple-white py-[12px] text-center text-lg font-semibold text-primary-700"
-        onClick={handleAssignOpenModal}
-      >
-      Direct Application
-      </button.PrimaryButton>
-    </div>
-  );
-
 
 
   if (!documents.length) {
@@ -318,20 +322,30 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
       <div>
         <button.PrimaryButton
           className="m-auto mt-[5em] ml-8 w-[18%] gap-2 rounded-full bg-linear-gradient py-[12px] text-center text-lg font-medium text-white"
-          onClick={handleAssignOpenModal}
+          onClick={handleDirectApproval}
         >
-          Direct Application
+              {directLoading ? (
+                    <ReactLoading
+                      color="#FFFFFF"
+                      width={25}
+                      height={25}
+                      type="spin"
+                    />
+                  ) : (
+                    "Direct Application"
+                  )}
         </button.PrimaryButton>
          
       </div>
-   
-      {isCompletedModal && (
-        <Modal isOpen={isCompletedModal} onClose={handleAssignCloseModal} data-aos="zoom-in">
-          <DirectCompleted applicationId={applicationId} onClose={handleAssignCloseModal} />
+          
+      {isModalOpen && (
+        <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
+          <DirectApplicationSuccessful to="/admin/dashboard/application" onClose={handleCloseModal} />
         </Modal>
-      )}
+      )} 
     </main>
   );
 };
 
 export default UploadedDocuments;
+

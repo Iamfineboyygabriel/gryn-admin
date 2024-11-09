@@ -29,7 +29,6 @@ const ApexChart = () => {
     label: new Date(0, i).toLocaleString('default', { month: 'long' })
   }));
 
-  // Generate year options (e.g., from 2000 to current year + 1)
   const currentYear = new Date().getFullYear();
   const yearOptions = Array.from(
     { length: currentYear - 1999 }, 

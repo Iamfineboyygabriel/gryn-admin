@@ -54,6 +54,20 @@ const getAllApplication = async (page: number, limit: number, search: string = '
   }
 };
 
+const getAllDirectApplication = async (page: number, limit: number, search: string = '', sort: string = '', status:string, isDirect: any) => {
+  const url = `${API_URL}/admin/application?isDirect=${isDirect}&page=${page}&limit=${limit}&search=${encodeURIComponent(search)}${sort ? `&sort=${sort}` : ''}&status=${status}`
+  try {
+    const response = await axios.get(url, { headers: authHeader() });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 
 const getAllStudents = async (page: number, limit: number, search: string = '') => {
   const url = `${API_URL}/admin/users/students?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
@@ -603,6 +617,7 @@ const applicationServices = {
   getAdminApplicationStatsBar,
   getAdminApexChartStats,
   updateApplicationToCompleted,
+  getAllDirectApplication,
 };
 
 export default applicationServices;

@@ -282,6 +282,29 @@ export const updateApplication = async (
   }
 };
 
+
+export const updateDirectApplication = async (
+  id: string,
+  body: any,
+) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/application/${id}`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "patch",
+      data: body,
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const updateDegree = async (id: string, body: UpdateDegree) => {
   const url = `${process.env.REACT_APP_API_URL}/application/degree/${id}`;
   try {
@@ -1490,6 +1513,7 @@ const shareApplicationServices = {
   UpdatePagePermission,
   getUserPermittedPages,
   budgetUploadPaymentDocument,
+  updateDirectApplication,
 };
 
 export default shareApplicationServices;

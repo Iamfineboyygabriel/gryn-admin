@@ -24,6 +24,11 @@ import {
   getTopAgentCommission,
   setAllApplicationSortTerm,
   setAllApplicationStatusTerm,
+  getAllDirectApplication,
+  setAllDirectApplicationSearchTerm,
+  setAllDirectApplicationSortTerm,
+  setAllDirectApplicationStatusTerm,
+  setAllDirectApplicationIsDirectTerm,
 } from "../../admin/slices/application.slices";
 import { setMessage } from "../../message.slices";
 import { createSelector } from "@reduxjs/toolkit";
@@ -255,6 +260,79 @@ export const useAllApplication = () => {
     updateSortTerm 
   };
 };
+
+
+export const useAllDirectApplication = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const applications = useSelector((state: any) => state?.application?.allDirect?.applications);
+  const totalPages = useSelector((state: any) => state?.application?.allDirect?.totalPages);
+  const currentPage = useSelector((state: any) => state?.application?.allDirect?.currentPage);
+  const loading = useSelector((state: any) => state?.application?.loading);
+  const error = useSelector((state: any) => state?.application?.error);
+  const searchTerm = useSelector((state: any) => state?.application?.allDirectApplicationSearchTerm);
+  const sortTerm = useSelector((state: any) => state?.application?.allDirectApplicationSortTerm);
+  const statusTerm = useSelector((state: any) => state?.application?.allDirectApplicationStatusTerm);
+  const isDirectTerm = useSelector((state: any) => state?.application?.allDirectApplicationIsDirectTerm);
+
+  const fetchApplications = useCallback(
+    (page: number, limit: number) => {
+      dispatch(getAllDirectApplication({ 
+        page, 
+        limit, 
+        search: searchTerm || '',
+        sort: sortTerm || '',
+        status: statusTerm || '',
+        isDirect: isDirectTerm || false
+      }));
+    },
+    [dispatch, searchTerm, sortTerm, statusTerm, isDirectTerm] 
+  );
+
+  const updateSearchTerm = useCallback(
+    (term: string) => {
+      dispatch(setAllDirectApplicationSearchTerm(term));
+    },
+    [dispatch]
+  );
+
+  const updateSortTerm = useCallback(
+    (term: string) => {
+      dispatch(setAllDirectApplicationSortTerm(term));
+    },
+    [dispatch]
+  );
+
+  const updateStatusTerm = useCallback(
+    (term: string) => {
+      dispatch(setAllDirectApplicationStatusTerm(term));
+    },
+    [dispatch]
+  );
+
+  const updateIsDirectTerm = useCallback(
+    (term: any) => {
+      dispatch(setAllDirectApplicationIsDirectTerm(term));
+    },
+    [dispatch]
+  );
+
+  return { 
+    applications, 
+    totalPages, 
+    currentPage, 
+    loading, 
+    error, 
+    searchTerm,
+    sortTerm,
+    statusTerm,
+    isDirectTerm,
+    updateIsDirectTerm,
+    updateStatusTerm,
+    fetchApplications, 
+    updateSearchTerm,
+    updateSortTerm 
+  };
+}
 
 
 export const useAllStudents = () => {

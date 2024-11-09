@@ -40,6 +40,18 @@ export const getAllApplication = createAsyncThunk(
   }
 );
 
+export const getAllDirectApplication = createAsyncThunk(
+  "application/getAllDirectApplication",
+  async ({ page, limit, search, sort, status, isDirect }: { page: number; limit: number; search: string; sort: string; status:string, isDirect: any }) => {
+    const response = await applicationServices.getAllDirectApplication(page, limit, search, sort, status, isDirect);
+    return {
+      applications: response.data.applications,
+      totalPages: response.data.totalPages,
+      currentPage: page
+    };
+  }
+);
+
 
 export const getAllStudents = createAsyncThunk(
   "application/getAllStudents",
@@ -323,6 +335,11 @@ interface ApplicationState {
     totalPages: number;
     currentPage: number;
   };
+  allDirect: {
+    applications: any[];
+    totalPages: number;
+    currentPage: number;
+  };
   allStaffPayments: {
     payments: any[];
     totalPages: number;
@@ -381,10 +398,13 @@ interface ApplicationState {
   loading: boolean;
   error: string | null;
   allApplicationSearchTerm: string;
+  allDirectApplicationSearchTerm: string;
+  allDirectApplicationIsDirectTerm: any;
   allSalarySearchTerm: string;
   allStudentsSearchTerm: string;
   allPendingApplicationSearchTerm: string;
   allApplicationSortTerm: string;
+  allDirectApplicationSortTerm: string;
   allStaffSearchTerm: string;
   allAdminSearchTerm: string;
   allActivity: {
@@ -397,6 +417,7 @@ interface ApplicationState {
   };
   addSchool: null,
   allApplicationStatusTerm: string;
+  allDirectApplicationStatusTerm: string;
 }
 
 const initialState: ApplicationState = {
@@ -410,6 +431,7 @@ const initialState: ApplicationState = {
   assignApplicationStaff: null,
   assignApplicationAgent: null,
   allApplicationSortTerm: '',
+  allDirectApplicationSortTerm: '',
   allBanks: null,
   allStaff: {
     staffs: [],
@@ -422,6 +444,11 @@ const initialState: ApplicationState = {
     currentPage: 1,
   },
   allApplication: {
+    applications: [],
+    totalPages: 0,
+    currentPage: 1,
+  },
+  allDirect: {
     applications: [],
     totalPages: 0,
     currentPage: 1,
@@ -464,10 +491,13 @@ const initialState: ApplicationState = {
   loading: false,
   error: null,
   allApplicationSearchTerm: '',
+  allDirectApplicationSearchTerm: '',
+  allDirectApplicationIsDirectTerm: '',
   allSalarySearchTerm: '',
   allStudentsSearchTerm: '',
   allPendingApplicationSearchTerm: '',
   allApplicationStatusTerm: '', 
+  allDirectApplicationStatusTerm: '', 
   allStaffSearchTerm: '',
   allAdminSearchTerm: '',
   allActivity: {
@@ -488,6 +518,12 @@ export const applicationSlice = createSlice({
     setAllApplicationSearchTerm: (state, action: PayloadAction<string>) => {
       state.allApplicationSearchTerm = action.payload;
     },
+    setAllDirectApplicationSearchTerm: (state, action: PayloadAction<string>) => {
+      state.allDirectApplicationSearchTerm = action.payload;
+    },
+    setAllDirectApplicationIsDirectTerm: (state, action: PayloadAction<string>) => {
+      state.allDirectApplicationIsDirectTerm = action.payload;
+    },
     setAllStaffSalarySearchTerm: (state, action: PayloadAction<string>) => {
       state.allSalarySearchTerm = action.payload;
     },
@@ -506,8 +542,14 @@ export const applicationSlice = createSlice({
     setAllApplicationSortTerm: (state, action: PayloadAction<string>) => {
       state.allApplicationSortTerm = action.payload;
     },
+    setAllDirectApplicationSortTerm: (state, action: PayloadAction<string>) => {
+      state.allDirectApplicationSortTerm = action.payload;
+    },
     setAllApplicationStatusTerm: (state, action: PayloadAction<string>) => {
       state.allApplicationStatusTerm = action.payload;
+    },
+    setAllDirectApplicationStatusTerm: (state, action: PayloadAction<string>) => {
+      state.allDirectApplicationStatusTerm = action.payload;
     },
     clearData: (state) => {
       state.allUserActivity = { data: [], currentPage: 1 };
@@ -568,6 +610,25 @@ export const applicationSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || "Failed to fetch applications";
       })
+
+
+      .addCase(getAllDirectApplication.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllDirectApplication.fulfilled, (state, action: PayloadAction<{
+        applications: any[];
+        totalPages: number;
+        currentPage: number;
+      }>) => {
+        state.loading = false;
+        state.allDirect = action.payload;
+      })
+      .addCase(getAllDirectApplication.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch applications";
+      })
+
 
       .addCase(getAllStudents.pending, (state) => {
         state.loading = true;
@@ -895,13 +956,17 @@ export const applicationSlice = createSlice({
 
 export const {
   setAllApplicationSearchTerm,
+  setAllDirectApplicationSearchTerm,
+  setAllDirectApplicationIsDirectTerm,
   setAllStaffSalarySearchTerm,
   setAllStudentsSearchTerm,
   setAllPendingApplicationSearchTerm,
   setAllStaffSearchTerm,
   setAllAdminSearchTerm,
   setAllApplicationSortTerm,
+  setAllDirectApplicationSortTerm,
   setAllApplicationStatusTerm,
+  setAllDirectApplicationStatusTerm,
 } = applicationSlice.actions;
 export const { clearData } = applicationSlice.actions;
 

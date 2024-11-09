@@ -26,7 +26,7 @@ interface FileUploadProps {
   success?: boolean;
   uploadedFile?: UploadedFile | null;
   disabled?: boolean;
-  originalFileName?: string; // Added this prop
+  originalFileName?: string; 
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({
@@ -42,7 +42,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
   success,
   uploadedFile,
   disabled = false,
-  originalFileName = "", // Added this prop with default value
+  originalFileName = "", 
 }) => {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -77,7 +77,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
   };
 
   const renderFileContent = () => {
-    // If there's a new file selected, show that
     if (file) {
       return (
         <div className="flex items-center gap-2">
@@ -98,7 +97,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
         </div>
       );
     }
-    // If there's an original file name, show that
     else if (originalFileName) {
       return (
         <div className="flex items-center gap-2">

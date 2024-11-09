@@ -56,6 +56,11 @@ interface UpdateStudentPayload {
   userId: string;
 }
 
+interface UpdateApplicationBody {
+  isDirect: boolean;
+  status: string;
+}
+
 interface UpdateBankDetailsBody {
   bankCode?: string;
   accountName?: string;
@@ -641,12 +646,27 @@ export const  getUserPermittedPages = createAsyncThunk(
   }
 );
 
+
+export const updateStudentApplication = createAsyncThunk(
+  'shareApplication/updateStudentApplication',
+  async ({ id, body }: { id: string; body: any }) => {
+    try {
+      const response = await shareApplicationServices.updateStudentApplication(id, body);
+      return response;
+    } catch (error: any) {
+      throw error.response?.data?.message || 'Failed to update application';
+    }
+  }
+);
+
+
 export const clearStaffPayment = createAsyncThunk(
   "shareApplication/clearStaffPayment",
   async () => {
     return null;
   }
 );
+
 
 interface ApplicationState {
   userProfile: null;
@@ -744,6 +764,10 @@ interface ApplicationState {
   allVisaApplicationSearchTerm: string;
   allApplicationPaymentSearchTerm: string;
   allPendingAgentSearchTerm: string;
+  applicationStatus: {
+    isDirect: boolean;
+    status: string;
+  } | null;
 }
 
 const initialState: ApplicationState = {
@@ -842,6 +866,7 @@ const initialState: ApplicationState = {
   allVisaApplicationSearchTerm: "",
   allApplicationPaymentSearchTerm: "",
   allPendingAgentSearchTerm: "",
+  applicationStatus: null,
 };
 
 
@@ -880,6 +905,10 @@ export const shareApplicationSlice = createSlice({
       state.loading = false;
       state.error = null;
     },
+    resetApplicationStatus: (state) => {
+      state.applicationStatus = null;
+      state.error = null;
+    }
   },
 
   extraReducers: (builder) => {
@@ -1463,12 +1492,24 @@ export const shareApplicationSlice = createSlice({
         setMessage(errorMessage);
       })
 
+      .addCase(updateStudentApplication.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateStudentApplication.fulfilled, (state, action) => {
+        state.loading = false;
+        state.applicationStatus = action.payload.data;
+      })
+      .addCase(updateStudentApplication.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to update application';
+      });
 
   },
 });
 
 
-export const { setSort, setStatus, setMonth, setSearch, setAllAgentSearchTerm, setAllVisaApplicationSearchTerm, setAllPendingAgentSearchTerm, setAllApplicationPaymentSearchTerm } = shareApplicationSlice.actions;
+export const { setSort, setStatus, setMonth, setSearch, setAllAgentSearchTerm, setAllVisaApplicationSearchTerm, setAllPendingAgentSearchTerm, setAllApplicationPaymentSearchTerm,  resetApplicationStatus  } = shareApplicationSlice.actions;
 const { reducer } = shareApplicationSlice;
 export const { clearPaymentData } = shareApplicationSlice.actions;
 export default reducer;
