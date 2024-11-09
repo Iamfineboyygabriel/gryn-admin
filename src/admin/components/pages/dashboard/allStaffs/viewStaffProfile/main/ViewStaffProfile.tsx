@@ -47,7 +47,7 @@ const ViewStaffProfile = () => {
         </header>
         <div>
           <nav>
-            <div className="flex px-[1em] mt-[10px] gap-[1em] border-b-[3px] border-gray-100 text-base font-semibold">
+            <div className="flex px-[1em] mt-[10px] gap-[12px] border-b-[3px] border-gray-100 text-base font-semibold">
               <div
                 className={`cursor-pointer py-3 ${activeLink === "personalDetails" ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700 dark:text-white" : "text-lg font-light text-gray-500"}`}
                 onClick={() => setActiveLink("personalDetails")}

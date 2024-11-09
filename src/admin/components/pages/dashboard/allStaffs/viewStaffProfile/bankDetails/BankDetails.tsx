@@ -3,8 +3,11 @@ import { useBanks, useStaffDetails } from '../../../../../../../shared/redux/hoo
 import { Dropdown, DropdownItem } from '../../../../../../../shared/dropDown/DropDown';
 import ReactLoading from "react-loading";
 import { button } from "../../../../../../../shared/buttons/Button";
-import { getAccountName, updateBankDetails } from '../../../../../../../shared/redux/admin/services/application.services';
+import { getAccountName } from '../../../../../../../shared/redux/admin/services/application.services';
 import { toast } from "react-toastify";
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../../../../../../shared/redux/store';
+import { updateUserBankDetails } from '../../../../../../../shared/redux/admin/slices/application.slices';
 
 interface Banks {
   name: string;
@@ -26,7 +29,9 @@ const SkeletonRow = () => (
 );
 
 const BankDetails: React.FC<{ staffEmail: any }> = ({ staffEmail }) => {
+  const dispatch: AppDispatch = useDispatch();
   const { staffDetail, loading: staffLoading } = useStaffDetails(staffEmail);
+  const staffId = staffDetail?.data?.profile.userId;
   const { allBanks, loading: bankLoading } = useBanks();
   const banks: Banks[] = allBanks || [];
 
@@ -99,7 +104,7 @@ const BankDetails: React.FC<{ staffEmail: any }> = ({ staffEmail }) => {
   }, [accountNumber, bank]);
 
   const handleSelectItem = (item: DropdownItem) => {
-    const selectedBank = banks.find((bank) => bank.name === item.name);
+    const selectedBank = banks?.find((bank) => bank.name === item.name);
     if (selectedBank) {
       setBank(selectedBank);
     }
@@ -110,6 +115,11 @@ const BankDetails: React.FC<{ staffEmail: any }> = ({ staffEmail }) => {
   };
 
   const editBankDetails = async () => {
+    if (!staffId) {
+      toast.error("Staff ID not found");
+      return;
+    }
+
     setLoading(true);
 
     if (!accountName || !bank) {
@@ -118,7 +128,7 @@ const BankDetails: React.FC<{ staffEmail: any }> = ({ staffEmail }) => {
       return;
     }
 
-    const body = {
+    const details:any = {
       accountNumber,
       accountName,
       bankCode: bank.code,
@@ -126,12 +136,22 @@ const BankDetails: React.FC<{ staffEmail: any }> = ({ staffEmail }) => {
     };
 
     try {
-      const response = await updateBankDetails(body);
+      const response = await dispatch(updateUserBankDetails({ 
+        id: staffId, 
+        details 
+      })).unwrap();
+      
       if (response.status === 200) {
         toast.success("Bank details updated successfully");
         setIsEditing(false);
+        
+        setOriginalBankDetails({
+          accountNumber,
+          accountName,
+          bank,
+        });
       } else {
-        toast.error(response.data.message || "Something went wrong");
+        toast.error(response.data?.message || "Something went wrong");
       }
     } catch (error: any) {
       toast.error(error.message || "An error occurred");
@@ -141,17 +161,17 @@ const BankDetails: React.FC<{ staffEmail: any }> = ({ staffEmail }) => {
   };
 
   const discardChanges = () => {
-    setAccountNumber(originalBankDetails.accountNumber);
-    setAccountName(originalBankDetails.accountName);
-    setBank(originalBankDetails.bank);
+    setAccountNumber(originalBankDetails?.accountNumber);
+    setAccountName(originalBankDetails?.accountName);
+    setBank(originalBankDetails?.bank);
     setIsEditing(false);  
   };
 
   const hasChanges = () => {
     return (
-      accountNumber !== originalBankDetails.accountNumber ||
-      accountName !== originalBankDetails.accountName ||
-      (bank && bank.code !== originalBankDetails.bank?.code)
+      accountNumber !== originalBankDetails?.accountNumber ||
+      accountName !== originalBankDetails?.accountName ||
+      (bank && bank?.code !== originalBankDetails?.bank?.code)
     );
   };
 
@@ -195,13 +215,13 @@ const BankDetails: React.FC<{ staffEmail: any }> = ({ staffEmail }) => {
               onChange={(e) => setAccountNumber(e.target.value)}
               readOnly={!isEditing}
               disabled={loading}
-              className="focus:border-border border-border mt-[1em] flex w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none dark:border-gray-700 dark:text-white"
+              className="focus:border-border border-border mt-[1em] flex w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
             />
           </div>
         </div>
 
         <div className="w-full">
-          <label htmlFor="accountName" className="flex-start flex gap-3 font-medium text-grey-primary dark:text-white">
+          <label htmlFor="accountName" className="flex-start flex gap-3 font-medium text-grey-primary">
             Account Name
           </label>
           <div className="relative flex text-center">

@@ -131,9 +131,9 @@ const Payment: React.FC = () => {
             {formatData(item.invoice?.user?.designation)}
           </td>
           <td className="whitespace-nowrap px-6 py-4">
-            {formatData(item.invoice?.document?.length)}
+            {formatData(item?.invoice?.document?.length)}
           </td>
-          <PrivateElement feature="ALL_USERS" page="View Details">
+          <PrivateElement feature="PAYMENTS" page="View Details">
             <td className="flex items-center whitespace-nowrap px-6 py-4">
               <button
                 onClick={() => handleViewDetails(item)}
@@ -209,7 +209,7 @@ const Payment: React.FC = () => {
               <th className="px-6 py-3 text-left whitespace-nowrap text-sm font-normal">
                 Uploaded Documents
               </th>
-              <PrivateElement feature="ALL_USERS" page="View Details">
+              <PrivateElement feature="PAYMENTS" page="View Details">
                 <th className="px-6 py-3 text-left text-sm font-normal">Action</th>
               </PrivateElement>
             </tr>

@@ -116,12 +116,12 @@ const StaffSalaryDetailModal = ({ isOpen, onClose, payment }:any) => {
             <div className='flex justify-between'>
               <p className="text-sm text-gray-500">Sender Name</p>
               <p className="font-medium">
-              {payment?.staffPayment?.senderName || '-'}
+              {payment?.staffPayment?.senderName || 'SUPER ADMIN'}
               </p>
             </div>
          </div>
 
-         {payment?.document && payment.document.length > 0 && (
+         {payment?.document && payment?.document?.length > 0 && (
            <div className="bg-gray-100 mt-8 flex px-2 items-center justify-between py-3">
               <p className="flex items-center gap-2">
                 <img src={file} alt="file" />
@@ -129,7 +129,7 @@ const StaffSalaryDetailModal = ({ isOpen, onClose, payment }:any) => {
               </p>
               <div className="flex gap-[2px]">
                 <button
-                  onClick={() => handlePreview(payment.document[0]?.publicURL)}
+                  onClick={() => handlePreview(payment?.document[0]?.publicURL)}
                   className="flex items-center gap-1 rounded-full bg-white px-2 py-[3px] text-center font-medium text-[#660066]"
                 >
                   <img src={eye} alt="eye" />

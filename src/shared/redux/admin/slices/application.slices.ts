@@ -2,6 +2,20 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { setMessage } from "../../message.slices";
 import applicationServices from "../services/application.services";
 
+interface BankDetails {
+  accountNumber: string;
+  accountName: string;
+  bankCode: string;
+  bankName: string;
+}
+
+interface AgentDetails {
+  firstName: string;
+  lastName: string;
+  gender: string;
+  middleName: string;
+}
+
 export const getStats = createAsyncThunk("application/getStats", async () => {
   try {
     const data = await applicationServices.getStats();
@@ -310,7 +324,7 @@ export const  getAdminApexChartStats = createAsyncThunk(
 );
 
 export const updateApplicationToCompleted = createAsyncThunk(
-  "shareApllication/updateApplicationToCompleted",
+  "application/updateApplicationToCompleted",
   async ({body ,applicationId}:{body:any, applicationId:any}, thunkAPI) => {
     try {
       const data = await applicationServices.updateApplicationToCompleted(body, applicationId);
@@ -319,6 +333,24 @@ export const updateApplicationToCompleted = createAsyncThunk(
       error.toString();
       return thunkAPI.rejectWithValue(error);
     }
+  }
+);
+
+export const updateUserBankDetails = createAsyncThunk(
+  'application/updateBankDetails',
+  async ({ id, details }: { id: string; details: BankDetails }, { dispatch }) => {
+    const response = await applicationServices.updateUserBankDetails(id, details);
+    dispatch(setMessage(response));
+    return response;
+  }
+);
+
+export const updateAgent = createAsyncThunk(
+  'application/updateAgent',
+  async ({ id, details }: { id: string; details: AgentDetails }, { dispatch }) => {
+    const response = await applicationServices.updateAgent(id, details);
+    dispatch(setMessage(response));
+    return response;
   }
 );
 
@@ -418,6 +450,8 @@ interface ApplicationState {
   addSchool: null,
   allApplicationStatusTerm: string;
   allDirectApplicationStatusTerm: string;
+  bankDetails: BankDetails | null;
+  agentDetails: AgentDetails | null;
 }
 
 const initialState: ApplicationState = {
@@ -509,6 +543,8 @@ const initialState: ApplicationState = {
     currentPage: 1,
   },
   addSchool:null,
+  bankDetails: null,
+  agentDetails: null,
 };
 
 export const applicationSlice = createSlice({
@@ -949,6 +985,19 @@ export const applicationSlice = createSlice({
       .addCase(updateApplicationToCompleted.rejected, (state) => {
         state.loading = false;
         state.markCompleted = null;
+      })
+
+      .addCase(
+        updateUserBankDetails.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.bankDetails = action.payload;
+        }
+      )
+      .addCase(updateUserBankDetails.rejected, (state, action) => {
+        state.bankDetails = null;
+        const errorMessage =
+          action.error.message || "failed to update user bank details";
+        setMessage(errorMessage);
       })
   },
   

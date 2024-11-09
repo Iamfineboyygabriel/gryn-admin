@@ -11,6 +11,13 @@ interface SubmitBankDetailsParams {
   bankName:string;
 }
 
+interface SubmitAgentDetailsParams {
+  firstName: string;
+  lastName: string;
+  gender: string;
+  middleName:string;
+}
+
 const handleApiError = (error: any) => {
   if (!error?.response) {
     throw new Error("Network Error: Please check your internet connection.");
@@ -449,6 +456,61 @@ export const submitBankDetails = async (
   }
 };
 
+ const updateUserBankDetails = async (
+  id: string,
+  { accountNumber, accountName, bankCode, bankName }: SubmitBankDetailsParams,
+) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/users/staff/bank_details/${id}`;
+  try {
+    const response = await axios.patch(
+      url,
+      {
+        accountNumber,
+        accountName,
+        bankCode,
+        bankName,
+      },
+      {
+        headers: authHeader(),
+      },
+    );
+    return response.data;
+  } catch (error: any) {
+    if (!error.response) {
+      throw new Error("Network Error: Please check your internet connection.");
+    }
+    throw error.response.data;
+  }
+};
+
+
+export const updateAgent = async (
+  id: string,
+  { firstName, lastName, gender, middleName }: SubmitAgentDetailsParams,
+) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/users/agent/${id}`;
+  try {
+    const response = await axios.patch(
+      url,
+      {
+        firstName,
+         lastName, 
+         gender,
+          middleName
+      },
+      {
+        headers: authHeader(),
+      },
+    );
+    return response.data;
+  } catch (error: any) {
+    if (!error.response) {
+      throw new Error("Network Error: Please check your internet connection.");
+    }
+    throw error.response.data;
+  }
+};
+
 export const updateBankDetails = async (
   { accountNumber, accountName, bankCode, bankName }: SubmitBankDetailsParams,
 ) => {
@@ -618,6 +680,8 @@ const applicationServices = {
   getAdminApexChartStats,
   updateApplicationToCompleted,
   getAllDirectApplication,
+  updateUserBankDetails,
+  updateAgent,
 };
 
 export default applicationServices;

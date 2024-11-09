@@ -147,7 +147,7 @@ const AgentDetails: React.FC = () => {
                 onPageChange={handlePageChange}
               />
             )}
-            {activeLink === "agentProfile" && <AgentProfile error={error} loading={loading} email={email}/>}
+            {activeLink === "agentProfile" && <AgentProfile error={error} agentId={agentId} loading={loading} email={email}/>}
             {activeLink === "agentCommission" && <AgentCommission/>}
           </section>
         </div>
