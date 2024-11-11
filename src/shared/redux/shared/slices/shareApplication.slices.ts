@@ -642,7 +642,7 @@ export const  getUserPermittedPages = createAsyncThunk(
   "shareApplication/getUserPermittedPages",
   async ({ id }: { id: string; }) => {
     const response = await shareApplicationServices.getUserPermittedPages(id);
-    return response.data
+    return response.datas
   }
 );
 

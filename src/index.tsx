@@ -9,6 +9,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import { persistStore } from "redux-persist";
 import ToastContainerWrapper from "./toastcontainer/ToastContainerWrapper";
 import { QueryClient, QueryClientProvider } from "react-query";
+import { SocketProvider } from "./context/SocketContext";
 
 const queryClient = new QueryClient();
 
@@ -17,6 +18,7 @@ const root = ReactDOM.createRoot(
 );
 let persistor = persistStore(store);
 root.render(
+  <SocketProvider>
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <QueryClientProvider client={queryClient}>
@@ -25,6 +27,7 @@ root.render(
         <ToastContainerWrapper />
       </PersistGate>
     </Provider>
+  </SocketProvider>
 );
 
 reportWebVitals();

@@ -46,7 +46,7 @@ const StepThree = ({ applicationId }: any) => {
       );
 
       const results = await Promise.all(
-        documentsToUpload.map(async ({ type, file }) => {
+        documentsToUpload?.map(async ({ type, file }) => {
           try {
             const form = new FormData();
             form.append("file", file!);

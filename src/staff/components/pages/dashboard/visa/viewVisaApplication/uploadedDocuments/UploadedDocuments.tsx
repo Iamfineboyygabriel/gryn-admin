@@ -133,7 +133,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
     try {
       const response = await dispatch(updateDocumentStatus({ id, remark }));
       
-      if (response.meta.requestStatus === 'fulfilled' && response?.payload?.status === 200) {
+      if (response?.meta?.requestStatus === 'fulfilled' && response?.payload?.status === 200) {
         setDocuments((prevDocs) =>
           prevDocs.map((doc) =>
             doc.id === id ? { ...doc, status: remark, remark: remark } : doc
@@ -155,8 +155,8 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
 
   const renderActionButton = (doc: Document, action: 'APPROVED' | 'REJECTED') => {
     const actionType: ActionType = action.toLowerCase() as ActionType;
-    const isLoading = loadingStatus[doc.id]?.[actionType] || false;
-    const isCurrentStatus = doc.status === action;
+    const isLoading = loadingStatus[doc?.id]?.[actionType] || false;
+    const isCurrentStatus = doc?.status === action;
     const isPending = doc.status === 'PENDING';
 
     let buttonClass = "flex px-[1em] rounded-md font-medium py-[8px] items-center border gap-2 ";
@@ -195,7 +195,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
         )}
         <button
           className={buttonClass}
-          onClick={() => handleStatusUpdate(doc.id, action)}
+          onClick={() => handleStatusUpdate(doc?.id, action)}
           disabled={isLoading || isCurrentStatus}
         >
           {isLoading ? (
@@ -242,7 +242,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
                 </label>
               </div>
               <div className="mt-2 flex items-center justify-between rounded-lg border-[1px] border-gray-300 px-[1em] py-5">
-                <label htmlFor={doc.documentType} className="flex flex-grow flex-col cursor-pointer">
+                <label htmlFor={doc?.documentType} className="flex flex-grow flex-col cursor-pointer">
                   <div className="flex items-center gap-5">
                     <div className="flex gap-2">
                       <img src={fileImg} alt="file_img" />
@@ -261,7 +261,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
                     <span className="mr-3">View</span>
                   </button>
                   <button
-                    onClick={() => handleDownload(doc.publicURL, doc.name)}
+                    onClick={() => handleDownload(doc?.publicURL, doc?.name)}
                     className="flex items-center gap-1 rounded-full bg-purple-white px-3 py-[5px] text-center font-medium text-[#660066]"
                   >
                     <img src={download} alt="download" />

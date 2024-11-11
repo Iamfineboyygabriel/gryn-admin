@@ -8,8 +8,23 @@ import StaffRoutes from "./staff/components/dashboard/routes/DashboardRoutes";
 import AdminRoutes from "./admin/components/dashboard/routes/DashboardRoutes";
 import DashboardGateway from "./shared/utils/DashboardGateWay";
 import PasswordSuccessful from "./staff/components/pages/auth/PasswordSuccessful";
+import { UseSocket } from "./context/SocketContext";
+import { useEffect } from "react";
 
 function App() {
+  const { connectSocket, disconnectSocket } = UseSocket();
+
+  useEffect(() => {
+      const token = localStorage.getItem('token'); 
+      if (token) {
+          connectSocket(token);
+      }
+
+      return () => {
+          disconnectSocket(); 
+      };
+  }, [connectSocket, disconnectSocket]);
+
   return (
     <Router>
       <Routes>

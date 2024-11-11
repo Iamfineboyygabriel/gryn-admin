@@ -1,4 +1,6 @@
 import axios from "axios";
+import { UseSocket } from "../../../../context/SocketContext";
+// import { useSocket } from "../../../../context/SocketContext";
 const API_URL_LOGIN_USER = process.env.REACT_APP_API_URL + "/auth/login";
 
 interface SubmitBankDetailsParams {
@@ -8,6 +10,8 @@ interface SubmitBankDetailsParams {
   bankName:string;
 }
 
+const {connectSocket} = UseSocket()
+
 const loginUser = async (body: any) => {
   try {
     const response = await axios.post(API_URL_LOGIN_USER, body);
@@ -15,6 +19,7 @@ const loginUser = async (body: any) => {
     const token = response?.data?.data?.tokens?.accessToken;
     if (token) {
       sessionStorage.setItem("userData", token);
+      connectSocket(token)
     } else {
       console.error("Token not found in response data:", response.data);
     }
@@ -74,5 +79,7 @@ const sharedLandingServices = {
   loginUser,
   ResetPassword,
 };
+
+
 
 export default sharedLandingServices;

@@ -50,7 +50,7 @@ const ViewApplication = () => {
             useCORS: true 
           });
 
-          const imgData = canvas.toDataURL('image/jpeg', 0.95); 
+          const imgData = canvas?.toDataURL('image/jpeg', 0.95); 
 
           if (i !== 0) {
             pdf.addPage();
@@ -69,7 +69,6 @@ const ViewApplication = () => {
 
       pdf.save('application.pdf');
     } catch (error) {
-      console.error('Error generating PDF:', error);
       alert('An error occurred while generating the PDF. Please try again.');
     } finally {
       setIsGeneratingPDF(false);
