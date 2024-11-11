@@ -102,6 +102,11 @@ const StaffSalaryDetailModal = ({ isOpen, onClose, payment }:any) => {
               <p className="font-semibold text-sm">NGN {payment?.amount ? formatAmount(payment?.amount) : '-'}</p>
             </div>
 
+            <div className='flex justify-between'>
+              <p className="text-sm text-gray-500">Description</p>
+              <p className="font-semibold text-sm">{payment?.description || '-'}</p>
+            </div>
+
             <hr  className="underline mt-8 border-dashed"/>
 
             <div className='flex justify-between'>
@@ -116,7 +121,7 @@ const StaffSalaryDetailModal = ({ isOpen, onClose, payment }:any) => {
             <div className='flex justify-between'>
               <p className="text-sm text-gray-500">Sender Name</p>
               <p className="font-medium">
-              {payment?.staffPayment?.senderName || 'SUPER ADMIN'}
+              {payment?.staffPayment?.senderName || 'Super Admin'}
               </p>
             </div>
          </div>

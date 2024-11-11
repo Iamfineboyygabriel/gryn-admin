@@ -83,24 +83,28 @@ const NewSalary = () => {
   }, [staffEmail, navigate]);
 
   if (!staffEmail) {
-    return null; // or return a loading indicator
+    return null; 
   }
 
   return (
     <main className="font-outfit">
       <h1 className="text-2xl font-bold">Application</h1>
-      <div className="mt-[1em] h-auto w-full overflow-auto rounded-lg bg-white px-[2em] py-3 pb-[10em] dark:bg-gray-800">
+      <div className="mt-[1em] h-auto w-full overflow-auto rounded-lg bg-white px-[2em] py-3 pb-[10em]">
         <header>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="font-medium dark:text-gray-700">
+              <h1 className="font-medium">
                 All Staffs /
-                <span className="ml-1 font-medium">
+                <span className="ml-1 mr-1 font-medium">
                   View Details
                 </span>
                 /
-                <span className="ml-1 font-medium text-primary-700 dark:text-white">
+                <span className="ml-1 mr-1 font-medium">
                   Salary-loan
+                </span>
+                 /
+                <span className="ml-1 font-medium text-primary-700">
+                  New-Salary-loan
                 </span>
               </h1>
             </div>
