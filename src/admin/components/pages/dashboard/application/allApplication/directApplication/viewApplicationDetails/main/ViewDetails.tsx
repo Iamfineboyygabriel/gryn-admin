@@ -7,6 +7,7 @@ import Degree from "../view/degree/Degree";
 import UploadedDocument from "../view/uploadedDocuments/UploadedDocuments";
 import { button } from "../../../../../../../../../shared/buttons/Button";
 import upload from "../../../../../../../../../assets/svg/Upload.svg";
+import Payments from "../../../viewApplicationDetails/view/payments/Payments";
 
 interface LocationState {
   applicationId: string;
@@ -20,6 +21,7 @@ const ViewApplication: React.FC = () => {
   const personalDetailsRef = useRef<HTMLDivElement>(null);
   const degreeRef = useRef<HTMLDivElement>(null);
   const uploadedDocumentRef = useRef<HTMLDivElement>(null);
+  const paymentDocumentRef = useRef<HTMLDivElement>(null);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState<boolean>(false);
 
   const handleBackClick = () => {
@@ -33,6 +35,7 @@ const ViewApplication: React.FC = () => {
       { ref: personalDetailsRef, title: "Personal Details" },
       { ref: degreeRef, title: "Degree" },
       { ref: uploadedDocumentRef, title: "Uploaded Documents" },
+      { ref: paymentDocumentRef, title: "Payments" }, 
     ];
 
     try {
@@ -97,7 +100,7 @@ const ViewApplication: React.FC = () => {
           <nav className="mt-[1.5em]">
             <div className="flex items-center border-b-[3px] border-gray-100 text-base font-semibold">
               <div className="flex gap-[2em]">
-                {["personalDetails", "degree", "uploadedDocument"].map((link) => (
+                {["personalDetails", "degree", "uploadedDocument","payments"].map((link) => (
                   <div
                     key={link}
                     className={`cursor-pointer py-3 ${
@@ -107,11 +110,7 @@ const ViewApplication: React.FC = () => {
                     }`}
                     onClick={() => setActiveLink(link)}
                   >
-                    {link === "personalDetails"
-                      ? "Personal Details"
-                      : link === "degree"
-                      ? "Degree"
-                      : "Uploaded Documents"}
+                    {link === "personalDetails" ? "Personal Details" : link === "degree" ? "Degree" : link === "uploadedDocuments" ? "Uploaded Documents" : "Payments"}
                   </div>
                 ))}
               </div>
@@ -133,6 +132,9 @@ const ViewApplication: React.FC = () => {
             </div>
             <div ref={uploadedDocumentRef} style={{display: activeLink === "uploadedDocument" ? "block" : "none"}}>
               <UploadedDocument applicationId={applicationId}/>
+            </div>
+            <div ref={paymentDocumentRef} style={{display: activeLink === "payments" ? "block" : "none"}}>
+              <Payments applicationId={applicationId} />
             </div>
           </section>
         </div>

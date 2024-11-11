@@ -251,3 +251,14 @@ export enum DocumentType {
   "OTHER_PAYMENT" = "OTHER_PAYMENT",
   "COMMISSION_RECEIPT" = "COMMISSION_RECEIPT"
 }
+
+export const signUp = [
+  {
+    path: "/admin_login",
+    text: "Sign in as Admin",
+  },
+  {
+    path: "/staff_login",
+    text: "Sign in as Staff",
+  },
+];

@@ -1,22 +1,22 @@
-import React, { useCallback, useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
-import welcome_signup from "../../assets/png/welcome_signup.png";
-import gryn_index_logo from "../../assets/svg/Gryn_Index _logo.svg";
-import { button } from "../buttons/Button";
-import usePasswordToggle from "../utils/usePasswordToggle";
-import { MdOutlineVisibilityOff, MdOutlineVisibility } from "react-icons/md";
 import { useDispatch } from "react-redux";
+import React, { useCallback, useState } from 'react';
 import { AppDispatch } from "../redux/store";
+import usePasswordToggle from "../utils/usePasswordToggle";
 import { login } from "../redux/shared/slices/shareLanding.slices";
-import { toast } from "react-toastify";
-import ReactLoading from "react-loading";
 import { usePermissions } from '../redux/hooks/admin/usePermission';
 import { handleLogout } from '../utils/auth';
+import { MdOutlineVisibilityOff, MdOutlineVisibility } from "react-icons/md";
 import { findFirstAccessibleRoute } from '../utils/findFirstAccessibleRoute';
+import { button } from "../buttons/Button";
+import gryn_index_logo from "../../assets/svg/Gryn_Index _logo.svg";
+import welcome_signup from "../../assets/png/welcome_signup.png";
+import { toast } from "react-toastify";
+import ReactLoading from "react-loading";
 
 const ROUTES = {
   ADMIN_DASHBOARD: "/admin/dashboard/home",
-  STAFF_SIGNIN: "/",
+  STAFF_SIGNIN: "/staff_login",
   FORGOT_PASSWORD: "/forgot_password",
   APPLICATION: "/admin/dashboard/application",
   ADMIN_LOGIN: "/admin_login",
@@ -48,9 +48,7 @@ const AdminLogin = () => {
   const loginUserData = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-  
       setLoading(true);
-  
       try {
         const response = await dispatch(login(formData)).unwrap();
   
@@ -105,11 +103,13 @@ const AdminLogin = () => {
         aria-labelledby="AdminLogin-header"
       >
         <div className="mx-auto w-full max-w-[80%] flex-1 items-center justify-center">
+        <Link to="/">
           <img
             src={gryn_index_logo}
             alt="gryn_index_logo"
             className="w-[11em] cursor-pointer"
-          />
+            />
+            </Link>
           <article
             className="flex h-full w-full flex-col justify-center"
             aria-labelledby="AdminLogin-article-header"

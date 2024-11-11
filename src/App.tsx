@@ -8,12 +8,14 @@ import StaffRoutes from "./staff/components/dashboard/routes/DashboardRoutes";
 import AdminRoutes from "./admin/components/dashboard/routes/DashboardRoutes";
 import DashboardGateway from "./shared/utils/DashboardGateWay";
 import PasswordSuccessful from "./staff/components/pages/auth/PasswordSuccessful";
+import Landing from "./shared/home/Landing";
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<StaffLanding />} />
+      <Route path="/" element={<Landing />} />
+        <Route path="/staff_login" element={<StaffLanding />} />
         <Route path="/admin_login" element={<AdminLogin />} />
         <Route path="/forgot_Password" element={<ForgotPassword />} />
         <Route path="/recovery_mail" element={<RecoveryMail />} />

@@ -11,7 +11,6 @@ interface SubmitBankDetailsParams {
 const loginUser = async (body: any) => {
   try {
     const response = await axios.post(API_URL_LOGIN_USER, body);
-
     const token = response?.data?.data?.tokens?.accessToken;
     if (token) {
       sessionStorage.setItem("userData", token);
