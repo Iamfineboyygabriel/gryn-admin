@@ -29,6 +29,7 @@ import {
   setAllDirectApplicationSortTerm,
   setAllDirectApplicationStatusTerm,
   setAllDirectApplicationIsDirectTerm,
+  getAdminEnquiresStats,
 } from "../../admin/slices/application.slices";
 import { setMessage } from "../../message.slices";
 import { createSelector } from "@reduxjs/toolkit";
@@ -834,4 +835,38 @@ export const useAllSalary = () => {
   );
 
   return { salaries, totalPages, currentPage, loading, error,  searchTerm, fetchSalaries, updateSearchTerm };
+};
+
+export const useEnquiriesData = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const enquiriesData = useSelector((state:any) => state?.application?.getEnquiriesChatStats);
+  useEffect(() => {
+    dispatch(getAdminEnquiresStats());
+  }, [dispatch]);
+
+  const formatData = (rawData:any) => {
+    if (!rawData?.data) return [];
+
+    const colorMap:any = {
+      INSTAGRAM: '#FFA500',
+      FACEBOOK: '#800080',
+      LINKEDIN: '#008000',
+      TIKTOK: '#00BFFF',
+      TWITTER: '#1DA1F2',
+      YOUTUBE: '#8A2BE2',
+      OTHERS: '#FF0000'
+    };
+
+    return rawData?.data?.map((item:any) => ({
+      name: item?.platform?.charAt(0) + item?.platform?.slice(1)?.toLowerCase(),
+      value: item?.count,
+      percentage: item?.percentage,
+      color: colorMap[item?.platform] || '#FF0000'
+    }));
+  };
+
+  return {
+    data: formatData(enquiriesData),
+    isLoading: !enquiriesData,
+  };
 };

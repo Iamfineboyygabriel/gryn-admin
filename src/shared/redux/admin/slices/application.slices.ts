@@ -131,6 +131,7 @@ export const getUserActivity = createAsyncThunk(
   },
 );
 
+
 export const addNewSchool = createAsyncThunk(
   "application/addNewSchool",
   async (body: any, thunkAPI) => {
@@ -315,6 +316,21 @@ export const  getAdminApplicationStatsBar = createAsyncThunk(
   }
 );
 
+export const  getAdminEnquiresStats = createAsyncThunk(
+  "application/getAdminEnquiresStats",
+  async (_, thunkAPI) => {
+    try {
+      const data = await applicationServices.getAdminEnquiresStats();
+      return data;
+    } catch (error: any) {
+      const message = error?.message || "Failed to fetch enquires";
+      thunkAPI.dispatch(setMessage(message));
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
+
 export const  getAdminApexChartStats = createAsyncThunk(
   "application/getApexChartStats",
   async ({ month, year, status }: { month: number; year: number;  status:string }) => {
@@ -353,6 +369,22 @@ export const updateAgent = createAsyncThunk(
     return response;
   }
 );
+
+export const getAllEnquiry = createAsyncThunk(
+  "application/getAllEnquiry",
+  async ({page, limit}: {page: number; limit: number;}, thunkAPI) => {
+    try {
+      const data = await applicationServices.getAllEnquiry(page, limit);
+      return data;
+    } catch (error: any) {
+      const message = error.message;
+      error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
+
 
 export const clearStaffPayment = createAsyncThunk(
   "application/clearStaffPayment",
@@ -394,6 +426,7 @@ interface ApplicationState {
   };
   getStats: any;
   getBarChatStats: any;
+  getEnquiriesChatStats: any;
   getApexChatStats: any;
   getStaffStats: any;
   markCompleted: null;
@@ -430,6 +463,7 @@ interface ApplicationState {
   loading: boolean;
   error: string | null;
   allApplicationSearchTerm: string;
+  allEnquirySearchTerm: string;
   allDirectApplicationSearchTerm: string;
   allDirectApplicationIsDirectTerm: any;
   allSalarySearchTerm: string;
@@ -443,6 +477,10 @@ interface ApplicationState {
     data: any[];
     currentPage: number;
   };
+  allEnquiry: {
+    data: any[];
+    currentPage: number;
+  }
   allUserActivity: {
     data: any[];
     currentPage: number;
@@ -457,6 +495,7 @@ interface ApplicationState {
 const initialState: ApplicationState = {
   getStats: null,
   getBarChatStats: null,
+  getEnquiriesChatStats: null,
   getApexChatStats: null,
   getStaffStats: null,
   markCompleted: null,
@@ -525,6 +564,7 @@ const initialState: ApplicationState = {
   loading: false,
   error: null,
   allApplicationSearchTerm: '',
+  allEnquirySearchTerm: '',
   allDirectApplicationSearchTerm: '',
   allDirectApplicationIsDirectTerm: '',
   allSalarySearchTerm: '',
@@ -537,6 +577,10 @@ const initialState: ApplicationState = {
   allActivity: {
     data: [],
     currentPage: 1,
+  },
+  allEnquiry: {
+    data: [],
+    currentPage: 1
   },
   allUserActivity: {
     data: [],
@@ -553,6 +597,9 @@ export const applicationSlice = createSlice({
   reducers: {
     setAllApplicationSearchTerm: (state, action: PayloadAction<string>) => {
       state.allApplicationSearchTerm = action.payload;
+    },
+    setAllEnquirySearchTerm: (state, action: PayloadAction<string>) => {
+      state.allEnquirySearchTerm = action.payload;
     },
     setAllDirectApplicationSearchTerm: (state, action: PayloadAction<string>) => {
       state.allDirectApplicationSearchTerm = action.payload;
@@ -613,6 +660,15 @@ export const applicationSlice = createSlice({
         setMessage(errorMessage);
       })
       
+      .addCase(getAdminEnquiresStats.fulfilled, (state, action: PayloadAction<any>) => {
+        state.getEnquiriesChatStats = action.payload;
+      })
+      .addCase(getAdminEnquiresStats.rejected, (state, action) => {
+        state.getEnquiriesChatStats = null;
+        const errorMessage = action.error.message || "Failed to fetch admin stats.";
+        setMessage(errorMessage);
+      })
+
       .addCase(getAdminApexChartStats.fulfilled, (state, action: PayloadAction<any>) => {
         state.getApexChatStats = action.payload;
       })
@@ -999,12 +1055,29 @@ export const applicationSlice = createSlice({
           action.error.message || "failed to update user bank details";
         setMessage(errorMessage);
       })
+
+      .addCase(getAllEnquiry.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllEnquiry.fulfilled, (state, action: PayloadAction<{
+        data: any[];
+        currentPage: number;
+      }>) => {
+        state.loading = false;
+        state.allEnquiry = action.payload;
+      })
+      .addCase(getAllEnquiry.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to fetch enquires";
+      })
   },
   
 });
 
 export const {
   setAllApplicationSearchTerm,
+  setAllEnquirySearchTerm,
   setAllDirectApplicationSearchTerm,
   setAllDirectApplicationIsDirectTerm,
   setAllStaffSalarySearchTerm,

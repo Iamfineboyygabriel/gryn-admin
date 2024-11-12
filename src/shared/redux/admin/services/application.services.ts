@@ -602,6 +602,20 @@ const getAdminApplicationStatsBar = async (days: number) => {
   }
 };
 
+const getAdminEnquiresStats = async () => {
+  const url = `${API_URL}/enquiry/stats`;
+  try {
+    const response = await axios.get(url, { headers: authHeader() });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const getAdminApexChartStats = async (month: number, year: number, status = '') => {
   const url = `${API_URL}/admin/application/stats/weekly?month=${month}&year=${year}&status=${status}`;
   try {
@@ -650,6 +664,20 @@ export async function updatePayment(endpoint: string, body: FormData) {
 }
 
 
+const getAllEnquiry = async (page: number, limit: number, search: string = '') => {
+  const url = `${API_URL}/enquiry?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
+  try {
+    const response = await axios.get(url, { headers: authHeader() });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const applicationServices = {
   getStats,
   getStaffDashboardStats,
@@ -682,6 +710,8 @@ const applicationServices = {
   getAllDirectApplication,
   updateUserBankDetails,
   updateAgent,
+  getAllEnquiry,
+  getAdminEnquiresStats
 };
 
 export default applicationServices;
