@@ -1,4 +1,5 @@
 import axios from "axios";
+import authHeader from "../../headers";
 const API_URL_LOGIN_USER = process.env.REACT_APP_API_URL + "/auth/login";
 const API_URL_LOGOUT_USER = process.env.REACT_APP_API_URL + "/auth/logout";
 
@@ -6,7 +7,7 @@ interface SubmitBankDetailsParams {
   accountNumber: string;
   accountName: string;
   bankCode: string;
-  bankName:string;
+  bankName: string;
 }
 
 const loginUser = async (body: any) => {
@@ -28,13 +29,17 @@ const loginUser = async (body: any) => {
   }
 };
 
-export const ResetPassword = async (token: string, email: string, password: { password: string }) => {
+export const ResetPassword = async (
+  token: string,
+  email: string,
+  password: { password: string }
+) => {
   const url = `${process.env.REACT_APP_API_URL}/auth/reset-password?token=${token}&email=${email}`;
   try {
     const response = await axios({
       url,
       method: "post",
-      data: password,  
+      data: password,
     });
     return response.data;
   } catch (error: any) {
@@ -45,22 +50,20 @@ export const ResetPassword = async (token: string, email: string, password: { pa
   }
 };
 
-
 export const submitBankDetails = async (
   email: string,
-  { accountNumber, accountName, bankCode, bankName }: SubmitBankDetailsParams,
+  { accountNumber, accountName, bankCode, bankName }: SubmitBankDetailsParams
 ) => {
-  const url = `${process.env.REACT_APP_API_URL}/auth/bankInfo?email=${encodeURIComponent(email)}`;
+  const url = `${
+    process.env.REACT_APP_API_URL
+  }/auth/bankInfo?email=${encodeURIComponent(email)}`;
   try {
-    const response = await axios.post(
-      url,
-      {
-        accountNumber,
-        accountName,
-        bankCode,
-        bankName,
-      }
-    );
+    const response = await axios.post(url, {
+      accountNumber,
+      accountName,
+      bankCode,
+      bankName,
+    });
     return response.data;
   } catch (error: any) {
     if (!error.response) {

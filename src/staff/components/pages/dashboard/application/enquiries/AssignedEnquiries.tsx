@@ -2,10 +2,9 @@ import React, { useState, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import DOMPurify from "dompurify";
 import { FiSearch } from "react-icons/fi";
-import transaction from "./../../../../../../../assets/svg/Transaction.svg";
-import { button } from "./../../../../../../../shared/buttons/Button";
-import CustomPagination from "../../../../../../../shared/utils/customPagination";
-import { useAllEnquiryData } from "../../../../../../../shared/redux/hooks/admin/getAdminProfile";
+import transaction from "../../../../../../assets/svg/Transaction.svg";
+import CustomPagination from "../../../../../../shared/utils/customPagination";
+import { useAllEnquiryData } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
 
 const SkeletonRow: React.FC = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -17,7 +16,7 @@ const SkeletonRow: React.FC = () => (
   </tr>
 );
 
-const Instagram: React.FC = () => {
+const AssignedEnquiries: React.FC = () => {
   const navigate = useNavigate();
   const {
     enquiries,
@@ -49,7 +48,7 @@ const Instagram: React.FC = () => {
   );
 
   const handleViewDetails = (item: any) => {
-    navigate("/admin/dashboard/reports/view_details", {
+    navigate("/staff/dashboard/application/enquiries/view_details", {
       state: {
         fullName: item?.fullName || "",
         email: item?.email || "",
@@ -133,38 +132,14 @@ const Instagram: React.FC = () => {
     loading,
   ]);
 
-  const handleBackClick = () => {
-    navigate(-1);
-  };
-
   const handleItemsPerPageChange = (newLimit: number) => {
     setItemsPerPage(newLimit);
     handleLimitChange(newLimit);
   };
 
   return (
-    <main className="mt-[1.3em] font-outfit">
-      <header>
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Reports</h1>
-        </div>
-      </header>
-      <div className="mt-[1.3em] h-auto w-full overflow-auto rounded-lg bg-white px-[1em] py-3 pb-[10em]">
-        <header>
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="font-medium">
-                Reports /{" "}
-                <span className="ml-1 font-medium text-primary-700">
-                  All Enquiries
-                </span>
-              </h1>
-            </div>
-            <button.PrimaryButton className="btn-2" onClick={handleBackClick}>
-              Back
-            </button.PrimaryButton>
-          </div>
-        </header>
+    <main className="font-outfit">
+      <div className="h-auto w-full overflow-auto rounded-lg bg-white px-[1em] py-3 pb-[10em]">
         <div className="flex mt-[2em] justify-between items-center">
           <div className="flex items-center gap-[1em]">
             <div className="relative w-full">
@@ -240,4 +215,4 @@ const Instagram: React.FC = () => {
   );
 };
 
-export default Instagram;
+export default AssignedEnquiries;

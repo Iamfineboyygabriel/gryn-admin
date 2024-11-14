@@ -1,21 +1,16 @@
 import React, { useState } from "react";
-import { button } from "./../../../../../../../shared/buttons/Button";
 import { useNavigate, useLocation } from "react-router";
-import Modal from "../../../../../../../shared/modal/Modal";
-import StaffEmailEnquiries from "../../../../../../../shared/modal/StaffEmailEnquiries";
+import { button } from "../../../../../../shared/buttons/Button";
+import StaffEmailEnquiries from "../../../../../../shared/modal/StaffEmailEnquiries";
 
 const ViewDetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const enquiryData = location.state;
   const id = enquiryData.id;
-  const [isAssignModal, setIsAssignModal] = useState(false);
   const handleBackClick = () => {
     navigate(-1);
   };
-
-  const handleAssignOpenModal = () => setIsAssignModal(true);
-  const handleAssignCloseModal = () => setIsAssignModal(false);
 
   const formatData = (value: string) => value || "Not Provided";
 
@@ -194,26 +189,7 @@ const ViewDetails = () => {
             </div>
           </div>
         </section>
-
-        <div className="mt-7">
-          <button.PrimaryButton
-            onClick={handleAssignOpenModal}
-            className="m-auto mt-[1.5em] px-[3em] justify-center gap-2 rounded-full bg-linear-gradient py-[11px] text-center font-medium text-white"
-            type="submit"
-          >
-            Assign Staff
-          </button.PrimaryButton>
-        </div>
       </div>
-      {isAssignModal && (
-        <Modal
-          isOpen={isAssignModal}
-          onClose={handleAssignCloseModal}
-          data-aos="zoom-in"
-        >
-          <StaffEmailEnquiries id={id} onClose={handleAssignCloseModal} />
-        </Modal>
-      )}
     </main>
   );
 };

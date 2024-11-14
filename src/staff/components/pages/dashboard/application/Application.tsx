@@ -2,7 +2,8 @@ import { useState } from "react";
 import ManageAgents from "./manageAgents/main/ManageAgent";
 import { button } from "../../../../../shared/buttons/Button";
 import ManageApplication from "./manageApplication/main/ManageApplication";
-import ManageStudents from "./manageStudents/main/ManageStudents";
+import AssignedEnquiries from "./enquiries/AssignedEnquiries";
+// import ManageStudents from "./manageStudents/main/ManageStudents";
 
 const Application = () => {
   const [activeLink, setActiveLink] = useState("manageApplication");
@@ -26,7 +27,7 @@ const Application = () => {
                   Manage Application
                 </button.PrimaryButton>
               </div>
-              <div
+              {/* <div
                 className={`${
                   activeLink === "manageStudents"
                     ? "bg-purple-white text-primary-700"
@@ -36,6 +37,18 @@ const Application = () => {
               >
                 <button.PrimaryButton className="m-auto flex justify-center gap-2 font-medium text-black">
                   Assigned Student
+                </button.PrimaryButton>
+              </div> */}
+              <div
+                className={`${
+                  activeLink === "enquiries"
+                    ? "bg-purple-white text-primary-700"
+                    : "bg-gray-100 text-grey-primary"
+                } cursor-pointer rounded-lg px-[1em] py-[10px] font-medium`}
+                onClick={() => setActiveLink("enquiries")}
+              >
+                <button.PrimaryButton className="m-auto flex justify-center gap-2 font-medium text-black">
+                  Enquiries
                 </button.PrimaryButton>
               </div>
               <div
@@ -53,9 +66,9 @@ const Application = () => {
             </div>
           </nav>
           <section className="mt-3">
-
             {activeLink === "manageApplication" && <ManageApplication />}
-            {activeLink === "manageStudents" && <ManageStudents />}
+            {/* {activeLink === "enquiries" && <ManageStudents />} */}
+            {activeLink === "enquiries" && <AssignedEnquiries />}
             {activeLink === "manageAgents" && <ManageAgents />}
           </section>
         </div>
