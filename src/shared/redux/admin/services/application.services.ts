@@ -8,14 +8,14 @@ interface SubmitBankDetailsParams {
   accountNumber: string;
   accountName: string;
   bankCode: string;
-  bankName:string;
+  bankName: string;
 }
 
 interface SubmitAgentDetailsParams {
   firstName: string;
   lastName: string;
   gender: string;
-  middleName:string;
+  middleName: string;
 }
 
 const handleApiError = (error: any) => {
@@ -24,7 +24,6 @@ const handleApiError = (error: any) => {
   }
   throw error.response.data || error;
 };
-
 
 const getStats = async () => {
   const url = `${API_URL}/admin/application/dashboard-stats`;
@@ -46,9 +45,16 @@ const getStaffDashboardStats = async () => {
   }
 };
 
-
-const getAllApplication = async (page: number, limit: number, search: string = '', sort: string = '', status:string) => {
-  const url = `${API_URL}/admin/application?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}${sort ? `&sort=${sort}` : ''}&status=${status}`;
+const getAllApplication = async (
+  page: number,
+  limit: number,
+  search: string = "",
+  sort: string = "",
+  status: string
+) => {
+  const url = `${API_URL}/admin/application?page=${page}&limit=${limit}&search=${encodeURIComponent(
+    search
+  )}${sort ? `&sort=${sort}` : ""}&status=${status}`;
   try {
     const response = await axios.get(url, { headers: authHeader() });
     const token = response?.data?.data?.tokens?.accessToken;
@@ -61,8 +67,17 @@ const getAllApplication = async (page: number, limit: number, search: string = '
   }
 };
 
-const getAllDirectApplication = async (page: number, limit: number, search: string = '', sort: string = '', status:string, isDirect: any) => {
-  const url = `${API_URL}/admin/application?isDirect=${isDirect}&page=${page}&limit=${limit}&search=${encodeURIComponent(search)}${sort ? `&sort=${sort}` : ''}&status=${status}`
+const getAllDirectApplication = async (
+  page: number,
+  limit: number,
+  search: string = "",
+  sort: string = "",
+  status: string,
+  isDirect: any
+) => {
+  const url = `${API_URL}/admin/application?isDirect=${isDirect}&page=${page}&limit=${limit}&search=${encodeURIComponent(
+    search
+  )}${sort ? `&sort=${sort}` : ""}&status=${status}`;
   try {
     const response = await axios.get(url, { headers: authHeader() });
     const token = response?.data?.data?.tokens?.accessToken;
@@ -75,9 +90,14 @@ const getAllDirectApplication = async (page: number, limit: number, search: stri
   }
 };
 
-
-const getAllStudents = async (page: number, limit: number, search: string = '') => {
-  const url = `${API_URL}/admin/users/students?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
+const getAllStudents = async (
+  page: number,
+  limit: number,
+  search: string = ""
+) => {
+  const url = `${API_URL}/admin/users/students?page=${page}&limit=${limit}&search=${encodeURIComponent(
+    search
+  )}`;
   try {
     const response = await axios.get(url, { headers: authHeader() });
     const token = response?.data?.data?.tokens?.accessToken;
@@ -89,7 +109,6 @@ const getAllStudents = async (page: number, limit: number, search: string = '') 
     throw error;
   }
 };
-
 
 const getTopAgentCommission = async (page: number, limit: number) => {
   const url = `${API_URL}/admin/users/agent/commissions?page=${page}&limit=${limit}`;
@@ -105,9 +124,14 @@ const getTopAgentCommission = async (page: number, limit: number) => {
   }
 };
 
-
-const getAllPendingApplication = async (page: number, limit: number, search: string = '') => {
-  const url = `${API_URL}/admin/application/pending?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
+const getAllPendingApplication = async (
+  page: number,
+  limit: number,
+  search: string = ""
+) => {
+  const url = `${API_URL}/admin/application/pending?page=${page}&limit=${limit}&search=${encodeURIComponent(
+    search
+  )}`;
   try {
     const response = await axios.get(url, { headers: authHeader() });
     const token = response?.data?.data?.tokens?.accessToken;
@@ -229,7 +253,6 @@ const getAllAdminsEmail = async () => {
   }
 };
 
-
 const getAllAgentsEmail = async () => {
   const url = `${API_URL}/admin/users/agents/emails`;
   try {
@@ -258,10 +281,13 @@ const getAllSchoolsListCountries = async () => {
   }
 };
 
-
-export const getAllStaffForSuperAdmin = async (page?: number, limit?: number, search: string = '') => {
+export const getAllStaffForSuperAdmin = async (
+  page?: number,
+  limit?: number,
+  search: string = ""
+) => {
   let url = `${API_URL}/admin/users/admin/staffs?`;
-  
+
   if (page !== undefined) url += `page=${page}&`;
   if (limit !== undefined) url += `limit=${limit}&`;
   if (search) url += `search=${encodeURIComponent(search)}`;
@@ -278,8 +304,14 @@ export const getAllStaffForSuperAdmin = async (page?: number, limit?: number, se
   }
 };
 
-const getAllActivity = async (page: number, limit: number, search: string = '') => {
-  const url = `${API_URL}/admin/application?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
+const getAllActivity = async (
+  page: number,
+  limit: number,
+  search: string = ""
+) => {
+  const url = `${API_URL}/admin/application?page=${page}&limit=${limit}&search=${encodeURIComponent(
+    search
+  )}`;
   try {
     const response = await axios.get(url, { headers: authHeader() });
     const token = response?.data?.data?.tokens?.accessToken;
@@ -294,7 +326,7 @@ const getAllActivity = async (page: number, limit: number, search: string = '') 
 
 export const updateApplicationDocument = async (
   endpoint: string,
-  formData: FormData,
+  formData: FormData
 ) => {
   const url = `${process.env.REACT_APP_API_URL}${endpoint}`;
   try {
@@ -356,7 +388,10 @@ const assignAgentToStaff = async (agentId: string, email: string) => {
   }
 };
 
-const assignApplicationToStaff = async (applicationId: string, email: string) => {
+const assignApplicationToStaff = async (
+  applicationId: string,
+  email: string
+) => {
   const url = `${process.env.REACT_APP_API_URL}/admin/application/staff/assign/${applicationId}?email=${email}`;
   try {
     const response = await axios({
@@ -374,7 +409,11 @@ const assignApplicationToStaff = async (applicationId: string, email: string) =>
   }
 };
 
-const assignApplicationToAgent = async (applicationId: string, agentEmail: string, staffEmail: string) => {
+const assignApplicationToAgent = async (
+  applicationId: string,
+  agentEmail: string,
+  staffEmail: string
+) => {
   const url = `${process.env.REACT_APP_API_URL}/admin/application/agent/assign/${applicationId}?agentEmail=${agentEmail}&staffEmail=${staffEmail}`;
   try {
     const response = await axios({
@@ -391,7 +430,6 @@ const assignApplicationToAgent = async (applicationId: string, agentEmail: strin
     throw handleApiError(error);
   }
 };
-
 
 export const getAllBanks = async () => {
   const url = `${API_URL}/auth/bank/list`;
@@ -431,9 +469,11 @@ export const getAccountName = async (endpoint: any) => {
 
 export const submitBankDetails = async (
   email: string,
-  { accountNumber, accountName, bankCode, bankName }: SubmitBankDetailsParams,
+  { accountNumber, accountName, bankCode, bankName }: SubmitBankDetailsParams
 ) => {
-  const url = `${process.env.REACT_APP_API_URL}/auth/bankInfo?email=${encodeURIComponent(email)}`;
+  const url = `${
+    process.env.REACT_APP_API_URL
+  }/auth/bankInfo?email=${encodeURIComponent(email)}`;
   try {
     const response = await axios.post(
       url,
@@ -445,7 +485,7 @@ export const submitBankDetails = async (
       },
       {
         headers: authHeader(),
-      },
+      }
     );
     return response.data;
   } catch (error: any) {
@@ -456,9 +496,9 @@ export const submitBankDetails = async (
   }
 };
 
- const updateUserBankDetails = async (
+const updateUserBankDetails = async (
   id: string,
-  { accountNumber, accountName, bankCode, bankName }: SubmitBankDetailsParams,
+  { accountNumber, accountName, bankCode, bankName }: SubmitBankDetailsParams
 ) => {
   const url = `${process.env.REACT_APP_API_URL}/admin/users/staff/bank_details/${id}`;
   try {
@@ -472,7 +512,7 @@ export const submitBankDetails = async (
       },
       {
         headers: authHeader(),
-      },
+      }
     );
     return response.data;
   } catch (error: any) {
@@ -483,10 +523,9 @@ export const submitBankDetails = async (
   }
 };
 
-
 export const updateAgent = async (
   id: string,
-  { firstName, lastName, gender, middleName }: SubmitAgentDetailsParams,
+  { firstName, lastName, gender, middleName }: SubmitAgentDetailsParams
 ) => {
   const url = `${process.env.REACT_APP_API_URL}/admin/users/agent/${id}`;
   try {
@@ -494,13 +533,13 @@ export const updateAgent = async (
       url,
       {
         firstName,
-         lastName, 
-         gender,
-          middleName
+        lastName,
+        gender,
+        middleName,
       },
       {
         headers: authHeader(),
-      },
+      }
     );
     return response.data;
   } catch (error: any) {
@@ -511,9 +550,12 @@ export const updateAgent = async (
   }
 };
 
-export const updateBankDetails = async (
-  { accountNumber, accountName, bankCode, bankName }: SubmitBankDetailsParams,
-) => {
+export const updateBankDetails = async ({
+  accountNumber,
+  accountName,
+  bankCode,
+  bankName,
+}: SubmitBankDetailsParams) => {
   const url = `${process.env.REACT_APP_API_URL}/admin/users/bank_details`;
   try {
     const response = await axios.patch(
@@ -526,7 +568,7 @@ export const updateBankDetails = async (
       },
       {
         headers: authHeader(),
-      },
+      }
     );
     return response.data;
   } catch (error: any) {
@@ -554,10 +596,13 @@ export const uploadApplication = async (endpoint: string, body: FormData) => {
   }
 };
 
-
-export const getAllAdminForSuperAdmin = async (page?: number, limit?: number, search: string = '') => {
+export const getAllAdminForSuperAdmin = async (
+  page?: number,
+  limit?: number,
+  search: string = ""
+) => {
   let url = `${API_URL}/admin/users/admin?`;
-  
+
   if (page !== undefined) url += `page=${page}&`;
   if (limit !== undefined) url += `limit=${limit}&`;
   if (search) url += `search=${encodeURIComponent(search)}`;
@@ -574,8 +619,15 @@ export const getAllAdminForSuperAdmin = async (page?: number, limit?: number, se
   }
 };
 
-const getAllStaffSalaryPayment = async (page: number, limit: number, search: string = '', status = '') => {
-  const url = `${API_URL}/invoice/payments?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}&status=${status}`;
+const getAllStaffSalaryPayment = async (
+  page: number,
+  limit: number,
+  search: string = "",
+  status = ""
+) => {
+  const url = `${API_URL}/invoice/payments?page=${page}&limit=${limit}&search=${encodeURIComponent(
+    search
+  )}&status=${status}`;
   try {
     const response = await axios.get(url, { headers: authHeader() });
     const token = response?.data?.data?.tokens?.accessToken;
@@ -616,7 +668,11 @@ const getAdminEnquiresStats = async () => {
   }
 };
 
-const getAdminApexChartStats = async (month: number, year: number, status = '') => {
+const getAdminApexChartStats = async (
+  month: number,
+  year: number,
+  status = ""
+) => {
   const url = `${API_URL}/admin/application/stats/weekly?month=${month}&year=${year}&status=${status}`;
   try {
     const response = await axios.get(url, { headers: authHeader() });
@@ -663,9 +719,14 @@ export async function updatePayment(endpoint: string, body: FormData) {
   }
 }
 
-
-const getAllEnquiry = async (page: number, limit: number, search: string = '') => {
-  const url = `${API_URL}/enquiry?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`;
+const getAllEnquiry = async (
+  page: number,
+  limit: number,
+  search: string = ""
+) => {
+  const url = `${API_URL}/enquiry?page=${page}&limit=${limit}&search=${encodeURIComponent(
+    search
+  )}`;
   try {
     const response = await axios.get(url, { headers: authHeader() });
     const token = response?.data?.data?.tokens?.accessToken;
@@ -675,6 +736,24 @@ const getAllEnquiry = async (page: number, limit: number, search: string = '') =
     return response.data;
   } catch (error) {
     throw error;
+  }
+};
+
+const assignEnquiryToStaff = async (id: string, email: string) => {
+  const url = `${process.env.REACT_APP_API_URL}/enquiry/assign/${id}?email=${email}`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "get",
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw handleApiError(error);
   }
 };
 
@@ -711,7 +790,8 @@ const applicationServices = {
   updateUserBankDetails,
   updateAgent,
   getAllEnquiry,
-  getAdminEnquiresStats
+  getAdminEnquiresStats,
+  assignEnquiryToStaff,
 };
 
 export default applicationServices;

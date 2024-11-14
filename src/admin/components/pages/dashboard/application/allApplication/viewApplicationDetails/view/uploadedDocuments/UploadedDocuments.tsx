@@ -15,9 +15,14 @@ import reject from "../../../../../../../../../assets/svg/Rejected.svg";
 import ReactLoading from "react-loading";
 import StudentApplicationSummary from "../../../../../../../../../shared/modal/applicationSummaryModal/StudentApplicationSummary";
 import AssignApplication from "../../../../../../../../../shared/modal/AssignApplication";
-import { Alert, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import {
+  Alert,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import { updateApplicationToCompleted } from "../../../../../../../../../shared/redux/admin/slices/application.slices";
-
 
 interface Document {
   id: string;
@@ -25,15 +30,15 @@ interface Document {
   publicURL: string;
   documentType: string;
   remark: string;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  status: "PENDING" | "APPROVED" | "REJECTED";
 }
 
 interface UpdateDocStatus {
   id: string;
-  remark: 'APPROVED' | 'REJECTED' | 'PENDING';
+  remark: "APPROVED" | "REJECTED" | "PENDING";
 }
 
-type ActionType = 'approve' | 'reject';
+type ActionType = "approve" | "reject";
 
 interface LoadingStatus {
   [key: string]: {
@@ -50,10 +55,16 @@ const SkeletonRow = () => (
 
 const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
   const dispatch: AppDispatch = useAppDispatch();
-  const { applicationDetails, loading: applicationLoading } = useApplicationDetails(applicationId);
-  const { updateDocStatus } = useSelector((state: any) => state.shareApplication);
+  const { applicationDetails, loading: applicationLoading } =
+    useApplicationDetails(applicationId);
+  console.log("appl", applicationDetails);
+  const { updateDocStatus } = useSelector(
+    (state: any) => state.shareApplication
+  );
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
-  const [newApplicationStatus, setNewApplicationStatus] = useState<'COMPLETED' | 'DECLINED' | null>(null);
+  const [newApplicationStatus, setNewApplicationStatus] = useState<
+    "COMPLETED" | "DECLINED" | null
+  >(null);
 
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -67,11 +78,11 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
   const [alertState, setAlertState] = useState<{
     open: boolean;
     message: string;
-    severity: 'success' | 'error';
+    severity: "success" | "error";
   }>({
     open: false,
-    message: '',
-    severity: 'success'
+    message: "",
+    severity: "success",
   });
 
   useEffect(() => {
@@ -82,9 +93,15 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
 
   useEffect(() => {
     if (updateDocStatus) {
-      setDocuments(prevDocs =>
-        prevDocs?.map(doc =>
-          doc?.id === updateDocStatus?.id ? { ...doc, status: updateDocStatus.remark, remark: updateDocStatus.remark } : doc
+      setDocuments((prevDocs) =>
+        prevDocs?.map((doc) =>
+          doc?.id === updateDocStatus?.id
+            ? {
+                ...doc,
+                status: updateDocStatus.remark,
+                remark: updateDocStatus.remark,
+              }
+            : doc
         )
       );
     }
@@ -98,7 +115,10 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
 
   const getFileTypeFromUrl = (url: string): string => {
     const segments = url.split("/");
-    const fileExtension = segments[segments.length - 1].split(".").pop()?.toLowerCase();
+    const fileExtension = segments[segments.length - 1]
+      .split(".")
+      .pop()
+      ?.toLowerCase();
     switch (fileExtension) {
       case "pdf":
         return "application/pdf";
@@ -129,44 +149,55 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
 
   const handleDownload = (url: string, fileName: string) => {
     fetch(url)
-      .then(response => response.blob())
-      .then(blob => {
-        const link = document.createElement('a');
+      .then((response) => response.blob())
+      .then((blob) => {
+        const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
         link.download = fileName;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
       })
-      .catch(error => console.error('Download failed:', error));
+      .catch((error) => console.error("Download failed:", error));
   };
 
-  const handleStatusUpdate = async (id: string, remark: 'APPROVED' | 'REJECTED') => {
-    const action: 'approve' | 'reject' = remark.toLowerCase() as 'approve' | 'reject';
+  const handleStatusUpdate = async (
+    id: string,
+    remark: "APPROVED" | "REJECTED"
+  ) => {
+    const action: "approve" | "reject" = remark.toLowerCase() as
+      | "approve"
+      | "reject";
     setLoadingStatus((prev) => ({
       ...prev,
-      [id]: { ...prev[id], [action]: true }
+      [id]: { ...prev[id], [action]: true },
     }));
-    setErrors((prev) => ({ ...prev, [id]: '' }));
+    setErrors((prev) => ({ ...prev, [id]: "" }));
 
     try {
       const response = await dispatch(updateDocumentStatus({ id, remark }));
 
-      if (response.meta.requestStatus === 'fulfilled' && response.payload?.status === 200) {
+      if (
+        response.meta.requestStatus === "fulfilled" &&
+        response.payload?.status === 200
+      ) {
         setDocuments((prevDocs) =>
           prevDocs.map((doc) =>
             doc.id === id ? { ...doc, status: remark, remark: remark } : doc
           )
         );
       } else {
-        throw new Error('Failed to update document status');
+        throw new Error("Failed to update document status");
       }
     } catch (error) {
-      setErrors((prev) => ({ ...prev, [id]: 'Failed to update status. Please try again.' }));
+      setErrors((prev) => ({
+        ...prev,
+        [id]: "Failed to update status. Please try again.",
+      }));
     } finally {
       setLoadingStatus((prev) => ({
         ...prev,
-        [id]: { ...prev[id], [action]: false }
+        [id]: { ...prev[id], [action]: false },
       }));
     }
   };
@@ -176,25 +207,32 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
 
     setIsUpdatingStatus(true);
     try {
-      const response = await dispatch(updateApplicationToCompleted({
-        body: { status: newApplicationStatus },
-        applicationId
-      }));
+      const response = await dispatch(
+        updateApplicationToCompleted({
+          body: { status: newApplicationStatus },
+          applicationId,
+        })
+      );
 
-      if (response.meta.requestStatus === 'fulfilled' && response.payload?.status === 200) {
+      if (
+        response.meta.requestStatus === "fulfilled" &&
+        response.payload?.status === 200
+      ) {
         setAlertState({
           open: true,
           message: `Application successfully marked as ${newApplicationStatus.toLowerCase()}`,
-          severity: 'success'
+          severity: "success",
         });
       } else {
-        throw new Error(`Failed to update application status to ${newApplicationStatus}`);
+        throw new Error(
+          `Failed to update application status to ${newApplicationStatus}`
+        );
       }
     } catch (error) {
       setAlertState({
         open: true,
-        message: 'Failed to update application status. Please try again.',
-        severity: 'error'
+        message: "Failed to update application status. Please try again.",
+        severity: "error",
       });
     } finally {
       setIsUpdatingStatus(false);
@@ -203,22 +241,28 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
   };
 
   const handleCloseAlert = () => {
-    setAlertState(prev => ({ ...prev, open: false }));
+    setAlertState((prev) => ({ ...prev, open: false }));
   };
 
-  const renderActionButton = (doc: Document, action: 'APPROVED' | 'REJECTED') => {
-    const actionType: 'approve' | 'reject' = action.toLowerCase() as 'approve' | 'reject';
+  const renderActionButton = (
+    doc: Document,
+    action: "APPROVED" | "REJECTED"
+  ) => {
+    const actionType: "approve" | "reject" = action.toLowerCase() as
+      | "approve"
+      | "reject";
     const isLoading = loadingStatus[doc.id]?.[actionType] || false;
 
     const isCurrentStatus = doc.remark === action;
-    const isPending = !doc.remark || doc.remark === 'PENDING';
-    const isDisabled = doc.remark === 'APPROVED' || doc.remark === 'REJECTED';
+    const isPending = !doc.remark || doc.remark === "PENDING";
+    const isDisabled = doc.remark === "APPROVED" || doc.remark === "REJECTED";
 
-    let buttonClass = "flex px-[1em] rounded-md font-medium py-[8px] items-center border gap-2 ";
+    let buttonClass =
+      "flex px-[1em] rounded-md font-medium py-[8px] items-center border gap-2 ";
 
     if (isPending) {
       buttonClass += "bg-gray-200 text-gray-600 border-gray-300";
-    } else if (action === 'APPROVED') {
+    } else if (action === "APPROVED") {
       buttonClass += isCurrentStatus
         ? "bg-[#F3FBF5] text-approve border-approve cursor-not-allowed opacity-50"
         : "bg-gray-200 text-gray-600 border-gray-300 cursor-not-allowed opacity-50";
@@ -229,12 +273,21 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
     }
 
     const buttonText = isPending
-      ? action === 'APPROVED' ? 'Approve' : 'Reject'
-      : action === 'APPROVED' ? 'Approved' : 'Rejected';
+      ? action === "APPROVED"
+        ? "Approve"
+        : "Reject"
+      : action === "APPROVED"
+      ? "Approved"
+      : "Rejected";
 
     const buttonContent = (
       <>
-        {isCurrentStatus && <img src={action === 'APPROVED' ? approve : reject} alt={`${action.toLowerCase()}_icon`} />}
+        {isCurrentStatus && (
+          <img
+            src={action === "APPROVED" ? approve : reject}
+            alt={`${action.toLowerCase()}_icon`}
+          />
+        )}
         <small>{buttonText}</small>
       </>
     );
@@ -263,7 +316,9 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
     return (
       <main className="font-outfit">
         <header>
-          <h2 className="text-xl font-semibold dark:text-white">Uploaded Documents</h2>
+          <h2 className="text-xl font-semibold dark:text-white">
+            Uploaded Documents
+          </h2>
         </header>
         <div className="mt-[2em] grid w-[85%] grid-cols-2 gap-10">
           {Array.from({ length: 4 }).map((_, index) => (
@@ -278,28 +333,29 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
     return (
       <main className="font-outfit">
         <header>
-          <h2 className="text-xl font-semibold dark:text-white">Uploaded Documents</h2>
+          <h2 className="text-xl font-semibold dark:text-white">
+            Uploaded Documents
+          </h2>
         </header>
         <div className="text-red-500">No documents found 📜.</div>
 
         <div className="w-full mt-8">
-        {alertState.open && (
-          <Alert
-            severity={alertState.severity}
-            onClose={handleCloseAlert}
-            className="w-1/2"
-            sx={{
-              '& .MuiAlert-message': {
-                width: '100%',
-                textAlign: 'center'
-              }
-            }}
-          >
-            {alertState.message}
-          </Alert>
-        )}
-      </div>
-
+          {alertState.open && (
+            <Alert
+              severity={alertState.severity}
+              onClose={handleCloseAlert}
+              className="w-1/2"
+              sx={{
+                "& .MuiAlert-message": {
+                  width: "100%",
+                  textAlign: "center",
+                },
+              }}
+            >
+              {alertState.message}
+            </Alert>
+          )}
+        </div>
 
         <div className="flex flex-wrap w-full gap-4 mt-[5em]">
           <button.PrimaryButton
@@ -307,51 +363,61 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
             onClick={handleOpenModal}
           >
             Submit Response
-          </button.PrimaryButton> 
+          </button.PrimaryButton>
 
-            <div className="flex items-center gap-4 w-full md:w-auto">
-              <FormControl className="flex-grow md:w-48"> 
-                <InputLabel id="application-status-select-label">Application Status</InputLabel>
-                <Select
-                  labelId="application-status-select-label"
-                  value={newApplicationStatus || ''}
-                  onChange={(e) => setNewApplicationStatus(e.target.value as 'COMPLETED' | 'DECLINED')}
-                >
-                  <MenuItem value="">Select an action</MenuItem>
-                  <MenuItem value="COMPLETED">Mark as Completed</MenuItem>
-                  <MenuItem value="DECLINED">Mark as Declined</MenuItem>
-                </Select>
-              </FormControl>
-
-              <button.PrimaryButton
-                className="w-[8em] rounded-full bg-linear-gradient py-[9px] px-3 text-center text-lg font-medium text-white"
-                onClick={handleUpdateApplicationStatus}
-                disabled={!newApplicationStatus || isUpdatingStatus}
+          <div className="flex items-center gap-4 w-full md:w-auto">
+            <FormControl className="flex-grow md:w-48">
+              <InputLabel id="application-status-select-label">
+                Application Status
+              </InputLabel>
+              <Select
+                labelId="application-status-select-label"
+                value={newApplicationStatus || ""}
+                onChange={(e) =>
+                  setNewApplicationStatus(
+                    e.target.value as "COMPLETED" | "DECLINED"
+                  )
+                }
               >
-                {isUpdatingStatus ? (
-                  <div className="flex items-center">
-                    <ReactLoading
-                      color="#FFFFFF"
-                      width={25}
-                      height={25}
-                      type="spin"
-                    />
-                  </div>
-                ) : (
-                  "Update Status"
-                )}
-              </button.PrimaryButton>
-            </div>
+                <MenuItem value="">Select an action</MenuItem>
+                <MenuItem value="COMPLETED">Mark as Completed</MenuItem>
+                <MenuItem value="DECLINED">Mark as Declined</MenuItem>
+              </Select>
+            </FormControl>
+
+            <button.PrimaryButton
+              className="w-[8em] rounded-full bg-linear-gradient py-[9px] px-3 text-center text-lg font-medium text-white"
+              onClick={handleUpdateApplicationStatus}
+              disabled={!newApplicationStatus || isUpdatingStatus}
+            >
+              {isUpdatingStatus ? (
+                <div className="flex items-center">
+                  <ReactLoading
+                    color="#FFFFFF"
+                    width={25}
+                    height={25}
+                    type="spin"
+                  />
+                </div>
+              ) : (
+                "Update Status"
+              )}
+            </button.PrimaryButton>
           </div>
+        </div>
         {isModalOpen && (
-          <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
+          <Modal
+            isOpen={isModalOpen}
+            onClose={handleCloseModal}
+            data-aos="zoom-in"
+          >
             <StudentApplicationSummary
               onClose={handleCloseModal}
               documents={documents}
               userData={{
                 firstName: applicationDetails?.data?.firstName,
                 lastName: applicationDetails?.data?.lastName,
-                userId: applicationDetails?.data?.userId
+                userId: applicationDetails?.data?.userId,
               }}
             />
           </Modal>
@@ -370,12 +436,13 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
           {documents.map((doc) => (
             <div key={doc.id}>
               <div>
-                <label htmlFor={doc.documentType}>
-                  {doc.documentType}
-                </label>
+                <label htmlFor={doc.documentType}>{doc.documentType}</label>
               </div>
               <div className="mt-2 flex items-center justify-between rounded-lg border-[1px] border-gray-300 px-[1em] py-5">
-                <label htmlFor={doc.documentType} className="flex flex-grow flex-col cursor-pointer">
+                <label
+                  htmlFor={doc.documentType}
+                  className="flex flex-grow flex-col cursor-pointer"
+                >
                   <div className="flex items-center gap-5">
                     <div className="flex gap-2">
                       <img src={fileImg} alt="file_img" />
@@ -403,18 +470,22 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
                 </div>
               </div>
               <p className="text-sm mt-[4px] font-medium">
-                current status : {' '}
-                <span className={
-                  doc.remark === "APPROVED" ? "text-approve" :
-                  doc.remark === "REJECTED" ? "text-red-600" :
-                  "text-yellow-500"
-                }>
+                current status :{" "}
+                <span
+                  className={
+                    doc.remark === "APPROVED"
+                      ? "text-approve"
+                      : doc.remark === "REJECTED"
+                      ? "text-red-600"
+                      : "text-yellow-500"
+                  }
+                >
                   {doc.remark || "PENDING"}
                 </span>
               </p>
               <div className="flex mt-[1em] gap-2 items-center">
-                {renderActionButton(doc, 'APPROVED')}
-                {renderActionButton(doc, 'REJECTED')}
+                {renderActionButton(doc, "APPROVED")}
+                {renderActionButton(doc, "REJECTED")}
               </div>
             </div>
           ))}
@@ -428,10 +499,10 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
             onClose={handleCloseAlert}
             className="w-1/2"
             sx={{
-              '& .MuiAlert-message': {
-                width: '100%',
-                textAlign: 'center'
-              }
+              "& .MuiAlert-message": {
+                width: "100%",
+                textAlign: "center",
+              },
             }}
           >
             {alertState.message}
@@ -446,73 +517,91 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
         previewFileType={previewFileType}
       />
 
-          <div className="flex flex-wrap w-full gap-4 mt-[5em]">
-      <button.PrimaryButton
-        className="w-auto rounded-full px-3 bg-purple-white py-[9px] text-center text-lg font-semibold text-primary-700"
-        onClick={handleAssignOpenModal}
-      >
-        Assign Application
-      </button.PrimaryButton>
+      <div className="flex flex-wrap w-full gap-4 mt-[5em]">
+        <button.PrimaryButton
+          className="w-auto rounded-full px-3 bg-purple-white py-[9px] text-center text-lg font-semibold text-primary-700"
+          onClick={handleAssignOpenModal}
+        >
+          Assign Application
+        </button.PrimaryButton>
+
+        <button.PrimaryButton
+          className="w-auto rounded-full px-3 bg-linear-gradient py-[9px] text-center text-lg font-medium text-white"
+          onClick={handleOpenModal}
+        >
+          Submit Response
+        </button.PrimaryButton>
+
+        <div className="flex items-center gap-4 w-full md:w-auto">
+          <FormControl className="flex-grow md:w-48">
+            <InputLabel id="application-status-select-label">
+              Application Status
+            </InputLabel>
+            <Select
+              labelId="application-status-select-label"
+              value={newApplicationStatus || ""}
+              onChange={(e) =>
+                setNewApplicationStatus(
+                  e.target.value as "COMPLETED" | "DECLINED"
+                )
+              }
+            >
+              <MenuItem value="">Select an action</MenuItem>
+              <MenuItem value="SUBMITTED">Mark as Submitted</MenuItem>
+              <MenuItem value="COMPLETED">Mark as Completed</MenuItem>
+              <MenuItem value="DECLINED">Mark as Declined</MenuItem>
+            </Select>
+          </FormControl>
 
           <button.PrimaryButton
-            className="w-auto rounded-full px-3 bg-linear-gradient py-[9px] text-center text-lg font-medium text-white"
-            onClick={handleOpenModal}
+            className="w-[8em] rounded-full bg-linear-gradient py-[9px] px-3 text-center text-lg font-medium text-white"
+            onClick={handleUpdateApplicationStatus}
+            disabled={!newApplicationStatus || isUpdatingStatus}
           >
-            Submit Response
-          </button.PrimaryButton> 
-
-            <div className="flex items-center gap-4 w-full md:w-auto">
-              <FormControl className="flex-grow md:w-48"> 
-                <InputLabel id="application-status-select-label">Application Status</InputLabel>
-                <Select
-                  labelId="application-status-select-label"
-                  value={newApplicationStatus || ''}
-                  onChange={(e) => setNewApplicationStatus(e.target.value as 'COMPLETED' | 'DECLINED')}
-                >
-                  <MenuItem value="">Select an action</MenuItem>
-                  <MenuItem value="SUBMITTED">Mark as Submitted</MenuItem>
-                  <MenuItem value="COMPLETED">Mark as Completed</MenuItem>
-                  <MenuItem value="DECLINED">Mark as Declined</MenuItem>
-                </Select>
-              </FormControl>
-
-              <button.PrimaryButton
-                className="w-[8em] rounded-full bg-linear-gradient py-[9px] px-3 text-center text-lg font-medium text-white"
-                onClick={handleUpdateApplicationStatus}
-                disabled={!newApplicationStatus || isUpdatingStatus}
-              >
-                {isUpdatingStatus ? (
-                  <div className="flex items-center">
-                    <ReactLoading
-                      color="#FFFFFF"
-                      width={25}
-                      height={25}
-                      type="spin"
-                    />
-                  </div>
-                ) : (
-                  "Update Status"
-                )}
-              </button.PrimaryButton>
-            </div>
-          </div>
+            {isUpdatingStatus ? (
+              <div className="flex items-center">
+                <ReactLoading
+                  color="#FFFFFF"
+                  width={25}
+                  height={25}
+                  type="spin"
+                />
+              </div>
+            ) : (
+              "Update Status"
+            )}
+          </button.PrimaryButton>
+        </div>
+      </div>
 
       {isModalOpen && (
-    <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
-      <StudentApplicationSummary 
-        onClose={handleCloseModal} 
-        documents={documents}
-        userData={{
-          firstName: applicationDetails?.data?.firstName,
-          lastName: applicationDetails?.data?.lastName,
-          userId: applicationDetails?.data?.userId
-        }}
-      />
-    </Modal>
-  )}
+        <Modal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          data-aos="zoom-in"
+        >
+          <StudentApplicationSummary
+            onClose={handleCloseModal}
+            documents={documents}
+            userData={{
+              firstName: applicationDetails?.data?.firstName,
+              lastName: applicationDetails?.data?.lastName,
+              userId: applicationDetails?.data?.userId,
+            }}
+          />
+        </Modal>
+      )}
       {isAssignModal && (
-        <Modal isOpen={isAssignModal} onClose={handleAssignCloseModal} data-aos="zoom-in">
-          <AssignApplication applicationId={applicationId} onClose={handleAssignCloseModal} />
+        <Modal
+          isOpen={isAssignModal}
+          onClose={handleAssignCloseModal}
+          data-aos="zoom-in"
+        >
+          <AssignApplication
+            applicationId={applicationId}
+            staffEmail={applicationDetails?.data?.staff?.email}
+            onClose={handleAssignCloseModal}
+          />
         </Modal>
       )}
     </main>

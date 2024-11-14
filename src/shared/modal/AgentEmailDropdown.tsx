@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { Dropdown, DropdownItem } from "../dropDown/DropDown";
 import { button } from "../../shared/buttons/Button";
-import { useAgentsEmails, useStaffEmails } from "../redux/hooks/admin/getAdminProfile";
+import { useAgentsEmails } from "../redux/hooks/admin/getAdminProfile";
 import Modal from "./Modal";
 import { assignApplicationToAgent } from "../redux/admin/slices/application.slices";
 import { useAppDispatch } from "../redux/hooks/shared/reduxHooks";
@@ -9,13 +9,21 @@ import { AppDispatch } from "../redux/store";
 import ReactLoading from "react-loading";
 import ApplicationAssignedSuccessAgent from "./ApplicationAssignedSuccessAgent";
 
-const AgentEmailDropdown = ({ applicationId, onClose }: { applicationId: any, onClose: any }) => {
+const AgentEmailDropdown = ({
+  applicationId,
+  onClose,
+  staffEmail,
+}: {
+  applicationId: any;
+  onClose: any;
+  staffEmail?: any;
+}) => {
   const dispatch: AppDispatch = useAppDispatch();
   const { agentsEmail, loading: agentEmailLoading } = useAgentsEmails();
-  const { staffEmail: staffsEmail, loading: staffLoading } = useStaffEmails();
-  
-  const [selectedAgentEmail, setSelectedAgentEmail] = useState<string | null>(null);
-  const [selectedStaffEmail, setSelectedStaffEmail] = useState<string | null>(null);
+
+  const [selectedAgentEmail, setSelectedAgentEmail] = useState<string | null>(
+    null
+  );
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAssigning, setIsAssigning] = useState(false);
@@ -30,20 +38,8 @@ const AgentEmailDropdown = ({ applicationId, onClose }: { applicationId: any, on
     return [];
   }, [agentsEmail]);
 
-  const staffEmailItems: DropdownItem[] = useMemo(() => {
-    if (Array.isArray(staffsEmail)) {
-      return staffsEmail.map((item: any) => ({ name: item.email }));
-    }
-    return [];
-  }, [staffsEmail]);
-
   const handleSelectAgentEmail = useCallback((item: DropdownItem) => {
     setSelectedAgentEmail(item?.name || null);
-    setError(null);
-  }, []);
-
-  const handleSelectStaffEmail = useCallback((item: DropdownItem) => {
-    setSelectedStaffEmail(item?.name || null);
     setError(null);
   }, []);
 
@@ -52,25 +48,28 @@ const AgentEmailDropdown = ({ applicationId, onClose }: { applicationId: any, on
       setError("Please select an agent email");
       return;
     }
-
-    if (!selectedStaffEmail) {
-      setError("Please select a staff email");
+    if (!staffEmail) {
+      setError("Please assign application to a staff first");
       return;
     }
 
     setIsAssigning(true);
     try {
-      const resultAction = await dispatch(assignApplicationToAgent({ 
-        applicationId, 
-        agentEmail: selectedAgentEmail,
-        staffEmail: selectedStaffEmail
-      }));
-      
-      if (assignApplicationToAgent.fulfilled.match(resultAction)) {
+      const resultAction = await dispatch(
+        assignApplicationToAgent({
+          applicationId,
+          agentEmail: selectedAgentEmail,
+          staffEmail,
+        })
+      );
+
+      if (assignApplicationToAgent?.fulfilled?.match(resultAction)) {
         handleModalOpen();
         onClose();
-      } else if (assignApplicationToAgent.rejected.match(resultAction)) {
-        setError(resultAction.payload as string || "Failed to assign application");
+      } else if (assignApplicationToAgent?.rejected?.match(resultAction)) {
+        setError(
+          (resultAction?.payload as string) || "Failed to assign application"
+        );
       }
     } catch (err) {
       setError("An unexpected error occurred");
@@ -84,15 +83,19 @@ const AgentEmailDropdown = ({ applicationId, onClose }: { applicationId: any, on
       <div className="m-auto w-[24em] text-center">
         <header className="flex gap-2 flex-col">
           <h1 className="text-2xl font-bold">Agent Details</h1>
-          <p className="font-light">Select the agent under staff to assign the application to</p>
+          <p className="font-light">
+            Select the agent under staff to assign the application to
+          </p>
         </header>
       </div>
-      
+
       <div className="mt-[1.5em] space-y-4">
         <Dropdown
           label="Agent Email"
           items={agentEmailItems}
-          selectedItem={selectedAgentEmail ? { name: selectedAgentEmail } : null}
+          selectedItem={
+            selectedAgentEmail ? { name: selectedAgentEmail } : null
+          }
           onSelectItem={handleSelectAgentEmail}
           asterisk
           searchVisible
@@ -100,21 +103,21 @@ const AgentEmailDropdown = ({ applicationId, onClose }: { applicationId: any, on
           placeholder="Select Agent Email"
         />
 
-        <Dropdown
-          label="Staff Email"
-          items={staffEmailItems}
-          selectedItem={selectedStaffEmail ? { name: selectedStaffEmail } : null}
-          onSelectItem={handleSelectStaffEmail}
-          asterisk
-          searchVisible
-          loading={staffLoading}
-          placeholder="Select Staff Email"
-        />
+        <div>
+          <label htmlFor="email" className="flex-start flex font-medium">
+            Staff Email
+          </label>
+          <input
+            name="email"
+            id="email"
+            type="email"
+            value={staffEmail}
+            className="mt-[11px] w-full rounded-lg cursor-not-allowed border-[2px] bg-inherit p-3 focus:outline-none"
+          />
+        </div>
       </div>
 
-      {error && (
-        <p className="text-red-500 mt-2 text-center">{error}</p>
-      )}
+      {error && <p className="text-red-500 mt-2 text-center">{error}</p>}
 
       <div className="flex justify-center">
         <button.PrimaryButton
@@ -124,12 +127,7 @@ const AgentEmailDropdown = ({ applicationId, onClose }: { applicationId: any, on
           disabled={isAssigning}
         >
           {isAssigning ? (
-            <ReactLoading
-              color="#FFFFFF"
-              width={25}
-              height={25}
-              type="spin"
-            />
+            <ReactLoading color="#FFFFFF" width={25} height={25} type="spin" />
           ) : (
             "Continue"
           )}

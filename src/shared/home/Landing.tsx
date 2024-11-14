@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { signUp } from "../../data/data";
 import welcome_signup from "../../assets/png/welcome_signup.png";
 import { IoIosArrowForward } from "react-icons/io";
+import LandingNav from "./LandingNav";
 
 const Landing = () => {
   return (
@@ -11,6 +12,7 @@ const Landing = () => {
         aria-labelledby="landing-header"
       >
         <div className="mx-auto w-full max-w-[80%] flex-1 items-center justify-center">
+          <LandingNav />
           <article
             className="flex h-full w-full flex-col justify-center"
             aria-labelledby="landing-article-header"

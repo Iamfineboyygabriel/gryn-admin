@@ -64,6 +64,9 @@ export interface ApplicationDetails {
     userId: string;
     createdAt: string;
     updatedAt: string;
+    staff: {
+      email: string;
+    };
     degree: {
       id: number;
       country: string;
@@ -86,7 +89,7 @@ export interface ApplicationDetails {
       createdAt: string;
       updatedAt: string;
       remark: string;
-      status: 'PENDING' | 'APPROVED' | 'REJECTED';
+      status: "PENDING" | "APPROVED" | "REJECTED";
     }[];
     payment: {
       id?: string;
@@ -102,9 +105,9 @@ export interface ApplicationDetails {
         createdAt: string;
         updatedAt: string;
         remark: string;
-        status: 'PENDING' | 'APPROVED' | 'REJECTED';
+        status: "PENDING" | "APPROVED" | "REJECTED";
       }[];
-    };  
+    };
   };
 }
 
@@ -113,16 +116,16 @@ export interface VisaApplicationDetails {
   message: string;
   data: {
     email: string;
-    otherName:string;
+    otherName: string;
     id: string;
     phoneNumber: string;
     firstName: string;
     lastName: string;
     middleName: string;
     localGovtArea: string;
-    issuedDate:string;
+    issuedDate: string;
     agentId: string;
-    expiryDate:string;
+    expiryDate: string;
     document: {
       id: string;
       name: string;
@@ -132,24 +135,23 @@ export interface VisaApplicationDetails {
       applicationId: number;
       agentId: null;
       remark: string;
-      status: 'PENDING' | 'APPROVED' | 'REJECTED';
+      status: "PENDING" | "APPROVED" | "REJECTED";
     }[];
-    agent:{
-      profile:{
-        email:string;
-      }
-    }
-    destination:string;
-    schoolName:string;
+    agent: {
+      profile: {
+        email: string;
+      };
+    };
+    destination: string;
+    schoolName: string;
     state: string;
     country: string;
-    passportNumber:string;
+    passportNumber: string;
     userId: string;
     createdAt: string;
     updatedAt: string;
   };
 }
-
 
 interface Country {
   name: string;
@@ -396,16 +398,28 @@ export const useTopUniversities = () => {
 
 export const useAllAgent = () => {
   const dispatch: AppDispatch = useDispatch();
-  const agents = useSelector((state: any) => state?.shareApplication?.allAgents?.agents || []);
-  const totalPages = useSelector((state: any) => state?.shareApplication?.allAgents?.totalPages || 0);
-  const currentPage = useSelector((state: any) => state?.shareApplication?.allAgents?.currentPage || 1);
-  const loading = useSelector((state: any) => state?.shareApplication?.loading || false);
-  const error = useSelector((state: any) => state?.shareApplication?.error || null);
-  const searchTerm = useSelector((state: any) => state?.shareApplication?.searchTerm || '');
+  const agents = useSelector(
+    (state: any) => state?.shareApplication?.allAgents?.agents || []
+  );
+  const totalPages = useSelector(
+    (state: any) => state?.shareApplication?.allAgents?.totalPages || 0
+  );
+  const currentPage = useSelector(
+    (state: any) => state?.shareApplication?.allAgents?.currentPage || 1
+  );
+  const loading = useSelector(
+    (state: any) => state?.shareApplication?.loading || false
+  );
+  const error = useSelector(
+    (state: any) => state?.shareApplication?.error || null
+  );
+  const searchTerm = useSelector(
+    (state: any) => state?.shareApplication?.searchTerm || ""
+  );
 
   const fetchAgents = useCallback(
     (page: number, limit: number) => {
-      dispatch(getAllAgents({ page, limit, search: searchTerm || '' }));
+      dispatch(getAllAgents({ page, limit, search: searchTerm || "" }));
     },
     [dispatch, searchTerm]
   );
@@ -417,7 +431,16 @@ export const useAllAgent = () => {
     [dispatch]
   );
 
-  return { agents, totalPages, currentPage, loading, error, searchTerm, fetchAgents, updateSearchTerm };
+  return {
+    agents,
+    totalPages,
+    currentPage,
+    loading,
+    error,
+    searchTerm,
+    fetchAgents,
+    updateSearchTerm,
+  };
 };
 
 export const useAllDraftItems = () => {
@@ -425,9 +448,15 @@ export const useAllDraftItems = () => {
   const draftItems = useSelector(
     (state: any) => state.shareApplication?.allDraftItems?.data?.data
   );
-  const totalPages = useSelector((state: any) => state?.shareApplication?.allDraftItems?.totalPages || 0);
-  const currentPage = useSelector((state: any) => state?.shareApplication?.allDraftItems?.currentPage || 1);
-  const loading = useSelector((state: any) => state?.shareApplication?.loading || false);
+  const totalPages = useSelector(
+    (state: any) => state?.shareApplication?.allDraftItems?.totalPages || 0
+  );
+  const currentPage = useSelector(
+    (state: any) => state?.shareApplication?.allDraftItems?.currentPage || 1
+  );
+  const loading = useSelector(
+    (state: any) => state?.shareApplication?.loading || false
+  );
 
   const fetchDraftItems = useCallback(
     (page: number, limit: number) => {
@@ -436,18 +465,23 @@ export const useAllDraftItems = () => {
     [dispatch]
   );
 
-  return { draftItems, loading, fetchDraftItems ,totalPages,currentPage };
+  return { draftItems, loading, fetchDraftItems, totalPages, currentPage };
 };
-
 
 export const useAllInvoice = () => {
   const dispatch: AppDispatch = useDispatch();
   const useInvoice = useSelector(
     (state: any) => state.shareApplication?.allInvoice?.data?.data
   );
-  const totalPages = useSelector((state: any) => state?.shareApplication?.allInvoice?.totalPages || 0);
-  const currentPage = useSelector((state: any) => state?.shareApplication?.allInvoice?.currentPage || 1);
-  const loading = useSelector((state: any) => state?.shareApplication?.loading || false);
+  const totalPages = useSelector(
+    (state: any) => state?.shareApplication?.allInvoice?.totalPages || 0
+  );
+  const currentPage = useSelector(
+    (state: any) => state?.shareApplication?.allInvoice?.currentPage || 1
+  );
+  const loading = useSelector(
+    (state: any) => state?.shareApplication?.loading || false
+  );
 
   const fetchInvoice = useCallback(
     (page: number, limit: number) => {
@@ -456,7 +490,7 @@ export const useAllInvoice = () => {
     [dispatch]
   );
 
-  return { useInvoice, loading, fetchInvoice,totalPages,currentPage };
+  return { useInvoice, loading, fetchInvoice, totalPages, currentPage };
 };
 
 export const useSingleStudentApplication = (
@@ -470,17 +504,19 @@ export const useSingleStudentApplication = (
   }
 ) => {
   const dispatch = useDispatch();
-  
+
   const { data, isLoading, error } = useQuery(
     ["applicationDetails", studentId, options],
     async () => {
       if (!studentId) {
         throw new Error("No student ID provided");
       }
-      
+
       const { page, limit, search, sort, status } = options;
-      const endpoint = `/admin/application/student/${studentId}?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}${sort ? `&sort=${sort}` : ''}&status=${status}`;
-      
+      const endpoint = `/admin/application/student/${studentId}?page=${page}&limit=${limit}&search=${encodeURIComponent(
+        search
+      )}${sort ? `&sort=${sort}` : ""}&status=${status}`;
+
       const response = await getSingleStudentApplication(endpoint);
       return response.data;
     },
@@ -495,7 +531,7 @@ export const useSingleStudentApplication = (
   return { applicationDetails: data, loading: isLoading, error };
 };
 
-export const useSingleAgentApplication  = (
+export const useSingleAgentApplication = (
   agentId: string,
   options: {
     page: number;
@@ -506,17 +542,19 @@ export const useSingleAgentApplication  = (
   }
 ) => {
   const dispatch = useDispatch();
-  
+
   const { data, isLoading, error } = useQuery(
     ["applicationDetails", agentId, options],
     async () => {
       if (!agentId) {
         throw new Error("No student ID provided");
       }
-      
+
       const { page, limit, search, sort, status } = options;
-      const endpoint = `/admin/users/agent/${agentId}/applications?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}${sort ? `&sort=${sort}` : ''}&status=${status}`;
-      
+      const endpoint = `/admin/users/agent/${agentId}/applications?page=${page}&limit=${limit}&search=${encodeURIComponent(
+        search
+      )}${sort ? `&sort=${sort}` : ""}&status=${status}`;
+
       const response = await getSingleStudentApplication(endpoint);
       return response.data;
     },
@@ -531,19 +569,32 @@ export const useSingleAgentApplication  = (
   return { applicationDetails: data, loading: isLoading, error };
 };
 
-
 export const useAllVisa = () => {
   const dispatch: AppDispatch = useDispatch();
-  const visa = useSelector((state: any) => state?.shareApplication?.allVisa?.visas || []);
-  const totalPages = useSelector((state: any) => state?.shareApplication?.allVisa?.totalPages || 0);
-  const currentPage = useSelector((state: any) => state?.shareApplication?.allVisa?.currentPage || 1);
-  const loading = useSelector((state: any) => state?.shareApplication?.loading || false);
-  const error = useSelector((state: any) => state?.shareApplication?.error || null);
-  const searchTerm = useSelector((state: any) => state?.shareApplication?.allVisaApplicationSearchTerm || '');
+  const visa = useSelector(
+    (state: any) => state?.shareApplication?.allVisa?.visas || []
+  );
+  const totalPages = useSelector(
+    (state: any) => state?.shareApplication?.allVisa?.totalPages || 0
+  );
+  const currentPage = useSelector(
+    (state: any) => state?.shareApplication?.allVisa?.currentPage || 1
+  );
+  const loading = useSelector(
+    (state: any) => state?.shareApplication?.loading || false
+  );
+  const error = useSelector(
+    (state: any) => state?.shareApplication?.error || null
+  );
+  const searchTerm = useSelector(
+    (state: any) => state?.shareApplication?.allVisaApplicationSearchTerm || ""
+  );
 
   const fetchApplications = useCallback(
     (page: number, limit: number) => {
-      dispatch(getAllVisaApplication({ page, limit, search: searchTerm || '' }));
+      dispatch(
+        getAllVisaApplication({ page, limit, search: searchTerm || "" })
+      );
     },
     [dispatch, searchTerm]
   );
@@ -555,21 +606,42 @@ export const useAllVisa = () => {
     [dispatch]
   );
 
-  return { visa, totalPages, currentPage, loading, error, searchTerm, fetchApplications, updateSearchTerm };
+  return {
+    visa,
+    totalPages,
+    currentPage,
+    loading,
+    error,
+    searchTerm,
+    fetchApplications,
+    updateSearchTerm,
+  };
 };
 
 export const useAllPendingAgents = () => {
   const dispatch: AppDispatch = useDispatch();
-  const agents = useSelector((state: any) => state?.shareApplication?.allPendingAgents?.allPending || []);
-  const totalPages = useSelector((state: any) => state?.shareApplication?.allPendingAgents?.totalPages || 0);
-  const currentPage = useSelector((state: any) => state?.shareApplication?.allPendingAgents?.currentPage || 1);
-  const loading = useSelector((state: any) => state?.shareApplication?.loading || false);
-  const error = useSelector((state: any) => state?.shareApplication?.error || null);
-  const searchTerm = useSelector((state: any) => state?.shareApplication?.searchTerm || '');
+  const agents = useSelector(
+    (state: any) => state?.shareApplication?.allPendingAgents?.allPending || []
+  );
+  const totalPages = useSelector(
+    (state: any) => state?.shareApplication?.allPendingAgents?.totalPages || 0
+  );
+  const currentPage = useSelector(
+    (state: any) => state?.shareApplication?.allPendingAgents?.currentPage || 1
+  );
+  const loading = useSelector(
+    (state: any) => state?.shareApplication?.loading || false
+  );
+  const error = useSelector(
+    (state: any) => state?.shareApplication?.error || null
+  );
+  const searchTerm = useSelector(
+    (state: any) => state?.shareApplication?.searchTerm || ""
+  );
 
   const fetchAgents = useCallback(
     (page: number, limit: number) => {
-      dispatch(getAllPendingAgents({ page, limit, search: searchTerm || '' }));
+      dispatch(getAllPendingAgents({ page, limit, search: searchTerm || "" }));
     },
     [dispatch, searchTerm]
   );
@@ -581,7 +653,16 @@ export const useAllPendingAgents = () => {
     [dispatch]
   );
 
-  return { agents, totalPages, currentPage, loading, error, searchTerm, fetchAgents, updateSearchTerm };
+  return {
+    agents,
+    totalPages,
+    currentPage,
+    loading,
+    error,
+    searchTerm,
+    fetchAgents,
+    updateSearchTerm,
+  };
 };
 
 export const useVisaApplicationDetails = (applicationId: string) => {
@@ -611,19 +692,21 @@ export const useVisaApplicationDetails = (applicationId: string) => {
 };
 
 export const useBudgetFetch = (initialPage = 1, initialLimit = 10) => {
-  const dispatch:AppDispatch = useDispatch();
-  const { allBudgets, loading, error, sort, status, month, search } = useSelector(
-    (state: any) => state.shareApplication);
+  const dispatch: AppDispatch = useDispatch();
+  const { allBudgets, loading, error, sort, status, month, search } =
+    useSelector((state: any) => state.shareApplication);
 
   useEffect(() => {
-    dispatch(getAllBudget({ 
-      page: initialPage, 
-      limit: initialLimit, 
-      sort, 
-      status, 
-      month, 
-      search 
-    }));
+    dispatch(
+      getAllBudget({
+        page: initialPage,
+        limit: initialLimit,
+        sort,
+        status,
+        month,
+        search,
+      })
+    );
   }, [dispatch, initialPage, initialLimit, sort, status, month, search]);
 
   return {
@@ -635,16 +718,30 @@ export const useBudgetFetch = (initialPage = 1, initialLimit = 10) => {
 
 export const useAllApplicationPayment = () => {
   const dispatch: AppDispatch = useDispatch();
-  const allApplicationPayment = useSelector((state: any) => state?.shareApplication?.allAppPayment?.payments || []);
-  const totalPages = useSelector((state: any) => state?.shareApplication?.allPayment?.totalPages || 0);
-  const currentPage = useSelector((state: any) => state?.shareApplication?.allPayment?.currentPage || 1);
-  const loading = useSelector((state: any) => state?.shareApplication?.loading || false);
-  const error = useSelector((state: any) => state?.shareApplication?.error || null);
-  const searchTerm = useSelector((state: any) => state?.shareApplication?.searchTerm || '');
+  const allApplicationPayment = useSelector(
+    (state: any) => state?.shareApplication?.allAppPayment?.payments || []
+  );
+  const totalPages = useSelector(
+    (state: any) => state?.shareApplication?.allPayment?.totalPages || 0
+  );
+  const currentPage = useSelector(
+    (state: any) => state?.shareApplication?.allPayment?.currentPage || 1
+  );
+  const loading = useSelector(
+    (state: any) => state?.shareApplication?.loading || false
+  );
+  const error = useSelector(
+    (state: any) => state?.shareApplication?.error || null
+  );
+  const searchTerm = useSelector(
+    (state: any) => state?.shareApplication?.searchTerm || ""
+  );
 
   const fetchApplicationPayments = useCallback(
     (page: number, limit: number) => {
-      dispatch(getAllApplicationPayment({ page, limit, search: searchTerm || '' }));
+      dispatch(
+        getAllApplicationPayment({ page, limit, search: searchTerm || "" })
+      );
     },
     [dispatch, searchTerm]
   );
@@ -656,58 +753,98 @@ export const useAllApplicationPayment = () => {
     [dispatch]
   );
 
-  return { allApplicationPayment, totalPages, currentPage, loading, error, searchTerm, fetchApplicationPayments, updateSearchTerm };
+  return {
+    allApplicationPayment,
+    totalPages,
+    currentPage,
+    loading,
+    error,
+    searchTerm,
+    fetchApplicationPayments,
+    updateSearchTerm,
+  };
 };
-
 
 export const useAllStaffPayment = () => {
   const dispatch: AppDispatch = useDispatch();
-  const allStaffInvoicePayment = useSelector((state: any) => state?.shareApplication?.allStaffPayment?.payments || []);
-  const totalPages = useSelector((state: any) => state?.shareApplication?.allStaffPayment?.totalPages || 0);
-  const currentPage = useSelector((state: any) => state?.shareApplication?.allStaffPayment?.currentPage || 1);
-  const loading = useSelector((state: any) => state?.shareApplication?.loading || false);
-  const error = useSelector((state: any) => state?.shareApplication?.error || null);
+  const allStaffInvoicePayment = useSelector(
+    (state: any) => state?.shareApplication?.allStaffPayment?.payments || []
+  );
+  const totalPages = useSelector(
+    (state: any) => state?.shareApplication?.allStaffPayment?.totalPages || 0
+  );
+  const currentPage = useSelector(
+    (state: any) => state?.shareApplication?.allStaffPayment?.currentPage || 1
+  );
+  const loading = useSelector(
+    (state: any) => state?.shareApplication?.loading || false
+  );
+  const error = useSelector(
+    (state: any) => state?.shareApplication?.error || null
+  );
 
   const fetchStaffPayments = useCallback(
     (id: string, page: number, limit: number) => {
-      dispatch(getAllStaffPayment({ id, page, limit, }));
+      dispatch(getAllStaffPayment({ id, page, limit }));
     },
     [dispatch]
   );
 
   const clearPayments = useCallback(() => {
-    dispatch(clearPaymentData()); 
+    dispatch(clearPaymentData());
   }, [dispatch]);
 
-  return { allStaffInvoicePayment, totalPages, currentPage, loading, error, fetchStaffPayments, clearPayments };
+  return {
+    allStaffInvoicePayment,
+    totalPages,
+    currentPage,
+    loading,
+    error,
+    fetchStaffPayments,
+    clearPayments,
+  };
 };
 
 export const useStaffSalary = () => {
   const dispatch: AppDispatch = useDispatch();
-  const staffSalary = useSelector((state: any) => state?.shareApplication?.allStaffSalary?.payments || []);
-  const currentPage = useSelector((state: any) => state?.shareApplication?.allStaffSalary?.currentPage || 1);
-  const loading = useSelector((state: any) => state?.shareApplication?.loading || false);
-  const error = useSelector((state: any) => state?.shareApplication?.error || null);
+  const staffSalary = useSelector(
+    (state: any) => state?.shareApplication?.allStaffSalary?.payments || []
+  );
+  const currentPage = useSelector(
+    (state: any) => state?.shareApplication?.allStaffSalary?.currentPage || 1
+  );
+  const loading = useSelector(
+    (state: any) => state?.shareApplication?.loading || false
+  );
+  const error = useSelector(
+    (state: any) => state?.shareApplication?.error || null
+  );
 
   const fetchStaffPayments = useCallback(
     (id: string, page: number) => {
-      dispatch(getStaffSalary({ id, page}));
+      dispatch(getStaffSalary({ id, page }));
     },
     [dispatch]
   );
 
-  return { staffSalary , loading, error, fetchStaffPayments, currentPage };
+  return { staffSalary, loading, error, fetchStaffPayments, currentPage };
 };
 
 export const useAgentCommission = () => {
   const dispatch: AppDispatch = useDispatch();
-  const agentCommissions = useSelector((state: any) => state?.shareApplication?.allAgentCommission?.payments || []);
-  const loading = useSelector((state: any) => state?.shareApplication?.loading || false);
-  const error = useSelector((state: any) => state?.shareApplication?.error || null);
+  const agentCommissions = useSelector(
+    (state: any) => state?.shareApplication?.allAgentCommission?.payments || []
+  );
+  const loading = useSelector(
+    (state: any) => state?.shareApplication?.loading || false
+  );
+  const error = useSelector(
+    (state: any) => state?.shareApplication?.error || null
+  );
 
   const fetchAgentPayments = useCallback(
     (id: string) => {
-      dispatch(getAgentCommission({ id}));
+      dispatch(getAgentCommission({ id }));
     },
     [dispatch]
   );

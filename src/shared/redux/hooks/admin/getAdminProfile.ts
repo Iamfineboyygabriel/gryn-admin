@@ -30,36 +30,47 @@ import {
   setAllDirectApplicationStatusTerm,
   setAllDirectApplicationIsDirectTerm,
   getAdminEnquiresStats,
+  getAllEnquiry,
+  setAllEnquirySearchTerm,
 } from "../../admin/slices/application.slices";
 import { setMessage } from "../../message.slices";
 import { createSelector } from "@reduxjs/toolkit";
 import { RootState } from "../../rootReducer";
-import { getAllDraftedNews, getAllNews, setAllDraftedNewsSearchTerm, setAllNewsSearchTerm } from "../../admin/slices/notificationApplication.slices";
+import {
+  getAllDraftedNews,
+  getAllNews,
+  setAllDraftedNewsSearchTerm,
+  setAllNewsSearchTerm,
+} from "../../admin/slices/notificationApplication.slices";
 import { getAllBanks } from "../../admin/slices/application.slices";
 import { useQuery, useQueryClient } from "react-query";
-import { findStaffAssignedAgent, findStaffDetailByEmail, findStaffInvoices } from "../../shared/services/shareApplication.services";
+import {
+  findStaffAssignedAgent,
+  findStaffDetailByEmail,
+  findStaffInvoices,
+} from "../../shared/services/shareApplication.services";
 import { getAllStaffPayment } from "../../shared/slices/shareApplication.slices";
 
 export interface StaffDetails {
   status: number;
   data: {
-    profile:{
+    profile: {
       firstName: string;
       lastName: string;
-      publicURL:string;
+      publicURL: string;
       middleName: string;
       email: string;
       userId: string;
       gender: string;
-      avatar:{
-        publicURL: string,
-      }
-    },
-    role:string;
+      avatar: {
+        publicURL: string;
+      };
+    };
+    role: string;
     phoneNumber: string;
     dateOfBirth: string;
     address: string;
-    designation:string;
+    designation: string;
     localGovtArea: string;
     state: string;
     country: string;
@@ -67,10 +78,10 @@ export interface StaffDetails {
     status: string;
     userId: string;
     bankAccounts: {
-      accountName: string
-      accountNumber: string
-      bankName:string
-    },
+      accountName: string;
+      accountNumber: string;
+      bankName: string;
+    };
     staffRegistrationDoc: {
       id: string;
       name: string;
@@ -81,32 +92,31 @@ export interface StaffDetails {
       paymentId: null;
       agentId: null;
       remark: string;
-      status: 'PENDING' | 'APPROVED' | 'REJECTED';
+      status: "PENDING" | "APPROVED" | "REJECTED";
     }[];
   };
 }
-
 
 export interface AdminDetails {
   status: number;
   data: {
-    profile:{
+    profile: {
       firstName: string;
       lastName: string;
-      publicURL:string;
+      publicURL: string;
       middleName: string;
       email: string;
       userId: string;
       gender: string;
-      avatar:{
-        publicURL: string,
-      }
-    },
-    role:string;
+      avatar: {
+        publicURL: string;
+      };
+    };
+    role: string;
     phoneNumber: string;
     dateOfBirth: string;
     address: string;
-    designation:string;
+    designation: string;
     localGovtArea: string;
     state: string;
     country: string;
@@ -114,10 +124,10 @@ export interface AdminDetails {
     status: string;
     userId: string;
     bankAccounts: {
-      accountName: string
-      accountNumber: string
-      bankName:string
-    },
+      accountName: string;
+      accountNumber: string;
+      bankName: string;
+    };
     staffRegistrationDoc: {
       id: string;
       name: string;
@@ -128,21 +138,20 @@ export interface AdminDetails {
       paymentId: null;
       agentId: null;
       remark: string;
-      status: 'PENDING' | 'APPROVED' | 'REJECTED';
+      status: "PENDING" | "APPROVED" | "REJECTED";
     }[];
   };
 }
 
-
 export interface StaffAssignedAgent {
   status: number;
   data: {
-      firstName: string;
-      lastName: string;
-      publicURL:string;
-      middleName: string;
-      email: string;
-     id: string;
+    firstName: string;
+    lastName: string;
+    publicURL: string;
+    middleName: string;
+    email: string;
+    id: string;
     phoneNumber: string;
     dateOfBirth: string;
     address: string;
@@ -156,23 +165,23 @@ export interface StaffAssignedAgent {
 }
 
 export interface StaffInvoices {
-  data:{
+  data: {
     invoices: {
-      id:number,
-      invoiceDate: string,
-      invoiceNumber: string,
-      dueDate: string,
-      status: string,
-      item:{
-         amount: any,
-      }
-    }
-  }
+      id: number;
+      invoiceDate: string;
+      invoiceNumber: string;
+      dueDate: string;
+      status: string;
+      item: {
+        amount: any;
+      };
+    };
+  };
 }
 
 export const selectUserActivity = createSelector(
   [(state: any) => state.application?.allActivity],
-  (allActivity) => allActivity,
+  (allActivity) => allActivity
 );
 
 export const useStats = () => {
@@ -204,26 +213,40 @@ export const useStats = () => {
 
 export const useAllApplication = () => {
   const dispatch: AppDispatch = useDispatch();
-  const applications = useSelector((state: any) => state?.application?.allApplication?.applications);
-  const totalPages = useSelector((state: any) => state?.application?.allApplication?.totalPages);
-  const currentPage = useSelector((state: any) => state?.application?.allApplication?.currentPage);
+  const applications = useSelector(
+    (state: any) => state?.application?.allApplication?.applications
+  );
+  const totalPages = useSelector(
+    (state: any) => state?.application?.allApplication?.totalPages
+  );
+  const currentPage = useSelector(
+    (state: any) => state?.application?.allApplication?.currentPage
+  );
   const loading = useSelector((state: any) => state?.application?.loading);
   const error = useSelector((state: any) => state?.application?.error);
-  const searchTerm = useSelector((state: any) => state?.application?.allApplicationSearchTerm);
-  const sortTerm = useSelector((state: any) => state?.application?.allApplicationSortTerm);
-  const statusTerm = useSelector((state: any) => state?.application?.allApplicationStatusTerm);
+  const searchTerm = useSelector(
+    (state: any) => state?.application?.allApplicationSearchTerm
+  );
+  const sortTerm = useSelector(
+    (state: any) => state?.application?.allApplicationSortTerm
+  );
+  const statusTerm = useSelector(
+    (state: any) => state?.application?.allApplicationStatusTerm
+  );
 
   const fetchApplications = useCallback(
     (page: number, limit: number) => {
-      dispatch(getAllApplication({ 
-        page, 
-        limit, 
-        search: searchTerm || '',
-        sort: sortTerm || '',
-        status: statusTerm || '',
-      }));
+      dispatch(
+        getAllApplication({
+          page,
+          limit,
+          search: searchTerm || "",
+          sort: sortTerm || "",
+          status: statusTerm || "",
+        })
+      );
     },
-    [dispatch, searchTerm, sortTerm, statusTerm] 
+    [dispatch, searchTerm, sortTerm, statusTerm]
   );
 
   const updateSearchTerm = useCallback(
@@ -246,47 +269,62 @@ export const useAllApplication = () => {
     [dispatch]
   );
 
-  return { 
-    applications, 
-    totalPages, 
-    currentPage, 
-    loading, 
-    error, 
+  return {
+    applications,
+    totalPages,
+    currentPage,
+    loading,
+    error,
     searchTerm,
     sortTerm,
     statusTerm,
     updateStatusTerm,
-    fetchApplications, 
+    fetchApplications,
     updateSearchTerm,
-    updateSortTerm 
+    updateSortTerm,
   };
 };
 
-
 export const useAllDirectApplication = () => {
   const dispatch: AppDispatch = useDispatch();
-  const applications = useSelector((state: any) => state?.application?.allDirect?.applications);
-  const totalPages = useSelector((state: any) => state?.application?.allDirect?.totalPages);
-  const currentPage = useSelector((state: any) => state?.application?.allDirect?.currentPage);
+  const applications = useSelector(
+    (state: any) => state?.application?.allDirect?.applications
+  );
+  const totalPages = useSelector(
+    (state: any) => state?.application?.allDirect?.totalPages
+  );
+  const currentPage = useSelector(
+    (state: any) => state?.application?.allDirect?.currentPage
+  );
   const loading = useSelector((state: any) => state?.application?.loading);
   const error = useSelector((state: any) => state?.application?.error);
-  const searchTerm = useSelector((state: any) => state?.application?.allDirectApplicationSearchTerm);
-  const sortTerm = useSelector((state: any) => state?.application?.allDirectApplicationSortTerm);
-  const statusTerm = useSelector((state: any) => state?.application?.allDirectApplicationStatusTerm);
-  const isDirectTerm = useSelector((state: any) => state?.application?.allDirectApplicationIsDirectTerm);
+  const searchTerm = useSelector(
+    (state: any) => state?.application?.allDirectApplicationSearchTerm
+  );
+  const sortTerm = useSelector(
+    (state: any) => state?.application?.allDirectApplicationSortTerm
+  );
+  const statusTerm = useSelector(
+    (state: any) => state?.application?.allDirectApplicationStatusTerm
+  );
+  const isDirectTerm = useSelector(
+    (state: any) => state?.application?.allDirectApplicationIsDirectTerm
+  );
 
   const fetchApplications = useCallback(
     (page: number, limit: number) => {
-      dispatch(getAllDirectApplication({ 
-        page, 
-        limit, 
-        search: searchTerm || '',
-        sort: sortTerm || '',
-        status: statusTerm || '',
-        isDirect: isDirectTerm || false
-      }));
+      dispatch(
+        getAllDirectApplication({
+          page,
+          limit,
+          search: searchTerm || "",
+          sort: sortTerm || "",
+          status: statusTerm || "",
+          isDirect: isDirectTerm || false,
+        })
+      );
     },
-    [dispatch, searchTerm, sortTerm, statusTerm, isDirectTerm] 
+    [dispatch, searchTerm, sortTerm, statusTerm, isDirectTerm]
   );
 
   const updateSearchTerm = useCallback(
@@ -317,37 +355,44 @@ export const useAllDirectApplication = () => {
     [dispatch]
   );
 
-  return { 
-    applications, 
-    totalPages, 
-    currentPage, 
-    loading, 
-    error, 
+  return {
+    applications,
+    totalPages,
+    currentPage,
+    loading,
+    error,
     searchTerm,
     sortTerm,
     statusTerm,
     isDirectTerm,
     updateIsDirectTerm,
     updateStatusTerm,
-    fetchApplications, 
+    fetchApplications,
     updateSearchTerm,
-    updateSortTerm 
+    updateSortTerm,
   };
-}
-
+};
 
 export const useAllStudents = () => {
   const dispatch: AppDispatch = useDispatch();
-  const useAllStudent = useSelector((state: any) => state?.application?.allStudents?.students);
-  const totalPages = useSelector((state: any) => state?.application?.allStudents?.totalPages);
-  const currentPage = useSelector((state: any) => state?.application?.allStudents?.currentPage);
+  const useAllStudent = useSelector(
+    (state: any) => state?.application?.allStudents?.students
+  );
+  const totalPages = useSelector(
+    (state: any) => state?.application?.allStudents?.totalPages
+  );
+  const currentPage = useSelector(
+    (state: any) => state?.application?.allStudents?.currentPage
+  );
   const loading = useSelector((state: any) => state?.application?.loading);
   const error = useSelector((state: any) => state.application.error);
-  const searchTerm = useSelector((state: any) => state.application.allStudentsSearchTerm);
+  const searchTerm = useSelector(
+    (state: any) => state.application.allStudentsSearchTerm
+  );
 
   const fetchApplications = useCallback(
     (page: number, limit: number) => {
-      dispatch(getAllStudents({ page, limit, search: searchTerm || '' }));
+      dispatch(getAllStudents({ page, limit, search: searchTerm || "" }));
     },
     [dispatch, searchTerm]
   );
@@ -359,16 +404,29 @@ export const useAllStudents = () => {
     [dispatch]
   );
 
-  return { useAllStudent, totalPages, currentPage, loading, error, searchTerm, fetchApplications, updateSearchTerm };
+  return {
+    useAllStudent,
+    totalPages,
+    currentPage,
+    loading,
+    error,
+    searchTerm,
+    fetchApplications,
+    updateSearchTerm,
+  };
 };
-
-
 
 export const useTopAgentCommisson = () => {
   const dispatch: AppDispatch = useDispatch();
-  const useTopCommission = useSelector((state: any) => state?.application?.allAgentCommission?.topAgentCommission);
-  const totalPages = useSelector((state: any) => state?.application?.allAgentCommission?.totalPages);
-  const currentPage = useSelector((state: any) => state?.application?.allAgentCommission?.currentPage);
+  const useTopCommission = useSelector(
+    (state: any) => state?.application?.allAgentCommission?.topAgentCommission
+  );
+  const totalPages = useSelector(
+    (state: any) => state?.application?.allAgentCommission?.totalPages
+  );
+  const currentPage = useSelector(
+    (state: any) => state?.application?.allAgentCommission?.currentPage
+  );
   const loading = useSelector((state: any) => state?.application?.loading);
   const error = useSelector((state: any) => state?.application?.error);
 
@@ -379,22 +437,38 @@ export const useTopAgentCommisson = () => {
     [dispatch]
   );
 
-  return {useTopCommission, totalPages, currentPage, loading, error,  fetchCommissions };
+  return {
+    useTopCommission,
+    totalPages,
+    currentPage,
+    loading,
+    error,
+    fetchCommissions,
+  };
 };
-
 
 export const useAllPendingApplication = () => {
   const dispatch: AppDispatch = useDispatch();
-  const applications = useSelector((state: any) => state?.application?.allPendingApplication?.applications);
-  const totalPages = useSelector((state: any) => state?.application?.allPendingApplication?.totalPages);
-  const currentPage = useSelector((state: any) => state?.application?.allPendingApplication?.currentPage);
+  const applications = useSelector(
+    (state: any) => state?.application?.allPendingApplication?.applications
+  );
+  const totalPages = useSelector(
+    (state: any) => state?.application?.allPendingApplication?.totalPages
+  );
+  const currentPage = useSelector(
+    (state: any) => state?.application?.allPendingApplication?.currentPage
+  );
   const loading = useSelector((state: any) => state?.application?.loading);
   const error = useSelector((state: any) => state.application.error);
-  const searchTerm = useSelector((state: any) => state.application.allPendingApplicationSearchTerm);
+  const searchTerm = useSelector(
+    (state: any) => state.application.allPendingApplicationSearchTerm
+  );
 
   const fetchApplications = useCallback(
     (page: number, limit: number) => {
-      dispatch(getAllPendingApplication({ page, limit, search: searchTerm || '' }));
+      dispatch(
+        getAllPendingApplication({ page, limit, search: searchTerm || "" })
+      );
     },
     [dispatch, searchTerm]
   );
@@ -406,15 +480,23 @@ export const useAllPendingApplication = () => {
     [dispatch]
   );
 
-  return { applications, totalPages, currentPage, loading, error, searchTerm, fetchApplications, updateSearchTerm };
+  return {
+    applications,
+    totalPages,
+    currentPage,
+    loading,
+    error,
+    searchTerm,
+    fetchApplications,
+    updateSearchTerm,
+  };
 };
-
 
 export const useUserActivity = () => {
   const dispatch: AppDispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [limit, setLimit] = useState(10); 
+  const [limit, setLimit] = useState(10);
 
   const userActivity = useSelector(selectUserActivity);
   const userToken = sessionStorage.getItem("userData");
@@ -438,14 +520,17 @@ export const useUserActivity = () => {
     [userToken, dispatch]
   );
 
-  const handlePageChange = useCallback((page: number) => {
-    setCurrentPage(page);
-    fetchActivity(page, limit);
-  }, [fetchActivity, limit]); 
+  const handlePageChange = useCallback(
+    (page: number) => {
+      setCurrentPage(page);
+      fetchActivity(page, limit);
+    },
+    [fetchActivity, limit]
+  );
 
   useEffect(() => {
     fetchActivity(currentPage, limit);
-  }, [fetchActivity, currentPage, limit]); 
+  }, [fetchActivity, currentPage, limit]);
 
   return useMemo(
     () => ({
@@ -453,12 +538,11 @@ export const useUserActivity = () => {
       loading,
       currentPage,
       limit,
-      handlePageChange
+      handlePageChange,
     }),
-    [userActivity, loading, currentPage, limit, handlePageChange] 
+    [userActivity, loading, currentPage, limit, handlePageChange]
   );
 };
-
 
 export const useStudentEmails = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -488,7 +572,6 @@ export const useAdminEmails = () => {
   return { adminsEmail, loading, error };
 };
 
-
 export const useStaffEmails = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { staffEmail, loading, error } = useSelector((state: RootState) => ({
@@ -501,7 +584,6 @@ export const useStaffEmails = () => {
   }, [dispatch]);
 
   return { staffEmail, loading, error };
-
 };
 
 export const useAgentsEmails = () => {
@@ -551,14 +633,22 @@ export const useSchoolListCountries = () => {
 
 export const useAllStaffForSuperAdmin = () => {
   const dispatch: AppDispatch = useDispatch();
-  const allAdmin:any = useSelector((state: RootState) => state?.application?.allStaff);
-  const loading = useSelector((state: RootState) => state?.application?.loading);
+  const allAdmin: any = useSelector(
+    (state: RootState) => state?.application?.allStaff
+  );
+  const loading = useSelector(
+    (state: RootState) => state?.application?.loading
+  );
   const error = useSelector((state: RootState) => state?.application.error);
-  const searchTerm = useSelector((state: RootState) => state?.application?.allStaffSearchTerm);
+  const searchTerm = useSelector(
+    (state: RootState) => state?.application?.allStaffSearchTerm
+  );
 
   const fetchAdmins = useCallback(
     (page?: number, limit?: number) => {
-      return dispatch(getAllStaffForSuperAdmin({ page, limit, search: searchTerm }));
+      return dispatch(
+        getAllStaffForSuperAdmin({ page, limit, search: searchTerm })
+      );
     },
     [dispatch, searchTerm]
   );
@@ -570,30 +660,42 @@ export const useAllStaffForSuperAdmin = () => {
     [dispatch]
   );
 
-  return { 
-    admins: allAdmin?.staffs, 
-    totalPages: allAdmin?.totalPages, 
-    currentPage: allAdmin?.currentPage, 
-    loading, 
-    error, 
-    searchTerm, 
-    fetchAdmins, 
-    updateSearchTerm 
+  return {
+    admins: allAdmin?.staffs,
+    totalPages: allAdmin?.totalPages,
+    currentPage: allAdmin?.currentPage,
+    loading,
+    error,
+    searchTerm,
+    fetchAdmins,
+    updateSearchTerm,
   };
 };
 
 export const useAllNews = () => {
   const dispatch: AppDispatch = useDispatch();
-  const allUserNews = useSelector((state: any) => state?.notificationApplication?.allNews?.news);
-  const totalPages = useSelector((state: any) => state?.notificationApplication?.allNews?.totalPages);
-  const currentPage = useSelector((state: any) => state?.notificationApplication?.allNews?.currentPage);
-  const loading = useSelector((state: any) => state?.notificationApplication?.loading);
-  const error = useSelector((state: any) => state.notificationApplication?.error);
-  const searchTerm = useSelector((state: any) => state.notificationApplication?.allNewsSearchTerm);
+  const allUserNews = useSelector(
+    (state: any) => state?.notificationApplication?.allNews?.news
+  );
+  const totalPages = useSelector(
+    (state: any) => state?.notificationApplication?.allNews?.totalPages
+  );
+  const currentPage = useSelector(
+    (state: any) => state?.notificationApplication?.allNews?.currentPage
+  );
+  const loading = useSelector(
+    (state: any) => state?.notificationApplication?.loading
+  );
+  const error = useSelector(
+    (state: any) => state.notificationApplication?.error
+  );
+  const searchTerm = useSelector(
+    (state: any) => state.notificationApplication?.allNewsSearchTerm
+  );
 
   const fetchNews = useCallback(
     (page: number, limit: number) => {
-      dispatch(getAllNews({ page, limit, search: searchTerm || '' }));
+      dispatch(getAllNews({ page, limit, search: searchTerm || "" }));
     },
     [dispatch, searchTerm]
   );
@@ -605,21 +707,42 @@ export const useAllNews = () => {
     [dispatch]
   );
 
-  return { allUserNews, totalPages, currentPage, loading, error, searchTerm, fetchNews, updateSearchTerm };
+  return {
+    allUserNews,
+    totalPages,
+    currentPage,
+    loading,
+    error,
+    searchTerm,
+    fetchNews,
+    updateSearchTerm,
+  };
 };
 
 export const useAllDraftedNews = () => {
   const dispatch: AppDispatch = useDispatch();
-  const allUserDraftedNews = useSelector((state: any) => state?.notificationApplication?.allDraftedNews?.draftedNews);
-  const totalPages = useSelector((state: any) => state?.notificationApplication?.allDraftedNews?.totalPages);
-  const currentPage = useSelector((state: any) => state?.notificationApplication?.allDraftedNews?.currentPage);
-  const loading = useSelector((state: any) => state?.notificationApplication?.loading);
-  const error = useSelector((state: any) => state?.notificationApplication?.error);
-  const searchTerm = useSelector((state: any) => state?.notificationApplication?.allDraftedNewsSearchTerm);
+  const allUserDraftedNews = useSelector(
+    (state: any) => state?.notificationApplication?.allDraftedNews?.draftedNews
+  );
+  const totalPages = useSelector(
+    (state: any) => state?.notificationApplication?.allDraftedNews?.totalPages
+  );
+  const currentPage = useSelector(
+    (state: any) => state?.notificationApplication?.allDraftedNews?.currentPage
+  );
+  const loading = useSelector(
+    (state: any) => state?.notificationApplication?.loading
+  );
+  const error = useSelector(
+    (state: any) => state?.notificationApplication?.error
+  );
+  const searchTerm = useSelector(
+    (state: any) => state?.notificationApplication?.allDraftedNewsSearchTerm
+  );
 
   const fetchNews = useCallback(
     (page: number, limit: number) => {
-      dispatch(getAllDraftedNews({ page, limit, search: searchTerm || '' }));
+      dispatch(getAllDraftedNews({ page, limit, search: searchTerm || "" }));
     },
     [dispatch, searchTerm]
   );
@@ -631,16 +754,24 @@ export const useAllDraftedNews = () => {
     [dispatch]
   );
 
-  return { allUserDraftedNews, totalPages, currentPage, loading, error, searchTerm, fetchNews, updateSearchTerm };
+  return {
+    allUserDraftedNews,
+    totalPages,
+    currentPage,
+    loading,
+    error,
+    searchTerm,
+    fetchNews,
+    updateSearchTerm,
+  };
 };
-
 
 export const useBanks = () => {
   const dispatch: AppDispatch = useDispatch();
   const [loading, setLoading] = useState(false);
 
   const allBanks = useSelector(
-    (state: any) => state?.application?.allBanks?.data?.data || [],
+    (state: any) => state?.application?.allBanks?.data?.data || []
   );
 
   useEffect(() => {
@@ -660,7 +791,6 @@ export const useBanks = () => {
   return { allBanks, loading };
 };
 
-
 export const useStaffDetails = (staffEmail: string) => {
   const dispatch = useDispatch();
 
@@ -678,7 +808,7 @@ export const useStaffDetails = (staffEmail: string) => {
       return await findStaffDetailByEmail(endpoint);
     },
     {
-      enabled: !!staffEmail, 
+      enabled: !!staffEmail,
       onError: (error) => {
         dispatch(setMessage(error.message));
       },
@@ -687,7 +817,6 @@ export const useStaffDetails = (staffEmail: string) => {
 
   return { staffDetail: staffDetail ?? null, loading, error };
 };
-
 
 export const useAdminDetails = (adminEmail: string) => {
   const dispatch = useDispatch();
@@ -706,7 +835,7 @@ export const useAdminDetails = (adminEmail: string) => {
       return await findStaffDetailByEmail(endpoint);
     },
     {
-      enabled: !!adminEmail, 
+      enabled: !!adminEmail,
       onError: (error) => {
         dispatch(setMessage(error.message));
       },
@@ -735,11 +864,11 @@ export const useStaffAssignedAgents = (staffId: string) => {
     },
     {
       enabled: !!staffId,
-      onError: (error:any) => {
+      onError: (error: any) => {
         dispatch(setMessage(error?.message));
       },
-      staleTime: 0, 
-      cacheTime: 1000 * 60 * 5, 
+      staleTime: 0,
+      cacheTime: 1000 * 60 * 5,
     }
   );
 
@@ -750,7 +879,11 @@ export const useStaffAssignedAgents = (staffId: string) => {
   return { agentDetail: agentDetail ?? null, loading, error, clearAgentData };
 };
 
-export const useStaffInvoices = (staffId: string, page: number, limit: number) => {
+export const useStaffInvoices = (
+  staffId: string,
+  page: number,
+  limit: number
+) => {
   const dispatch = useDispatch();
   const {
     data: staffInvoices,
@@ -766,7 +899,7 @@ export const useStaffInvoices = (staffId: string, page: number, limit: number) =
       return await findStaffInvoices(endpoint);
     },
     {
-      enabled: !!staffId, 
+      enabled: !!staffId,
       keepPreviousData: true,
       onError: (error) => {
         dispatch(setMessage(error.message));
@@ -777,17 +910,24 @@ export const useStaffInvoices = (staffId: string, page: number, limit: number) =
   return { staffInvoices: staffInvoices ?? null, loading, error };
 };
 
-
 export const useAllAdminForSuperAdmin = () => {
   const dispatch: AppDispatch = useDispatch();
-  const allAdmin:any = useSelector((state: RootState) => state?.application?.allAdmin);
-  const loading = useSelector((state: RootState) => state?.application?.loading);
+  const allAdmin: any = useSelector(
+    (state: RootState) => state?.application?.allAdmin
+  );
+  const loading = useSelector(
+    (state: RootState) => state?.application?.loading
+  );
   const error = useSelector((state: RootState) => state?.application.error);
-  const searchTerm = useSelector((state: RootState) => state?.application?.allAdminSearchTerm);
+  const searchTerm = useSelector(
+    (state: RootState) => state?.application?.allAdminSearchTerm
+  );
 
   const fetchAdmins = useCallback(
     (page?: number, limit?: number) => {
-      return dispatch(getAllAdminForSuperAdmin({ page, limit, search: searchTerm }));
+      return dispatch(
+        getAllAdminForSuperAdmin({ page, limit, search: searchTerm })
+      );
     },
     [dispatch, searchTerm]
   );
@@ -799,30 +939,45 @@ export const useAllAdminForSuperAdmin = () => {
     [dispatch]
   );
 
-  return { 
-    admins: allAdmin?.admins, 
-    totalPages: allAdmin?.totalPages, 
-    currentPage: allAdmin?.currentPage, 
-    loading, 
-    error, 
-    searchTerm, 
-    fetchAdmins, 
-    updateSearchTerm 
+  return {
+    admins: allAdmin?.admins,
+    totalPages: allAdmin?.totalPages,
+    currentPage: allAdmin?.currentPage,
+    loading,
+    error,
+    searchTerm,
+    fetchAdmins,
+    updateSearchTerm,
   };
 };
 
 export const useAllSalary = () => {
   const dispatch: AppDispatch = useDispatch();
-  const salaries = useSelector((state: any) => state?.application?.allStaffPayments?.payments);
-  const totalPages = useSelector((state: any) => state?.application?.allStaffPaments?.totalPages);
-  const currentPage = useSelector((state: any) => state?.application?.allStaffPayments?.currentPage);
+  const salaries = useSelector(
+    (state: any) => state?.application?.allStaffPayments?.payments
+  );
+  const totalPages = useSelector(
+    (state: any) => state?.application?.allStaffPaments?.totalPages
+  );
+  const currentPage = useSelector(
+    (state: any) => state?.application?.allStaffPayments?.currentPage
+  );
   const loading = useSelector((state: any) => state?.application?.loading);
   const error = useSelector((state: any) => state.application.error);
-  const searchTerm = useSelector((state: any) => state?.application?.allSalarySearchTerm);
+  const searchTerm = useSelector(
+    (state: any) => state?.application?.allSalarySearchTerm
+  );
 
   const fetchSalaries = useCallback(
     (page: number, limit: number, status: string) => {
-      dispatch(getAllStaffSalaryPayment({ page, limit, search: searchTerm || "", status }));
+      dispatch(
+        getAllStaffSalaryPayment({
+          page,
+          limit,
+          search: searchTerm || "",
+          status,
+        })
+      );
     },
     [dispatch, searchTerm]
   );
@@ -834,39 +989,109 @@ export const useAllSalary = () => {
     [dispatch]
   );
 
-  return { salaries, totalPages, currentPage, loading, error,  searchTerm, fetchSalaries, updateSearchTerm };
+  return {
+    salaries,
+    totalPages,
+    currentPage,
+    loading,
+    error,
+    searchTerm,
+    fetchSalaries,
+    updateSearchTerm,
+  };
 };
 
 export const useEnquiriesData = () => {
   const dispatch: AppDispatch = useDispatch();
-  const enquiriesData = useSelector((state:any) => state?.application?.getEnquiriesChatStats);
+  const enquiriesData = useSelector(
+    (state: any) => state?.application?.getEnquiriesChatStats
+  );
   useEffect(() => {
     dispatch(getAdminEnquiresStats());
   }, [dispatch]);
 
-  const formatData = (rawData:any) => {
+  const formatData = (rawData: any) => {
     if (!rawData?.data) return [];
 
-    const colorMap:any = {
-      INSTAGRAM: '#FFA500',
-      FACEBOOK: '#800080',
-      LINKEDIN: '#008000',
-      TIKTOK: '#00BFFF',
-      TWITTER: '#1DA1F2',
-      YOUTUBE: '#8A2BE2',
-      OTHERS: '#FF0000'
+    const colorMap: any = {
+      INSTAGRAM: "#FFA500",
+      FACEBOOK: "#800080",
+      LINKEDIN: "#008000",
+      TIKTOK: "#00BFFF",
+      TWITTER: "#1DA1F2",
+      YOUTUBE: "#8A2BE2",
+      OTHERS: "#FF0000",
     };
 
-    return rawData?.data?.map((item:any) => ({
+    return rawData?.data?.map((item: any) => ({
       name: item?.platform?.charAt(0) + item?.platform?.slice(1)?.toLowerCase(),
       value: item?.count,
       percentage: item?.percentage,
-      color: colorMap[item?.platform] || '#FF0000'
+      color: colorMap[item?.platform] || "#FF0000",
     }));
   };
 
   return {
     data: formatData(enquiriesData),
     isLoading: !enquiriesData,
+  };
+};
+
+export const useAllEnquiryData = (
+  initialPage: number = 1,
+  initialLimit: number = 10,
+  initialSearch: string = ""
+) => {
+  const dispatch: AppDispatch = useDispatch();
+  const { allEnquiry, allEnquirySearchTerm, loading } = useSelector(
+    (state: any) => state?.application
+  );
+  const [page, setPage] = useState(initialPage);
+  const [limit, setLimit] = useState(initialLimit);
+  const [search, setSearch] = useState(initialSearch);
+
+  const fetchEnquiries = useCallback(() => {
+    const validPage = Math.max(1, page);
+    if (validPage !== page) {
+      setPage(validPage);
+      return;
+    }
+    dispatch(getAllEnquiry({ page: validPage, limit, search }));
+  }, [dispatch, page, limit, search]);
+
+  useEffect(() => {
+    fetchEnquiries();
+  }, [fetchEnquiries]);
+
+  const handleSearch = (newSearch: string) => {
+    setPage(1);
+    setSearch(newSearch);
+    dispatch(setAllEnquirySearchTerm(newSearch));
+  };
+
+  const handlePageChange: any = (newPage: number) => {
+    if (newPage < 1) return;
+
+    if (!allEnquiry?.data?.length && newPage > 1) {
+      setPage(1);
+      return;
+    }
+
+    setPage(newPage);
+  };
+
+  const handleLimitChange = (newLimit: number) => {
+    setPage(1);
+    setLimit(newLimit);
+  };
+
+  return {
+    enquiries: allEnquiry?.data,
+    currentPage: page,
+    search: allEnquirySearchTerm,
+    handleSearch,
+    handlePageChange,
+    handleLimitChange,
+    loading,
   };
 };

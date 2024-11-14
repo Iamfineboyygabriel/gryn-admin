@@ -17,18 +17,18 @@ const SkeletonRow: React.FC = () => (
 );
 
 const AllApplication: React.FC = () => {
-  const { 
-    applications, 
-    totalPages, 
-    currentPage, 
-    loading, 
-    fetchApplications, 
-    searchTerm, 
+  const {
+    applications,
+    totalPages,
+    currentPage,
+    loading,
+    fetchApplications,
+    searchTerm,
     updateSearchTerm,
     updateSortTerm,
-    updateStatusTerm
+    updateStatusTerm,
   } = useAllApplication();
-   console.log("appp",applications)
+  console.log("appp", applications);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [status, setStatus] = useState<string>("");
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
@@ -38,42 +38,57 @@ const AllApplication: React.FC = () => {
   useEffect(() => {
     updateSortTerm("desc");
     fetchApplications(1, itemsPerPage);
-  }, []); 
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      fetchApplications(1, itemsPerPage);  
+      fetchApplications(1, itemsPerPage);
     }, 300);
 
     return () => clearTimeout(timer);
   }, [searchTerm, sortOrder, status, itemsPerPage]);
 
-  const handleSortChange = useCallback((newOrder: "asc" | "desc") => {
-    setSortOrder(newOrder);
-    updateSortTerm(newOrder);
-    fetchApplications(currentPage, itemsPerPage);
-  }, [currentPage, itemsPerPage, updateSortTerm, fetchApplications]);
+  const handleSortChange = useCallback(
+    (newOrder: "asc" | "desc") => {
+      setSortOrder(newOrder);
+      updateSortTerm(newOrder);
+      fetchApplications(currentPage, itemsPerPage);
+    },
+    [currentPage, itemsPerPage, updateSortTerm, fetchApplications]
+  );
 
-  const handleStatusChange = useCallback((newStatus: string) => {
-    setStatus(newStatus);
-    updateStatusTerm(newStatus);
-    fetchApplications(1, itemsPerPage);
-  }, [updateStatusTerm, fetchApplications, itemsPerPage]);
+  const handleStatusChange = useCallback(
+    (newStatus: string) => {
+      setStatus(newStatus);
+      updateStatusTerm(newStatus);
+      fetchApplications(1, itemsPerPage);
+    },
+    [updateStatusTerm, fetchApplications, itemsPerPage]
+  );
 
-  const handleItemsPerPageChange = useCallback((newItemsPerPage: number) => {
-    setItemsPerPage(newItemsPerPage);
-    fetchApplications(1, newItemsPerPage);
-  }, [fetchApplications]);
+  const handleItemsPerPageChange = useCallback(
+    (newItemsPerPage: number) => {
+      setItemsPerPage(newItemsPerPage);
+      fetchApplications(1, newItemsPerPage);
+    },
+    [fetchApplications]
+  );
 
-  const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, newPage: number) => {
-    fetchApplications(newPage, itemsPerPage); 
-  }, [fetchApplications, itemsPerPage, sortOrder]);
+  const handlePageChange = useCallback(
+    (event: React.ChangeEvent<unknown>, newPage: number) => {
+      fetchApplications(newPage, itemsPerPage);
+    },
+    [fetchApplications, itemsPerPage, sortOrder]
+  );
 
   const handleViewDetails = useCallback(
     (applicationId: number) => {
-      navigate("/admin/dashboard/application/all_application/view_application", {
-        state: { applicationId: applicationId }
-      });
+      navigate(
+        "/admin/dashboard/application/all_application/view_application",
+        {
+          state: { applicationId: applicationId },
+        }
+      );
     },
     [navigate]
   );
@@ -84,14 +99,17 @@ const AllApplication: React.FC = () => {
     return { __html: DOMPurify.sanitize(html) };
   }, []);
 
-  const highlightText = useCallback((text: string) => {
-    if (!searchTerm?.trim()) return text;
-    const regex = new RegExp(`(${searchTerm})`, "gi");
-    return text?.replace(
-      regex,
-      (match: string) => `<mark class="bg-yellow-300">${match}</mark>`
-    );
-  }, [searchTerm]);
+  const highlightText = useCallback(
+    (text: string) => {
+      if (!searchTerm?.trim()) return text;
+      const regex = new RegExp(`(${searchTerm})`, "gi");
+      return text?.replace(
+        regex,
+        (match: string) => `<mark class="bg-yellow-300">${match}</mark>`
+      );
+    },
+    [searchTerm]
+  );
 
   const renderTableBody = useCallback(() => {
     if (loading) {
@@ -115,16 +133,21 @@ const AllApplication: React.FC = () => {
       );
     }
 
-    return applications?.map((item:any, index:number) => (
-      <tr key={item?.id} className="text-sm text-grey-primary font-medium border-b border-gray-200">
+    return applications?.map((item: any, index: number) => (
+      <tr
+        key={item?.id}
+        className="text-sm text-grey-primary font-medium border-b border-gray-200"
+      >
         <td className="whitespace-nowrap px-6 py-4">
-          {((currentPage - 1) * itemsPerPage) + index + 1}
+          {(currentPage - 1) * itemsPerPage + index + 1}
         </td>
         <td
           className="whitespace-nowrap px-6 py-4"
           dangerouslySetInnerHTML={sanitizeHTML(
             highlightText(
-              `${formatData(item?.lastName)} ${formatData(item?.middleName)} ${formatData(item?.firstName)}`
+              `${formatData(item?.lastName)} ${formatData(
+                item?.middleName
+              )} ${formatData(item?.firstName)}`
             )
           )}
         />
@@ -146,14 +169,18 @@ const AllApplication: React.FC = () => {
         <td className="flex items-center whitespace-nowrap px-6 py-4">
           <button
             className={`mr-2 rounded-full px-3 py-2 w-[8em] text-white ${
-              item?.status === "SUBMITTED" ? "bg-yellow-500" : 
-              item?.status === "COMPLETED" ? "bg-green-500" :
-              "bg-red-500"
+              item?.status === "SUBMITTED"
+                ? "bg-yellow-500"
+                : item?.status === "COMPLETED"
+                ? "bg-green-500"
+                : "bg-red-500"
             }`}
           >
-            {item?.status === "SUBMITTED" ? "In Progress" : 
-             item?.status === "COMPLETED" ? "Completed" :
-             "Declined"}
+            {item?.status === "SUBMITTED"
+              ? "In Progress"
+              : item?.status === "COMPLETED"
+              ? "Completed"
+              : "Declined"}
           </button>
           <button
             onClick={() => handleViewDetails(item?.id)}
@@ -172,7 +199,7 @@ const AllApplication: React.FC = () => {
     sanitizeHTML,
     highlightText,
     formatData,
-    handleViewDetails
+    handleViewDetails,
   ]);
 
   return (
@@ -193,7 +220,9 @@ const AllApplication: React.FC = () => {
             <select
               className="bg-gray-100 px-3 py-2 rounded text-sm cursor-pointer"
               value={sortOrder}
-              onChange={(e) => handleSortChange(e.target.value as "asc" | "desc")}
+              onChange={(e) =>
+                handleSortChange(e.target.value as "asc" | "desc")
+              }
             >
               <option value="asc">Ascending</option>
               <option value="desc">Descending</option>
@@ -239,11 +268,15 @@ const AllApplication: React.FC = () => {
               <th className="px-6 py-3 whitespace-nowrap text-left text-sm font-normal">
                 Degree Type
               </th>
-              <th className="px-6 py-3 text-left text-sm font-normal">Course</th>
+              <th className="px-6 py-3 text-left text-sm font-normal">
+                Course
+              </th>
               <th className="px-6 py-3 text-left text-sm font-normal">
                 Documents
               </th>
-              <th className="px-6 py-3 text-left text-sm font-normal">Action</th>
+              <th className="px-6 py-3 text-left text-sm font-normal">
+                Action
+              </th>
             </tr>
           </thead>
           <tbody>{renderTableBody()}</tbody>

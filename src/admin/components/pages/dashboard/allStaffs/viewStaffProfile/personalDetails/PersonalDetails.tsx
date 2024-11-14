@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react'
-import { useStaffDetails } from '../../../../../../../shared/redux/hooks/admin/getAdminProfile';
+import React, { useState, useEffect } from "react";
+import { useStaffDetails } from "../../../../../../../shared/redux/hooks/admin/getAdminProfile";
 import user from "../../../../../../../assets/png/avatar.png";
 import { toast } from "react-toastify";
-import { updateStaff } from '../../../../../../../shared/redux/shared/services/shareApplication.services';
+import { updateStaff } from "../../../../../../../shared/redux/shared/services/shareApplication.services";
 import ReactLoading from "react-loading";
 import { button } from "../../../../../../../shared/buttons/Button";
 
@@ -23,20 +23,18 @@ const SkeletonAvatar = () => (
   </div>
 );
 
-const PersonalDetails: React.FC<{ staffEmail: any }> = ({
-  staffEmail,
-}) => {
+const PersonalDetails: React.FC<{ staffEmail: any }> = ({ staffEmail }) => {
   const { staffDetail, loading } = useStaffDetails(staffEmail);
-  const staffId:any = staffDetail?.data?.profile?.userId;
+  const staffId: any = staffDetail?.data?.profile?.userId;
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [middleName, setMiddleName] = useState("");
   const [email, setEmail] = useState("");
-  const [gender, setGender] = useState("")
-  const [designation, setDesignation] = useState("")
+  const [gender, setGender] = useState("");
+  const [designation, setDesignation] = useState("");
   const [updateLoading, setUpdateLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  
+
   useEffect(() => {
     if (staffDetail?.data?.profile) {
       setFirstName(staffDetail.data.profile.firstName || "");
@@ -65,7 +63,7 @@ const PersonalDetails: React.FC<{ staffEmail: any }> = ({
       const response = await updateStaff(staffId, body);
       toast.success(response?.message);
       setIsEditing(false);
-    } catch (error:any) {
+    } catch (error: any) {
       toast.error(error.message);
     } finally {
       setUpdateLoading(false);
@@ -74,10 +72,8 @@ const PersonalDetails: React.FC<{ staffEmail: any }> = ({
 
   return (
     <main>
-      <header className='mt-[1em]'>
-        <h1 className="text-xl font-semibold">
-          Personal Details
-        </h1>
+      <header className="mt-[1em]">
+        <h1 className="text-xl font-semibold">Personal Details</h1>
       </header>
       {loading ? (
         <SkeletonAvatar />
@@ -102,7 +98,10 @@ const PersonalDetails: React.FC<{ staffEmail: any }> = ({
           </div>
         </div>
       )}
-      <form onSubmit={updateDetails} className="mt-[1.5em] grid w-full max-w-[80%] grid-cols-1 gap-[1.8em] text-grey md:grid-cols-2">
+      <form
+        onSubmit={updateDetails}
+        className="mt-[1.5em] grid w-full max-w-[80%] grid-cols-1 gap-[1.8em] text-grey md:grid-cols-2"
+      >
         {loading ? (
           <>
             <SkeletonField />
@@ -115,7 +114,7 @@ const PersonalDetails: React.FC<{ staffEmail: any }> = ({
             <div className="w-full">
               <label
                 htmlFor="firstName"
-                className="flex-start flex gap-3 font-medium text-grey-primary dark:text-white"
+                className="flex-start flex gap-3 font-medium text-grey-primary"
               >
                 First Name
               </label>
@@ -127,7 +126,7 @@ const PersonalDetails: React.FC<{ staffEmail: any }> = ({
                   onChange={(e) => setFirstName(e.target.value)}
                   readOnly={!isEditing}
                   disabled={loading}
-                  className="focus:border-border border-border mt-[1em] flex w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none dark:border-gray-700 dark:text-white"
+                  className="focus:border-border border-border mt-[1em] flex w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
                 />
               </div>
             </div>
@@ -135,7 +134,7 @@ const PersonalDetails: React.FC<{ staffEmail: any }> = ({
             <div className="w-full">
               <label
                 htmlFor="lastName"
-                className="flex-start flex gap-3 font-medium text-grey-primary dark:text-white"
+                className="flex-start flex gap-3 font-medium text-grey-primary"
               >
                 Last Name
               </label>
@@ -147,7 +146,7 @@ const PersonalDetails: React.FC<{ staffEmail: any }> = ({
                   onChange={(e) => setLastName(e.target.value)}
                   readOnly={!isEditing}
                   disabled={loading}
-                  className="focus:border-border border-border mt-[1em] flex w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none dark:border-gray-700 dark:text-white"
+                  className="focus:border-border border-border mt-[1em] flex w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
                 />
               </div>
             </div>
@@ -155,7 +154,7 @@ const PersonalDetails: React.FC<{ staffEmail: any }> = ({
             <div className="w-full">
               <label
                 htmlFor="middleName"
-                className="flex-start flex gap-3 font-medium text-grey-primary dark:text-white"
+                className="flex-start flex gap-3 font-medium text-grey-primary"
               >
                 Middle Name
               </label>
@@ -167,7 +166,7 @@ const PersonalDetails: React.FC<{ staffEmail: any }> = ({
                   onChange={(e) => setMiddleName(e.target.value)}
                   readOnly={!isEditing}
                   disabled={loading}
-                  className="focus:border-border border-border mt-[1em] flex w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none dark:border-gray-700 dark:text-white"
+                  className="focus:border-border border-border mt-[1em] flex w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
                 />
               </div>
             </div>
@@ -175,7 +174,7 @@ const PersonalDetails: React.FC<{ staffEmail: any }> = ({
             <div className="w-full">
               <label
                 htmlFor="email"
-                className="flex-start flex gap-3 font-medium text-grey-primary dark:text-white"
+                className="flex-start flex gap-3 font-medium text-grey-primary"
               >
                 Email Address
               </label>
@@ -195,7 +194,7 @@ const PersonalDetails: React.FC<{ staffEmail: any }> = ({
             <div className="w-full">
               <label
                 htmlFor="gender"
-                className="flex-start flex gap-3 font-medium text-grey-primary dark:text-white"
+                className="flex-start flex gap-3 font-medium text-grey-primary"
               >
                 Gender
               </label>
@@ -207,7 +206,7 @@ const PersonalDetails: React.FC<{ staffEmail: any }> = ({
                   onChange={(e) => setGender(e.target.value)}
                   readOnly={!isEditing}
                   disabled={loading}
-                  className="focus:border-border border-border mt-[1em] flex w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none dark:border-gray-700 dark:text-white"
+                  className="focus:border-border border-border mt-[1em] flex w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
                 />
               </div>
             </div>
@@ -215,7 +214,7 @@ const PersonalDetails: React.FC<{ staffEmail: any }> = ({
             <div className="w-full">
               <label
                 htmlFor="designation"
-                className="flex-start flex gap-3 font-medium text-grey-primary dark:text-white"
+                className="flex-start flex gap-3 font-medium text-grey-primary"
               >
                 Designation
               </label>
@@ -227,7 +226,7 @@ const PersonalDetails: React.FC<{ staffEmail: any }> = ({
                   onChange={(e) => setDesignation(e.target.value)}
                   readOnly
                   disabled={true}
-                  className="focus:border-border border-border mt-[1em] flex w-full rounded-lg border-[1px] bg-gray-100 p-3 focus:outline-none dark:border-gray-700 dark:text-white dark:bg-gray-700"
+                  className="focus:border-border border-border mt-[1em] flex w-full rounded-lg border-[1px] bg-gray-100 p-3 focus:outline-none"
                 />
               </div>
             </div>
@@ -255,7 +254,7 @@ const PersonalDetails: React.FC<{ staffEmail: any }> = ({
         </div>
       </form>
     </main>
-  )
-}
+  );
+};
 
 export default PersonalDetails;

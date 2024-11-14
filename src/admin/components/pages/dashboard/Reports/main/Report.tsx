@@ -4,7 +4,6 @@ import TopPeople from "../../home/topPeople/TopPeople";
 import ApexChart from "../../../../../../shared/chart/ApexChart";
 import TotalNumber from "../totalNumber/TotalNumber";
 import Transaction from "../transaction/Transaction";
-import PieChartEnquired from "../pieChart/PieChartEnquires";
 import PieChartEnquires from "../pieChart/PieChartEnquires";
 
 const Home = () => {

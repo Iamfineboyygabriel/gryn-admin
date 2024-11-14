@@ -20,7 +20,7 @@ import AssignAgent from "../../pages/dashboard/allUsers/manageAgents/assignAgent
 import AllStudentApplications from "../../pages/dashboard/allUsers/manageStudents/allStudentApplications/AllStudentApplications";
 import ViewApplication from "../../pages/dashboard/allUsers/manageStudents/allStudentApplications/ViewApplication";
 import ViewVisaApplication from "../../../components/pages/dashboard/visa/viewVisaApplication/main/ViewApplication";
-import Report from "../../pages/dashboard/Reports/main/Report"
+import Report from "../../pages/dashboard/Reports/main/Report";
 import { useCurrentUser } from "../../../../shared/redux/hooks/shared/getUserProfile";
 import Budgets from "../../pages/dashboard/Reports/budgets/main/Budgets";
 import NewBudgets from "../../pages/dashboard/Reports/budgets/newBudgets/NewBudgets";
@@ -47,9 +47,10 @@ import NewSalary from "../../pages/dashboard/allStaffs/viewStaffProfile/salary/n
 import { PrivateRoute } from "../../../../shared/redux/hooks/admin/PrivateRoute";
 import SeeAllTopAgents from "../../pages/dashboard/Reports/seeAll/SeeAllTopAgents";
 import SeeAllTransaction from "../../pages/dashboard/Reports/transaction/SeeAllTransaction";
+import Instagram from "../../pages/dashboard/Reports/seeAll/enquiries/Instagram";
+import ViewDetails from "../../pages/dashboard/Reports/seeAll/enquiries/ViewDetails";
 
-
-const ProtectedSuperAdminRoute = ({ children }:any) => {
+const ProtectedSuperAdminRoute = ({ children }: any) => {
   const { userDetails } = useCurrentUser();
   const isSuperAdmin = userDetails?.data.role === "SUPER_ADMIN";
 
@@ -61,27 +62,26 @@ const ProtectedSuperAdminRoute = ({ children }:any) => {
 };
 
 const DashboardRoutes = () => {
-
   return (
     <DashboardLayout>
       <Routes>
-        <Route 
-          path="home" 
+        <Route
+          path="home"
           element={
             <PrivateRoute
-              element={<Home />} 
-              feature="DASHBOARD" 
+              element={<Home />}
+              feature="DASHBOARD"
               page="Overview"
             />
-          } 
+          }
         />
         <Route path="application" element={<Application />} />
-        
+
         <Route
           path="/application/all_application/view_application"
           element={<ViewApplicationDetails />}
         />
-         <Route
+        <Route
           path="/application/direct_application/view_application"
           element={<ViewDirectApplicationDetails />}
         />
@@ -90,117 +90,121 @@ const DashboardRoutes = () => {
           element={<NewApplication />}
         />
 
-         <Route
+        <Route
           path="/application/update_application"
           element={<UpdateApplication />}
         />
-        
-        <Route
-          path="/application/new_school"
-          element={<AddNewSchool />}
-        />
-        
+
+        <Route path="/application/new_school" element={<AddNewSchool />} />
+
         <Route path="/visa" element={<Visa />} />
         <Route path="/visa/new_application" element={<NewVisaApplication />} />
-        <Route path="/visa/view_visa_application" element={<ViewVisaApplication />} />
+        <Route
+          path="/visa/view_visa_application"
+          element={<ViewVisaApplication />}
+        />
 
         <Route path="all_users" element={<AllUsers />} />
-        <Route
-          path="/all_users/create_student"
-          element={<CreateStudent />}
-        />
-         <Route
-          path="/all_users/update_student"
-          element={<UpdateStudent />}
-        />
+        <Route path="/all_users/create_student" element={<CreateStudent />} />
+        <Route path="/all_users/update_student" element={<UpdateStudent />} />
 
-          <Route
+        <Route
           path="/all_users/student_applications"
           element={<AllStudentApplications />}
         />
-          <Route
-          path="/all_users/agent_details"
-          element={<AgentDetails />}
-        />
-          <Route
+        <Route path="/all_users/agent_details" element={<AgentDetails />} />
+        <Route
           path="/all_users/agent_details/new_commission"
           element={<NewCommission />}
         />
-          <Route
+        <Route
           path="/all_users/view_application"
           element={<ViewApplication />}
         />
 
-         <Route
-          path="/all_users/create_agent"
-          element={<CreateAgent />}
-        />
-          <Route
-          path="/all_users/update_agent"
-          element={<UpdateAgent />}
-        />
-          <Route
-          path="/all_users/assign_agent"
-          element={<AssignAgent />}
-        />
-      
-         <Route
+        <Route path="/all_users/create_agent" element={<CreateAgent />} />
+        <Route path="/all_users/update_agent" element={<UpdateAgent />} />
+        <Route path="/all_users/assign_agent" element={<AssignAgent />} />
+
+        <Route
           path="/all_users/approve_agents/:email"
           element={<ApprovePendingAgent />}
         />
 
-          <Route path="all_staffs" element={<AllStaff />} />
-          <Route path="/all_staffs/view_profile" element={<ViewStaffProfile />} />
-          <Route path="/all_staffs/create_staff" element={<CreateStaff />} />
-          <Route path="/all_staffs/new-salary" element={<NewSalary />} />
-          <Route path="/all_staffs/view_profile/:staffEmail/new_invoice" element={<NewInvoice />} />
-           
-          <Route 
-          path="reports" 
+        <Route path="all_staffs" element={<AllStaff />} />
+        <Route path="/all_staffs/view_profile" element={<ViewStaffProfile />} />
+        <Route path="/all_staffs/create_staff" element={<CreateStaff />} />
+        <Route path="/all_staffs/new-salary" element={<NewSalary />} />
+        <Route
+          path="/all_staffs/view_profile/:staffEmail/new_invoice"
+          element={<NewInvoice />}
+        />
+
+        <Route
+          path="reports"
           element={
             <PrivateRoute
-              element={<Report />} 
-              feature="REPORTS" 
+              element={<Report />}
+              feature="REPORTS"
               page="Overview"
             />
-          } 
+          }
         />
-          <Route path="/reports/budgets" element={<Budgets />} />
-          <Route path="/reports/new_budgets" element={<NewBudgets />} />
-          <Route path="/reports/all_application" element={<SeeAllApplication />} />
-          <Route path="/reports/all_top_agents" element={<SeeAllTopAgents />} />
-          <Route path="/reports/all_transaction" element={<SeeAllTransaction />} />
-          <Route path="/reports/all_pending_applications" element={<SeeAllPendingApplication />} />
-          <Route path="/reports/all_agents" element={<SeeAllAgents />} />
-          <Route path="/reports/all_students" element={<SeeAllStudents />} />
-          <Route path="/reports/all_staffs" element={<SeeAllStaffs />} />
-          <Route path="/reports/all_pending_agents" element={<SeeAllPendingAgents />} />
+        <Route path="/reports/budgets" element={<Budgets />} />
+        <Route path="/reports/new_budgets" element={<NewBudgets />} />
+        <Route
+          path="/reports/all_application"
+          element={<SeeAllApplication />}
+        />
+        <Route path="/reports/all_top_agents" element={<SeeAllTopAgents />} />
+        <Route
+          path="/reports/all_transaction"
+          element={<SeeAllTransaction />}
+        />
+        <Route
+          path="/reports/all_pending_applications"
+          element={<SeeAllPendingApplication />}
+        />
+        <Route path="/reports/all_agents" element={<SeeAllAgents />} />
+        <Route path="/reports/all_students" element={<SeeAllStudents />} />
+        <Route path="/reports/all_staffs" element={<SeeAllStaffs />} />
+        <Route
+          path="/reports/all_pending_agents"
+          element={<SeeAllPendingAgents />}
+        />
+        <Route path="/reports/instagram" element={<Instagram />} />
+        <Route path="/reports/view_details" element={<ViewDetails />} />
 
-          <Route path="payments" element={<Payment />} />
-          <Route path="/payments/new_payments" element={<NewPayment />} />
-            
+        <Route path="payments" element={<Payment />} />
+        <Route path="/payments/new_payments" element={<NewPayment />} />
 
-         <Route path="settings" element={<Settings />} />
-         <Route path="messages" element={<Messaging />} />
+        <Route path="settings" element={<Settings />} />
+        <Route path="messages" element={<Messaging />} />
 
-          <Route path="notifications" element={<Notification />} />
-          <Route path="/news/create_news" element={<CreateNews />} />
+        <Route path="notifications" element={<Notification />} />
+        <Route path="/news/create_news" element={<CreateNews />} />
 
-       <Route path="settings/admin_management/*" element={
-          <ProtectedSuperAdminRoute>
-            <Routes>
-              <Route path="new_Admin" element={<NewAdmin />} />
-            </Routes>
-          </ProtectedSuperAdminRoute>
-        } />
+        <Route
+          path="settings/admin_management/*"
+          element={
+            <ProtectedSuperAdminRoute>
+              <Routes>
+                <Route path="new_Admin" element={<NewAdmin />} />
+              </Routes>
+            </ProtectedSuperAdminRoute>
+          }
+        />
 
-        <Route path="settings/role_management/*" element={
-          <ProtectedSuperAdminRoute>
-            <Routes>
-            <Route path="new_role" element={<RoleDetails />} />
-            </Routes>
-          </ProtectedSuperAdminRoute>
-        } />
+        <Route
+          path="settings/role_management/*"
+          element={
+            <ProtectedSuperAdminRoute>
+              <Routes>
+                <Route path="new_role" element={<RoleDetails />} />
+              </Routes>
+            </ProtectedSuperAdminRoute>
+          }
+        />
       </Routes>
     </DashboardLayout>
   );

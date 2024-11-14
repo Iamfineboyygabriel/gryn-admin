@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { Dropdown, DropdownItem } from "../dropDown/DropDown";
-import { button } from "../../shared/buttons/Button"; 
+import { button } from "../../shared/buttons/Button";
 import StaffEmailDropdown from "./StaffEmailDropdown";
 import AgentEmailDropdown from "./AgentEmailDropdown";
 import Modal from "./Modal";
@@ -11,34 +11,39 @@ interface Choice {
 
 interface AssignApplicationProps {
   applicationId: any;
+  staffEmail?: any;
   onClose: () => void;
 }
 
-const AssignApplication = ({ applicationId, onClose }: AssignApplicationProps) => {
+const AssignApplication = ({
+  applicationId,
+  onClose,
+  staffEmail,
+}: AssignApplicationProps) => {
   const type: Choice[] = [{ name: "Staff" }, { name: "Agent" }];
   const [person, setPerson] = useState<string | null>(null);
   const [staffModal, setStaffModal] = useState(false);
   const [agentModal, setAgentModal] = useState(false);
-  const [isParentModalVisible, setIsParentModalVisible] = useState(true); 
+  const [isParentModalVisible, setIsParentModalVisible] = useState(true);
 
   const handleOpenStaffModal = () => {
-    setIsParentModalVisible(false); 
+    setIsParentModalVisible(false);
     setStaffModal(true);
   };
 
   const handleOpenAgentModal = () => {
-    setIsParentModalVisible(false); 
-    setAgentModal(true); 
+    setIsParentModalVisible(false);
+    setAgentModal(true);
   };
 
   const handleCloseStaffModal = () => {
     setStaffModal(false);
-    onClose(); 
+    onClose();
   };
 
   const handleCloseAgentModal = () => {
     setAgentModal(false);
-    onClose(); 
+    onClose();
   };
 
   const handleSelectPerson = useCallback((item: DropdownItem) => {
@@ -55,7 +60,7 @@ const AssignApplication = ({ applicationId, onClose }: AssignApplicationProps) =
 
   return (
     <main className="px-[5em] py-[2em] font-outfit">
-      {isParentModalVisible && ( 
+      {isParentModalVisible && (
         <>
           <div className="m-auto w-[24em] text-center">
             <header className="flex gap-2 flex-col">
@@ -101,7 +106,11 @@ const AssignApplication = ({ applicationId, onClose }: AssignApplicationProps) =
           onClose={handleCloseAgentModal}
           data-aos="zoom-in"
         >
-          <AgentEmailDropdown onClose={onClose} applicationId={applicationId} />
+          <AgentEmailDropdown
+            staffEmail={staffEmail}
+            onClose={onClose}
+            applicationId={applicationId}
+          />
         </Modal>
       )}
     </main>
