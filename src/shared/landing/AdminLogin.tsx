@@ -91,7 +91,7 @@ const AdminLogin = () => {
         <button
           onClick={() => {
             setShowModal(false);
-            handleLogOut;
+            handleLogOut();
           }}
           className="bg-primary-700 text-white px-4 py-2 rounded hover:bg-primary-800"
         >
