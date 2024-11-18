@@ -2,7 +2,7 @@ import { logOutUser } from "../redux/shared/services/shareLanding.services";
 
 export const handleLogout = async (navigate: any) => {
   try {
-    await logOutUser();
+    // await logOutUser();
     
     sessionStorage.clear();
     localStorage.clear();
