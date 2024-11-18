@@ -16,7 +16,6 @@ const loginUser = async (body: any) => {
     const response = await axios.post(API_URL_LOGIN_USER, body);
     const token = response?.data?.data?.tokens?.accessToken;
     if (token) {
-      console.log(token)
       socket.auth = {token}
       socket.disconnect()
       socket.connect()
