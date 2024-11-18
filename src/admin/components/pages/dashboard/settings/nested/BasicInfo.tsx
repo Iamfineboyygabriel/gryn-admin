@@ -10,6 +10,7 @@ import ConfirmDiscard from "../../../../../../shared/modal/ConfirmDiscard";
 
 const BasicInfo = () => {
   const { userProfile, updateUserProfile, uploadUserAvatar } = useUserProfile();
+  console.log("userProfi", userProfile);
   const [firstName, setFirstName] = useState(userProfile?.firstName || "");
   const [loading, setLoading] = useState(false);
   const [avatarLoading, setAvatarLoading] = useState(false);
@@ -17,7 +18,7 @@ const BasicInfo = () => {
   const [email] = useState(userProfile?.email || "");
 
   const [editMode, setEditMode] = useState(false);
-  
+
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
 
   const handleFileChange = async (event: any) => {
@@ -66,7 +67,6 @@ const BasicInfo = () => {
     setEditMode(false);
     setIsConfirmDialogOpen(false);
   };
-
 
   return (
     <main className="font-outfit px-[2em]">
@@ -163,7 +163,7 @@ const BasicInfo = () => {
               Email Address
             </label>
             <div className="relative flex items-center text-center">
-            <input
+              <input
                 name="emailAddress"
                 id="emailAddress"
                 value={email}
@@ -182,7 +182,7 @@ const BasicInfo = () => {
             Edit Details
           </button.PrimaryButton>
         )}
-       {editMode && (
+        {editMode && (
           <>
             <button.PrimaryButton
               className="m-auto mt-[5em] w-[18%] gap-2 rounded-full bg-linear-gradient py-[12px] text-center text-lg font-medium text-white"

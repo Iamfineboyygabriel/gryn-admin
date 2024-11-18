@@ -23,6 +23,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import { updateApplicationToCompleted } from "../../../../../../../../../shared/redux/admin/slices/application.slices";
+import { PrivateElement } from "../../../../../../../../../shared/redux/hooks/admin/PrivateElement";
 
 interface Document {
   id: string;
@@ -57,7 +58,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
   const dispatch: AppDispatch = useAppDispatch();
   const { applicationDetails, loading: applicationLoading } =
     useApplicationDetails(applicationId);
-  console.log("appl", applicationDetails);
+
   const { updateDocStatus } = useSelector(
     (state: any) => state.shareApplication
   );
@@ -525,12 +526,14 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
           Assign Application
         </button.PrimaryButton>
 
-        <button.PrimaryButton
-          className="w-auto rounded-full px-3 bg-linear-gradient py-[9px] text-center text-lg font-medium text-white"
-          onClick={handleOpenModal}
-        >
-          Submit Response
-        </button.PrimaryButton>
+        <PrivateElement feature="APPLICATION" page="Submit Response">
+          <button.PrimaryButton
+            className="w-auto rounded-full px-3 bg-linear-gradient py-[9px] text-center text-lg font-medium text-white"
+            onClick={handleOpenModal}
+          >
+            Submit Response
+          </button.PrimaryButton>
+        </PrivateElement>
 
         <div className="flex items-center gap-4 w-full md:w-auto">
           <FormControl className="flex-grow md:w-48">

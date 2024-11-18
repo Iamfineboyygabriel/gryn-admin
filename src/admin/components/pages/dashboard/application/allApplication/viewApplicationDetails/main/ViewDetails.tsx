@@ -16,7 +16,6 @@ interface LocationState {
 const ViewApplication: React.FC = () => {
   const location = useLocation();
   const { applicationId } = location.state as LocationState;
-  // console.log("emm", email);
   const [activeLink, setActiveLink] = useState("personalDetails");
   const navigate = useNavigate();
   const personalDetailsRef = useRef<HTMLDivElement>(null);

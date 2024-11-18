@@ -11,7 +11,6 @@ import { MdOutlineVisibilityOff, MdOutlineVisibility } from "react-icons/md";
 import { toast } from "react-toastify";
 import ReactLoading from "react-loading";
 import { usePermissions } from "../redux/hooks/admin/usePermission";
-import { handleLogout } from "../utils/auth";
 import { findFirstAccessibleRouteStaff } from "../utils/findFirstAccessibleRoute";
 
 const ROUTES = {
@@ -38,6 +37,10 @@ const StaffLanding: React.FC = () => {
   const { hasPermission } = usePermissions();
   const [showModal, setShowModal] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const handleLogOut = () => {
+    navigate("/");
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -87,11 +90,13 @@ const StaffLanding: React.FC = () => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white p-8 rounded-lg shadow-lg">
         <h2 className="text-xl font-bold mb-4">No Accessible Pages</h2>
-        <p className="mb-4">You don't have permission to access any pages. You will be logged out.</p>
+        <p className="mb-4">
+          You don't have permission to access any pages. You will be logged out.
+        </p>
         <button
           onClick={() => {
             setShowModal(false);
-            handleLogout(navigate);
+            handleLogOut;
           }}
           className="bg-primary-700 text-white px-4 py-2 rounded hover:bg-primary-800"
         >
@@ -109,12 +114,12 @@ const StaffLanding: React.FC = () => {
       >
         <div className="mx-auto w-full max-w-[80%] flex-1 items-center justify-center">
           <Link to="/">
-          <img
-            src={gryn_index_logo}
-            alt="gryn_index_logo"
-            className="w-[11em] cursor-pointer"
+            <img
+              src={gryn_index_logo}
+              alt="gryn_index_logo"
+              className="w-[11em] cursor-pointer"
             />
-            </Link>
+          </Link>
           <article
             className="flex h-full w-full flex-col justify-center"
             aria-labelledby="StaffLanding-article-header"
