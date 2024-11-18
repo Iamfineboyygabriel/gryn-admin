@@ -82,17 +82,26 @@ import { useEnquiriesData } from "../../../../../../shared/redux/hooks/admin/get
 import { Link } from "react-router-dom";
 
 const PieChartEnquiries = () => {
-  const { data, isLoading, total } = useEnquiriesData();
-
-  if (isLoading) {
-    return <div className="w-full bg-white rounded-lg p-6">Loading...</div>;
-  }
+  const { data, isLoading, total, isError } = useEnquiriesData();
 
   return (
-    <div className="w-full bg-white rounded-lg p-6">
+    <div className="w-full bg-white rounded-lg p-6 relative">
+      {isLoading && (
+        <div className="absolute top-2 right-2">
+          <div className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent" />
+        </div>
+      )}
+
+      {isError && (
+        <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md">
+          Failed to load enquiries data. Please try again later.
+        </div>
+      )}
+
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold">Enquiries</h2>
       </div>
+
       <div className="flex">
         <div className="w-1/2">
           <PieChart width={300} height={300}>
@@ -104,12 +113,13 @@ const PieChartEnquiries = () => {
               fill="#8884d8"
               dataKey="value"
             >
-              {data.map((entry: any, index: any) => (
-                <Cell key={`cell-${index}`} fill={entry?.color} />
+              {data?.map((entry: any, index: number) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
           </PieChart>
         </div>
+
         <div className="w-1/2 pl-4">
           <div className="mb-6">
             <p className="text-gray-500">Social Media</p>
@@ -118,21 +128,21 @@ const PieChartEnquiries = () => {
               <span className="ml-1 text-gray-500">views</span>
             </div>
             <div
-              className="mt-[2em] text-blue-800 font-semibold"
-              title="all enquuiries"
+              className="mt-8 text-blue-800 font-semibold"
+              title="all enquiries"
             >
               <Link to="/admin/dashboard/reports/instagram">See All</Link>
             </div>
           </div>
 
           <div className="space-y-3">
-            {data?.map((item: any, index: any) => (
+            {data?.map((item: any, index: number) => (
               <div key={index} className="flex gap-5 items-center">
                 <div className="flex items-center">
                   <div
                     className="w-2 h-2 rounded-full mr-2"
                     style={{ backgroundColor: item.color }}
-                  ></div>
+                  />
                   <span>{item?.name}</span>
                 </div>
                 <div className="flex items-center space-x-4">
