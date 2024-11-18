@@ -61,6 +61,7 @@ const Instagram: React.FC = () => {
         degree: item?.degree || "",
         degreeType: item?.highestEducation || "",
         course: item?.desiredCourse || "",
+        hearFromUs: item.hearAboutUs || "",
         id: item?.id || "",
       },
     });

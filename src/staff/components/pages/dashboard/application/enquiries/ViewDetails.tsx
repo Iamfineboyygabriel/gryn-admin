@@ -1,13 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router";
 import { button } from "../../../../../../shared/buttons/Button";
-import StaffEmailEnquiries from "../../../../../../shared/modal/StaffEmailEnquiries";
 
 const ViewDetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const enquiryData = location.state;
-  const id = enquiryData.id;
   const handleBackClick = () => {
     navigate(-1);
   };
@@ -124,6 +122,24 @@ const ViewDetails = () => {
                 name="sponsor"
                 id="sponsor"
                 value={formatData(enquiryData?.sponsor)}
+                readOnly
+                className="focus:border-border border-border mt-[1em] flex w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div className="w-full">
+            <label
+              htmlFor="sponsor"
+              className="flex-start flex gap-3 font-medium text-grey-primary"
+            >
+              Hear From Us
+            </label>
+            <div className="relative flex text-center">
+              <input
+                name="sponsor"
+                id="sponsor"
+                value={formatData(enquiryData?.hearFromUs)}
                 readOnly
                 className="focus:border-border border-border mt-[1em] flex w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
               />
