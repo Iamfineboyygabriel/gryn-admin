@@ -1022,7 +1022,7 @@ export const useEnquiriesData = () => {
       OTHERS: "#FF0000",
     };
 
-    return rawData.data.enqStats.map((item: any) => ({
+    return rawData?.data?.enqStats?.map((item: any) => ({
       name: item?.platform?.charAt(0) + item?.platform?.slice(1)?.toLowerCase(),
       value: item?.count,
       percentage: item?.percentage,

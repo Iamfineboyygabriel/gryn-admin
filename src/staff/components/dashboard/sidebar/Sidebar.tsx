@@ -6,7 +6,7 @@ import { usePermissions } from "../../../../shared/redux/hooks/admin/usePermissi
 import { staffSidebarLinks } from "../../../../data/data";
 import { AppDispatch } from "../../../../shared/redux/store";
 import { useAppDispatch } from "../../../../shared/redux/hooks/shared/reduxHooks";
-import UseUserProfile from "../../../../shared/redux/hooks/shared/getUserProfile";
+import useUserProfile from "../../../../shared/redux/hooks/shared/getUserProfile";
 import { logOutUser } from "../../../../shared/redux/shared/slices/shareLanding.slices";
 import { toast } from "react-toastify";
 
@@ -15,7 +15,7 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const dispatch: AppDispatch = useAppDispatch();
   const { hasPermission } = usePermissions();
-  const { userProfile } = UseUserProfile();
+  const { userProfile } = useUserProfile();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {

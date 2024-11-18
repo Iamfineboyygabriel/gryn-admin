@@ -162,7 +162,7 @@ interface State {
   name: string;
 }
 
-export const UseUserProfile = () => {
+export const useUserProfile = () => {
   const dispatch: AppDispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const userToken = sessionStorage.getItem("userData");
@@ -250,7 +250,7 @@ export const useCurrentUser = () => {
   return { userDetails, loading };
 };
 
-export default UseUserProfile;
+export default useUserProfile;
 
 export const useApplicationDetails = (applicationId: string) => {
   const dispatch = useDispatch();
