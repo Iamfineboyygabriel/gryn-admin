@@ -1006,12 +1006,13 @@ export const useEnquiriesData = () => {
   const enquiriesData = useSelector(
     (state: any) => state?.application?.getEnquiriesChatStats
   );
+  console.log("enq", enquiriesData);
   useEffect(() => {
     dispatch(getAdminEnquiresStats());
   }, [dispatch]);
 
   const formatData = (rawData: any) => {
-    if (!rawData?.data) return [];
+    if (!rawData?.data?.enqStats) return [];
 
     const colorMap: any = {
       INSTAGRAM: "#FFA500",
@@ -1023,7 +1024,7 @@ export const useEnquiriesData = () => {
       OTHERS: "#FF0000",
     };
 
-    return rawData?.data?.map((item: any) => ({
+    return rawData.data.enqStats.map((item: any) => ({
       name: item?.platform?.charAt(0) + item?.platform?.slice(1)?.toLowerCase(),
       value: item?.count,
       percentage: item?.percentage,
