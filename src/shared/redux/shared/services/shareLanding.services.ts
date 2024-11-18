@@ -21,6 +21,7 @@ const loginUser = async (body: any) => {
       socket.connect()
       sessionStorage.setItem("userData", token);
     } else {
+      socket.disconnect()
       console.error("Token not found in response data:", response.data);
     }
 
