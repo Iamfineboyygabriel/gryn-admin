@@ -8,7 +8,7 @@ import { FiSearch } from "react-icons/fi";
 import CustomPagination from "../../../../../../shared/utils/customPagination";
 import eye from "../../../../../../assets/svg/eyeImg.svg";
 import { PrivateElement } from "../../../../../../shared/redux/hooks/admin/PrivateElement";
-import DOMPurify from 'dompurify';
+import DOMPurify from "dompurify";
 
 interface VisaData {
   lastName: string;
@@ -40,11 +40,11 @@ const SkeletonRow: React.FC = () => (
 );
 
 const Visa: React.FC = () => {
-  const { 
-    visa, 
-    loading, 
-    currentPage, 
-    fetchApplications, 
+  const {
+    visa,
+    loading,
+    currentPage,
+    fetchApplications,
     searchTerm,
     updateSearchTerm,
   } = useAllVisa();
@@ -58,20 +58,26 @@ const Visa: React.FC = () => {
     return { __html: DOMPurify.sanitize(html) };
   }, []);
 
-  const highlightText = useCallback((text: string) => {
-    if (!searchTerm?.trim()) return text;
-    const regex = new RegExp(`(${searchTerm})`, "gi");
-    return text?.replace(
-      regex,
-      (match: string) => `<mark class="bg-yellow-300">${match}</mark>`
-    );
-  }, [searchTerm]);
+  const highlightText = useCallback(
+    (text: string) => {
+      if (!searchTerm?.trim()) return text;
+      const regex = new RegExp(`(${searchTerm})`, "gi");
+      return text?.replace(
+        regex,
+        (match: string) => `<mark class="bg-yellow-300">${match}</mark>`
+      );
+    },
+    [searchTerm]
+  );
 
-  const renderHighlightedText = useCallback((text: string) => {
-    if (!text) return '-';
-    const highlightedText = highlightText(text);
-    return <span dangerouslySetInnerHTML={sanitizeHTML(highlightedText)} />;
-  }, [highlightText, sanitizeHTML]);
+  const renderHighlightedText = useCallback(
+    (text: string) => {
+      if (!text) return "-";
+      const highlightedText = highlightText(text);
+      return <span dangerouslySetInnerHTML={sanitizeHTML(highlightedText)} />;
+    },
+    [highlightText, sanitizeHTML]
+  );
 
   useEffect(() => {
     fetchApplications(1, itemsPerPage);
@@ -116,38 +122,47 @@ const Visa: React.FC = () => {
     setPreviewFileType(fileType);
     setIsPreviewOpen(true);
   };
-   
+
   const closePreviewModal = () => {
     setIsPreviewOpen(false);
     setPreviewUrl(null);
     setPreviewFileType("");
   };
 
-  const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, page: number) => {
-    fetchApplications(page, itemsPerPage);
-  }, [fetchApplications, itemsPerPage]);
+  const handlePageChange = useCallback(
+    (event: React.ChangeEvent<unknown>, page: number) => {
+      fetchApplications(page, itemsPerPage);
+    },
+    [fetchApplications, itemsPerPage]
+  );
 
-  const handleItemsPerPageChange = useCallback((newItemsPerPage: number) => {
-    setItemsPerPage(newItemsPerPage);
-    fetchApplications(1, newItemsPerPage);
-  }, [fetchApplications]);
+  const handleItemsPerPageChange = useCallback(
+    (newItemsPerPage: number) => {
+      setItemsPerPage(newItemsPerPage);
+      fetchApplications(1, newItemsPerPage);
+    },
+    [fetchApplications]
+  );
 
   const handleViewDetails = useCallback(
     (applicationId: any) => {
       navigate("/admin/dashboard/visa/view_visa_application", {
-        state: { applicationId: applicationId }
+        state: { applicationId: applicationId },
       });
     },
     [navigate]
   );
 
-  const renderPaymentStatus = (documents: Array<{documentType: string; publicURL: string}>, type: string) => {
-    const document = documents.find(doc => doc.documentType === type);
+  const renderPaymentStatus = (
+    documents: Array<{ documentType: string; publicURL: string }>,
+    type: string
+  ) => {
+    const document = documents.find((doc) => doc.documentType === type);
     if (document) {
       return (
         <div className="flex items-center">
           <span className="mr-3">Paid</span>
-           <button
+          <button
             type="button"
             className="flex items-center gap-1 rounded-full bg-purple-white px-3 py-[4px] text-center font-medium text-[#660066] dark:bg-gray-600 dark:text-white"
             onClick={() => handlePreview(document.publicURL)}
@@ -184,7 +199,9 @@ const Visa: React.FC = () => {
               <select
                 className="bg-gray-100 px-3 py-2 rounded text-sm cursor-pointer"
                 value={itemsPerPage}
-                onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+                onChange={(e) =>
+                  handleItemsPerPageChange(Number(e.target.value))
+                }
               >
                 <option value={10}>10</option>
                 <option value={15}>15</option>
@@ -193,7 +210,10 @@ const Visa: React.FC = () => {
                 <option value={50}>50</option>
               </select>
             </div>
-            <PrivateElement feature="APPLICATION" page="CreateVisa">
+            <PrivateElement
+              feature="VISA_APPLICATION"
+              page="New Visa Application"
+            >
               <Link to="/admin/dashboard/visa/new_application">
                 <button className="flex gap-2 rounded-full bg-linear-gradient px-6 py-2 font-medium text-white transition-colors duration-300 hover:bg-primary-700 hover:text-white">
                   <img src={plus} alt="cross" />
@@ -250,16 +270,20 @@ const Visa: React.FC = () => {
                     className="text-sm font-medium text-grey-primary font-outfit"
                   >
                     <td className="whitespace-nowrap px-6 py-4">
-                      {((currentPage - 1) * itemsPerPage) + index + 1}
+                      {(currentPage - 1) * itemsPerPage + index + 1}
                     </td>
                     <td className="whitespace-nowrap gap-2 px-6 py-4">
-                      {renderHighlightedText(`${item?.lastName} ${item?.firstName}`)}
+                      {renderHighlightedText(
+                        `${item?.lastName} ${item?.firstName}`
+                      )}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
                       {renderHighlightedText(item?.schoolName || "-")}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
-                      {renderHighlightedText(`${item?.agent?.profile?.lastName} ${item?.agent?.profile?.firstName}`)}
+                      {renderHighlightedText(
+                        `${item?.agent?.profile?.lastName} ${item?.agent?.profile?.firstName}`
+                      )}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
                       {renderHighlightedText(item?.destination || "-")}

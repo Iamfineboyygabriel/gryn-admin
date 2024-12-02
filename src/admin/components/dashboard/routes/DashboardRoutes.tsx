@@ -49,6 +49,7 @@ import SeeAllTopAgents from "../../pages/dashboard/Reports/seeAll/SeeAllTopAgent
 import SeeAllTransaction from "../../pages/dashboard/Reports/transaction/SeeAllTransaction";
 import Instagram from "../../pages/dashboard/Reports/seeAll/enquiries/Instagram";
 import ViewDetails from "../../pages/dashboard/Reports/seeAll/enquiries/ViewDetails";
+import AllUserEnquiries from "../../pages/dashboard/allUsers/enquiries/main/ViewDetails";
 
 const ProtectedSuperAdminRoute = ({ children }: any) => {
   const { userDetails } = useCurrentUser();
@@ -106,6 +107,10 @@ const DashboardRoutes = () => {
 
         <Route path="all_users" element={<AllUsers />} />
         <Route path="/all_users/create_student" element={<CreateStudent />} />
+        <Route
+          path="/all_users/enquiries/view_details"
+          element={<AllUserEnquiries />}
+        />
         <Route path="/all_users/update_student" element={<UpdateStudent />} />
 
         <Route
@@ -122,6 +127,7 @@ const DashboardRoutes = () => {
           element={<ViewApplication />}
         />
 
+        <Route path="/all_users/view_application" element={<ViewDetails />} />
         <Route path="/all_users/create_agent" element={<CreateAgent />} />
         <Route path="/all_users/update_agent" element={<UpdateAgent />} />
         <Route path="/all_users/assign_agent" element={<AssignAgent />} />

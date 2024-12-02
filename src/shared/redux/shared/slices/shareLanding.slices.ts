@@ -19,6 +19,7 @@ interface SharedState {
   user: User | null;
   isLoading: boolean;
   isLoggedIn: boolean;
+  isloggedOut: boolean;
   error: string | null;
 }
 
@@ -37,21 +38,40 @@ export const login = createAsyncThunk<LoginResponse, LoginPayload>(
 );
 
 export const resetPassword = createAsyncThunk(
-  'shared/resetPassword',
-  async ({ 
-    token, 
-    email, 
-    password 
-  }: { 
-    token: string; 
-    email: string; 
-    password: string;
-  }, thunkAPI) => {
+  "shared/resetPassword",
+  async (
+    {
+      token,
+      email,
+      password,
+    }: {
+      token: string;
+      email: string;
+      password: string;
+    },
+    thunkAPI
+  ) => {
     try {
-      const response = await sharedLandingServices.ResetPassword(token, email, { password });
+      const response = await sharedLandingServices.ResetPassword(token, email, {
+        password,
+      });
       return response;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+export const logOutUser = createAsyncThunk(
+  "shared/logOutUser",
+  async (userId: string, thunkAPI) => {
+    try {
+      const data = await sharedLandingServices.logOutUser(userId);
+      return data;
+    } catch (error: any) {
+      const message = error.response?.message || "Something went wrong";
+      thunkAPI.dispatch(setMessage(message));
+      return thunkAPI.rejectWithValue(message);
     }
   }
 );
@@ -60,6 +80,7 @@ const initialState: SharedState = {
   user: null,
   isLoading: false,
   isLoggedIn: false,
+  isloggedOut: false,
   error: null,
 };
 
@@ -84,6 +105,24 @@ const sharedSlice = createSlice({
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
         state.isLoggedIn = false;
+        state.error = action.payload as string;
+      })
+
+      .addCase(logOutUser.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(
+        logOutUser.fulfilled,
+        (state, action: PayloadAction<LoginResponse>) => {
+          state.isLoading = false;
+          state.isloggedOut = true;
+          state.user = action.payload.data;
+        }
+      )
+      .addCase(logOutUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isloggedOut = false;
         state.error = action.payload as string;
       })
 

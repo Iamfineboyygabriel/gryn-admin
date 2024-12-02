@@ -16,15 +16,14 @@ interface TabProps {
 const Tab: React.FC<TabProps> = ({ isActive, label, onClick }) => (
   <div
     className={`cursor-pointer rounded-lg px-4 py-2.5 font-medium transition-colors
-      ${isActive 
-        ? "bg-purple-white text-primary-700"
-        : "bg-gray-100 text-grey-primary hover:bg-gray-200"
+      ${
+        isActive
+          ? "bg-purple-white text-primary-700"
+          : "bg-gray-100 text-grey-primary hover:bg-gray-200"
       }`}
     onClick={onClick}
   >
-    <button.PrimaryButton 
-      className="m-auto flex justify-center gap-2 font-medium text-black"
-    >
+    <button.PrimaryButton className="m-auto flex justify-center gap-2 font-medium text-black">
       {label}
     </button.PrimaryButton>
   </div>
@@ -34,36 +33,40 @@ const AllUsers: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string | null>(null);
   const { hasPermission } = usePermissions();
 
-  const tabs = useMemo(() => [
-    {
-      key: "manageStudents",
-      label: "Manage Students",
-      component: <ManageStudents />,
-      feature: "ALL_USERS"
-    },
-    {
-      key: "manageAgents",
-      label: "Manage Agents",
-      component: <ManageAgents />,
-      feature: "ALL_USERS"
-    },
-    {
-      key: "pendingAgents",
-      label: "Pending Agents",
-      component: <PendingAgents />,
-      feature: "ALL_USERS"
-    },
-    {
-      key: "enquiries",
-      label: "Enquiries",
-      component: <Enquiries />,
-      feature: "ALL_USERS"
-    }
-  ], []);
+  const tabs = useMemo(
+    () => [
+      {
+        key: "manageStudents",
+        label: "Manage Students",
+        component: <ManageStudents />,
+        feature: "ALL_USERS",
+      },
+      {
+        key: "manageAgents",
+        label: "Manage Agents",
+        component: <ManageAgents />,
+        feature: "ALL_USERS",
+      },
+      {
+        key: "pendingAgents",
+        label: "Pending Agents",
+        component: <PendingAgents />,
+        feature: "ALL_USERS",
+      },
+      {
+        key: "enquiries",
+        label: "Enquires",
+        component: <Enquiries />,
+        feature: "ALL_USERS",
+      },
+    ],
+    []
+  );
 
-  const availableTabs = useMemo(() => 
-    tabs?.filter(tab => hasPermission(tab?.feature, tab?.label))
-  , [tabs, hasPermission]);
+  const availableTabs = useMemo(
+    () => tabs?.filter((tab) => hasPermission(tab?.feature, tab?.label)),
+    [tabs, hasPermission]
+  );
 
   useEffect(() => {
     if (availableTabs?.length > 0 && !activeTab) {
@@ -71,9 +74,10 @@ const AllUsers: React.FC = () => {
     }
   }, [availableTabs, activeTab]);
 
-  const activeComponent = useMemo(() => 
-    availableTabs?.find(tab => tab?.key === activeTab)?.component
-  , [availableTabs, activeTab]);
+  const activeComponent = useMemo(
+    () => availableTabs?.find((tab) => tab?.key === activeTab)?.component,
+    [availableTabs, activeTab]
+  );
 
   return (
     <main className="font-outfit">
@@ -84,7 +88,7 @@ const AllUsers: React.FC = () => {
       <div className="h-auto w-full overflow-auto rounded-lg bg-white px-8 py-3 pb-40">
         <nav className="mb-3">
           <div className="flex gap-8 border-b-2 border-gray-100 py-4">
-            {availableTabs?.map(tab => (
+            {availableTabs?.map((tab) => (
               <PrivateElement
                 key={tab?.key}
                 feature={tab?.feature}
@@ -100,9 +104,7 @@ const AllUsers: React.FC = () => {
           </div>
         </nav>
 
-        <section className="mt-4">
-          {activeComponent}
-        </section>
+        <section className="mt-4">{activeComponent}</section>
       </div>
     </main>
   );

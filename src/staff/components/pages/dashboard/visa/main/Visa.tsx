@@ -7,12 +7,13 @@ import { useAllVisa } from "../../../../../../shared/redux/hooks/shared/getUserP
 import { FiSearch } from "react-icons/fi";
 import CustomPagination from "../../../../../../shared/utils/customPagination";
 import eye from "../../../../../../assets/svg/eyeImg.svg";
+import { PrivateElement } from "../../../../../../shared/redux/hooks/admin/PrivateElement";
 
 interface VisaData {
   lastName: string;
   firstName: string;
   schoolName: string;
-  id:string;
+  id: string;
   agent: {
     profile: {
       lastName: string;
@@ -38,13 +39,21 @@ const SkeletonRow: React.FC = () => (
 );
 
 const Visa: React.FC = () => {
-  const { visa, loading, totalPages, currentPage, fetchApplications, searchTerm, updateSearchTerm } = useAllVisa();
+  const {
+    visa,
+    loading,
+    totalPages,
+    currentPage,
+    fetchApplications,
+    searchTerm,
+    updateSearchTerm,
+  } = useAllVisa();
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewFileType, setPreviewFileType] = useState<string>("");
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const itemsPerPage = 10;
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const getFileTypeFromUrl = (url: string) => {
     const segments = url.split("/");
@@ -73,7 +82,7 @@ const Visa: React.FC = () => {
     setPreviewFileType(fileType);
     setIsPreviewOpen(true);
   };
-   
+
   const closePreviewModal = () => {
     setIsPreviewOpen(false);
     setPreviewUrl(null);
@@ -84,9 +93,12 @@ const Visa: React.FC = () => {
     fetchApplications(currentPage, itemsPerPage);
   }, [fetchApplications, currentPage, itemsPerPage]);
 
-  const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, page: number) => {
-    fetchApplications(page, itemsPerPage);
-  }, [fetchApplications, itemsPerPage])
+  const handlePageChange = useCallback(
+    (event: React.ChangeEvent<unknown>, page: number) => {
+      fetchApplications(page, itemsPerPage);
+    },
+    [fetchApplications, itemsPerPage]
+  );
 
   const highlightText = (text: string, query: string) => {
     if (!query) return text;
@@ -106,19 +118,22 @@ const Visa: React.FC = () => {
   const handleViewDetails = useCallback(
     (applicationId: any) => {
       navigate("/staff/dashboard/visa/view_visa_application", {
-        state: { applicationId: applicationId }
+        state: { applicationId: applicationId },
       });
     },
     [navigate]
   );
 
-  const renderPaymentStatus = (documents: Array<{documentType: string; publicURL: string}>, type: string) => {
-    const document = documents.find(doc => doc.documentType === type);
+  const renderPaymentStatus = (
+    documents: Array<{ documentType: string; publicURL: string }>,
+    type: string
+  ) => {
+    const document = documents.find((doc) => doc.documentType === type);
     if (document) {
       return (
         <div className="flex items-center">
           <span className="mr-3">Paid</span>
-           <button
+          <button
             type="button"
             className="flex items-center gap-1 rounded-full bg-purple-white px-3 py-[4px] text-center font-medium text-[#660066] dark:bg-gray-600 dark:text-white"
             onClick={() => handlePreview(document.publicURL)}
@@ -148,12 +163,18 @@ const Visa: React.FC = () => {
               <FiSearch className="absolute right-[1em] top-1/2 -translate-y-1/2 transform text-lg text-gray-500" />
             </div>
           </div>
-          <Link to="/staff/dashboard/visa/new_application">
-            <button className="mt-4 flex gap-2 rounded-full bg-linear-gradient px-6 py-2 font-medium text-white transition-colors duration-300 hover:bg-primary-700 hover:text-white">
-              <img src={plus} alt="cross" />
-              New Application
-            </button>
-          </Link>
+
+          <PrivateElement
+            feature="VISA_APPLICATION"
+            page="New Visa Application"
+          >
+            <Link to="/staff/dashboard/visa/new_application">
+              <button className="mt-4 flex gap-2 rounded-full bg-linear-gradient px-6 py-2 font-medium text-white transition-colors duration-300 hover:bg-primary-700 hover:text-white">
+                <img src={plus} alt="cross" />
+                New Application
+              </button>
+            </Link>
+          </PrivateElement>
         </div>
 
         <section className="overflow-auto py-6">
@@ -233,13 +254,13 @@ const Visa: React.FC = () => {
                       {highlightText(item.issuedDate || "-", searchQuery)}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
-                    <button
-                      onClick={() => handleViewDetails(item.id)}
-                      className="font-medium text-primary-700 dark:text-gray-500"
-                    >
-                      View Details
-                    </button>
-                  </td>
+                      <button
+                        onClick={() => handleViewDetails(item.id)}
+                        className="font-medium text-primary-700 dark:text-gray-500"
+                      >
+                        View Details
+                      </button>
+                    </td>
                   </tr>
                 ))
               ) : (
@@ -265,10 +286,10 @@ const Visa: React.FC = () => {
         {!loading && visa && visa.length > 0 && (
           <div className="mt-6 flex justify-center">
             <CustomPagination
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
-            hasMore={visa.length === itemsPerPage}
-          />
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+              hasMore={visa.length === itemsPerPage}
+            />
           </div>
         )}
       </div>

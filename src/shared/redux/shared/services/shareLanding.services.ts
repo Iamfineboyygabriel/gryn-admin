@@ -11,6 +11,10 @@ interface SubmitBankDetailsParams {
   bankName: string;
 }
 
+interface LogoutRequestBody {
+  id: string;
+}
+
 const loginUser = async (body: any) => {
   try {
     const response = await axios.post(API_URL_LOGIN_USER, body);
@@ -78,9 +82,14 @@ export const submitBankDetails = async (
   }
 };
 
-export const logOutUser = async () => {
+export const logOutUser = async (userId: string) => {
   try {
-    const response = await axios.post(API_URL_LOGOUT_USER);
+    const body: LogoutRequestBody = {
+      id: userId, // Using the actual userId passed to the function
+    };
+
+    const response = await axios.post(API_URL_LOGOUT_USER, body);
+
     const token = response?.data?.data?.tokens?.accessToken;
     if (token) {
       sessionStorage.setItem("userData", token);

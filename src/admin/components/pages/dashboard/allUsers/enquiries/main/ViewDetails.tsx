@@ -137,16 +137,16 @@ const ViewDetails = () => {
 
           <div className="w-full">
             <label
-              htmlFor="sponsor"
+              htmlFor="hearFromUs"
               className="flex-start flex gap-3 font-medium text-grey-primary"
             >
               Hear From Us
             </label>
             <div className="relative flex text-center">
               <input
-                name="sponsor"
-                id="sponsor"
-                value={formatData(enquiryData?.hearFromUs)}
+                name="hearFromUs"
+                id="hearFromUs"
+                value={formatData(enquiryData?.hearAboutUs)}
                 readOnly
                 className="focus:border-border border-border mt-[1em] flex w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
               />
