@@ -2,7 +2,7 @@ import profile from "../../../../../../assets/svg/Profile.svg";
 import { useMessage } from "../../../../../../shared/redux/hooks/shared/message";
 import { useCurrentUser } from '../../../../../../shared/redux/hooks/shared/getUserProfile';
 import { useState, useEffect, useRef } from 'react';
-import { io } from 'socket.io-client';
+import socket from "../../../../../../socket/socket";
 
 interface Message {
   id: number | string;
@@ -19,11 +19,6 @@ interface Message {
   };
 }
 
-interface Chat {
-  id: string;
-  messages: any;
-}
-
 const MessageChat = () => {
   const { userDetails } = useCurrentUser();
   const { 
@@ -32,63 +27,80 @@ const MessageChat = () => {
     loading,
     handleSendMessage 
   } = useMessage();
-  console.log("oppen")
-  console.log("cc",currentChat)
+
   const [message, setMessage] = useState('');
   const [sendingMessage, setSendingMessage] = useState(false);
   const [localMessages, setLocalMessages] = useState<Message[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const socketRef = useRef<any>(null);
   const currentUserId = userDetails?.data?.id;
 
+  // Listen for incoming socket events
   useEffect(() => {
-    socketRef.current = io(process.env.REACT_APP_API_URL || '', {
-      transports: ['websocket'],
-      withCredentials: true
-    });
-
-    socketRef.current.on('connect', () => {
-      console.log('Connected to Socket.IO');
-    });
-
-    socketRef.current.on('new_message', (newMessage: Message) => {
+    socket.on('receiveMessage', (newMessage: Message) => {
+      console.log("received: ", newMessage)
       setLocalMessages(prev => [...prev, newMessage]);
     });
 
+    socket.on('connect_error', (error) => {
+      console.error('Socket connection error:', error.message);
+    });
+
     return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-      }
+      socket.off('receiveMessage');
+      socket.off('connect_error');
     };
   }, []);
 
+  // Join chat when currentChat changes
+  useEffect(() => {
+    if (currentChat?.id) {
+      socket.emit('joinChat', currentChat.id );
+    }
+  }, [currentChat?.id]);
+
+  // Sync messages with currentChat
   useEffect(() => {
     if (currentChat?.messages) {
       setLocalMessages(currentChat.messages);
     }
   }, [currentChat?.messages]);
 
+  // Update local messages when Redux messages change
   useEffect(() => {
     if (reduxMessages?.length) {
       setLocalMessages(reduxMessages as Message[]);
     }
   }, [reduxMessages]);
 
-  useEffect(() => {
-    if (currentChat?.id && socketRef.current) {
-      socketRef.current.emit('join_chat', { chatId: currentChat.id });
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!message?.trim() || !currentChat?.id) {
+      return;
     }
-  }, [currentChat?.id]);
+
+    try {
+      setSendingMessage(true);
+      
+      socket.emit('sendMessage', {
+        chatId: currentChat.id,
+        message: message.trim(),
+      });
+
+      setMessage('');
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      setLocalMessages(prev => prev?.filter(msg => msg?.id !== `temp-${Date.now()}`));
+    } finally {
+      setSendingMessage(false);
+    }
+  };
 
   const formatMessageTime = (timestamp: string) => {
     try {
       if (!timestamp) return '';
-      
       const date = new Date(timestamp);
-      if (isNaN(date.getTime())) {
-        return ''; 
-      }
-      
+      if (isNaN(date.getTime())) return '';
       return new Intl.DateTimeFormat('en-US', {
         hour: '2-digit',
         minute: '2-digit',
@@ -100,53 +112,7 @@ const MessageChat = () => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!message?.trim() || !currentChat?.id) {
-      return;
-    }
-
-    try {
-      setSendingMessage(true);
-      
-      const tempMessage: Message = {
-        id: `temp-${Date.now()}`,
-        senderId: currentUserId || '',
-        message: message.trim(),
-        createdAt: new Date().toISOString(),
-        sender: userDetails?.data
-      };
-
-      setLocalMessages(prev => [...prev, tempMessage]);
-      
-      const messageData = {
-        message: message.trim(),
-        timestamp: new Date().toISOString(),
-        chatId: currentChat.id
-      };
-      
-      await handleSendMessage(messageData);
-      
-      if (socketRef.current) {
-        socketRef.current.emit('send_message', {
-          chatId: currentChat.id,
-          message: messageData
-        });
-      }
-
-      setMessage('');
-    } catch (error) {
-      console.error('Failed to send message:', error);
-      setLocalMessages(prev => prev?.filter(msg => msg?.id !== `temp-${Date.now()}`));
-    } finally {
-      setSendingMessage(false);
-    }
-  };
-
-  const otherUser = localMessages?.find((message: Message) => 
-    message?.senderId !== currentUserId
-  )?.sender;
+  const otherUser = localMessages.find((message: Message) => message.senderId !== currentUserId)?.sender;
 
   if (!currentChat) {
     return (
@@ -172,39 +138,36 @@ const MessageChat = () => {
       </header>
 
       <section className="flex-1 flex flex-col gap-4 py-4 overflow-y-auto">
-        {loading && !localMessages?.length ? (
+        {loading && !localMessages.length ? (
           <div className="text-center">Loading messages...</div>
         ) : (
           <>
-            {localMessages?.map((message: Message) => (
+            {localMessages.map((message: Message) => (
               <div
-                key={message?.id}
-                className={`flex gap-4 ${
-                  message?.senderId === currentUserId ? 'flex-row-reverse' : ''
-                }`}
+                key={message.id}
+                className={`flex gap-4 ${message.senderId === currentUserId ? 'flex-row-reverse' : ''}`}
               >
-                {message?.senderId !== currentUserId && (
+                {message.senderId !== currentUserId && (
                   <img 
-                    src={message?.sender?.profile?.avatar?.publicURL || profile} 
+                    src={message.sender?.profile?.avatar?.publicURL || profile} 
                     alt="profile" 
                     className="w-8 h-8 rounded-full object-cover" 
                   />
                 )}
                 <div
                   className={`max-w-[50%] rounded-lg p-3 ${
-                    message?.senderId === currentUserId
+                    message.senderId === currentUserId
                       ? 'bg-purple-700 text-white ml-auto'
                       : 'bg-gray-100 dark:bg-gray-700'
                   }`}
                 >
-                  <p className="break-words">{message?.message}</p>
+                  <p className="break-words">{message.message}</p>
                   <div className="text-xs opacity-70 mt-1 text-right">
-                    {formatMessageTime(message?.createdAt)}
+                    {formatMessageTime(message.createdAt)}
                   </div>
                 </div>
               </div>
             ))}
-            <div ref={messagesEndRef} />
           </>
         )}
       </section>
