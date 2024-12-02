@@ -17,10 +17,6 @@ socket.on("disconnect", (reason) => {
   console.log("Disconnected from WebSocket server:", reason);
 });
 
-socket.on('receiveMessage', (newMessage) => {
-      console.log("received: ", newMessage)
-    });
-
 socket.on("connect_error", (error) => {
   console.error("Connection error:", error.message);
 });
