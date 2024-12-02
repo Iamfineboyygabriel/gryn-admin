@@ -1,4 +1,6 @@
 import axios from "axios";
+import authHeader from "../../headers";
+import socket from "../../../../socket/socket";
 const API_URL_LOGIN_USER = process.env.REACT_APP_API_URL + "/auth/login";
 const API_URL_LOGOUT_USER = process.env.REACT_APP_API_URL + "/auth/logout";
 
@@ -18,8 +20,12 @@ const loginUser = async (body: any) => {
     const response = await axios.post(API_URL_LOGIN_USER, body);
     const token = response?.data?.data?.tokens?.accessToken;
     if (token) {
+      socket.auth = {token}
+      socket.disconnect()
+      socket.connect()
       sessionStorage.setItem("userData", token);
     } else {
+      socket.disconnect()
       console.error("Token not found in response data:", response.data);
     }
 
