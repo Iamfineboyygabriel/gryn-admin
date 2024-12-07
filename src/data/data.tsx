@@ -117,6 +117,7 @@ export const adminSideBarLinks = [
     text: "All Users",
     to: "/admin/dashboard/all_users",
     pathsToCheck: ["/admin/dashboard/all_users"],
+    title: "All Users",
   },
   {
     img: inActiveUser,
