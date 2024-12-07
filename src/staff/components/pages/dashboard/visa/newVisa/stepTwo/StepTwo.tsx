@@ -70,20 +70,20 @@ const StepTwo = ({
     ),
   }));
 
-  // const validateFields = () => {
-  //   if (!destination || !issuedDate || !expiryDate) {
-  //     return "Please fill in destination, issued date, and expiry date.";
-  //   }
-  //   return null;
-  // };
+  const validateFields = () => {
+    if (!destination || !issuedDate || !expiryDate) {
+      return "Please fill in destination, issued date, and expiry date.";
+    }
+    return null;
+  };
 
   const submitApplication = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // const validationError = validateFields();
-    // if (validationError) {
-    //   toast.error(validationError);
-    //   return;
-    // }
+    const validationError = validateFields();
+    if (validationError) {
+      toast.error(validationError);
+      return;
+    }
     setLoading(true);
 
     try {
