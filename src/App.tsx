@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import {HashRouter, Route, Routes } from "react-router-dom";
 import StaffLanding from "./shared/landing/StaffLogin";
 import AdminLogin from "./shared/landing/AdminLogin";
 import ForgotPassword from "./staff/components/pages/auth/ForgotPassword";
@@ -12,9 +12,9 @@ import Landing from "./shared/home/Landing";
 
 function App() {
   return (
-    <Router>
+    <HashRouter>
       <Routes>
-      <Route path="/" element={<Landing />} />
+        <Route path="/" element={<Landing />} />
         <Route path="/staff_login" element={<StaffLanding />} />
         <Route path="/admin_login" element={<AdminLogin />} />
         <Route path="/forgot_Password" element={<ForgotPassword />} />
@@ -26,16 +26,16 @@ function App() {
         />
         <Route path="/staff/dashboard/*" element={
           <DashboardGateway>
-          <StaffRoutes />
+            <StaffRoutes />
           </DashboardGateway>
-          } />
+        } />
         <Route path="/admin/dashboard/*" element={
           <DashboardGateway>
-          <AdminRoutes />
+            <AdminRoutes />
           </DashboardGateway>
-          } />
+        } />
       </Routes>
-    </Router>
+    </HashRouter>
   );
 }
 

@@ -20,6 +20,7 @@
       "icon": "public/apple.ico"
     }
   },
+  "homepage": "./",
   "dependencies": {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
@@ -82,7 +83,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron-dev": "concurrently \"cross-env BROWSER=none npm start\" \"wait-on http://localhost:3000 && electron public/electron.js\"",
-    "electron-pack": "electron-builder"
+    "electron-pack": "electron-builder",
+    "electron-pack-win": "electron-builder --win --x64"
   },
   "eslintConfig": {
     "extends": [
