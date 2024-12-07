@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import userIcon from "../../../../assets/avatar.png";
-import gryn_index_logo from "../../../../assets/svg/Gryn_Index _logo.svg";
 import { IoIosNotifications } from "react-icons/io";
 import { formatDate } from "../../../../shared/utils/dateFormat";
 import useUserProfile from "../../../../shared/redux/hooks/shared/getUserProfile";

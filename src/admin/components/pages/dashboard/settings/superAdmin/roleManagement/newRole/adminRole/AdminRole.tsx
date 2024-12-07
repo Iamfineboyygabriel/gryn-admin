@@ -1,12 +1,15 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import ReactLoading from 'react-loading';
+import React, { useCallback, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import ReactLoading from "react-loading";
 import { button } from "../../../../../../../../../shared/buttons/Button";
-import { useAdminsEmails } from '../../../../../../../../../shared/redux/hooks/admin/getAdminProfile';
-import { Dropdown, DropdownItem } from '../../../../../../../../../shared/dropDown/DropDown';
-import { RootState } from '../../../../../../../../../shared/redux/store';
-import {toast} from 'react-toastify'
-import { updateRole } from '../../../../../../../../../shared/redux/shared/slices/shareApplication.slices';
+import { useAdminsEmails } from "../../../../../../../../../shared/redux/hooks/admin/getAdminProfile";
+import {
+  Dropdown,
+  DropdownItem,
+} from "../../../../../../../../../shared/dropDown/DropDown";
+import { RootState } from "../../../../../../../../../shared/redux/store";
+import { toast } from "react-toastify";
+import { updateRole } from "../../../../../../../../../shared/redux/shared/slices/shareApplication.slices";
 
 interface RoleChoice {
   name: string;
@@ -24,10 +27,18 @@ const AdminRole: React.FC = () => {
   const [role, setRole] = useState<string | null>(null);
   const [designation, setDesignation] = useState<string | null>(null);
 
-  const loading = useSelector((state: RootState) => state.shareApplication.loading);
+  const loading = useSelector(
+    (state: RootState) => state.shareApplication.loading
+  );
 
   const type: RoleChoice[] = [{ name: "STAFF" }, { name: "ADMIN" }];
-  const designationType: DesignationChoice[] = [{ name: "CUSTOMER_RELATIONS" }, {name: "STUDENT_RELATION_MANAGER"}, {name: "INTERNATIONAL_RELATIONAL_MANAGER"}, {name: "OFFICE_ADMIN"},{name: "EXCUTIVE_ADMIN"}];
+  const designationType: DesignationChoice[] = [
+    { name: "CUSTOMER_RELATIONS" },
+    { name: "STUDENT_RELATION_MANAGER" },
+    { name: "INTERNATIONAL_RELATIONAL_MANAGER" },
+    { name: "OFFICE_ADMIN" },
+    { name: "EXCUTIVE_ADMIN" },
+  ];
 
   const emailItems: DropdownItem[] = useMemo(() => {
     if (Array.isArray(adminsEmail)) {
@@ -65,10 +76,12 @@ const AdminRole: React.FC = () => {
 
     try {
       await dispatch(updateRole({ email, role, designation }) as any);
-      toast.success("role assigned successfully")
+      toast.success("role assigned successfully");
       resetForm();
     } catch (error: any) {
-      setError(error || "An error occurred while updating the role. Please try again.");
+      setError(
+        error || "An error occurred while updating the role. Please try again."
+      );
     }
   };
 
@@ -77,7 +90,10 @@ const AdminRole: React.FC = () => {
       <header>
         <h1 className="text-2xl mt-[1.5em] font-semibold">Role Details</h1>
       </header>
-      <form className="mt-[1.5em] w-[40%] max-w-4xl" onSubmit={handleSubmit}>
+      <form
+        className="mt-[1.5em] w-full lg:w-[40%] lg:max-w-4xl"
+        onSubmit={handleSubmit}
+      >
         <div className="flex flex-wrap gap-[2em]">
           <Dropdown
             label="admin Email"
@@ -128,7 +144,7 @@ const AdminRole: React.FC = () => {
                   type="spin"
                 />
               ) : (
-                'Save & Continue'
+                "Save & Continue"
               )}
             </button.PrimaryButton>
           </div>
