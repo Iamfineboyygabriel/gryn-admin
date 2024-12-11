@@ -175,8 +175,8 @@ const StepTwo: React.FC<StepTwoProps> = ({
                 Expiry Date
               </label>
               <input
-                type="date"
-                id="date"
+                type="expirtyDate"
+                id="expiryDate"
                 onChange={(e) => setExpiryDate(e.target.value)}
                 required
                 disabled={loading}
