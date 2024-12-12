@@ -5,6 +5,7 @@ import socket from "../../../../socket/socket";
 const API_URL_LOGIN_USER = process.env.REACT_APP_API_URL + "/auth/login";
 const API_URL_LOGOUT_USER = process.env.REACT_APP_API_URL + "/auth/logout";
 
+
 interface SubmitBankDetailsParams {
   accountNumber: string;
   accountName: string;

@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { HashRouter as Router, Route, Routes } from "react-router-dom";
 import StaffLanding from "./shared/landing/StaffLogin";
 import AdminLogin from "./shared/landing/AdminLogin";
 import ForgotPassword from "./staff/components/pages/auth/ForgotPassword";
