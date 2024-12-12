@@ -1,11 +1,13 @@
-import { useState, useEffect, useRef } from "react";
 import profile from "../../../../../../assets/svg/Profile.svg";
 import { useMessage } from "../../../../../../shared/redux/hooks/shared/message";
+import { useCurrentUser } from "../../../../../../shared/redux/hooks/shared/getUserProfile";
+import { useState, useEffect, useRef } from "react";
+import socket from "../../../../../../socket/socket";
 
 interface Message {
   id: number | string;
   senderId: string;
-  message: string;
+  message: any;
   createdAt: string;
   sender?: {
     profile?: {
@@ -18,52 +20,84 @@ interface Message {
 }
 
 const MessageChat = () => {
-  const {
-    currentChat,
-    messages: reduxMessages,
-    loading,
-    currentUserId,
-    socketService,
-  } = useMessage();
+  const { userDetails } = useCurrentUser();
+  const { currentChat, messages: reduxMessages, loading } = useMessage();
 
   const [message, setMessage] = useState("");
   const [sendingMessage, setSendingMessage] = useState(false);
   const [localMessages, setLocalMessages] = useState<Message[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const currentUserId = userDetails?.data?.id;
 
-  // Join chat room and listen for new messages
+  // Listen for incoming socket events
   useEffect(() => {
-    // if (currentChat?.id) {
-    //   socketService.emit("join_chat", { chatId: currentChat.id });
-    // }
-
-    const handleNewMessage = (newMessage: Message) => {
+    socket.on("receiveMessage", (newMessage: Message) => {
+      console.log("received: ", newMessage);
       setLocalMessages((prev) => [...prev, newMessage]);
-    };
+    });
 
-    socketService.on("new_message", handleNewMessage);
+    socket.on("connect_error", (error) => {
+      console.error("Socket connection error:", error.message);
+    });
 
     return () => {
-      socketService.off("new_message", handleNewMessage);
+      socket.off("receiveMessage");
+      socket.off("connect_error");
     };
-  }, [currentChat?.id, socketService]);
+  }, []);
 
-  // Update local messages when redux messages change
+  // Join chat when currentChat changes
+  useEffect(() => {
+    if (currentChat?.id) {
+      socket.emit("joinChat", currentChat.id);
+    }
+  }, [currentChat?.id]);
+
+  // Sync messages with currentChat
+  useEffect(() => {
+    if (currentChat?.messages) {
+      setLocalMessages(currentChat.messages);
+    }
+  }, [currentChat?.messages]);
+
+  // Update local messages when Redux messages change
   useEffect(() => {
     if (reduxMessages?.length) {
       setLocalMessages(reduxMessages as Message[]);
     }
   }, [reduxMessages]);
 
-  // Scroll to bottom when messages update
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [localMessages]);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!message?.trim() || !currentChat?.id) {
+      return;
+    }
+
+    try {
+      setSendingMessage(true);
+
+      socket.emit("sendMessage", {
+        chatId: currentChat.id,
+        message: message.trim(),
+      });
+
+      setMessage("");
+    } catch (error) {
+      console.error("Failed to send message:", error);
+      setLocalMessages((prev) =>
+        prev?.filter((msg) => msg?.id !== `temp-${Date.now()}`)
+      );
+    } finally {
+      setSendingMessage(false);
+    }
+  };
 
   const formatMessageTime = (timestamp: string) => {
     try {
       if (!timestamp) return "";
       const date = new Date(timestamp);
+      if (isNaN(date.getTime())) return "";
       return new Intl.DateTimeFormat("en-US", {
         hour: "2-digit",
         minute: "2-digit",
@@ -75,41 +109,8 @@ const MessageChat = () => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const trimmedMessage = message.trim();
-
-    if (!trimmedMessage || !currentChat?.id || sendingMessage) {
-      return;
-    }
-
-    try {
-      setSendingMessage(true);
-      const messageData = {
-        senderId: currentUserId,
-        message: trimmedMessage,
-        createdAt: new Date().toISOString(),
-        chatId: currentChat.id,
-      };
-
-      // Emit the message directly through socket
-      // socketService.emit("send_message", {
-      //   chatId: currentChat.id,
-      //   message: messageData,
-      // });
-
-      // Optimistically add message to local state
-      setLocalMessages((prev) => [...prev, { ...messageData, id: Date.now() }]);
-      setMessage("");
-    } catch (error) {
-      console.error("Failed to send message:", error);
-    } finally {
-      setSendingMessage(false);
-    }
-  };
-
-  const otherUser = localMessages?.find(
-    (msg: Message) => msg?.senderId !== currentUserId
+  const otherUser = localMessages.find(
+    (message: Message) => message.senderId !== currentUserId
   )?.sender;
 
   if (!currentChat) {
@@ -138,39 +139,38 @@ const MessageChat = () => {
       </header>
 
       <section className="flex-1 flex flex-col gap-4 py-4 overflow-y-auto">
-        {loading ? (
+        {loading && !localMessages.length ? (
           <div className="text-center">Loading messages...</div>
         ) : (
           <>
-            {localMessages?.map((msg: Message) => (
+            {localMessages.map((message: Message) => (
               <div
-                key={msg?.id}
+                key={message.id}
                 className={`flex gap-4 ${
-                  msg?.senderId === currentUserId ? "flex-row-reverse" : ""
+                  message.senderId === currentUserId ? "flex-row-reverse" : ""
                 }`}
               >
-                {msg?.senderId !== currentUserId && (
+                {message.senderId !== currentUserId && (
                   <img
-                    src={msg?.sender?.profile?.avatar?.publicURL || profile}
+                    src={message.sender?.profile?.avatar?.publicURL || profile}
                     alt="profile"
                     className="w-8 h-8 rounded-full object-cover"
                   />
                 )}
                 <div
                   className={`max-w-[50%] rounded-lg p-3 ${
-                    msg?.senderId === currentUserId
+                    message.senderId === currentUserId
                       ? "bg-purple-700 text-white ml-auto"
                       : "bg-gray-100 dark:bg-gray-700"
                   }`}
                 >
-                  <p className="break-words">{msg?.message}</p>
+                  <p className="break-words">{message.message}</p>
                   <div className="text-xs opacity-70 mt-1 text-right">
-                    {formatMessageTime(msg?.createdAt)}
+                    {formatMessageTime(message.createdAt)}
                   </div>
                 </div>
               </div>
             ))}
-            <div ref={messagesEndRef} />
           </>
         )}
       </section>
@@ -190,7 +190,7 @@ const MessageChat = () => {
           />
           <button
             type="submit"
-            disabled={!message.trim() || sendingMessage}
+            disabled={!message?.trim() || sendingMessage}
             className="rounded-full bg-purple-700 px-6 py-2 text-white disabled:opacity-50"
           >
             {sendingMessage ? "Sending..." : "Send"}

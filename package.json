@@ -1,5 +1,5 @@
 {
-  "name": "ggggggggg",
+  "name": "gryn-index",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -23,6 +23,7 @@
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
     "dompurify": "^3.1.6",
+    "dotenv": "^16.4.7",
     "dotenv-expand": "^11.0.6",
     "html2canvas": "^1.4.1",
     "isexe": "^3.1.1",
@@ -79,6 +80,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@types/dompurify": "^3.0.5",
     "@types/lodash": "^4.17.7",
     "@types/react-modal": "^3.16.3",
