@@ -30,9 +30,7 @@ export const useMessage = () => {
         await dispatch(fetchAllUserChats()).unwrap();
         await dispatch(fetchUnreadCount()).unwrap();
         socketService.connect();
-      } catch (error) {
-        console.error("Messaging initialization failed", error);
-      }
+      } catch (error) {}
     };
 
     initializeMessaging();
@@ -54,14 +52,12 @@ export const useMessage = () => {
 
   const handleCreateChat = useCallback(
     async (userId: string) => {
-      console.log("userid", userId);
       try {
         const result = await dispatch(createChat(userId)).unwrap();
         setSelectedChatId(result.id);
         setSelectedUserId(userId);
         return result;
       } catch (error) {
-        console.error("Chat creation failed", error);
         throw error;
       }
     },
