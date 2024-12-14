@@ -158,15 +158,12 @@ export const messageSlice = createSlice({
       .addCase(searchUser.pending, (state) => {
         state.loading = true;
         state.error = null;
-        console.log("Search pending...");
       })
       .addCase(searchUser.fulfilled, (state, action) => {
-        console.log("Search fulfilled, payload:", action.payload);
         state.loading = false;
         state.users = action.payload;
       })
       .addCase(searchUser.rejected, (state, action) => {
-        console.log("Search rejected:", action.payload);
         state.loading = false;
         state.error = action.payload as string;
       })
