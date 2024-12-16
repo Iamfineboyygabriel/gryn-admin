@@ -60,13 +60,28 @@ const MessageList = () => {
   } = useMessage();
 
   // Add local search state to handle immediate updates
-  const [localSearch, setLocalSearch] = useState(search);
+  const [localSearch, setLocalSearch] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [sortedChats, setSortedChats] = useState<any>([]);
   const [localChats, setLocalChats] = useState<any>([]);
   const searchRef = useRef<HTMLDivElement>(null);
 
-  // Initialize socket listeners for chat updates
+  useEffect(() => {
+    handleSearch("");
+    setLocalSearch("");
+
+    return () => {
+      handleSearch("");
+      setLocalSearch("");
+    };
+  }, []);
+  // Initialize local search only on first render
+  useEffect(() => {
+    if (localSearch === "" && search !== "") {
+      setLocalSearch(search);
+    }
+  }, []);
+
   useEffect(() => {
     socketService.on(
       "new_message",
@@ -176,7 +191,6 @@ const MessageList = () => {
   };
 
   const handleUserSelect = async (userId: string) => {
-    console.log("userId", userId);
     if (!userId) return;
 
     try {
@@ -194,6 +208,9 @@ const MessageList = () => {
       // If chat doesn't exist, create new chat
       const newChat = await handleCreateChat(userId); // Already passing userId
       setShowSuggestions(false);
+      // Clear search after selecting a user
+      setLocalSearch("");
+      handleSearch("");
       return newChat;
     } catch (error) {
       console.error("Error handling user selection:", error);
@@ -202,8 +219,8 @@ const MessageList = () => {
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setLocalSearch(value); // Update local state immediately
-    handleSearch(value); // This triggers the debounced search
+    setLocalSearch(value);
+    handleSearch(value);
     setShowSuggestions(true);
   };
 
