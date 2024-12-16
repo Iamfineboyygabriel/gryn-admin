@@ -1,11 +1,11 @@
 {
-  "name": "gryn-index",
+  "name": "gryn-index-admin",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "main": "/public/electron.js",
   "build": {
-    "appId": "com.gryn-index",
+    "appId": "com.gryn-index-admin",
     "files": [
       "build/**/*",
       "public/electron.js"
