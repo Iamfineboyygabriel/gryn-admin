@@ -59,17 +59,35 @@ const MessageList = () => {
     socketService,
   } = useMessage();
 
+  // Add local search state to handle immediate updates
+  const [localSearch, setLocalSearch] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [sortedChats, setSortedChats] = useState<Chat[]>([]);
-  const [localChats, setLocalChats] = useState<Chat[]>([]);
+  const [sortedChats, setSortedChats] = useState<any>([]);
+  const [localChats, setLocalChats] = useState<any>([]);
   const searchRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    handleSearch("");
+    setLocalSearch("");
+
+    return () => {
+      handleSearch("");
+      setLocalSearch("");
+    };
+  }, []);
+  // Initialize local search only on first render
+  useEffect(() => {
+    if (localSearch === "" && search !== "") {
+      setLocalSearch(search);
+    }
+  }, []);
 
   useEffect(() => {
     socketService.on(
       "new_message",
       (data: { chatId: string; message: Message }) => {
-        setLocalChats((prevChats) => {
-          return prevChats.map((chat) => {
+        setLocalChats((prevChats: any) => {
+          return prevChats.map((chat: any) => {
             if (chat.id === data.chatId) {
               return {
                 ...chat,
@@ -85,12 +103,12 @@ const MessageList = () => {
     socketService.on(
       "message_read",
       (data: { chatId: string; userId: string }) => {
-        setLocalChats((prevChats) => {
-          return prevChats.map((chat) => {
+        setLocalChats((prevChats: any) => {
+          return prevChats.map((chat: any) => {
             if (chat.id === data.chatId) {
               return {
                 ...chat,
-                messages: chat.messages.map((msg) => ({
+                messages: chat.messages.map((msg: any) => ({
                   ...msg,
                   read: msg.read || msg.senderId === data.userId,
                 })),
@@ -108,6 +126,7 @@ const MessageList = () => {
     };
   }, [socketService]);
 
+  // Update local chats when redux chats change
   useEffect(() => {
     if (Array.isArray(chats)) {
       const validChats = chats.filter(
@@ -134,6 +153,7 @@ const MessageList = () => {
     }
   }, [chats, currentUserId]);
 
+  // Handle clicks outside search suggestions
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -171,10 +191,10 @@ const MessageList = () => {
   };
 
   const handleUserSelect = async (userId: string) => {
-    console.log("userId", userId);
     if (!userId) return;
 
     try {
+      // Check if chat already exists
       const existingChat = localChats.find(
         (chat: any) =>
           (chat.sender.id === userId && chat.receiver.id === currentUserId) ||
@@ -182,27 +202,24 @@ const MessageList = () => {
       );
 
       if (existingChat) {
-        // If chat exists, mark messages as read
-        // socketService.emit("mark_messages_read", {
-        //   chatId: existingChat.id,
-        //   userId: currentUserId,
-        // });
-        return handleCreateChat(userId); // Pass userId instead of chat.id
+        return handleCreateChat(userId);
       }
 
-      const newChat = await handleCreateChat(userId);
+      // If chat doesn't exist, create new chat
+      const newChat = await handleCreateChat(userId); // Already passing userId
       setShowSuggestions(false);
-
-      // socketService.emit("join_chat", { chatId: newChat.id });
-
+      // Clear search after selecting a user
+      setLocalSearch("");
+      handleSearch("");
       return newChat;
     } catch (error) {
       console.error("Error handling user selection:", error);
     }
   };
 
-  const debouncedSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+    setLocalSearch(value);
     handleSearch(value);
     setShowSuggestions(true);
   };
@@ -214,13 +231,13 @@ const MessageList = () => {
           type="text"
           className="w-full rounded-full bg-gray-100 py-2 pl-4 pr-12 text-sm dark:bg-gray-700 dark:text-white"
           placeholder="Search users by email"
-          value={search}
-          onChange={debouncedSearch}
+          value={localSearch}
+          onChange={handleSearchChange}
           onFocus={() => setShowSuggestions(true)}
         />
         <FiSearch className="absolute right-4 top-1/2 -translate-y-1/2 transform text-lg text-gray-500" />
 
-        {showSuggestions && search && users.length > 0 && (
+        {showSuggestions && localSearch && users.length > 0 && (
           <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg dark:bg-gray-700">
             <ul className="max-h-60 overflow-auto py-1">
               {users.map((user: User) => (
@@ -259,7 +276,7 @@ const MessageList = () => {
               </p>
             </div>
           ) : (
-            localChats.map((chat) => {
+            localChats.map((chat: any) => {
               const otherUser = getOtherUser(chat);
               const lastMessage = chat.messages[chat.messages.length - 1];
               const unreadCount = getUnreadCount(chat);
