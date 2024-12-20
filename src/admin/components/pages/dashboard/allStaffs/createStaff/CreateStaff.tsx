@@ -1,31 +1,34 @@
-import React, { useCallback, useState } from 'react';
-import { useNavigate } from 'react-router';
-import { AppDispatch } from '../../../../../../shared/redux/store';
-import { useAppDispatch } from '../../../../../../shared/redux/hooks/shared/reduxHooks';
-import Modal from '../../../../../../shared/modal/Modal';
-import StaffCreated from '../../../../../../shared/modal/StaffCreated';
-import { button } from '../../../../../../shared/buttons/Button';
-import { CgAsterisk } from 'react-icons/cg';
-import ReactLoading from 'react-loading';
-import { toast } from 'react-toastify';
-import { createStaff } from '../../../../../../shared/redux/shared/slices/shareApplication.slices';
-import { Dropdown, DropdownItem } from '../../../../../../shared/dropDown/DropDown';
+import React, { useCallback, useState } from "react";
+import { useNavigate } from "react-router";
+import { AppDispatch } from "../../../../../../shared/redux/store";
+import { useAppDispatch } from "../../../../../../shared/redux/hooks/shared/reduxHooks";
+import Modal from "../../../../../../shared/modal/Modal";
+import StaffCreated from "../../../../../../shared/modal/StaffCreated";
+import { button } from "../../../../../../shared/buttons/Button";
+import { CgAsterisk } from "react-icons/cg";
+import ReactLoading from "react-loading";
+import { toast } from "react-toastify";
+import { createStaff } from "../../../../../../shared/redux/shared/slices/shareApplication.slices";
+import {
+  Dropdown,
+  DropdownItem,
+} from "../../../../../../shared/dropDown/DropDown";
 
 interface Gender {
   name: string;
 }
 
 const CreateStaff = () => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [middleName, setMiddleName] = useState('');
-  const [email, setEmail] = useState('');
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [middleName, setMiddleName] = useState("");
+  const [email, setEmail] = useState("");
   const [gender, setGender] = useState<string | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
 
-  const type: Gender[] = [{ name: "MALE" }, {name:"FEMALE"}];
+  const type: Gender[] = [{ name: "MALE" }, { name: "FEMALE" }];
 
   const handleSelectGender = useCallback((item: DropdownItem) => {
     setGender(item?.name || null);
@@ -55,9 +58,7 @@ const CreateStaff = () => {
       await dispatch(createStaff(body)).unwrap();
       handleOpenModal();
     } catch (error: any) {
-      toast.error(
-        error.message || 'An error occurred while creating staff'
-      );
+      toast.error(error.message || "An error occurred while creating staff");
     } finally {
       setLoading(false);
     }
@@ -71,7 +72,7 @@ const CreateStaff = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="font-medium">
-                staff management /{' '}
+                staff management /{" "}
                 <span className="ml-1 font-medium text-primary-700">
                   New staff
                 </span>
@@ -127,8 +128,12 @@ const CreateStaff = () => {
 
           <div className="flex flex-wrap gap-[2em] mt-[1em]">
             <div className="w-full md:w-[48%]">
-              <label htmlFor="middleName" className="flex items-center font-medium">
-                Other Name <span className="text-gray-500 ml-1">(Optional)</span>
+              <label
+                htmlFor="middleName"
+                className="flex items-center font-medium"
+              >
+                Other Name{" "}
+                <span className="text-gray-500 ml-1">(Optional)</span>
               </label>
               <input
                 id="middleName"
@@ -155,16 +160,16 @@ const CreateStaff = () => {
 
           <div className="flex flex-wrap gap-[2em] mt-[1em]">
             <div className="w-full md:w-[48%]">
-            <Dropdown
-            label="Gender"
-            labelClassName="text-grey-primary"
-            className="text-purple-deep"
-            items={type}
-            selectedItem={gender ? { name: gender } : null}
-            onSelectItem={handleSelectGender}
-            asterisk
-            placeholder='Select'
-          />
+              <Dropdown
+                label="Gender"
+                labelClassName="text-grey-primary"
+                className="text-purple-deep"
+                items={type}
+                selectedItem={gender ? { name: gender } : null}
+                onSelectItem={handleSelectGender}
+                asterisk
+                placeholder="Select"
+              />
             </div>
           </div>
 
@@ -182,7 +187,7 @@ const CreateStaff = () => {
                   type="spin"
                 />
               ) : (
-                'Generate Password Link'
+                "Create"
               )}
             </button.PrimaryButton>
           </div>
@@ -190,7 +195,11 @@ const CreateStaff = () => {
       </div>
 
       {isModalOpen && (
-        <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
+        <Modal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          data-aos="zoom-in"
+        >
           <StaffCreated email={email} onClose={handleCloseModal} />
         </Modal>
       )}

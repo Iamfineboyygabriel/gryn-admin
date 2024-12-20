@@ -3,13 +3,10 @@ import Flag from "react-world-flags";
 import { CgAsterisk } from "react-icons/cg";
 import ReactLoading from "react-loading";
 import { toast } from "react-toastify";
-import {
-  useCountries,
-  useStates,
-} from "../../../../../../../../shared/redux/hooks/shared/getUserProfile";
 import { formatDateApplication } from "../../../../../../../../shared/utils/dateFormat";
 import { Dropdown } from "../../../../../../../../shared/dropDown/DropDown";
 import { button } from "../../../../../../../../shared/buttons/Button";
+import { countries } from "../../../../../../../../data/data";
 
 interface Country {
   name: string;
@@ -31,10 +28,6 @@ const StepOne = ({ onNext }: any) => {
   const [email, setEmail] = useState("");
 
   const [loading, setLoading] = useState(false);
-
-  const { countries, loading: countriesLoading } = useCountries();
-  const { states, loading: statesLoading } = useStates();
-  const statesData = states;
 
   const areFieldsFilled = () => {
     return dateOfBirth && state && country;
@@ -72,10 +65,6 @@ const StepOne = ({ onNext }: any) => {
     }, 3000);
   };
 
-  const stateDropdownItems: any = statesData.map((state) => ({
-    name: state,
-  }));
-
   const countryDropdownItems = countries.map((country) => ({
     name: country.name,
     cca2: country.cca2,
@@ -90,10 +79,6 @@ const StepOne = ({ onNext }: any) => {
       </div>
     ),
   }));
-
-  const handleStateSelect: any = (item: any) => {
-    setState(item.name);
-  };
 
   const handleCountrySelect: any = (item: any) => {
     setCountry({ name: item.name, cca2: item.cca2 });
@@ -209,7 +194,7 @@ const StepOne = ({ onNext }: any) => {
                     name: country.name,
                     cca2: country.cca2,
                     label: countryDropdownItems.find(
-                      (item) => item.name === country.name
+                      (item: any) => item.name === country.name
                     )?.label,
                   }
                 : null
@@ -217,8 +202,8 @@ const StepOne = ({ onNext }: any) => {
             onSelectItem={handleCountrySelect}
             asterisk
             searchVisible
-            loading={countriesLoading}
-            placeholder="Select Country"
+            loading={false}
+            placeholder="Select a Country"
           />
 
           <div className="w-full">

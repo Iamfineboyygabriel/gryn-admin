@@ -150,7 +150,7 @@ const CreateAgent = () => {
                   type="spin"
                 />
               ) : (
-                "Generate Password Link"
+                "Create"
               )}
             </button.PrimaryButton>
           </div>

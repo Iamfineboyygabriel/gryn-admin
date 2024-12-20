@@ -623,7 +623,7 @@ export const useSchoolListCountries = () => {
     loading: state?.application?.loading,
     error: state?.application?.error,
   }));
-
+  console.log("hook", listCountries);
   useEffect(() => {
     dispatch(getAllSchoolsListCountries());
   }, [dispatch]);

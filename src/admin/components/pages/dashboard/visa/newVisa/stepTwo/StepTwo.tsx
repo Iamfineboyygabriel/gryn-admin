@@ -1,7 +1,6 @@
 import React, { useRef, useState } from "react";
 import { useAppDispatch } from "../../../../../../../shared/redux/hooks/shared/reduxHooks";
 import { createVisaApplication } from "../../../../../../../shared/redux/shared/slices/shareApplication.slices";
-import { useCountries } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
 import useClickOutside from "../../../../../../../shared/utils/useClickOutside";
 import { button } from "../../../../../../../shared/buttons/Button";
 import { IoIosArrowDown } from "react-icons/io";
@@ -9,6 +8,7 @@ import ReactLoading from "react-loading";
 import Flag from "react-world-flags";
 import { toast } from "react-toastify";
 import { AppDispatch } from "../../../../../../../shared/redux/store";
+import { countries } from "../../../../../../../data/data";
 
 interface CreateApplicationBody {
   firstName: string;
@@ -57,7 +57,6 @@ const StepTwo: React.FC<StepTwoProps> = ({
   const dispatch: AppDispatch = useAppDispatch();
 
   const [loading, setLoading] = useState(false);
-  const { countries } = useCountries();
 
   const validateFields = () => {
     if (
@@ -174,8 +173,9 @@ const StepTwo: React.FC<StepTwoProps> = ({
               >
                 Expiry Date
               </label>
+
               <input
-                type="expirtyDate"
+                type="date"
                 id="expiryDate"
                 onChange={(e) => setExpiryDate(e.target.value)}
                 required
