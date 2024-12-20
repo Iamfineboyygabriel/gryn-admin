@@ -10,11 +10,13 @@ import { toast } from "react-toastify";
 import { useState } from "react";
 import gryn_index_logo from "../../../../assets/svg/Gryn_Index _logo.svg";
 import { Menu, X } from "lucide-react";
+import { useMessage } from "../../../../shared/redux/hooks/shared/message";
 
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const { unreadCount } = useMessage();
 
   const dispatch: AppDispatch = useDispatch();
   const { hasPermission } = usePermissions();
@@ -78,6 +80,7 @@ const Sidebar = () => {
             const isActive = link.pathsToCheck.some((path) =>
               location.pathname.startsWith(path)
             );
+            const isMessaging = link.text === "Messaging";
 
             return (
               <div key={index} className="relative group">
@@ -89,16 +92,37 @@ const Sidebar = () => {
                       : "text-gray-500 hover:bg-purple-white"
                   } ${isCollapsed ? "justify-center px-2" : "px-4"}`}
                 >
-                  <img
-                    src={isActive ? link.imgActive : link.img}
-                    alt={link?.text}
-                    className="w-5"
-                  />
-                  {!isCollapsed && <span className="ml-3">{link?.text}</span>}
+                  <div className="relative">
+                    <img
+                      src={isActive ? link.imgActive : link.img}
+                      alt={link?.text}
+                      className="w-5"
+                    />
+                    {isMessaging && unreadCount > 0 && isCollapsed && (
+                      <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                        {unreadCount}
+                      </span>
+                    )}
+                  </div>
+                  {!isCollapsed && (
+                    <div className="ml-3 flex items-center">
+                      <span>{link?.text}</span>
+                      {isMessaging && unreadCount > 0 && (
+                        <span className="ml-2 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[1.2rem] text-center">
+                          {unreadCount}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </Link>
                 {isCollapsed && (
                   <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 bg-gray-800 text-white text-sm rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50">
                     {link.title}
+                    {isMessaging && unreadCount > 0 && (
+                      <span className="ml-2 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[1.2rem] text-center">
+                        {unreadCount}
+                      </span>
+                    )}
                   </div>
                 )}
               </div>

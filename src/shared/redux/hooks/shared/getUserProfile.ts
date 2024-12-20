@@ -27,15 +27,11 @@ import {
 import { AppDispatch } from "../../store";
 import { setMessage } from "../../message.slices";
 import {
-  getSingleAgentApplication,
   getSingleStudentApplication,
   getStudentApplication,
   getVisaApplicationDetails,
 } from "../../shared/services/shareApplication.services";
 import { useQuery } from "react-query";
-import { getAllStaffForSuperAdmin } from "../../admin/slices/application.slices";
-import { useAppSelector } from "./reduxHooks";
-import { getAllBanks } from "../../admin/services/application.services";
 
 interface UpdateProfile {
   email?: string;
@@ -151,15 +147,6 @@ export interface VisaApplicationDetails {
     createdAt: string;
     updatedAt: string;
   };
-}
-
-interface Country {
-  name: string;
-  cca2: string;
-}
-
-interface State {
-  name: string;
 }
 
 export const useUserProfile = () => {
