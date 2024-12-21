@@ -3,6 +3,7 @@ import { useMessage } from "../../../../../../shared/redux/hooks/shared/message"
 import { useCurrentUser } from "../../../../../../shared/redux/hooks/shared/getUserProfile";
 import { useState, useEffect, useRef } from "react";
 import socket from "../../../../../../socket/socket";
+import { PrivateElement } from "../../../../../../shared/redux/hooks/admin/PrivateElement";
 
 interface Message {
   id: number | string;
@@ -188,13 +189,15 @@ const MessageChat = () => {
             className="flex-1 rounded-full bg-gray-100 px-4 py-2 dark:bg-gray-700 dark:text-white"
             disabled={sendingMessage}
           />
-          <button
-            type="submit"
-            disabled={!message?.trim() || sendingMessage}
-            className="rounded-full bg-purple-700 px-6 py-2 text-white disabled:opacity-50"
-          >
-            {sendingMessage ? "Sending..." : "Send"}
-          </button>
+          <PrivateElement feature="MESSAGINGS" page="Send/Inbox">
+            <button
+              type="submit"
+              disabled={!message?.trim() || sendingMessage}
+              className="rounded-full bg-purple-700 px-6 py-2 text-white disabled:opacity-50"
+            >
+              {sendingMessage ? "Sending..." : "Send"}
+            </button>
+          </PrivateElement>
         </div>
       </form>
     </main>
