@@ -67,7 +67,6 @@ const Application = () => {
           </nav>
           <section className="mt-3">
             {activeLink === "manageApplication" && <ManageApplication />}
-            {/* {activeLink === "enquiries" && <ManageStudents />} */}
             {activeLink === "enquiries" && <AssignedEnquiries />}
             {activeLink === "manageAgents" && <ManageAgents />}
           </section>

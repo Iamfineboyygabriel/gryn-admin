@@ -107,7 +107,19 @@ const DashboardRoutes = () => {
         />
 
         <Route path="all_users" element={<AllUsers />} />
+        <Route
+          path="/all_users/create_student"
+          element={
+            <PrivateRoute
+              element={<CreateStudent />}
+              feature="ALL_USERS"
+              page="New Student"
+            />
+          }
+        />
+
         <Route path="/all_users/create_student" element={<CreateStudent />} />
+
         <Route
           path="/all_users/enquiries/view_details"
           element={<AllUserEnquiries />}
@@ -139,8 +151,27 @@ const DashboardRoutes = () => {
         />
 
         <Route path="all_staffs" element={<AllStaff />} />
-        <Route path="/all_staffs/view_profile" element={<ViewStaffProfile />} />
-        <Route path="/all_staffs/create_staff" element={<CreateStaff />} />
+        <Route
+          path="/all_staffs/view_profile"
+          element={
+            <PrivateRoute
+              element={<ViewStaffProfile />}
+              feature="ALL_STAFFS"
+              page="View Details"
+            />
+          }
+        />
+
+        <Route
+          path="/all_staffs/create_staff"
+          element={
+            <PrivateRoute
+              element={<CreateStaff />}
+              feature="ALL_STAFFS"
+              page="New Staff"
+            />
+          }
+        />
         <Route path="/all_staffs/new-salary" element={<NewSalary />} />
         <Route
           path="/all_staffs/view_profile/:staffEmail/new_invoice"

@@ -9,6 +9,7 @@ import CustomPagination from "../../../../../../shared/utils/customPagination";
 import { useAllStaffForSuperAdmin } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
 import Modal from "../../../../../../shared/modal/Modal";
 import UpdateStaff from "./UpdateStaff";
+import { PrivateElement } from "../../../../../../shared/redux/hooks/admin/PrivateElement";
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -143,12 +144,14 @@ const AllStaff = () => {
               highlightText(formatData(admin?.email), localSearchTerm)
             )}
           />
-          <td
-            onClick={() => handleViewDetails(admin?.profile?.email)}
-            className="py-[16px] text-primary-700 font-medium cursor-pointer px-[24px]"
-          >
-            View details
-          </td>
+          <PrivateElement feature="ALL_STAFFS" page="View Details">
+            <td
+              onClick={() => handleViewDetails(admin?.profile?.email)}
+              className="py-[16px] text-primary-700 font-medium cursor-pointer px-[24px]"
+            >
+              View details
+            </td>
+          </PrivateElement>
         </tr>
       ));
     } else {
@@ -183,20 +186,25 @@ const AllStaff = () => {
         <div className="relative">
           <header className="flex items-center justify-between">
             <h1 className="font-medium text-xl">All Staff</h1>
+
             <div className="flex gap-2">
-              <button.PrimaryButton
-                onClick={handleOpenModal}
-                className="mt-[1em] flex gap-2 rounded-full bg-primary-200 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300"
-              >
-                <img src={plus} alt="plus" />
-                Update Staff
-              </button.PrimaryButton>
-              <Link to="/admin/dashboard/all_staffs/create_staff">
-                <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-primary-700 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
+              <PrivateElement feature="ALL_STAFFS" page="Update Staff">
+                <button.PrimaryButton
+                  onClick={handleOpenModal}
+                  className="mt-[1em] flex gap-2 rounded-full bg-primary-200 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300"
+                >
                   <img src={plus} alt="plus" />
-                  New Staff
+                  Update Staff
                 </button.PrimaryButton>
-              </Link>
+              </PrivateElement>
+              <PrivateElement feature="ALL_STAFFS" page="New Staff">
+                <Link to="/admin/dashboard/all_staffs/create_staff">
+                  <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-primary-700 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
+                    <img src={plus} alt="plus" />
+                    New Staff
+                  </button.PrimaryButton>
+                </Link>
+              </PrivateElement>
             </div>
           </header>
           <div className="flex items-center mt-3 w-64 rounded-full border-[1px] border-border bg-gray-100 dark:bg-gray-700">
