@@ -180,16 +180,16 @@ const MessageChat = () => {
         onSubmit={handleSubmit}
         className="flex-shrink-0 border-t border-gray-100 pt-4 dark:border-gray-700"
       >
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="Type a message..."
-            className="flex-1 rounded-full bg-gray-100 px-4 py-2 dark:bg-gray-700 dark:text-white"
-            disabled={sendingMessage}
-          />
-          <PrivateElement feature="MESSAGINGS" page="Send/Inbox">
+        <PrivateElement feature="MESSAGINGS" page="Send/Inbox">
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="Type a message..."
+              className="flex-1 rounded-full bg-gray-100 px-4 py-2 dark:bg-gray-700 dark:text-white"
+              disabled={sendingMessage}
+            />
             <button
               type="submit"
               disabled={!message?.trim() || sendingMessage}
@@ -197,8 +197,8 @@ const MessageChat = () => {
             >
               {sendingMessage ? "Sending..." : "Send"}
             </button>
-          </PrivateElement>
-        </div>
+          </div>
+        </PrivateElement>
       </form>
     </main>
   );
