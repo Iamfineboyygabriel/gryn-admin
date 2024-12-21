@@ -5,7 +5,7 @@ import { useDispatch } from "react-redux";
 import { login } from "../redux/shared/slices/shareLanding.slices";
 import usePasswordToggle from "../utils/usePasswordToggle";
 import { button } from "../buttons/Button";
-import welcome_signup from "../../assets/png/welcome_signup.png";
+import welcome_signup from "../../assets/png/welcomme.png";
 import gryn_index_logo from "../../assets/svg/Gryn_Index _logo.svg";
 import { MdOutlineVisibilityOff, MdOutlineVisibility } from "react-icons/md";
 import { toast } from "react-toastify";

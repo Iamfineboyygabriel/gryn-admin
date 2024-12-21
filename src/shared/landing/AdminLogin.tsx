@@ -9,7 +9,7 @@ import { MdOutlineVisibilityOff, MdOutlineVisibility } from "react-icons/md";
 import { findFirstAccessibleRoute } from "../utils/findFirstAccessibleRoute";
 import { button } from "../buttons/Button";
 import gryn_index_logo from "../../assets/svg/Gryn_Index _logo.svg";
-import welcome_signup from "../../assets/png/welcome_signup.png";
+import welcome_signup from "../../assets/png/welcomme.png";
 import { toast } from "react-toastify";
 import ReactLoading from "react-loading";
 
