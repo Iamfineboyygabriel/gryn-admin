@@ -27,15 +27,11 @@ import {
 import { AppDispatch } from "../../store";
 import { setMessage } from "../../message.slices";
 import {
-  getSingleAgentApplication,
   getSingleStudentApplication,
   getStudentApplication,
   getVisaApplicationDetails,
 } from "../../shared/services/shareApplication.services";
 import { useQuery } from "react-query";
-import { getAllStaffForSuperAdmin } from "../../admin/slices/application.slices";
-import { useAppSelector } from "./reduxHooks";
-import { getAllBanks } from "../../admin/services/application.services";
 
 interface UpdateProfile {
   email?: string;
@@ -153,15 +149,6 @@ export interface VisaApplicationDetails {
   };
 }
 
-interface Country {
-  name: string;
-  cca2: string;
-}
-
-interface State {
-  name: string;
-}
-
 export const useUserProfile = () => {
   const dispatch: AppDispatch = useDispatch();
   const [loading, setLoading] = useState(false);
@@ -277,66 +264,6 @@ export const useApplicationDetails = (applicationId: string) => {
   );
 
   return { applicationDetails, loading, error };
-};
-
-export const useCountries = () => {
-  const [countries, setCountries] = useState<Country[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchCountries = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await fetch("https://restcountries.com/v3.1/all");
-        const data = await response.json();
-        const mappedCountries = data?.map((country: any) => ({
-          name: country?.name?.common,
-          cca2: country?.cca2,
-        }));
-        setCountries(mappedCountries);
-      } catch (error) {
-        setError("Error fetching countries");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCountries();
-  }, []);
-
-  return { countries, loading, error };
-};
-
-export const useStates = () => {
-  const [states, setStates] = useState<State[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchStates = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await fetch(
-          "https://nga-states-lga.onrender.com/fetch"
-        );
-        if (!response.ok) throw new Error("Network response was not ok");
-        const data = await response.json();
-        setStates(data);
-      } catch (error) {
-        setError("Error fetching states");
-        console.error("Error fetching states:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchStates();
-  }, []);
-
-  return { states, loading, error };
 };
 
 export const useTopCountries = () => {

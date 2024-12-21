@@ -21,6 +21,7 @@ export const useMessage = () => {
 
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   const socketService = useMemo(() => socket, []);
 
@@ -28,7 +29,8 @@ export const useMessage = () => {
     const initializeMessaging = async () => {
       try {
         await dispatch(fetchAllUserChats()).unwrap();
-        await dispatch(fetchUnreadCount()).unwrap();
+        const response = await dispatch(fetchUnreadCount()).unwrap();
+        setUnreadCount(response.count);
         socketService.connect();
       } catch (error) {}
     };
@@ -72,5 +74,6 @@ export const useMessage = () => {
     handleSearch,
     handleCreateChat,
     socketService,
+    unreadCount,
   };
 };

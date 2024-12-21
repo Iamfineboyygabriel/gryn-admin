@@ -49,7 +49,6 @@ import {
   findStaffDetailByEmail,
   findStaffInvoices,
 } from "../../shared/services/shareApplication.services";
-import { getAllStaffPayment } from "../../shared/slices/shareApplication.slices";
 
 export interface StaffDetails {
   status: number;
@@ -623,7 +622,6 @@ export const useSchoolListCountries = () => {
     loading: state?.application?.loading,
     error: state?.application?.error,
   }));
-
   useEffect(() => {
     dispatch(getAllSchoolsListCountries());
   }, [dispatch]);

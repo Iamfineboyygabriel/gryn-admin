@@ -1,16 +1,19 @@
-import React, { useCallback, useState } from 'react';
-import { useNavigate } from 'react-router';
-import { AppDispatch } from '../../../../../../../../shared/redux/store';
-import { useAppDispatch } from '../../../../../../../../shared/redux/hooks/shared/reduxHooks';
-import Modal from '../../../../../../../../shared/modal/Modal';
-import StaffCreated from '../../../../../../../../shared/modal/StaffCreated';
-import { button } from '../../../../../../../../shared/buttons/Button';
-import { CgAsterisk } from 'react-icons/cg';
-import ReactLoading from 'react-loading';
-import { toast } from 'react-toastify';
-import { createAdmin } from '../../../../../../../../shared/redux/shared/slices/shareApplication.slices';
-import AdminCreated from '../../../../../../../../shared/modal/AdminCreated';
-import { Dropdown, DropdownItem } from '../../../../../../../../shared/dropDown/DropDown';
+import React, { useCallback, useState } from "react";
+import { useNavigate } from "react-router";
+import { AppDispatch } from "../../../../../../../../shared/redux/store";
+import { useAppDispatch } from "../../../../../../../../shared/redux/hooks/shared/reduxHooks";
+import Modal from "../../../../../../../../shared/modal/Modal";
+import StaffCreated from "../../../../../../../../shared/modal/StaffCreated";
+import { button } from "../../../../../../../../shared/buttons/Button";
+import { CgAsterisk } from "react-icons/cg";
+import ReactLoading from "react-loading";
+import { toast } from "react-toastify";
+import { createAdmin } from "../../../../../../../../shared/redux/shared/slices/shareApplication.slices";
+import AdminCreated from "../../../../../../../../shared/modal/AdminCreated";
+import {
+  Dropdown,
+  DropdownItem,
+} from "../../../../../../../../shared/dropDown/DropDown";
 
 interface Gender {
   name: string;
@@ -21,19 +24,24 @@ interface DesignationChoice {
 }
 
 const NewAdmin = () => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [middleName, setMiddleName] = useState('');
-  const [email, setEmail] = useState('');
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [middleName, setMiddleName] = useState("");
+  const [email, setEmail] = useState("");
   const [gender, setGender] = useState<string | null>(null);
-  const [designation, setDesignation] = useState<string | null>(null);;
+  const [designation, setDesignation] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
 
-  const type: Gender[] = [{ name: "MALE" }, {name:"FEMALE"}];
-  const designationType: DesignationChoice[] = [{ name: "CUSTOMER_RELATIONS" }, {name: "STUDENT_RELATION_MANAGER"}, {name: "INTERNATIONAL_RELATIONAL_MANAGER"}, {name: "OFFICE_ADMIN"},{name: "EXECUTIVE_ADMIN"}];
+  const type: Gender[] = [{ name: "MALE" }, { name: "FEMALE" }];
+  const designationType: DesignationChoice[] = [
+    { name: "CUSTOMER_RELATIONS" },
+    { name: "STUDENT_RELATION_MANAGER" },
+    { name: "INTERNATIONAL_RELATIONAL_MANAGER" },
+    { name: "OFFICE_ADMIN" },
+    { name: "EXECUTIVE_ADMIN" },
+  ];
 
-  
   const handleSelectGender = useCallback((item: DropdownItem) => {
     setGender(item?.name || null);
   }, []);
@@ -43,7 +51,7 @@ const NewAdmin = () => {
   }, []);
 
   const navigate = useNavigate();
-  
+
   const handleBackClick = () => {
     navigate(-1);
   };
@@ -63,14 +71,14 @@ const NewAdmin = () => {
         lastName,
         middleName,
         gender,
-        designation
-      }
+        designation,
+      };
       await dispatch(createAdmin(body)).unwrap();
       handleOpenModal();
     } catch (error: any) {
-      console.log('error', error);
+      console.log("error", error);
       toast.error(
-        error.message || 'An error occurred while creating the application'
+        error.message || "An error occurred while creating the application"
       );
     } finally {
       setLoading(false);
@@ -85,7 +93,7 @@ const NewAdmin = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="font-medium dark:text-gray-700">
-                Admin Management /{' '}
+                Admin Management /{" "}
                 <span className="ml-1 font-medium text-primary-700 dark:text-white">
                   New Admin
                 </span>
@@ -141,8 +149,12 @@ const NewAdmin = () => {
 
           <div className="flex flex-wrap gap-[2em] mt-[1em]">
             <div className="w-full md:w-[48%]">
-              <label htmlFor="middleName" className="flex items-center font-medium">
-                Other Name <span className="text-gray-500 ml-1">(Optional)</span>
+              <label
+                htmlFor="middleName"
+                className="flex items-center font-medium"
+              >
+                Other Name{" "}
+                <span className="text-gray-500 ml-1">(Optional)</span>
               </label>
               <input
                 id="middleName"
@@ -169,31 +181,31 @@ const NewAdmin = () => {
 
           <div className="flex flex-wrap gap-[2em] mt-[1em]">
             <div className="w-full md:w-[48%]">
-            <Dropdown
-            label="Designation"
-            labelClassName="text-grey-primary"
-            className="text-purple-deep"
-            items={designationType}
-            selectedItem={designation ? { name: designation } : null}
-            onSelectItem={handleSelectDesignation}
-            asterisk
-            placeholder="Select Designation"
-          />
+              <Dropdown
+                label="Designation"
+                labelClassName="text-grey-primary"
+                className="text-purple-deep"
+                items={designationType}
+                selectedItem={designation ? { name: designation } : null}
+                onSelectItem={handleSelectDesignation}
+                asterisk
+                placeholder="Select Designation"
+              />
             </div>
 
             <div className="w-full md:w-[48%]">
-          <Dropdown
-            label="Gender"
-            labelClassName="text-grey-primary"
-            className="text-purple-deep"
-            items={type}
-            selectedItem={gender ? { name: gender } : null}
-            onSelectItem={handleSelectGender}
-            asterisk
-            placeholder='Select'
-          />
+              <Dropdown
+                label="Gender"
+                labelClassName="text-grey-primary"
+                className="text-purple-deep"
+                items={type}
+                selectedItem={gender ? { name: gender } : null}
+                onSelectItem={handleSelectGender}
+                asterisk
+                placeholder="Select"
+              />
+            </div>
           </div>
-       </div>
           <div className="mt-11">
             <button.PrimaryButton
               className="m-auto w-[100%] md:w-[37%] justify-center gap-2 rounded-full bg-linear-gradient py-[11px] text-center font-medium text-white"
@@ -208,7 +220,7 @@ const NewAdmin = () => {
                   type="spin"
                 />
               ) : (
-                'Generate Password Link'
+                "Create"
               )}
             </button.PrimaryButton>
           </div>
@@ -216,7 +228,11 @@ const NewAdmin = () => {
       </div>
 
       {isModalOpen && (
-        <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
+        <Modal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          data-aos="zoom-in"
+        >
           <AdminCreated email={email} onClose={handleCloseModal} />
         </Modal>
       )}

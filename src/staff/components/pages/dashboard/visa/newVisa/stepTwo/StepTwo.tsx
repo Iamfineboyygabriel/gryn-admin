@@ -2,12 +2,12 @@ import { useState } from "react";
 import { button } from "../../../../../../../shared/buttons/Button";
 import { toast } from "react-toastify";
 import ReactLoading from "react-loading";
-import { useCountries } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
 import Flag from "react-world-flags";
 import { AppDispatch } from "../../../../../../../shared/redux/store";
 import { useAppDispatch } from "../../../../../../../shared/redux/hooks/shared/reduxHooks";
 import { createVisaApplication } from "../../../../../../../shared/redux/shared/slices/shareApplication.slices";
 import { Dropdown } from "../../../../../../../shared/dropDown/DropDown";
+import { countries } from "../../../../../../../data/data";
 
 interface CreateApplicationBody {
   firstName: string;
@@ -53,7 +53,6 @@ const StepTwo = ({
   const dispatch: AppDispatch = useAppDispatch();
 
   const [loading, setLoading] = useState(false);
-  const { countries, loading: countriesLoading } = useCountries();
 
   const destinationDropdownItems = countries.map((country) => ({
     name: country.name,
@@ -193,11 +192,11 @@ const StepTwo = ({
                 onSelectItem={handleCountrySelect}
                 asterisk
                 searchVisible
-                loading={countriesLoading}
                 placeholder="Destination"
               />
             </div>
           </div>
+
           <div className="lg:mt-[1em] flex flex-col lg:flex-row gap-[1em] lg:gap-[3em]">
             <div className="w-full">
               <label htmlFor="schoolName" className="flex-start font-medium">
@@ -210,6 +209,7 @@ const StepTwo = ({
                 className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
               />
             </div>
+
             <div className="w-full">
               <label
                 htmlFor="assignedAgent"
