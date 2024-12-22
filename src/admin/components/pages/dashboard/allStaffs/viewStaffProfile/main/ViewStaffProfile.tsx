@@ -40,9 +40,11 @@ const ViewStaffProfile = () => {
                 </span>
               </h1>
             </div>
-            <button.PrimaryButton className="btn-2" onClick={handleBackClick}>
-              Back
-            </button.PrimaryButton>
+            <div>
+              <button.PrimaryButton className="btn-2" onClick={handleBackClick}>
+                Back
+              </button.PrimaryButton>
+            </div>
           </div>
         </header>
         <div>

@@ -745,6 +745,18 @@ export const updateStudentApplication = createAsyncThunk(
   }
 );
 
+export const deleteUser = createAsyncThunk(
+  "shareApplication/deleteUser",
+  async (userId: any, thunkAPI) => {
+    try {
+      const response = await shareApplicationServices.deleteUser(userId);
+      return response.data;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
 export const clearStaffPayment = createAsyncThunk(
   "shareApplication/clearStaffPayment",
   async () => {
@@ -852,6 +864,7 @@ interface ApplicationState {
     isDirect: boolean;
     status: string;
   } | null;
+  removeUser: null;
 }
 
 const initialState: ApplicationState = {
@@ -951,6 +964,7 @@ const initialState: ApplicationState = {
   allApplicationPaymentSearchTerm: "",
   allPendingAgentSearchTerm: "",
   applicationStatus: null,
+  removeUser: null,
 };
 
 export const shareApplicationSlice = createSlice({
@@ -1635,6 +1649,19 @@ export const shareApplicationSlice = createSlice({
       .addCase(updateStudentApplication.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to update application";
+      })
+
+      .addCase(deleteUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteUser.fulfilled, (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.removeUser = action.payload;
+      })
+      .addCase(deleteUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to update Notification";
       });
   },
 });

@@ -10,10 +10,12 @@ import { useAllStaffForSuperAdmin } from "../../../../../../shared/redux/hooks/a
 import Modal from "../../../../../../shared/modal/Modal";
 import UpdateStaff from "./UpdateStaff";
 import { PrivateElement } from "../../../../../../shared/redux/hooks/admin/PrivateElement";
+import { useDispatch } from "react-redux";
+import { deleteUser } from "../../../../../../shared/redux/shared/slices/shareApplication.slices";
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
-    {Array.from({ length: 6 }).map((_, index) => (
+    {Array.from({ length: 7 }).map((_, index) => (
       <td key={index} className="px-6 py-4">
         <div className="h-4 bg-gray-200 rounded"></div>
       </td>
@@ -22,6 +24,8 @@ const SkeletonRow = () => (
 );
 
 const AllStaff = () => {
+  const dispatch = useDispatch();
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const {
     admins,
     totalPages,
@@ -36,8 +40,35 @@ const AllStaff = () => {
   const itemsPerPage = 10;
   const [isModalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
+
   const handleOpenModal = () => setModalOpen(true);
   const handleCloseModal = () => setModalOpen(false);
+
+  const handleCheckboxChange = (userId: string) => {
+    setSelectedUsers((prev) => {
+      if (prev.includes(userId)) {
+        return prev.filter((id) => id !== userId);
+      } else {
+        return [...prev, userId];
+      }
+    });
+  };
+
+  const handleDeleteSelected = async () => {
+    if (window.confirm("Are you sure you want to delete the selected users?")) {
+      try {
+        const deletePromises = selectedUsers.map((userId) =>
+          dispatch(deleteUser(userId) as any).unwrap()
+        );
+
+        await Promise.all(deletePromises);
+        setSelectedUsers([]);
+        fetchAdmins(currentPage, itemsPerPage);
+      } catch (error) {
+        console.error("Error deleting users:", error);
+      }
+    }
+  };
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -125,6 +156,16 @@ const AllStaff = () => {
           key={admin?.id}
           className="text-[14px] border-b border-gray-200 leading-[20px] text-grey-primary font-medium"
         >
+          <PrivateElement feature="ALL_STAFFS" page="delete user">
+            <td className="py-[16px] px-[24px]">
+              <input
+                type="checkbox"
+                checked={selectedUsers.includes(admin?.id)}
+                onChange={() => handleCheckboxChange(admin?.id)}
+                className="w-4 h-4 rounded border-gray-300 text-primary-700 focus:ring-primary-700"
+              />
+            </td>
+          </PrivateElement>
           <td className="py-[16px] px-[24px]">
             {(currentPage - 1) * itemsPerPage + index + 1}
           </td>
@@ -157,7 +198,7 @@ const AllStaff = () => {
     } else {
       return (
         <tr>
-          <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+          <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
             <div className="mt-[2em] flex flex-col items-center justify-center">
               <img src={transaction} alt="No admins" />
               <p className="mt-2 text-sm text-gray-500 dark:text-white">
@@ -177,6 +218,9 @@ const AllStaff = () => {
     highlightText,
     localSearchTerm,
     formatData,
+    selectedUsers,
+    handleCheckboxChange,
+    handleViewDetails,
   ]);
 
   return (
@@ -187,7 +231,22 @@ const AllStaff = () => {
           <header className="flex items-center justify-between">
             <h1 className="font-medium text-xl">All Staff</h1>
 
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
+              <PrivateElement feature="ALL_STAFFS" page="delete user">
+                <div>
+                  <button.PrimaryButton
+                    onClick={handleDeleteSelected}
+                    disabled={selectedUsers.length === 0}
+                    className={`btn-2 ${
+                      selectedUsers.length === 0
+                        ? "opacity-60 cursor-not-allowed"
+                        : ""
+                    }`}
+                  >
+                    Delete Selected ({selectedUsers.length})
+                  </button.PrimaryButton>
+                </div>
+              </PrivateElement>
               <PrivateElement feature="ALL_STAFFS" page="Update Staff">
                 <button.PrimaryButton
                   onClick={handleOpenModal}
@@ -207,6 +266,7 @@ const AllStaff = () => {
               </PrivateElement>
             </div>
           </header>
+
           <div className="flex items-center mt-3 w-64 rounded-full border-[1px] border-border bg-gray-100 dark:bg-gray-700">
             <input
               type="text"
@@ -222,6 +282,11 @@ const AllStaff = () => {
             <table className="w-full mt-4 border-collapse">
               <thead className="text-gray-500 border-b border-gray-200">
                 <tr>
+                  <PrivateElement feature="ALL_STAFFS" page="delete user">
+                    <th className="px-6 py-3 text-left text-sm font-normal">
+                      Select
+                    </th>
+                  </PrivateElement>
                   <th className="px-6 py-3 text-left text-sm font-normal">
                     S/N
                   </th>
@@ -234,9 +299,11 @@ const AllStaff = () => {
                   <th className="px-6 py-3 text-left text-sm font-normal">
                     Email Address
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-normal">
-                    Action
-                  </th>
+                  <PrivateElement feature="ALL_STAFFS" page="View Details">
+                    <th className="px-6 py-3 text-left text-sm font-normal">
+                      Action
+                    </th>
+                  </PrivateElement>
                 </tr>
               </thead>
               <tbody>{renderTableBody()}</tbody>

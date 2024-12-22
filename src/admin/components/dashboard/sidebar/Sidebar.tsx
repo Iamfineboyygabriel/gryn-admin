@@ -23,6 +23,13 @@ const Sidebar = () => {
   const { userProfile } = useUserProfile();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
+  const filteredSidebarLinks = adminSideBarLinks?.filter((link) => {
+    if (link.feature && link.page) {
+      return hasPermission(link.feature, link.page);
+    }
+    return true;
+  });
+
   const handleLogout = async () => {
     try {
       setIsLoggingOut(true);
@@ -76,7 +83,7 @@ const Sidebar = () => {
         </div>
 
         <nav className={`mt-5 space-y-1 ${isCollapsed ? "px-2" : "px-4"}`}>
-          {adminSideBarLinks?.map((link, index) => {
+          {filteredSidebarLinks?.map((link, index) => {
             const isActive = link.pathsToCheck.some((path) =>
               location.pathname.startsWith(path)
             );

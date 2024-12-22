@@ -19,15 +19,15 @@ const SkeletonRow = () => (
 );
 
 const AdminManagement = () => {
-  const { 
-    admins = { data: [] }, 
-    totalPages, 
-    currentPage, 
-    loading, 
-    error, 
-    searchTerm, 
-    fetchAdmins, 
-    updateSearchTerm 
+  const {
+    admins = { data: [] },
+    totalPages,
+    currentPage,
+    loading,
+    error,
+    searchTerm,
+    fetchAdmins,
+    updateSearchTerm,
   } = useAllAdminForSuperAdmin();
 
   const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm || "");
@@ -42,29 +42,41 @@ const AdminManagement = () => {
     }, 300);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [localSearchTerm, updateSearchTerm, fetchAdmins, itemsPerPage, searchTerm]);
+  }, [
+    localSearchTerm,
+    updateSearchTerm,
+    fetchAdmins,
+    itemsPerPage,
+    searchTerm,
+  ]);
 
   useEffect(() => {
     fetchAdmins(currentPage, itemsPerPage);
   }, [fetchAdmins, currentPage, itemsPerPage]);
 
-  const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, value: number) => {
-    fetchAdmins(value, itemsPerPage);
-  }, [fetchAdmins, itemsPerPage]);
+  const handlePageChange = useCallback(
+    (event: React.ChangeEvent<unknown>, value: number) => {
+      fetchAdmins(value, itemsPerPage);
+    },
+    [fetchAdmins, itemsPerPage]
+  );
 
   const escapeRegExp = useCallback((string: string) => {
     return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }, []);
 
-  const highlightText = useCallback((text: string, query: string) => {
-    if (!query) return text;
-    const escapedQuery = escapeRegExp(query);
-    const regex = new RegExp(`(${escapedQuery})`, "gi");
-    return text.replace(
-      regex,
-      (match: string) => `<mark class="bg-yellow-300">${match}</mark>`
-    );
-  }, [escapeRegExp]);
+  const highlightText = useCallback(
+    (text: string, query: string) => {
+      if (!query) return text;
+      const escapedQuery = escapeRegExp(query);
+      const regex = new RegExp(`(${escapedQuery})`, "gi");
+      return text.replace(
+        regex,
+        (match: string) => `<mark class="bg-yellow-300">${match}</mark>`
+      );
+    },
+    [escapeRegExp]
+  );
 
   const sanitizeHTML = useCallback((html: string) => {
     return { __html: DOMPurify.sanitize(html) };
@@ -74,13 +86,15 @@ const AdminManagement = () => {
 
   const filteredAdmins = useMemo(() => {
     if (!admins?.data) return [];
-    
+
     return admins.data.filter((admin: any) => {
       if (!localSearchTerm) return true;
-      
-      const fullName = `${admin?.profile?.firstName || ''} ${admin?.profile?.lastName || ''}`.toLowerCase();
+
+      const fullName = `${admin?.profile?.firstName || ""} ${
+        admin?.profile?.lastName || ""
+      }`.toLowerCase();
       const searchLower = localSearchTerm.toLowerCase();
-      
+
       return (
         fullName.includes(searchLower) ||
         admin?.email?.toLowerCase()?.includes(searchLower) ||
@@ -105,27 +119,25 @@ const AdminManagement = () => {
           <td className="py-[16px] px-[24px]">
             {(currentPage - 1) * itemsPerPage + index + 1}
           </td>
-          <td 
+          <td
             className="py-[16px] px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
               highlightText(
-                `${admin?.profile?.firstName || ''} ${admin?.profile?.lastName || ''}`,
+                `${admin?.profile?.firstName || ""} ${
+                  admin?.profile?.lastName || ""
+                }`,
                 localSearchTerm
               )
             )}
           />
-          <td className="py-[16px] px-[24px]">
-            {formatData(admin?.role)}
-          </td>
-          <td 
+          <td className="py-[16px] px-[24px]">{formatData(admin?.role)}</td>
+          <td
             className="py-[16px] px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
-              highlightText(
-                formatData(admin?.email),
-                localSearchTerm
-              )
+              highlightText(formatData(admin?.email), localSearchTerm)
             )}
           />
+          <td className="py-[16px] px-[24px]">View Details</td>
         </tr>
       ));
     }
@@ -142,7 +154,16 @@ const AdminManagement = () => {
         </td>
       </tr>
     );
-  }, [loading, filteredAdmins, currentPage, itemsPerPage, sanitizeHTML, highlightText, localSearchTerm, formatData]);
+  }, [
+    loading,
+    filteredAdmins,
+    currentPage,
+    itemsPerPage,
+    sanitizeHTML,
+    highlightText,
+    localSearchTerm,
+    formatData,
+  ]);
 
   return (
     <main className="font-outfit px-[1em]">
@@ -174,9 +195,13 @@ const AdminManagement = () => {
           <thead className="text-gray-500 border-b border-gray-200">
             <tr>
               <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
-              <th className="px-6 py-3 text-left text-sm font-normal">Full Name</th>
+              <th className="px-6 py-3 text-left text-sm font-normal">
+                Full Name
+              </th>
               <th className="px-6 py-3 text-left text-sm font-normal">Role</th>
-              <th className="px-6 py-3 text-left text-sm font-normal">Email Address</th>
+              <th className="px-6 py-3 text-left text-sm font-normal">
+                Email Address
+              </th>
             </tr>
           </thead>
           <tbody>{renderTableBody()}</tbody>
