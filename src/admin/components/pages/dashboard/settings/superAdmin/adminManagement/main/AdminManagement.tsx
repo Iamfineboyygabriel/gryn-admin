@@ -7,6 +7,9 @@ import { button } from "../../../../../../../../shared/buttons/Button";
 import plus from "../../../../../../../../assets/svg/plus.svg";
 import CustomPagination from "../../../../../../../../shared/utils/customPagination";
 import { useAllAdminForSuperAdmin } from "../../../../../../../../shared/redux/hooks/admin/getAdminProfile";
+import { deleteUser } from "../../../../../../../../shared/redux/shared/slices/shareApplication.slices";
+import { PrivateElement } from "../../../../../../../../shared/redux/hooks/admin/PrivateElement";
+import { useDispatch } from "react-redux";
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -29,6 +32,36 @@ const AdminManagement = () => {
     fetchAdmins,
     updateSearchTerm,
   } = useAllAdminForSuperAdmin();
+  const dispach = useDispatch();
+  const [selectedAdmins, setSelectedAdmins] = useState<string[]>([]);
+
+  const handleCheckboxChange = (adminId: string) => {
+    setSelectedAdmins((prev) => {
+      if (prev.includes(adminId)) {
+        return prev.filter((id) => id !== adminId);
+      } else {
+        return [...prev, adminId];
+      }
+    });
+  };
+
+  const handleDeleteSelected = async () => {
+    if (
+      window.confirm("Are you sure you want to delete the selected admins?")
+    ) {
+      try {
+        const deletePromises = selectedAdmins?.map((adminId) =>
+          dispach(deleteUser(adminId) as any).unwrap()
+        );
+
+        await Promise.all(deletePromises);
+        setSelectedAdmins([]);
+        fetchAdmins(currentPage, itemsPerPage);
+      } catch (error) {
+        console.error("Error deleting admins:", error);
+      }
+    }
+  };
 
   const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm || "");
   const itemsPerPage = 10;
@@ -116,6 +149,16 @@ const AdminManagement = () => {
           key={admin?.id}
           className="text-[14px] border-b border-gray-200 leading-[20px] text-grey-primary font-medium"
         >
+          <PrivateElement feature="ALL_STAFFS" page="delete user">
+            <td className="py-[16px] px-[24px]">
+              <input
+                type="checkbox"
+                checked={selectedAdmins.includes(admin?.id)}
+                onChange={() => handleCheckboxChange(admin?.id)}
+                className="w-4 h-4 rounded border-gray-300 text-primary-700 focus:ring-primary-700 accent-primary-700"
+              />
+            </td>
+          </PrivateElement>
           <td className="py-[16px] px-[24px]">
             {(currentPage - 1) * itemsPerPage + index + 1}
           </td>
@@ -170,7 +213,20 @@ const AdminManagement = () => {
       <div className="relative">
         <header className="flex items-center justify-between">
           <h1 className="font-medium text-xl">Admin Management</h1>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
+            <PrivateElement feature="ALL_STAFFS" page="delete user">
+              {selectedAdmins?.length > 0 && (
+                <div>
+                  <button.PrimaryButton
+                    onClick={handleDeleteSelected}
+                    className="btn-2"
+                  >
+                    Delete Selected ({selectedAdmins.length})
+                  </button.PrimaryButton>
+                </div>
+              )}
+            </PrivateElement>
+
             <Link to="/admin/dashboard/settings/admin_management/new_admin">
               <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-primary-700 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
                 <img src={plus} alt="plus" />
@@ -194,6 +250,11 @@ const AdminManagement = () => {
         <table className="w-full mt-4 border-collapse">
           <thead className="text-gray-500 border-b border-gray-200">
             <tr>
+              <PrivateElement feature="ALL_STAFF" page="delete user">
+                <th className="px-6 py-3 text-left text-sm font-normal">
+                  Select
+                </th>
+              </PrivateElement>
               <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
               <th className="px-6 py-3 text-left text-sm font-normal">
                 Full Name
