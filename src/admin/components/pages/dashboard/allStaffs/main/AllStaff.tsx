@@ -233,20 +233,18 @@ const AllStaff = () => {
 
             <div className="flex items-center gap-2">
               <PrivateElement feature="ALL_STAFFS" page="delete user">
-                <div>
-                  <button.PrimaryButton
-                    onClick={handleDeleteSelected}
-                    disabled={selectedUsers.length === 0}
-                    className={`btn-2 ${
-                      selectedUsers.length === 0
-                        ? "opacity-60 cursor-not-allowed"
-                        : ""
-                    }`}
-                  >
-                    Delete Selected ({selectedUsers.length})
-                  </button.PrimaryButton>
-                </div>
+                {selectedUsers?.length > 0 && (
+                  <div>
+                    <button.PrimaryButton
+                      onClick={handleDeleteSelected}
+                      className="btn-2"
+                    >
+                      Delete Selected ({selectedUsers.length})
+                    </button.PrimaryButton>
+                  </div>
+                )}
               </PrivateElement>
+
               <PrivateElement feature="ALL_STAFFS" page="Update Staff">
                 <button.PrimaryButton
                   onClick={handleOpenModal}
@@ -256,6 +254,7 @@ const AllStaff = () => {
                   Update Staff
                 </button.PrimaryButton>
               </PrivateElement>
+
               <PrivateElement feature="ALL_STAFFS" page="New Staff">
                 <Link to="/admin/dashboard/all_staffs/create_staff">
                   <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-primary-700 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
