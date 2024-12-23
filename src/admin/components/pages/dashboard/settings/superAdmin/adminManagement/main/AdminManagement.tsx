@@ -136,7 +136,7 @@ const AdminManagement = () => {
 
   const renderTableBody = useCallback(() => {
     if (loading) {
-      return Array.from({ length: itemsPerPage }).map((_, index) => (
+      return Array.from({ length: itemsPerPage })?.map((_, index) => (
         <SkeletonRow key={index} />
       ));
     }
@@ -217,7 +217,7 @@ const AdminManagement = () => {
                 onClick={handleDeleteSelected}
                 className="mt-[1em] flex gap-2 rounded-full bg-red-500 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300"
               >
-                Delete Selected ({selectedUsers.length})
+                Delete Selected ({selectedUsers?.length})
               </button.PrimaryButton>
             )}
             <Link to="/admin/dashboard/settings/admin_management/new_admin">
@@ -263,12 +263,12 @@ const AdminManagement = () => {
         </table>
       </div>
 
-      {!loading && filteredAdmins.length > 0 && (
+      {!loading && filteredAdmins?.length > 0 && (
         <div className="mt-6 flex justify-center">
           <CustomPagination
             currentPage={currentPage}
             onPageChange={handlePageChange}
-            hasMore={filteredAdmins.length === itemsPerPage}
+            hasMore={filteredAdmins?.length === itemsPerPage}
           />
         </div>
       )}
