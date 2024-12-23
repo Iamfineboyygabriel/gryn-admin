@@ -12,6 +12,8 @@ import Modal from "../../../../../../../shared/modal/Modal";
 import FindAgentByEmail from "../../../../../../../shared/modal/FindAgentByEmail";
 import { PrivateElement } from "../../../../../../../shared/redux/hooks/admin/PrivateElement";
 import { deleteUser } from "../../../../../../../shared/redux/shared/slices/shareApplication.slices";
+import DeletePendingModal from "../modal/DeletePendingModal";
+import SuccessModal from "../modal/SuccessModal";
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -44,7 +46,13 @@ const PendingAgents = () => {
   const handleOpenModal = () => setModalOpen(true);
   const handleCloseModal = () => setModalOpen(false);
 
-  // Handle checkbox selection
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  const handleDeleteSelected = () => {
+    setShowDeleteModal(true);
+  };
+
   const handleCheckboxChange = (agentId: string) => {
     setSelectedAgents((prev) => {
       if (prev.includes(agentId)) {
@@ -55,22 +63,19 @@ const PendingAgents = () => {
     });
   };
 
-  // Handle delete selected agents
-  const handleDeleteSelected = async () => {
-    if (
-      window.confirm("Are you sure you want to delete the selected agents?")
-    ) {
-      try {
-        const deletePromises = selectedAgents.map((agentId) =>
-          dispatch(deleteUser(agentId) as any).unwrap()
-        );
+  const handleConfirmDelete = async () => {
+    try {
+      const deletePromises = selectedAgents.map((agentId) =>
+        dispatch(deleteUser(agentId) as any).unwrap()
+      );
 
-        await Promise.all(deletePromises);
-        setSelectedAgents([]);
-        fetchAgents(currentPage, itemsPerPage);
-      } catch (error) {
-        console.error("Error deleting agents:", error);
-      }
+      await Promise.all(deletePromises);
+      setShowDeleteModal(false);
+      setSelectedAgents([]);
+      setShowSuccessModal(true);
+      fetchAgents(currentPage, itemsPerPage);
+    } catch (error) {
+      console.error("Error deleting agents:", error);
     }
   };
 
@@ -305,6 +310,33 @@ const PendingAgents = () => {
           data-aos="zoom-in"
         >
           <FindAgentByEmail onClose={handleCloseModal} />
+        </Modal>
+      )}
+
+      {showDeleteModal && (
+        <Modal
+          isOpen={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+        >
+          <DeletePendingModal
+            selectedCount={selectedAgents.length}
+            onConfirm={handleConfirmDelete}
+            onCancel={() => setShowDeleteModal(false)}
+          />
+        </Modal>
+      )}
+
+      {showSuccessModal && (
+        <Modal
+          isOpen={showSuccessModal}
+          onClose={() => setShowSuccessModal(false)}
+        >
+          <SuccessModal
+            message={`Successfully deleted ${selectedAgents.length} agent ${
+              selectedAgents.length === 1 ? "member" : "members"
+            }.`}
+            onClose={() => setShowSuccessModal(false)}
+          />
         </Modal>
       )}
     </main>
