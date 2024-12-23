@@ -237,7 +237,7 @@ const AllStaff = () => {
                   <div>
                     <button.PrimaryButton
                       onClick={handleDeleteSelected}
-                      className="btn-2"
+                      className="mt-[1em] flex gap-2 rounded-full bg-red-500 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300"
                     >
                       Delete Selected ({selectedUsers.length})
                     </button.PrimaryButton>
