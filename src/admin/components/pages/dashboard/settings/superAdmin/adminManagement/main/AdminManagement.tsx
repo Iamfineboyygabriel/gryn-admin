@@ -9,6 +9,9 @@ import CustomPagination from "../../../../../../../../shared/utils/customPaginat
 import { useAllAdminForSuperAdmin } from "../../../../../../../../shared/redux/hooks/admin/getAdminProfile";
 import { useDispatch } from "react-redux";
 import { deleteUser } from "../../../../../../../../shared/redux/shared/slices/shareApplication.slices";
+import Modal from "../../../../../../../../shared/modal/Modal";
+import DeleteAdminModal from "../modal/DeleteAdminModal";
+import SuccessModal from "../modal/SuccessModal";
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -36,6 +39,13 @@ const AdminManagement = () => {
   const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm || "");
   const itemsPerPage = 10;
 
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  const handleDeleteSelected = () => {
+    setShowDeleteModal(true);
+  };
+
   const handleCheckboxChange = (userId: string) => {
     setSelectedUsers((prev) => {
       if (prev.includes(userId)) {
@@ -46,21 +56,19 @@ const AdminManagement = () => {
     });
   };
 
-  const handleDeleteSelected = async () => {
-    if (
-      window.confirm("Are you sure you want to delete the selected admins?")
-    ) {
-      try {
-        const deletePromises = selectedUsers.map((userId) =>
-          dispatch(deleteUser(userId) as any).unwrap()
-        );
+  const handleConfirmDelete = async () => {
+    try {
+      const deletePromises = selectedUsers.map((userId) =>
+        dispatch(deleteUser(userId) as any).unwrap()
+      );
 
-        await Promise.all(deletePromises);
-        setSelectedUsers([]);
-        fetchAdmins(currentPage, itemsPerPage);
-      } catch (error) {
-        console.error("Error deleting admins:", error);
-      }
+      await Promise.all(deletePromises);
+      setShowSuccessModal(true);
+      setShowDeleteModal(false);
+      setSelectedUsers([]);
+      fetchAdmins(currentPage, itemsPerPage);
+    } catch (error) {
+      console.error("Error deleting admins:", error);
     }
   };
 
@@ -271,6 +279,32 @@ const AdminManagement = () => {
             hasMore={filteredAdmins?.length === itemsPerPage}
           />
         </div>
+      )}
+      {showDeleteModal && (
+        <Modal
+          isOpen={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+        >
+          <DeleteAdminModal
+            selectedCount={selectedUsers.length}
+            onConfirm={handleConfirmDelete}
+            onCancel={() => setShowDeleteModal(false)}
+          />
+        </Modal>
+      )}
+
+      {showSuccessModal && (
+        <Modal
+          isOpen={showSuccessModal}
+          onClose={() => setShowSuccessModal(false)}
+        >
+          <SuccessModal
+            message={`Successfully deleted ${selectedUsers.length} admin ${
+              selectedUsers.length === 1 ? "member" : "members"
+            }.`}
+            onClose={() => setShowSuccessModal(false)}
+          />
+        </Modal>
       )}
     </main>
   );
