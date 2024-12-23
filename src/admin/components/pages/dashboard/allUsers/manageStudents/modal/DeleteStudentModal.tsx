@@ -1,21 +1,24 @@
 import React from "react";
-import question from "../../../../../../assets/svg/question.svg";
-import { button } from "../../../../../../shared/buttons/Button";
+import question from "../../../../../../../assets/svg/question.svg";
+import { button } from "../../../../../../../shared/buttons/Button";
 
-const DeleteStaffModal = ({ onConfirm, onCancel, selectedCount }: any) => {
+const DeleteStudentModal = ({ onConfirm, onCancel, selectedCount }: any) => {
   return (
     <main className="px-[3em] font-outfit">
-      <div className="m-auto w-[24em] py-[2em] text-center">
+      <div className="m-auto w-[24em] flex flex-col justify-center py-[2em] text-center">
         <img src={question} alt="success_img" className="m-auto" />
-        <header className="mt-[2em] flex flex-col">
-          <h1 className="text-xl whitespace-nowrap font-semibold">
-            Are you sure you want to delete staff ?
+        <header className="mt-[2em] text-center justify-center flex flex-col">
+          {/* <h1 className="text-2xl text-center whitespace-nowrap font-semibold">
+            Are you sure you want to delete Student ?
+          </h1> */}
+          <h1 className="text-xl font-semibold">
+            Are you sure you want to delete Student ?
           </h1>
         </header>
         <article>
           <div className="mt-1 text-sm font-light text-center flex flex-col gap-[5px] tracking-wide text-grey">
             <p className="text-gray-600 mb-6">
-              Are you sure you want to delete {selectedCount} selected staff{" "}
+              Are you sure you want to delete {selectedCount} selected student{" "}
               {selectedCount === 1 ? "member" : "members"}? This action cannot
               be undone.
             </p>
@@ -40,4 +43,4 @@ const DeleteStaffModal = ({ onConfirm, onCancel, selectedCount }: any) => {
     </main>
   );
 };
-export default DeleteStaffModal;
+export default DeleteStudentModal;

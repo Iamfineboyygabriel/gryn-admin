@@ -64,7 +64,6 @@ const AllStaff = () => {
       fetchAdmins(currentPage, itemsPerPage);
     } catch (error) {
       console.error("Error deleting users:", error);
-      // You might want to show an error modal here
     }
   };
 
