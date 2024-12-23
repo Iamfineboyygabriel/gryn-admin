@@ -12,6 +12,8 @@ import UpdateStaff from "./UpdateStaff";
 import { PrivateElement } from "../../../../../../shared/redux/hooks/admin/PrivateElement";
 import { useDispatch } from "react-redux";
 import { deleteUser } from "../../../../../../shared/redux/shared/slices/shareApplication.slices";
+import DeleteStaffModal from "../modal/DeleteStaffModal";
+import SuccessModal from "../modal/SuccessModal";
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -28,10 +30,8 @@ const AllStaff = () => {
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const {
     admins,
-    totalPages,
     currentPage,
     loading,
-    error,
     searchTerm,
     fetchAdmins,
     updateSearchTerm,
@@ -44,6 +44,30 @@ const AllStaff = () => {
   const handleOpenModal = () => setModalOpen(true);
   const handleCloseModal = () => setModalOpen(false);
 
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  const handleDeleteSelected = () => {
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      const deletePromises = selectedUsers.map((userId) =>
+        dispatch(deleteUser(userId) as any).unwrap()
+      );
+
+      await Promise.all(deletePromises);
+      setShowDeleteModal(false);
+      setSelectedUsers([]);
+      setShowSuccessModal(true);
+      fetchAdmins(currentPage, itemsPerPage);
+    } catch (error) {
+      console.error("Error deleting users:", error);
+      // You might want to show an error modal here
+    }
+  };
+
   const handleCheckboxChange = (userId: string) => {
     setSelectedUsers((prev) => {
       if (prev.includes(userId)) {
@@ -52,22 +76,6 @@ const AllStaff = () => {
         return [...prev, userId];
       }
     });
-  };
-
-  const handleDeleteSelected = async () => {
-    if (window.confirm("Are you sure you want to delete the selected users?")) {
-      try {
-        const deletePromises = selectedUsers.map((userId) =>
-          dispatch(deleteUser(userId) as any).unwrap()
-        );
-
-        await Promise.all(deletePromises);
-        setSelectedUsers([]);
-        fetchAdmins(currentPage, itemsPerPage);
-      } catch (error) {
-        console.error("Error deleting users:", error);
-      }
-    }
   };
 
   useEffect(() => {
@@ -329,6 +337,33 @@ const AllStaff = () => {
           </Modal>
         )}
       </div>
+
+      {showDeleteModal && (
+        <Modal
+          isOpen={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+        >
+          <DeleteStaffModal
+            selectedCount={selectedUsers.length}
+            onConfirm={handleConfirmDelete}
+            onCancel={() => setShowDeleteModal(false)}
+          />
+        </Modal>
+      )}
+
+      {showSuccessModal && (
+        <Modal
+          isOpen={showSuccessModal}
+          onClose={() => setShowSuccessModal(false)}
+        >
+          <SuccessModal
+            message={`Successfully deleted ${selectedUsers.length} staff ${
+              selectedUsers.length === 1 ? "member" : "members"
+            }.`}
+            onClose={() => setShowSuccessModal(false)}
+          />
+        </Modal>
+      )}
     </main>
   );
 };
