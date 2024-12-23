@@ -151,12 +151,24 @@ const AdminManagement = () => {
         >
           <PrivateElement feature="ALL_STAFFS" page="delete user">
             <td className="py-[16px] px-[24px]">
-              <input
-                type="checkbox"
-                checked={selectedAdmins.includes(admin?.id)}
-                onChange={() => handleCheckboxChange(admin?.id)}
-                className="w-4 h-4 rounded border-gray-300 text-primary-700 focus:ring-primary-700 accent-primary-700"
-              />
+              <div className="relative">
+                <input
+                  type="checkbox"
+                  checked={selectedAdmins.includes(admin?.id)}
+                  onChange={() => handleCheckboxChange(admin?.id)}
+                  className="w-4 h-4 text-primary-700 border-gray-300 rounded focus:ring-primary-700"
+                />
+                <svg
+                  className={`absolute left-0 top-0 w-4 h-4 pointer-events-none
+                    ${selectedAdmins.includes(admin?.id) ? "block" : "hidden"}`}
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    fill="white"
+                    d="M13.293 4.293a1 1 0 0 1 0 1.414l-6 6a1 1 0 0 1-1.414 0l-3-3a1 1 0 1 1 1.414-1.414L6.586 9.586l5.293-5.293a1 1 0 0 1 1.414 0z"
+                  />
+                </svg>
+              </div>
             </td>
           </PrivateElement>
           <td className="py-[16px] px-[24px]">
