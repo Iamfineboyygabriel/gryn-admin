@@ -18,6 +18,7 @@ const ROUTES = {
   ADMIN_SIGNIN: "/admin_login",
   FORGOT_PASSWORD: "/forgot_password",
   APPLICATION: "/admin/dashboard/application",
+  VERIFY_ACCOUNT: "/verify_account",
 };
 
 interface LoginFormData {
@@ -54,9 +55,18 @@ const StaffLanding: React.FC = () => {
 
       try {
         const response = await dispatch(login(formData)).unwrap();
+        console.log("res", response);
         const role = response?.data?.role;
+        const isEmailVerified = response?.data?.isEmailVerified;
 
         if (role === "STAFF") {
+          if (!isEmailVerified) {
+            navigate(
+              `/verify_account?email=${encodeURIComponent(formData.email)}`
+            );
+            return;
+          }
+
           toast.success("Welcome");
           setIsLoggedIn(true);
         } else {
@@ -72,7 +82,7 @@ const StaffLanding: React.FC = () => {
         setLoading(false);
       }
     },
-    [dispatch, formData]
+    [dispatch, formData, navigate]
   );
 
   useEffect(() => {

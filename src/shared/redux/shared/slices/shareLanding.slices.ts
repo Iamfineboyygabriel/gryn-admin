@@ -3,6 +3,7 @@ import { setMessage } from "../../message.slices";
 import sharedLandingServices from "../services/shareLanding.services";
 
 interface User {
+  isEmailVerified: any;
   role: string;
 }
 
@@ -12,6 +13,8 @@ interface LoginPayload {
 }
 
 interface LoginResponse {
+  message: string;
+  status: number;
   data: User;
 }
 

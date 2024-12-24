@@ -1,5 +1,3 @@
-
-
 import axios from "axios";
 import socket from "../../../../socket/socket";
 const API_URL_LOGIN_USER = process.env.REACT_APP_API_URL + "/auth/login";
@@ -107,10 +105,33 @@ export const logOutUser = async (userId: string) => {
   }
 };
 
+export async function verifyUser(endpoint: any, params: any) {
+  const url = process.env.REACT_APP_API_URL + endpoint;
+  try {
+    return await axios.get(url, { params });
+  } catch (error: any) {
+    if (!error.response) {
+      throw new Error("Network Error: Please check your internet connection.");
+    }
+    throw error.response.data;
+  }
+}
+
+export const resendToken: any = async (endpoint: any, body: any) => {
+  try {
+    const response = await axios.post(endpoint, body);
+    return response?.data;
+  } catch (response: any) {
+    return response?.response?.data;
+  }
+};
+
 const sharedLandingServices = {
   loginUser,
   ResetPassword,
   logOutUser,
+  verifyUser,
+  resendToken,
 };
 
 export default sharedLandingServices;
