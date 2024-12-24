@@ -51,7 +51,8 @@ const VerifyAccount = () => {
       const response = await verifyUser(endpoint, { token });
 
       if (response.status === 200) {
-        navigate(`/verification_successful`);
+        toast.success("Account Verified Successfully");
+        navigate(`/`);
       } else {
         toast.error(response.data.message);
       }
