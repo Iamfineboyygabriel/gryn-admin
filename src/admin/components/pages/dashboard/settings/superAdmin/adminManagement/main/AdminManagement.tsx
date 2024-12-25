@@ -178,13 +178,15 @@ const AdminManagement = () => {
             )}
           />
           <td className="py-[16px] px-[24px]">{formatData(admin?.role)}</td>
+          <td className="py-[16px] px-[24px]">
+            {formatData(admin?.designation)}
+          </td>
           <td
             className="py-[16px] px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
               highlightText(formatData(admin?.email), localSearchTerm)
             )}
           />
-          <td className="py-[16px] px-[24px]">View Details</td>
         </tr>
       ));
     }
@@ -260,10 +262,10 @@ const AdminManagement = () => {
               </th>
               <th className="px-6 py-3 text-left text-sm font-normal">Role</th>
               <th className="px-6 py-3 text-left text-sm font-normal">
-                Email Address
+                Designation
               </th>
               <th className="px-6 py-3 text-left text-sm font-normal">
-                Action
+                Email Address
               </th>
             </tr>
           </thead>
