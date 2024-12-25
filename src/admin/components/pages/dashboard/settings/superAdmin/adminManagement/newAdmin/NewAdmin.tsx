@@ -36,11 +36,28 @@ const NewAdmin = () => {
   const type: Gender[] = [{ name: "MALE" }, { name: "FEMALE" }];
 
   const designationType: DesignationChoice[] = [
-    { name: "CUSTOMER_RELATIONS" },
-    { name: "STUDENT_RELATION_MANAGER" },
-    { name: "INTERNATIONAL_RELATIONAL_MANAGER" },
-    { name: "OFFICE_ADMIN" },
-    { name: "EXECUTIVE_ADMIN" },
+    { name: "CHIEF_EXECUTIVE_OFFICER" },
+    { name: "BOARD_MEMBER" },
+    { name: "CHIEF_OPERATIONS_OFFICER" },
+    { name: "MANAGEMENT_CONSULTANT" },
+    { name: "HEAD_HR" },
+    { name: "HEAD_ACCOUNT" },
+    { name: "OPERATION_MANAGER" },
+    { name: "BRANCH_MANAGER" },
+    { name: "RECRUITMENT_MANAGER" },
+    { name: "DEPUTY_RECRUITMENT_MANAGER" },
+    { name: "HR_MANAGER" },
+    { name: "ACCOUNTANT" },
+    { name: "CHIEF_FINANCIAL_OFFICER" },
+    { name: "SENIOR_ASSOCIATE" },
+    { name: "ADMINISTRATIVE_EXECUTIVE" },
+    { name: "JUNIOR_ASSOCIATE" },
+    { name: "ADMIN_OFFICER" },
+    { name: "ADMISSION_OFFICER" },
+    { name: "OFFICE_ASSISTANT" },
+    { name: "SENIOR_ADMISSION_OFFICER" },
+    { name: "ADMISSION_OFFICER_I" },
+    { name: "  PROJECT_TEAM_MEMBER" },
   ];
 
   const handleSelectGender = useCallback((item: DropdownItem) => {
