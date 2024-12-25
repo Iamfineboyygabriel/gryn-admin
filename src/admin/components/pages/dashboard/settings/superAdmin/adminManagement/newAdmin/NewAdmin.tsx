@@ -57,7 +57,7 @@ const NewAdmin = () => {
     { name: "OFFICE_ASSISTANT" },
     { name: "SENIOR_ADMISSION_OFFICER" },
     { name: "ADMISSION_OFFICER_I" },
-    { name: "  PROJECT_TEAM_MEMBER" },
+    { name: "PROJECT_TEAM_MEMBER" },
   ];
 
   const handleSelectGender = useCallback((item: DropdownItem) => {
