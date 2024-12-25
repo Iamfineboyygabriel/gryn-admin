@@ -26,7 +26,7 @@ const DeleteStaffModal = ({ onConfirm, onCancel, selectedCount }: any) => {
             className="m-auto mt-[2em] flex justify-center gap-2 px-6 rounded-full bg-red-600 py-[10px] text-center font-medium text-white"
             onClick={onCancel}
           >
-            Continue
+            Cancel
           </button.PrimaryButton>
 
           <button.PrimaryButton
