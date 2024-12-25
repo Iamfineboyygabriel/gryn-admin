@@ -34,6 +34,7 @@ const NewAdmin = () => {
   const [isModalOpen, setModalOpen] = useState(false);
 
   const type: Gender[] = [{ name: "MALE" }, { name: "FEMALE" }];
+
   const designationType: DesignationChoice[] = [
     { name: "CUSTOMER_RELATIONS" },
     { name: "STUDENT_RELATION_MANAGER" },

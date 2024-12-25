@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import ReactLoading from "react-loading";
 import { button } from "../../../../../../../../../shared/buttons/Button";
 import { useStaffEmails } from "../../../../../../../../../shared/redux/hooks/admin/getAdminProfile";
@@ -32,13 +31,34 @@ const NewRole: React.FC = () => {
     (state: RootState) => state.shareApplication.loading
   );
 
-  const type: RoleChoice[] = [{ name: "STAFF" }, { name: "ADMIN" }];
+  const type: RoleChoice[] = [
+    { name: "STAFF" },
+    { name: "ADMIN" },
+    { name: "SUPER_ADMIN" },
+  ];
   const designationType: DesignationChoice[] = [
-    { name: "CUSTOMER_RELATIONS" },
-    { name: "STUDENT_RELATION_MANAGER" },
-    { name: "INTERNATIONAL_RELATIONAL_MANAGER" },
-    { name: "OFFICE_ADMIN" },
-    { name: "EXCUTIVE_ADMIN" },
+    { name: "CHIEF_EXECUTIVE_OFFICER" },
+    { name: "BOARD_MEMBER" },
+    { name: "CHIEF_OPERATIONS_OFFICER" },
+    { name: "MANAGEMENT_CONSULTANT" },
+    { name: "HEAD_HR" },
+    { name: "HEAD_ACCOUNT" },
+    { name: "OPERATION_MANAGER" },
+    { name: "BRANCH_MANAGER" },
+    { name: "RECRUITMENT_MANAGER" },
+    { name: "DEPUTY_RECRUITMENT_MANAGER" },
+    { name: "HR_MANAGER" },
+    { name: "ACCOUNTANT" },
+    { name: "CHIEF_FINANCIAL_OFFICER" },
+    { name: "SENIOR_ASSOCIATE" },
+    { name: "ADMINISTRATIVE_EXECUTIVE" },
+    { name: "JUNIOR_ASSOCIATE" },
+    { name: "ADMIN_OFFICER" },
+    { name: "ADMISSION_OFFICER" },
+    { name: "OFFICE_ASSISTANT" },
+    { name: "SENIOR_ADMISSION_OFFICER" },
+    { name: "ADMISSION_OFFICER_I" },
+    { name: "  PROJECT_TEAM_MEMBER" },
   ];
 
   const emailItems: DropdownItem[] = useMemo(() => {

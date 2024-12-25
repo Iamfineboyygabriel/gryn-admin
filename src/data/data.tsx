@@ -202,49 +202,6 @@ export const studentDegree = [
   },
 ];
 
-export const StaffStats = [
-  {
-    label: "Total Number of",
-    p: "Students",
-    figure: "35",
-  },
-  {
-    label: "Total Number of",
-    p: "Application",
-    figure: "20",
-  },
-  {
-    label: "Number of Completed",
-    p: "Applications",
-    figure: "15",
-  },
-  {
-    label: "Number of Pending",
-    p: "Applications",
-    figure: "200,000",
-  },
-  {
-    label: "All",
-    p: "Agents",
-    figure: "25",
-  },
-  {
-    label: "Conditional",
-    p: "Offer",
-    figure: "10",
-  },
-  {
-    label: "Unconditional",
-    p: "Offer",
-    figure: "20",
-  },
-  {
-    label: "Confirmation for",
-    p: "Acceptance Studies",
-    figure: "5",
-  },
-];
-
 export enum DocumentType {
   RESUME = "RESUME",
   INTERNATIONAL_PASSPORT = "INTERNATIONAL_PASSPORT",
