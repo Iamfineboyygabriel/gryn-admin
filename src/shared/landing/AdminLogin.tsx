@@ -60,7 +60,7 @@ const AdminLogin = () => {
         const isEmailVerified = response?.data?.isEmailVerified;
 
         if (role === "ADMIN" || role === "SUPER_ADMIN") {
-          if (!isEmailVerified) {
+          if (role === "ADMIN" && !isEmailVerified) {
             navigate(
               `/verify_account?email=${encodeURIComponent(formData.email)}`
             );

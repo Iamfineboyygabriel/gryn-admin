@@ -100,6 +100,7 @@ const NewRole: React.FC = () => {
       toast.success("role assigned successfully");
       resetForm();
     } catch (error: any) {
+      toast.error(error);
       setError(
         error || "An error occurred while updating the role. Please try again."
       );
