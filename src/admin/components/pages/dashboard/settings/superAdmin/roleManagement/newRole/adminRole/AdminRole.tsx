@@ -10,6 +10,7 @@ import {
 import { RootState } from "../../../../../../../../../shared/redux/store";
 import { toast } from "react-toastify";
 import { updateRole } from "../../../../../../../../../shared/redux/shared/slices/shareApplication.slices";
+import {  AppDispatch } from "../../../../../../../../../shared/redux/store";
 
 interface RoleChoice {
   name: string;
@@ -20,7 +21,7 @@ interface DesignationChoice {
 }
 
 const AdminRole: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch();
   const { adminsEmail, loading: emailLoading } = useAdminsEmails();
   const [email, setEmail] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -59,7 +60,7 @@ const AdminRole: React.FC = () => {
     { name: "OFFICE_ASSISTANT" },
     { name: "SENIOR_ADMISSION_OFFICER" },
     { name: "ADMISSION_OFFICER_I" },
-    { name: "  PROJECT_TEAM_MEMBER" },
+    { name: "PROJECT_TEAM_MEMBER" },
   ];
 
   const emailItems: DropdownItem[] = useMemo(() => {
@@ -88,23 +89,23 @@ const AdminRole: React.FC = () => {
     setDesignation(null);
     setError(null);
   }, []);
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!email || !role || !designation) {
-    setError("Please fill in all fields");
-    return;
-  }
 
-  const result = await dispatch(updateRole({ email, role, designation }));
-  
-  if (result.error) {
-    const errorMessage = result.payload?.message || result.error.message || "An error occurred";
-    toast.error(errorMessage);
-    setError(errorMessage);
-  } else {
-    toast.success("Role assigned successfully");
-    resetForm();
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+ e.preventDefault();
+ if (!email || !role || !designation) {
+   setError("Please fill in all fields");
+   return;
+ }
+
+ try {
+   await dispatch(updateRole({ email, role, designation })).unwrap();
+   toast.success("Role assigned successfully");
+   resetForm();
+ } catch (error: any) {
+   const errorMessage = error.message || "An error occurred";
+   toast.error(errorMessage);
+   setError(errorMessage);
+ }
 };
 
   return (

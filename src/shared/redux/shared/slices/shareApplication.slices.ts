@@ -70,6 +70,12 @@ interface UpdateBankDetailsPayload {
   body: UpdateBankDetailsBody;
 }
 
+interface UpdateRolePayload {
+  email: string;
+  role: string;
+  designation: string;
+}
+
 interface UpdateDocumentPayload {
   remark: any;
   id: string;
@@ -608,7 +614,7 @@ export const createAdmin = createAsyncThunk(
 
 export const updateRole = createAsyncThunk(
   "shareApplication/updateRole",
-  async (body: any, thunkAPI) => {
+  async (body: UpdateRolePayload, thunkAPI) => {
     try {
       const data = await shareApplicationServices.updateRole(body);
       return data;
@@ -616,8 +622,7 @@ export const updateRole = createAsyncThunk(
       return thunkAPI.rejectWithValue(error);
     }
   }
-);
-
+)
 
 export const UploadStaffInvoicePaymentDocument = createAsyncThunk(
   "shareApplication/ uploadStaffInvoicePaymentDocument",
