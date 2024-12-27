@@ -185,7 +185,7 @@ const AllStaff = () => {
               )
             )}
           />
-          <td className="py-[16px] px-[24px]">{formatData(admin?.role)}</td>
+          <td className="py-[16px] px-[24px]">{formatData(admin?.designation)}</td>
           <td
             className="py-[16px] px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(

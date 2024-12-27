@@ -613,11 +613,11 @@ export const updateRole = createAsyncThunk(
       const data = await shareApplicationServices.updateRole(body);
       return data;
     } catch (error: any) {
-      const message = error;
-      return thunkAPI.rejectWithValue(message);
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );
+
 
 export const UploadStaffInvoicePaymentDocument = createAsyncThunk(
   "shareApplication/ uploadStaffInvoicePaymentDocument",
@@ -1496,8 +1496,8 @@ export const shareApplicationSlice = createSlice({
       })
       .addCase(updateRole.rejected, (state, action) => {
         state.registerRole = null;
-        const errorMessage = action.error.message || "Role failed to update.";
-        setMessage(errorMessage);
+        const error = action.error || "Role failed to update.";
+        setMessage(error);
       })
 
       .addCase(UploadStaffInvoicePaymentDocument.pending, (state) => {

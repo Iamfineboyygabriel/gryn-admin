@@ -18,20 +18,55 @@ interface Gender {
   name: string;
 }
 
+interface DesignationChoice {
+  name: string;
+}
+
+
 const CreateStaff = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [middleName, setMiddleName] = useState("");
   const [email, setEmail] = useState("");
   const [gender, setGender] = useState<string | null>(null);
+  const [designation, setDesignation] = useState<string | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
 
   const type: Gender[] = [{ name: "MALE" }, { name: "FEMALE" }];
 
+   const designationType: DesignationChoice[] = [
+    { name: "CHIEF_EXECUTIVE_OFFICER" },
+    { name: "BOARD_MEMBER" },
+    { name: "CHIEF_OPERATIONS_OFFICER" },
+    { name: "MANAGEMENT_CONSULTANT" },
+    { name: "HEAD_HR" },
+    { name: "HEAD_ACCOUNT" },
+    { name: "OPERATION_MANAGER" },
+    { name: "BRANCH_MANAGER" },
+    { name: "RECRUITMENT_MANAGER" },
+    { name: "DEPUTY_RECRUITMENT_MANAGER" },
+    { name: "HR_MANAGER" },
+    { name: "ACCOUNTANT" },
+    { name: "CHIEF_FINANCIAL_OFFICER" },
+    { name: "SENIOR_ASSOCIATE" },
+    { name: "ADMINISTRATIVE_EXECUTIVE" },
+    { name: "JUNIOR_ASSOCIATE" },
+    { name: "ADMIN_OFFICER" },
+    { name: "ADMISSION_OFFICER" },
+    { name: "OFFICE_ASSISTANT" },
+    { name: "SENIOR_ADMISSION_OFFICER" },
+    { name: "ADMISSION_OFFICER_I" },
+    { name: "PROJECT_TEAM_MEMBER" },
+  ];
+
   const handleSelectGender = useCallback((item: DropdownItem) => {
     setGender(item?.name || null);
+  }, []);
+
+    const handleSelectDesignation = useCallback((item: DropdownItem) => {
+    setDesignation(item?.name || null);
   }, []);
 
   const navigate = useNavigate();
@@ -54,6 +89,7 @@ const CreateStaff = () => {
         middleName,
         email,
         gender,
+        designation,
       };
       await dispatch(createStaff(body)).unwrap();
       handleOpenModal();
@@ -169,6 +205,19 @@ const CreateStaff = () => {
                 onSelectItem={handleSelectGender}
                 asterisk
                 placeholder="Select"
+              />
+            </div>
+
+               <div className="w-full md:w-[48%]">
+              <Dropdown
+                label="Designation"
+                labelClassName="text-grey-primary"
+                className="text-purple-deep"
+                items={designationType}
+                selectedItem={designation ? { name: designation } : null}
+                onSelectItem={handleSelectDesignation}
+                asterisk
+                placeholder="Select Designation"
               />
             </div>
           </div>

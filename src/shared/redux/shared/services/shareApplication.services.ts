@@ -704,7 +704,6 @@ const createAdmin = async (body: any) => {
     handleApiError(error);
   }
 };
-
 const updateRole = async (body: any) => {
   try {
     const token = sessionStorage.getItem("userData");
@@ -713,7 +712,7 @@ const updateRole = async (body: any) => {
     });
     return response.data;
   } catch (error: any) {
-    handleApiError(error);
+    throw error.response?.data || error.message || error;
   }
 };
 

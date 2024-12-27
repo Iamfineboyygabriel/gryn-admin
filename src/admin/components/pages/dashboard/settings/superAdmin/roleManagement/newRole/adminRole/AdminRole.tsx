@@ -88,24 +88,24 @@ const AdminRole: React.FC = () => {
     setDesignation(null);
     setError(null);
   }, []);
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (!email || !role || !designation) {
+    setError("Please fill in all fields");
+    return;
+  }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !role || !designation) {
-      setError("Please fill in all fields");
-      return;
-    }
-
-    try {
-      await dispatch(updateRole({ email, role, designation }) as any);
-      toast.success("role assigned successfully");
-      resetForm();
-    } catch (error: any) {
-      setError(
-        error || "An error occurred while updating the role. Please try again."
-      );
-    }
-  };
+  const result = await dispatch(updateRole({ email, role, designation }));
+  
+  if (result.error) {
+    const errorMessage = result.payload?.message || result.error.message || "An error occurred";
+    toast.error(errorMessage);
+    setError(errorMessage);
+  } else {
+    toast.success("Role assigned successfully");
+    resetForm();
+  }
+};
 
   return (
     <main className="font-outfit">
