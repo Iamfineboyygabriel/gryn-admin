@@ -132,7 +132,6 @@ const NewPayment = () => {
       };
 
       const response = await dispatch(createInvoicePaymentForStaff(body)).unwrap();
-      console.log("response from payment page",response)
       if (response && response.id) {
         setInvoiceId(response.id);
         resetForm();

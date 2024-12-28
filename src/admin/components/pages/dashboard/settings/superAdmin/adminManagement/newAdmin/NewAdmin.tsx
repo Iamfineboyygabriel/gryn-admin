@@ -94,7 +94,6 @@ const NewAdmin = () => {
       await dispatch(createAdmin(body)).unwrap();
       handleOpenModal();
     } catch (error: any) {
-      console.log("error", error);
       toast.error(
         error.message || "An error occurred while creating the application"
       );

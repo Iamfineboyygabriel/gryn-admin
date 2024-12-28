@@ -14,6 +14,7 @@ import { PrivateElement } from "../../../../../../../shared/redux/hooks/admin/Pr
 import { deleteUser } from "../../../../../../../shared/redux/shared/slices/shareApplication.slices";
 import DeletePendingModal from "../modal/DeletePendingModal";
 import SuccessModal from "../modal/SuccessModal";
+import { AppDispatch } from "../../../../../../../shared/redux/store";
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -26,7 +27,7 @@ const SkeletonRow = () => (
 );
 
 const PendingAgents = () => {
-  const dispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch();
   const [selectedAgents, setSelectedAgents] = useState<string[]>([]);
   const {
     agents,

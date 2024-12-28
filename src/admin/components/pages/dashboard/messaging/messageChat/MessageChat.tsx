@@ -33,7 +33,6 @@ const MessageChat = () => {
   // Listen for incoming socket events
   useEffect(() => {
     socket.on("receiveMessage", (newMessage: Message) => {
-      console.log("received: ", newMessage);
       setLocalMessages((prev) => [...prev, newMessage]);
     });
 

@@ -108,7 +108,6 @@ const NewInvoice = () => {
       };
 
       const response = await dispatch(createInvoicePaymentForStaff(body)).unwrap();
-      console.log("response in vie staff profile")
       resetForm();
       handleOpenModal();
     } catch (error: any) {

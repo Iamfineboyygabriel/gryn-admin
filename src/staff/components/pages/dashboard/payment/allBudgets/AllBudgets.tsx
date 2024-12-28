@@ -18,11 +18,12 @@ import StaffBudgetPaymentDetail from "../../../../../../shared/modal/StaffBudget
 import Modal from "../../../../../../shared/modal/Modal";
 import BudgetPaymentReceiptResponse from "../../../../../../shared/modal/PaymentReceiptResponse";
 import CustomPagination from "../../../../../../shared/utils/customPagination";
+import { AppDispatch } from "../../../../../../shared/redux/store";
 
 const ITEMS_PER_PAGE = 10;
 
 const AllBudgets: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [selectedMonth, setSelectedMonth] = useState("");

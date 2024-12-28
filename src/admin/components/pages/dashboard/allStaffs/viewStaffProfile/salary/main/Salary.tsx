@@ -12,6 +12,7 @@ import { clearPaymentData } from "../../../../../../../../shared/redux/shared/sl
 import { button } from "../../../../../../../../shared/buttons/Button";
 import StaffSalaryDetailModal from "../../../../../../../../shared/modal/StaffSalaryDetailModal";
 import CustomPagination from "../../../../../../../../shared/utils/customPagination";
+import { AppDispatch } from "../../../../../../../../shared/redux/store";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -37,7 +38,7 @@ interface SalaryItem {
 }
 
 const StaffSalary = ({ staffEmail }: { staffEmail: any | null }) => {
-  const dispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch();
   const [selectedPayment, setSelectedPayment] = useState<SalaryItem | null>(
     null
   );

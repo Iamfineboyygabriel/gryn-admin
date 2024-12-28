@@ -14,6 +14,7 @@ import { PrivateElement } from "../../../../../../../shared/redux/hooks/admin/Pr
 import { deleteUser } from "../../../../../../../shared/redux/shared/slices/shareApplication.slices";
 import DeleteStudentModal from "../modal/DeleteStudentModal";
 import SuccessModal from "../modal/SuccessModal";
+import { AppDispatch } from "../../../../../../../shared/redux/store";
 
 interface Student {
   profile: {
@@ -36,7 +37,7 @@ const SkeletonRow: React.FC = () => (
 );
 
 const AllStudents: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch();
   const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
   const {
     useAllStudent,

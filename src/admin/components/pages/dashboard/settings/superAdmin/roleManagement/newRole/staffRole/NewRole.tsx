@@ -7,7 +7,10 @@ import {
   Dropdown,
   DropdownItem,
 } from "../../../../../../../../../shared/dropDown/DropDown";
-import { RootState } from "../../../../../../../../../shared/redux/store";
+import {
+  AppDispatch,
+  RootState,
+} from "../../../../../../../../../shared/redux/store";
 import { toast } from "react-toastify";
 import { updateRole } from "../../../../../../../../../shared/redux/shared/slices/shareApplication.slices";
 
@@ -20,7 +23,7 @@ interface DesignationChoice {
 }
 
 const NewRole: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch();
   const { staffEmail, loading: emailLoading } = useStaffEmails();
   const [email, setEmail] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);

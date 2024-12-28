@@ -15,6 +15,7 @@ import {
 import ReactLoading from "react-loading";
 import { Alert } from "@mui/material";
 import { useStaffEmails } from "../../../../../../../../shared/redux/hooks/admin/getAdminProfile";
+import { AppDispatch } from "../../../../../../../../shared/redux/store";
 
 enum Features {
   DASHBOARD = "DASHBOARD",
@@ -106,7 +107,7 @@ const PrivilegeItem: React.FC<
 );
 
 const Privileges: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch();
   const { staffEmail, loading: emailLoading } = useStaffEmails();
   const [email, setEmail] = useState<string | null>(null);
   const [selectedEmail, setSelectedEmail] = useState<string | null>(null);

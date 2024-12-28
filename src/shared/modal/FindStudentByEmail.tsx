@@ -4,23 +4,26 @@ import { useNavigate } from "react-router-dom";
 import { button } from "../buttons/Button";
 import { CgAsterisk } from "react-icons/cg";
 import { findStudentByEmail } from "../redux/shared/slices/shareApplication.slices";
-import ReactLoading from 'react-loading';
+import ReactLoading from "react-loading";
 import { useStudentEmails } from "../redux/hooks/admin/getAdminProfile";
 import { Dropdown, DropdownItem } from "../dropDown/DropDown";
 
 interface FindStudentByEmailProps {
   onClose: () => void;
-  redirect?: string; 
+  redirect?: string;
 }
 
-const FindStudentByEmail: React.FC<FindStudentByEmailProps> = ({ onClose, redirect }) => {
+const FindStudentByEmail: React.FC<FindStudentByEmailProps> = ({
+  onClose,
+  redirect,
+}) => {
   const { studentsEmail, loading: emailLoading } = useStudentEmails();
-  const [email, setEmail] = useState<string>('');
+  const [email, setEmail] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
+
   const emailItems: DropdownItem[] = useMemo(() => {
     if (Array.isArray(studentsEmail)) {
       return studentsEmail.map((item: any) => ({ name: item.email }));
@@ -29,10 +32,9 @@ const FindStudentByEmail: React.FC<FindStudentByEmailProps> = ({ onClose, redire
   }, [studentsEmail]);
 
   const handleSelectEmail = useCallback((item: DropdownItem | null) => {
-    setEmail(item?.name || '');
+    setEmail(item?.name || "");
     setError(null);
   }, []);
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,12 +43,12 @@ const FindStudentByEmail: React.FC<FindStudentByEmailProps> = ({ onClose, redire
       const response = await dispatch(findStudentByEmail(email) as any);
       onClose();
 
-      const redirectPath = redirect || "/admin/dashboard/all_users/update_student";
+      const redirectPath =
+        redirect || "/admin/dashboard/all_users/update_student";
       navigate(redirectPath, {
-        state: { studentData: response.payload }
+        state: { studentData: response.payload },
       });
     } catch (error) {
-      console.log("Error",error)
       setError("Failed to find student. Please try again.");
     } finally {
       setLoading(false);
@@ -63,16 +65,16 @@ const FindStudentByEmail: React.FC<FindStudentByEmailProps> = ({ onClose, redire
         <form onSubmit={handleSubmit}>
           <article>
             <div className="w-full mt-[2em]">
-            <Dropdown
-            label="Email"
-            items={emailItems}
-            selectedItem={email ? { name: email } : null}
-            onSelectItem={handleSelectEmail}
-            asterisk
-            searchVisible
-            loading={emailLoading}
-            placeholder='Select an Email'
-          />
+              <Dropdown
+                label="Email"
+                items={emailItems}
+                selectedItem={email ? { name: email } : null}
+                onSelectItem={handleSelectEmail}
+                asterisk
+                searchVisible
+                loading={emailLoading}
+                placeholder="Select an Email"
+              />
             </div>
           </article>
           {error && <p className="text-red-500 mt-2">{error}</p>}
@@ -89,7 +91,7 @@ const FindStudentByEmail: React.FC<FindStudentByEmailProps> = ({ onClose, redire
                 type="spin"
               />
             ) : (
-              'Continue'
+              "Continue"
             )}
           </button.PrimaryButton>
         </form>

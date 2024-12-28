@@ -12,6 +12,7 @@ import { deleteUser } from "../../../../../../../../shared/redux/shared/slices/s
 import Modal from "../../../../../../../../shared/modal/Modal";
 import DeleteAdminModal from "../modal/DeleteAdminModal";
 import SuccessModal from "../modal/SuccessModal";
+import { AppDispatch } from "../../../../../../../../shared/redux/store";
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -34,7 +35,7 @@ const AdminManagement = () => {
     fetchAdmins,
     updateSearchTerm,
   } = useAllAdminForSuperAdmin();
-  const dispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch();
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm || "");
   const itemsPerPage = 10;
