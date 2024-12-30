@@ -242,6 +242,7 @@ const AllStudents: React.FC = () => {
       <div className="relative">
         <header className="flex items-center justify-between">
           <h1 className="font-medium text-xl">All Students</h1>
+
           <div className="flex gap-2">
             <PrivateElement feature="ALL_USERS" page="delete user">
               {selectedStudents?.length > 0 && (
@@ -274,6 +275,7 @@ const AllStudents: React.FC = () => {
             </PrivateElement>
           </div>
         </header>
+
         <div className="flex items-center w-64 mt-[1em] rounded-full border-[1px] border-border bg-gray-100 dark:bg-gray-700">
           <input
             type="text"

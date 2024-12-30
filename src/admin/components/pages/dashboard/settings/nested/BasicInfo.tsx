@@ -7,6 +7,7 @@ import useUserProfile, {
   useCurrentUser,
 } from "../../../../../../shared/redux/hooks/shared/getUserProfile";
 import ConfirmDiscard from "../../../../../../shared/modal/ConfirmDiscard";
+import { PrivateElement } from "../../../../../../shared/redux/hooks/admin/PrivateElement";
 
 const BasicInfo = () => {
   const { userProfile, updateUserProfile, uploadUserAvatar } = useUserProfile();
@@ -170,34 +171,39 @@ const BasicInfo = () => {
             </div>
           </div>
         </div>
-        {!editMode && (
-          <button.PrimaryButton
-            className="m-auto mt-[5em] w-[30%] gap-2 rounded-full bg-linear-gradient py-[12px] text-center text-lg font-medium text-white"
-            type="button"
-            onClick={handleEditClick}
-          >
-            Edit Details
-          </button.PrimaryButton>
-        )}
+        <PrivateElement feature="SETTINGS" page="Edit Profile">
+          {!editMode && (
+            <button.PrimaryButton
+              className="m-auto mt-[5em] w-[30%] gap-2 rounded-full bg-linear-gradient py-[12px] text-center text-lg font-medium text-white"
+              type="button"
+              onClick={handleEditClick}
+            >
+              Edit Details
+            </button.PrimaryButton>
+          )}
+        </PrivateElement>
+
         {editMode && (
           <>
-            <button.PrimaryButton
-              className="m-auto mt-[5em] w-[18%] gap-2 rounded-full bg-linear-gradient py-[12px] text-center text-lg font-medium text-white"
-              type="button"
-              disabled={loading}
-              onClick={handleSaveChanges}
-            >
-              {loading ? (
-                <ReactLoading
-                  color="#FFFFFF"
-                  width={25}
-                  height={25}
-                  type="spin"
-                />
-              ) : (
-                "Save Changes"
-              )}
-            </button.PrimaryButton>
+            <PrivateElement feature="SETTINGS" page="Edit Profile">
+              <button.PrimaryButton
+                className="m-auto mt-[5em] w-[18%] gap-2 rounded-full bg-linear-gradient py-[12px] text-center text-lg font-medium text-white"
+                type="button"
+                disabled={loading}
+                onClick={handleSaveChanges}
+              >
+                {loading ? (
+                  <ReactLoading
+                    color="#FFFFFF"
+                    width={25}
+                    height={25}
+                    type="spin"
+                  />
+                ) : (
+                  "Save Changes"
+                )}
+              </button.PrimaryButton>
+            </PrivateElement>
 
             {!loading && (
               <p

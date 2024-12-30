@@ -59,12 +59,12 @@ const StaffLanding: React.FC = () => {
         const isEmailVerified = response?.data?.isEmailVerified;
 
         if (role === "STAFF") {
-          if (!isEmailVerified) {
-            navigate(
-              `/verify_account?email=${encodeURIComponent(formData.email)}`
-            );
-            return;
-          }
+          // if (!isEmailVerified) {
+          //   navigate(
+          //     `/verify_account?email=${encodeURIComponent(formData.email)}`
+          //   );
+          //   return;
+          // }
 
           toast.success("Welcome");
           setIsLoggedIn(true);

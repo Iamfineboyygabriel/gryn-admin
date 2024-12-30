@@ -8,6 +8,7 @@ import { CgAsterisk } from "react-icons/cg";
 import { toast } from "react-toastify";
 import ReactLoading from "react-loading";
 import { updatePassword } from "../../../../../../shared/redux/shared/slices/shareApplication.slices";
+import { PrivateElement } from "../../../../../../shared/redux/hooks/admin/PrivateElement";
 
 const Password = () => {
   const [oldPasswordType, toggleOldPasswordType] = usePasswordToggle();
@@ -145,23 +146,24 @@ const Password = () => {
               </div>
             </div>
           </div>
-
-          <button.PrimaryButton
-            className="m-auto mt-[5em] w-[30%] gap-2 rounded-full bg-linear-gradient py-[12px] text-center text-lg font-medium text-white"
-            type="submit"
-            disabled={loading}
-          >
-            {loading ? (
-              <ReactLoading
-                color="#FFFFFF"
-                width={25}
-                height={25}
-                type="spin"
-              />
-            ) : (
-              "Change Password"
-            )}
-          </button.PrimaryButton>
+          <PrivateElement feature="SETTINGS" page="Change Password">
+            <button.PrimaryButton
+              className="m-auto mt-[5em] w-[30%] gap-2 rounded-full bg-linear-gradient py-[12px] text-center text-lg font-medium text-white"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? (
+                <ReactLoading
+                  color="#FFFFFF"
+                  width={25}
+                  height={25}
+                  type="spin"
+                />
+              ) : (
+                "Change Password"
+              )}
+            </button.PrimaryButton>
+          </PrivateElement>
         </form>
       </div>
     </main>
