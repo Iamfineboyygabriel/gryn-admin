@@ -3,6 +3,7 @@ import { useMessage } from "../../../../../../shared/redux/hooks/shared/message"
 import { useCurrentUser } from "../../../../../../shared/redux/hooks/shared/getUserProfile";
 import { useState, useEffect, useRef } from "react";
 import socket from "../../../../../../socket/socket";
+import { PrivateElement } from "../../../../../../shared/redux/hooks/admin/PrivateElement";
 
 interface Message {
   id: number | string;
@@ -32,7 +33,6 @@ const MessageChat = () => {
   // Listen for incoming socket events
   useEffect(() => {
     socket.on("receiveMessage", (newMessage: Message) => {
-      console.log("received: ", newMessage);
       setLocalMessages((prev) => [...prev, newMessage]);
     });
 
@@ -179,23 +179,25 @@ const MessageChat = () => {
         onSubmit={handleSubmit}
         className="flex-shrink-0 border-t border-gray-100 pt-4 dark:border-gray-700"
       >
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="Type a message..."
-            className="flex-1 rounded-full bg-gray-100 px-4 py-2 dark:bg-gray-700 dark:text-white"
-            disabled={sendingMessage}
-          />
-          <button
-            type="submit"
-            disabled={!message?.trim() || sendingMessage}
-            className="rounded-full bg-purple-700 px-6 py-2 text-white disabled:opacity-50"
-          >
-            {sendingMessage ? "Sending..." : "Send"}
-          </button>
-        </div>
+        <PrivateElement feature="MESSAGINGS" page="Send/Inbox">
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="Type a message..."
+              className="flex-1 rounded-full bg-gray-100 px-4 py-2 dark:bg-gray-700"
+              disabled={sendingMessage}
+            />
+            <button
+              type="submit"
+              disabled={!message?.trim() || sendingMessage}
+              className="rounded-full bg-purple-700 px-6 py-2 text-white disabled:opacity-50"
+            >
+              {sendingMessage ? "Sending..." : "Send"}
+            </button>
+          </div>
+        </PrivateElement>
       </form>
     </main>
   );

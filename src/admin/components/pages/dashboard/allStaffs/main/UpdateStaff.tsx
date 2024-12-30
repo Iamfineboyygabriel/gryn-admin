@@ -11,6 +11,7 @@ import {
   Dropdown,
   DropdownItem,
 } from "../../../../../../shared/dropDown/DropDown";
+import { AppDispatch } from "../../../../../../shared/redux/store";
 
 interface UpdateStaffByEmailProps {
   onClose: () => void;
@@ -36,7 +37,7 @@ const UpdateStaff: React.FC<UpdateStaffByEmailProps> = ({ onClose }) => {
   }, []);
 
   const [loading, setLoading] = useState(false);
-  const dispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {

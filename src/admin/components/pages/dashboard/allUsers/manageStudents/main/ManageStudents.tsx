@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { FiSearch } from "react-icons/fi";
+import { useDispatch } from "react-redux";
 import transaction from "../../../../../../../assets/svg/Transaction.svg";
 import { Link, useNavigate } from "react-router-dom";
 import CustomPagination from "../../../../../../../shared/utils/customPagination";
@@ -10,6 +11,10 @@ import Modal from "../../../../../../../shared/modal/Modal";
 import FindStudentByEmail from "../../../../../../../shared/modal/FindStudentByEmail";
 import { useAllStudents } from "../../../../../../../shared/redux/hooks/admin/getAdminProfile";
 import { PrivateElement } from "../../../../../../../shared/redux/hooks/admin/PrivateElement";
+import { deleteUser } from "../../../../../../../shared/redux/shared/slices/shareApplication.slices";
+import DeleteStudentModal from "../modal/DeleteStudentModal";
+import SuccessModal from "../modal/SuccessModal";
+import { AppDispatch } from "../../../../../../../shared/redux/store";
 
 interface Student {
   profile: {
@@ -23,7 +28,7 @@ interface Student {
 
 const SkeletonRow: React.FC = () => (
   <tr className="animate-pulse border-b border-gray-200">
-    {Array.from({ length: 5 }).map((_, index) => (
+    {Array.from({ length: 6 }).map((_, index) => (
       <td key={index} className="px-6 py-4">
         <div className="h-4 bg-gray-200 rounded"></div>
       </td>
@@ -32,6 +37,8 @@ const SkeletonRow: React.FC = () => (
 );
 
 const AllStudents: React.FC = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
   const {
     useAllStudent,
     currentPage,
@@ -46,8 +53,41 @@ const AllStudents: React.FC = () => {
   const handleOpenModal = () => setModalOpen(true);
   const handleCloseModal = () => setModalOpen(false);
 
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  const handleDeleteSelected = () => {
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      const deletePromises = selectedStudents.map((studentId) =>
+        dispatch(deleteUser(studentId) as any).unwrap()
+      );
+
+      await Promise.all(deletePromises);
+      setShowDeleteModal(false);
+      setSelectedStudents([]);
+      setShowSuccessModal(true);
+      fetchApplications(currentPage, itemsPerPage);
+    } catch (error) {
+      console.error("Error deleting students:", error);
+    }
+  };
+
   const navigate = useNavigate();
   const itemsPerPage = 10;
+
+  const handleCheckboxChange = (studentId: string) => {
+    setSelectedStudents((prev) => {
+      if (prev.includes(studentId)) {
+        return prev.filter((id) => id !== studentId);
+      } else {
+        return [...prev, studentId];
+      }
+    });
+  };
 
   useEffect(() => {
     fetchApplications(currentPage, itemsPerPage);
@@ -125,6 +165,16 @@ const AllStudents: React.FC = () => {
           key={student.id}
           className="text-[14px] leading-[20px] text-grey-primary font-medium"
         >
+          <PrivateElement feature="ALL_USERS" page="delete user">
+            <td className="py-[16px] px-[24px]">
+              <input
+                type="checkbox"
+                checked={selectedStudents.includes(student.id)}
+                onChange={() => handleCheckboxChange(student.id)}
+                className="w-4 h-4 rounded border-gray-300 text-primary-700 focus:ring-primary-700"
+              />
+            </td>
+          </PrivateElement>
           <td className="py-[16px] px-[24px]">
             {(currentPage - 1) * itemsPerPage + index + 1}
           </td>
@@ -163,7 +213,7 @@ const AllStudents: React.FC = () => {
     } else {
       return (
         <tr>
-          <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+          <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
             <div className="mt-[2em] flex flex-col items-center justify-center">
               <img src={transaction} alt="No applications" />
               <p className="mt-2 text-sm text-gray-500 dark:text-white">
@@ -183,6 +233,8 @@ const AllStudents: React.FC = () => {
     highlightText,
     formatData,
     handleViewDetails,
+    selectedStudents,
+    handleCheckboxChange,
   ]);
 
   return (
@@ -191,6 +243,17 @@ const AllStudents: React.FC = () => {
         <header className="flex items-center justify-between">
           <h1 className="font-medium text-xl">All Students</h1>
           <div className="flex gap-2">
+            <PrivateElement feature="ALL_USERS" page="delete user">
+              {selectedStudents?.length > 0 && (
+                <button.PrimaryButton
+                  onClick={handleDeleteSelected}
+                  className="mt-[1em] flex gap-2 rounded-full bg-red-500 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300"
+                >
+                  Delete Selected ({selectedStudents.length})
+                </button.PrimaryButton>
+              )}
+            </PrivateElement>
+
             <PrivateElement feature="ALL_USERS" page="Update Student">
               <button.PrimaryButton
                 onClick={handleOpenModal}
@@ -226,6 +289,11 @@ const AllStudents: React.FC = () => {
           <table className="w-full mt-6 border-collapse">
             <thead className="text-gray-500 border-b border-gray-200">
               <tr>
+                <PrivateElement feature="ALL_USERS" page="delete user">
+                  <th className="px-6 py-3 text-left text-sm font-normal">
+                    Select
+                  </th>
+                </PrivateElement>
                 <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
                 <th className="px-6 py-3 text-left text-sm font-normal">
                   Full Name
@@ -261,6 +329,33 @@ const AllStudents: React.FC = () => {
           data-aos="zoom-in"
         >
           <FindStudentByEmail onClose={handleCloseModal} />
+        </Modal>
+      )}
+
+      {showDeleteModal && (
+        <Modal
+          isOpen={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+        >
+          <DeleteStudentModal
+            selectedCount={selectedStudents.length}
+            onConfirm={handleConfirmDelete}
+            onCancel={() => setShowDeleteModal(false)}
+          />
+        </Modal>
+      )}
+
+      {showSuccessModal && (
+        <Modal
+          isOpen={showSuccessModal}
+          onClose={() => setShowSuccessModal(false)}
+        >
+          <SuccessModal
+            message={`Successfully deleted ${selectedStudents.length} staff ${
+              selectedStudents.length === 1 ? "member" : "members"
+            }.`}
+            onClose={() => setShowSuccessModal(false)}
+          />
         </Modal>
       )}
     </main>

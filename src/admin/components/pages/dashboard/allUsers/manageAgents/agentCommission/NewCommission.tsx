@@ -9,7 +9,10 @@ import ReactLoading from "react-loading";
 import FileUpload from "../../../../../../../shared/fileUpload/FileUpload";
 import { RxCrossCircled } from "react-icons/rx";
 import { uploadCommissionPayment } from "../../../../../../../shared/redux/shared/slices/shareApplication.slices";
-import { AppDispatch, RootState } from "../../../../../../../shared/redux/store";
+import {
+  AppDispatch,
+  RootState,
+} from "../../../../../../../shared/redux/store";
 import CommissionCreated from "../../../../../../../shared/modal/CommissionCreated";
 import { formatAmountWithCommas } from "../../../../../../../shared/utils/dateFormat";
 
@@ -34,7 +37,9 @@ const NewPayment: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const studentData: StudentData = location.state?.studentData;
 
-  const { status, error } = useSelector((state: RootState) => state.shareApplication);
+  const { status, error } = useSelector(
+    (state: RootState) => state.shareApplication
+  );
 
   const handleBrowseFileClick = (inputId: string): Promise<void> => {
     return new Promise<void>((resolve) => {
@@ -53,7 +58,7 @@ const NewPayment: React.FC = () => {
   };
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawValue = e.target.value.replace(/,/g, ""); 
+    const rawValue = e.target.value.replace(/,/g, "");
     if (!isNaN(Number(rawValue))) {
       setAmount(formatAmountWithCommas(rawValue));
     }
@@ -69,7 +74,7 @@ const NewPayment: React.FC = () => {
 
     const formData = new FormData();
     formData.append("file", commissionReceipt);
-    formData.append("amount", amount.replace(/,/g, "")); 
+    formData.append("amount", amount.replace(/,/g, ""));
     formData.append("documentType", DocumentType.COMMISSION_RECEIPT);
 
     try {
@@ -84,7 +89,6 @@ const NewPayment: React.FC = () => {
       setCommissionReceipt(null);
       setAmount("");
     } catch (error) {
-      console.log("er",error)
       toast.error("Failed to update commission payment");
     }
   };
@@ -95,7 +99,8 @@ const NewPayment: React.FC = () => {
       <div className="mt-[1em] h-auto w-full overflow-auto rounded-lg bg-white p-3 pb-[10em]">
         <div className="flex items-center justify-between">
           <p className="font-medium">
-            Agent Commission / <span className="text-primary-700">New Commission</span>
+            Agent Commission /{" "}
+            <span className="text-primary-700">New Commission</span>
           </p>
           <button.PrimaryButton className="btn-2" onClick={() => navigate(-1)}>
             Back
@@ -104,7 +109,10 @@ const NewPayment: React.FC = () => {
         <div className="mt-[2em]">
           <div className="grid w-[78%] grid-cols-2 gap-4">
             <div>
-              <label htmlFor="studentName" className="text-sm font-medium text-grey-primary">
+              <label
+                htmlFor="studentName"
+                className="text-sm font-medium text-grey-primary"
+              >
                 Student Name
               </label>
               <input
@@ -117,7 +125,10 @@ const NewPayment: React.FC = () => {
               />
             </div>
             <div>
-              <label htmlFor="university" className="text-sm font-medium text-grey-primary">
+              <label
+                htmlFor="university"
+                className="text-sm font-medium text-grey-primary"
+              >
                 University
               </label>
               <input
@@ -130,7 +141,10 @@ const NewPayment: React.FC = () => {
               />
             </div>
             <div>
-              <label htmlFor="degree" className="text-sm font-medium text-grey-primary">
+              <label
+                htmlFor="degree"
+                className="text-sm font-medium text-grey-primary"
+              >
                 Degree
               </label>
               <input
@@ -146,7 +160,10 @@ const NewPayment: React.FC = () => {
 
           <form onSubmit={submitPayment}>
             <div className="flex flex-col mt-[2em]">
-              <label htmlFor="amount" className="text-sm font-medium text-grey-primary">
+              <label
+                htmlFor="amount"
+                className="text-sm font-medium text-grey-primary"
+              >
                 Amount
               </label>
               <input
@@ -175,7 +192,10 @@ const NewPayment: React.FC = () => {
             {commissionReceipt && (
               <span className="rounded-full items-center py-1 px-[2em] w-[39%] mt-[2em] text-primary-700 bg-purple-white flex justify-between">
                 <p className="font-medium">{commissionReceipt.name}</p>
-                <RxCrossCircled size={22} onClick={() => setCommissionReceipt(null)} />
+                <RxCrossCircled
+                  size={22}
+                  onClick={() => setCommissionReceipt(null)}
+                />
               </span>
             )}
 
@@ -186,7 +206,12 @@ const NewPayment: React.FC = () => {
             >
               {status === "loading" ? (
                 <div className="mr-auto flex">
-                  <ReactLoading color="#FFFFFF" width={25} height={25} type="spin" />
+                  <ReactLoading
+                    color="#FFFFFF"
+                    width={25}
+                    height={25}
+                    type="spin"
+                  />
                 </div>
               ) : (
                 "Pay Commission"
@@ -197,7 +222,10 @@ const NewPayment: React.FC = () => {
       </div>
       {isModalOpen && (
         <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
-          <CommissionCreated to="/admin/dashboard/all_users" onClose={handleCloseModal} />
+          <CommissionCreated
+            to="/admin/dashboard/all_users"
+            onClose={handleCloseModal}
+          />
         </Modal>
       )}
     </main>

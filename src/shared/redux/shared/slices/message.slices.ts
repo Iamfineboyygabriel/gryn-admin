@@ -69,7 +69,6 @@ export const searchUser = createAsyncThunk(
   async (search: string = "", thunkAPI) => {
     try {
       const response = await messageServices.searchUser(search);
-      console.log("reee", response.data);
       return response.data;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.message);
@@ -94,7 +93,6 @@ export const fetchChatByUserId = createAsyncThunk(
   async (userId: string, thunkAPI) => {
     try {
       const response = await messageServices.findChatByUserId(userId);
-      console.log("res", response);
       return response.data;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.message);

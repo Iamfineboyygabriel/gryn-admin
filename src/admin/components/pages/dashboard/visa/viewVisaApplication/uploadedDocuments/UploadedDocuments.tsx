@@ -49,7 +49,6 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
   const dispatch: AppDispatch = useAppDispatch();
   const { applicationDetails, loading: applicationLoading } =
     useVisaApplicationDetails(applicationId);
-  console.log("app", applicationDetails);
   const { updateDocStatus } = useSelector(
     (state: any) => state.shareApplication
   );

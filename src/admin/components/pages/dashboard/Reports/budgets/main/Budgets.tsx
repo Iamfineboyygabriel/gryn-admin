@@ -18,11 +18,12 @@ import BudgetPaymentDetail from "../../../../../../../shared/modal/BudgetPayment
 import Modal from "../../../../../../../shared/modal/Modal";
 import CustomPagination from "../../../../../../../shared/utils/customPagination";
 import BudgetPaymentReceiptResponse from "../../../../../../../shared/modal/BudgetPaymentReceiptResponse";
+import { AppDispatch } from "../../../../../../../shared/redux/store";
 
 const ITEMS_PER_PAGE = 10;
 
 const Budgets: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");

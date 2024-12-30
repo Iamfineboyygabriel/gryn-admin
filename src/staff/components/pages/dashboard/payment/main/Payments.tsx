@@ -5,6 +5,7 @@ import AllInvoices from "../allInvoices/main/AllInvoices";
 import AllDrafts from "../drafts/main/AllDrafts";
 import AllBudgets from "../allBudgets/AllBudgets";
 import SalaryLoan from "../salaryLoan/SalaryLoan";
+import { PrivateElement } from "../../../../../../shared/redux/hooks/admin/PrivateElement";
 
 const Payments = () => {
   const [activeLink, setActiveLink] = useState("allPayments");
@@ -28,31 +29,36 @@ const Payments = () => {
                   All Payments
                 </button.PrimaryButton>
               </div>
-              <div
-                className={`${
-                  activeLink === "allInvoices"
-                    ? "bg-purple-white text-primary-700"
-                    : "bg-gray-100 text-grey-primary"
-                } cursor-pointer rounded-lg whitespace-nowrap px-[1em] py-[10px] font-medium`}
-                onClick={() => setActiveLink("allInvoices")}
-              >
-                <button.PrimaryButton className="m-auto flex justify-center gap-2 font-medium text-black">
-                  All Invoices
-                </button.PrimaryButton>
-              </div>
 
-              <div
-                className={`${
-                  activeLink === "allDrafts"
-                    ? "bg-purple-white text-primary-700"
-                    : "bg-gray-100 text-grey-primary"
-                } cursor-pointer rounded-lg px-[1em] whitespace-nowrap py-[10px] font-medium`}
-                onClick={() => setActiveLink("allDrafts")}
-              >
-                <button.PrimaryButton className="m-auto flex justify-center gap-2 font-medium text-black">
-                  All Drafts
-                </button.PrimaryButton>
-              </div>
+              <PrivateElement feature="PAYMENTS" page="Invoice">
+                <div
+                  className={`${
+                    activeLink === "allInvoices"
+                      ? "bg-purple-white text-primary-700"
+                      : "bg-gray-100 text-grey-primary"
+                  } cursor-pointer rounded-lg whitespace-nowrap px-[1em] py-[10px] font-medium`}
+                  onClick={() => setActiveLink("allInvoices")}
+                >
+                  <button.PrimaryButton className="m-auto flex justify-center gap-2 font-medium text-black">
+                    All Invoices
+                  </button.PrimaryButton>
+                </div>
+              </PrivateElement>
+
+              <PrivateElement feature="PAYMENTS" page="Drafts">
+                <div
+                  className={`${
+                    activeLink === "allDrafts"
+                      ? "bg-purple-white text-primary-700"
+                      : "bg-gray-100 text-grey-primary"
+                  } cursor-pointer rounded-lg px-[1em] whitespace-nowrap py-[10px] font-medium`}
+                  onClick={() => setActiveLink("allDrafts")}
+                >
+                  <button.PrimaryButton className="m-auto flex justify-center gap-2 font-medium text-black">
+                    All Drafts
+                  </button.PrimaryButton>
+                </div>
+              </PrivateElement>
 
               <div
                 className={`${
@@ -83,8 +89,12 @@ const Payments = () => {
           </nav>
           <section className="mt-3">
             {activeLink === "allPayments" && <AllPayment />}
-            {activeLink === "allInvoices" && <AllInvoices />}
-            {activeLink === "allDrafts" && <AllDrafts />}
+            <PrivateElement feature="PAYMENTS" page="Invoice">
+              {activeLink === "allInvoices" && <AllInvoices />}
+            </PrivateElement>
+            <PrivateElement feature="PAYMENTS" page="Drafts">
+              {activeLink === "allDrafts" && <AllDrafts />}
+            </PrivateElement>
             {activeLink === "allBudgets" && <AllBudgets />}
             {activeLink === "salaryLoan" && <SalaryLoan />}
           </section>

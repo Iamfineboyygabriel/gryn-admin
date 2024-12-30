@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useCallback, useState } from "react";
 import { FiSearch } from "react-icons/fi";
+import { useDispatch } from "react-redux";
 import transaction from "../../../../../../../assets/svg/Transaction.svg";
 import { Link } from "react-router-dom";
 import CustomPagination from "../../../../../../../shared/utils/customPagination";
@@ -10,6 +11,10 @@ import plus from "../../../../../../../assets/svg/plus.svg";
 import Modal from "../../../../../../../shared/modal/Modal";
 import FindAgentByEmail from "../../../../../../../shared/modal/FindAgentByEmail";
 import { PrivateElement } from "../../../../../../../shared/redux/hooks/admin/PrivateElement";
+import { deleteUser } from "../../../../../../../shared/redux/shared/slices/shareApplication.slices";
+import DeletePendingModal from "../modal/DeletePendingModal";
+import SuccessModal from "../modal/SuccessModal";
+import { AppDispatch } from "../../../../../../../shared/redux/store";
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -22,6 +27,8 @@ const SkeletonRow = () => (
 );
 
 const PendingAgents = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const [selectedAgents, setSelectedAgents] = useState<string[]>([]);
   const {
     agents,
     totalPages,
@@ -39,6 +46,39 @@ const PendingAgents = () => {
 
   const handleOpenModal = () => setModalOpen(true);
   const handleCloseModal = () => setModalOpen(false);
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  const handleDeleteSelected = () => {
+    setShowDeleteModal(true);
+  };
+
+  const handleCheckboxChange = (agentId: string) => {
+    setSelectedAgents((prev) => {
+      if (prev.includes(agentId)) {
+        return prev.filter((id) => id !== agentId);
+      } else {
+        return [...prev, agentId];
+      }
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      const deletePromises = selectedAgents.map((agentId) =>
+        dispatch(deleteUser(agentId) as any).unwrap()
+      );
+
+      await Promise.all(deletePromises);
+      setShowDeleteModal(false);
+      setSelectedAgents([]);
+      setShowSuccessModal(true);
+      fetchAgents(currentPage, itemsPerPage);
+    } catch (error) {
+      console.error("Error deleting agents:", error);
+    }
+  };
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -115,6 +155,16 @@ const PendingAgents = () => {
           key={agent.id}
           className="text-[14px] border-b border-gray-200 leading-[20px] text-grey-primary font-medium"
         >
+          <PrivateElement feature="ALL_USERS" page="delete user">
+            <td className="py-[16px] px-[24px]">
+              <input
+                type="checkbox"
+                checked={selectedAgents.includes(agent?.id)}
+                onChange={() => handleCheckboxChange(agent?.id)}
+                className="w-4 h-4 rounded border-gray-300 text-primary-700 focus:ring-primary-700"
+              />
+            </td>
+          </PrivateElement>
           <td className="py-[16px] px-[24px]">
             {(currentPage - 1) * itemsPerPage + index + 1}
           </td>
@@ -146,7 +196,7 @@ const PendingAgents = () => {
     } else {
       return (
         <tr>
-          <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+          <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
             <div className="mt-[2em] flex flex-col items-center justify-center">
               <img src={transaction} alt="No applications" />
               <p className="mt-2 text-sm text-gray-500 dark:text-white">
@@ -166,6 +216,8 @@ const PendingAgents = () => {
     highlightText,
     localSearchTerm,
     formatData,
+    selectedAgents,
+    handleCheckboxChange,
   ]);
 
   return (
@@ -174,6 +226,17 @@ const PendingAgents = () => {
         <header className="flex items-center justify-between">
           <h1 className="font-medium text-xl">Pending Agents</h1>
           <div className="flex gap-2">
+            <PrivateElement feature="ALL_USERS" page="delete user">
+              {selectedAgents?.length > 0 && (
+                <button.PrimaryButton
+                  onClick={handleDeleteSelected}
+                  className="mt-[1em] flex gap-2 rounded-full bg-red-500 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300"
+                >
+                  Delete Selected ({selectedAgents.length})
+                </button.PrimaryButton>
+              )}
+            </PrivateElement>
+
             <PrivateElement feature="ALL_USERS" page="Update Agents">
               <button.PrimaryButton
                 onClick={handleOpenModal}
@@ -194,6 +257,7 @@ const PendingAgents = () => {
             </PrivateElement>
           </div>
         </header>
+
         <div className="flex items-center mt-3 w-64 rounded-full border-[1px] border-border bg-gray-100 dark:bg-gray-700">
           <input
             type="text"
@@ -209,6 +273,11 @@ const PendingAgents = () => {
           <table className="w-full mt-4 border-collapse">
             <thead className="text-gray-500 border-b border-gray-200">
               <tr>
+                <PrivateElement feature="ALL_USERS" page="delete user">
+                  <th className="px-6 py-3 text-left text-sm font-normal">
+                    Select
+                  </th>
+                </PrivateElement>
                 <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
                 <th className="px-6 py-3 text-left text-sm font-normal">
                   Full Name
@@ -242,6 +311,33 @@ const PendingAgents = () => {
           data-aos="zoom-in"
         >
           <FindAgentByEmail onClose={handleCloseModal} />
+        </Modal>
+      )}
+
+      {showDeleteModal && (
+        <Modal
+          isOpen={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+        >
+          <DeletePendingModal
+            selectedCount={selectedAgents.length}
+            onConfirm={handleConfirmDelete}
+            onCancel={() => setShowDeleteModal(false)}
+          />
+        </Modal>
+      )}
+
+      {showSuccessModal && (
+        <Modal
+          isOpen={showSuccessModal}
+          onClose={() => setShowSuccessModal(false)}
+        >
+          <SuccessModal
+            message={`Successfully deleted ${selectedAgents.length} agent ${
+              selectedAgents.length === 1 ? "member" : "members"
+            }.`}
+            onClose={() => setShowSuccessModal(false)}
+          />
         </Modal>
       )}
     </main>

@@ -20,7 +20,6 @@ const BudgetPaymentDetail: React.FC<BudgetPaymentDetailProps> = ({
   onClose,
   budgets,
 }) => {
-  console.log("bb", budgets);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewFileType, setPreviewFileType] = useState<string>("");

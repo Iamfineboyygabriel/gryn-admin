@@ -8,6 +8,7 @@ import { Dropdown, DropdownItem } from '../../../../../../../../shared/dropDown/
 import { UpdatePagePermission, getUserPermittedPages } from '../../../../../../../../shared/redux/shared/slices/shareApplication.slices';
 import ReactLoading from "react-loading";
 import { Alert } from '@mui/material';
+import { AppDispatch } from '../../../../../../../../shared/redux/store';
 
 enum Features {
   DASHBOARD = 'DASHBOARD',
@@ -91,7 +92,7 @@ const PrivilegeItem: React.FC<FeaturePrivileges & {
 );
 
 const Privileges: React.FC = () => {
-  const dispatch = useDispatch();
+   const dispatch: AppDispatch = useDispatch();
   const { adminsEmail, loading: emailLoading } = useAdminEmails();
   const [email, setEmail] = useState<string | null>(null);
   const [selectedEmail, setSelectedEmail] = useState<string | null>(null);

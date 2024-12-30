@@ -10,15 +10,26 @@ import useUserProfile from "../../../../shared/redux/hooks/shared/getUserProfile
 import { logOutUser } from "../../../../shared/redux/shared/slices/shareLanding.slices";
 import { toast } from "react-toastify";
 import { Menu, X } from "lucide-react";
+import { useMessage } from "../../../../shared/redux/hooks/shared/message";
+import { useDispatch } from "react-redux";
 
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const dispatch: AppDispatch = useAppDispatch();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const { unreadCount } = useMessage();
+
+  const dispatch: AppDispatch = useDispatch();
   const { hasPermission } = usePermissions();
   const { userProfile } = useUserProfile();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  const filteredSidebarLinks = staffSidebarLinks?.filter((link) => {
+    if (link.feature && link.page) {
+      return hasPermission(link.feature, link.page);
+    }
+    return true;
+  });
 
   const handleLogout = async () => {
     try {
@@ -73,10 +84,11 @@ const Sidebar = () => {
         </div>
 
         <nav className={`mt-5 space-y-1 ${isCollapsed ? "px-2" : "px-4"}`}>
-          {staffSidebarLinks?.map((link, index) => {
-            const isActive = link.pathsToCheck.some((path) =>
+          {filteredSidebarLinks?.map((link: any, index: number) => {
+            const isActive = link.pathsToCheck.some((path: any) =>
               location.pathname.startsWith(path)
             );
+            const isMessaging = link.text === "Messaging";
 
             return (
               <div key={index} className="relative group">
@@ -88,23 +100,43 @@ const Sidebar = () => {
                       : "text-gray-500 hover:bg-purple-white"
                   } ${isCollapsed ? "justify-center px-2" : "px-4"}`}
                 >
-                  <img
-                    src={isActive ? link.imgActive : link.img}
-                    alt={link?.text}
-                    className="w-5"
-                  />
-                  {!isCollapsed && <span className="ml-3">{link?.text}</span>}
+                  <div className="relative">
+                    <img
+                      src={isActive ? link.imgActive : link.img}
+                      alt={link?.text}
+                      className="w-5"
+                    />
+                    {isMessaging && unreadCount > 0 && isCollapsed && (
+                      <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                        {unreadCount}
+                      </span>
+                    )}
+                  </div>
+                  {!isCollapsed && (
+                    <div className="ml-3 flex items-center">
+                      <span>{link?.text}</span>
+                      {isMessaging && unreadCount > 0 && (
+                        <span className="ml-2 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[1.2rem] text-center">
+                          {unreadCount}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </Link>
                 {isCollapsed && (
                   <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 bg-gray-800 text-white text-sm rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50">
                     {link.title}
+                    {isMessaging && unreadCount > 0 && (
+                      <span className="ml-2 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[1.2rem] text-center">
+                        {unreadCount}
+                      </span>
+                    )}
                   </div>
                 )}
               </div>
             );
           })}
         </nav>
-
         <div
           className={`mt-[1em] mx-auto w-[80%] transition-opacity duration-300 ${
             isCollapsed ? "opacity-0" : "opacity-100"
@@ -113,9 +145,9 @@ const Sidebar = () => {
           <button.PrimaryButton
             onClick={handleLogout}
             disabled={isLoggingOut}
-            className="btn-auth mt-[10px] rounded-lg px-[2em] py-[10px] font-medium text-white"
+            className="btn-auth mx-auto w-full rounded-lg py-2 text-sm font-medium text-white"
           >
-            {isLoggingOut ? "Logging out..." : "Log Out"}
+            Log Out
           </button.PrimaryButton>
         </div>
       </div>

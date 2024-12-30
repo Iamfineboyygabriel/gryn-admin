@@ -70,6 +70,12 @@ interface UpdateBankDetailsPayload {
   body: UpdateBankDetailsBody;
 }
 
+interface UpdateRolePayload {
+  email: string;
+  role: string;
+  designation: string;
+}
+
 interface UpdateDocumentPayload {
   remark: any;
   id: string;
@@ -608,16 +614,15 @@ export const createAdmin = createAsyncThunk(
 
 export const updateRole = createAsyncThunk(
   "shareApplication/updateRole",
-  async (body: any, thunkAPI) => {
+  async (body: UpdateRolePayload, thunkAPI) => {
     try {
       const data = await shareApplicationServices.updateRole(body);
       return data;
     } catch (error: any) {
-      const message = error;
-      return thunkAPI.rejectWithValue(message);
+      return thunkAPI.rejectWithValue(error);
     }
   }
-);
+)
 
 export const UploadStaffInvoicePaymentDocument = createAsyncThunk(
   "shareApplication/ uploadStaffInvoicePaymentDocument",
@@ -745,6 +750,18 @@ export const updateStudentApplication = createAsyncThunk(
   }
 );
 
+export const deleteUser = createAsyncThunk(
+  "shareApplication/deleteUser",
+  async (userId: any, thunkAPI) => {
+    try {
+      const response = await shareApplicationServices.deleteUser(userId);
+      return response.data;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
 export const clearStaffPayment = createAsyncThunk(
   "shareApplication/clearStaffPayment",
   async () => {
@@ -852,6 +869,7 @@ interface ApplicationState {
     isDirect: boolean;
     status: string;
   } | null;
+  removeUser: null;
 }
 
 const initialState: ApplicationState = {
@@ -951,6 +969,7 @@ const initialState: ApplicationState = {
   allApplicationPaymentSearchTerm: "",
   allPendingAgentSearchTerm: "",
   applicationStatus: null,
+  removeUser: null,
 };
 
 export const shareApplicationSlice = createSlice({
@@ -1482,8 +1501,8 @@ export const shareApplicationSlice = createSlice({
       })
       .addCase(updateRole.rejected, (state, action) => {
         state.registerRole = null;
-        const errorMessage = action.error.message || "Role failed to update.";
-        setMessage(errorMessage);
+        const error = action.error || "Role failed to update.";
+        setMessage(error);
       })
 
       .addCase(UploadStaffInvoicePaymentDocument.pending, (state) => {
@@ -1635,6 +1654,19 @@ export const shareApplicationSlice = createSlice({
       .addCase(updateStudentApplication.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to update application";
+      })
+
+      .addCase(deleteUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteUser.fulfilled, (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.removeUser = action.payload;
+      })
+      .addCase(deleteUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to update Notification";
       });
   },
 });

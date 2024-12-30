@@ -13,6 +13,7 @@ import noData from "../../../../../../../assets/svg/Transaction.svg";
 import approved from "../../../../../../../assets/svg/Approved.svg";
 import rejected from "../../../../../../../assets/svg/Rejected.svg";
 import pending from "../../../../../../../assets/svg/Pending.svg";
+import { PrivateElement } from "../../../../../../../shared/redux/hooks/admin/PrivateElement";
 
 interface PaymentData {
   id: string;
@@ -175,13 +176,15 @@ const AllPayment: React.FC = () => {
       <header>
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">All Payments</h1>
-          <button.PrimaryButton
-            onClick={handleFindByAllOpen}
-            className="mt-[1em] flex gap-2 rounded-full bg-linear-gradient px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300 hover:bg-primary-700 hover:text-white"
-          >
-            <img src={plus} alt="cross" />
-            Upload Payments
-          </button.PrimaryButton>
+          <PrivateElement feature="PAYMENTS" page="New Payments">
+            <button.PrimaryButton
+              onClick={handleFindByAllOpen}
+              className="mt-[1em] flex gap-2 rounded-full bg-linear-gradient px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300 hover:bg-primary-700 hover:text-white"
+            >
+              <img src={plus} alt="cross" />
+              Upload Payments
+            </button.PrimaryButton>
+          </PrivateElement>
         </div>
       </header>
       <div className="mt-4 h-auto w-full rounded-lg bg-white p-3 pb-[10em] dark:bg-gray-800">

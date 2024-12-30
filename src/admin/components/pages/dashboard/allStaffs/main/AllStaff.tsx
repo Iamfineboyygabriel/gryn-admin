@@ -9,10 +9,29 @@ import CustomPagination from "../../../../../../shared/utils/customPagination";
 import { useAllStaffForSuperAdmin } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
 import Modal from "../../../../../../shared/modal/Modal";
 import UpdateStaff from "./UpdateStaff";
+import { PrivateElement } from "../../../../../../shared/redux/hooks/admin/PrivateElement";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../../../../../shared/redux/store";
+import { deleteUser } from "../../../../../../shared/redux/shared/slices/shareApplication.slices";
+import DeleteStaffModal from "../modal/DeleteStaffModal";
+import SuccessModal from "../modal/SuccessModal";
+
+interface AdminUser {
+  id: string | number;
+  email: string;
+  role: string;
+  designation: string;
+  profile?: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    designation: string;
+  };
+}
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
-    {Array.from({ length: 6 }).map((_, index) => (
+    {Array.from({ length: 7 }).map((_, index) => (
       <td key={index} className="px-6 py-4">
         <div className="h-4 bg-gray-200 rounded"></div>
       </td>
@@ -21,12 +40,12 @@ const SkeletonRow = () => (
 );
 
 const AllStaff = () => {
+   const dispatch: AppDispatch = useDispatch();
+ const [selectedUsers, setSelectedUsers] = useState<(string | number)[]>([]);
   const {
     admins,
-    totalPages,
     currentPage,
     loading,
-    error,
     searchTerm,
     fetchAdmins,
     updateSearchTerm,
@@ -35,8 +54,40 @@ const AllStaff = () => {
   const itemsPerPage = 10;
   const [isModalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
   const handleOpenModal = () => setModalOpen(true);
   const handleCloseModal = () => setModalOpen(false);
+
+  const handleDeleteSelected = () => {
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      const deletePromises = selectedUsers.map((userId) =>
+        dispatch(deleteUser(userId)).unwrap()
+      );
+      await Promise.all(deletePromises);
+      setShowDeleteModal(false);
+      setSelectedUsers([]);
+      setShowSuccessModal(true);
+      fetchAdmins(currentPage, itemsPerPage);
+    } catch (error) {
+      console.error("Error deleting users:", error);
+    }
+  };
+
+const handleCheckboxChange = (userId: string | number) => {
+    setSelectedUsers((prev) => {
+      if (prev.includes(userId)) {
+        return prev.filter((id) => id !== userId);
+      } else {
+        return [...prev, userId];
+      }
+    });
+  };
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -45,67 +96,47 @@ const AllStaff = () => {
         fetchAdmins(1, itemsPerPage);
       }
     }, 300);
-
     return () => clearTimeout(delayDebounceFn);
-  }, [
-    localSearchTerm,
-    updateSearchTerm,
-    fetchAdmins,
-    itemsPerPage,
-    searchTerm,
-  ]);
+  }, [localSearchTerm, searchTerm, updateSearchTerm, fetchAdmins, itemsPerPage]);
 
   useEffect(() => {
     fetchAdmins(currentPage, itemsPerPage);
   }, [fetchAdmins, currentPage, itemsPerPage]);
 
   const handlePageChange = useCallback(
-    (event: React.ChangeEvent<unknown>, value: number) => {
+    (event:any, value:any) => {
       fetchAdmins(value, itemsPerPage);
     },
     [fetchAdmins, itemsPerPage]
   );
 
-  const escapeRegExp = useCallback((string: string) => {
+  const escapeRegExp = useCallback((string:any) => {
     return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }, []);
 
   const highlightText = useCallback(
-    (text: string, query: string) => {
+    (text:any, query:any) => {
       if (!query) return text;
       const escapedQuery = escapeRegExp(query);
       const regex = new RegExp(`(${escapedQuery})`, "gi");
       return text.replace(
         regex,
-        (match: string) => `<mark class="bg-yellow-300">${match}</mark>`
+        (match:any) => `<mark class="bg-yellow-300">${match}</mark>`
       );
     },
     [escapeRegExp]
   );
 
-  const sanitizeHTML = useCallback((html: string) => {
+  const sanitizeHTML = useCallback((html:any) => {
     return { __html: DOMPurify.sanitize(html) };
   }, []);
 
-  const formatData = useCallback((data: any) => (data ? data : "-"), []);
-
-  const filteredAdmins = useMemo(() => {
-    if (!admins?.data) return [];
-    return admins.data.filter((admin: any) => {
-      const fullName =
-        `${admin?.profile?.firstName} ${admin?.profile?.lastName}`?.toLowerCase();
-      return (
-        fullName?.includes(localSearchTerm?.toLowerCase()) ||
-        admin?.email.toLowerCase()?.includes(localSearchTerm?.toLowerCase()) ||
-        admin?.role?.toLowerCase()?.includes(localSearchTerm?.toLowerCase())
-      );
-    });
-  }, [admins, localSearchTerm]);
+  const formatData = useCallback((data:any) => (data ? data : "-"), []);
 
   const handleViewDetails = useCallback(
-    (staffEmail: string) => {
+    (staffEmail:any) => {
       navigate("/admin/dashboard/all_staffs/view_profile", {
-        state: { staffEmail: staffEmail },
+        state: { staffEmail },
       });
     },
     [navigate]
@@ -118,43 +149,10 @@ const AllStaff = () => {
       ));
     }
 
-    if (filteredAdmins?.length > 0) {
-      return filteredAdmins?.map((admin: any, index: number) => (
-        <tr
-          key={admin?.id}
-          className="text-[14px] border-b border-gray-200 leading-[20px] text-grey-primary font-medium"
-        >
-          <td className="py-[16px] px-[24px]">
-            {(currentPage - 1) * itemsPerPage + index + 1}
-          </td>
-          <td
-            className="py-[16px] whitespace-nowrap gap-1 px-[24px]"
-            dangerouslySetInnerHTML={sanitizeHTML(
-              highlightText(
-                `${admin?.profile?.firstName} ${admin?.profile?.lastName}`,
-                localSearchTerm
-              )
-            )}
-          />
-          <td className="py-[16px] px-[24px]">{formatData(admin?.role)}</td>
-          <td
-            className="py-[16px] px-[24px]"
-            dangerouslySetInnerHTML={sanitizeHTML(
-              highlightText(formatData(admin?.email), localSearchTerm)
-            )}
-          />
-          <td
-            onClick={() => handleViewDetails(admin?.profile?.email)}
-            className="py-[16px] text-primary-700 font-medium cursor-pointer px-[24px]"
-          >
-            View details
-          </td>
-        </tr>
-      ));
-    } else {
+    if (!admins?.data?.length) {
       return (
         <tr>
-          <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+          <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
             <div className="mt-[2em] flex flex-col items-center justify-center">
               <img src={transaction} alt="No admins" />
               <p className="mt-2 text-sm text-gray-500 dark:text-white">
@@ -165,15 +163,63 @@ const AllStaff = () => {
         </tr>
       );
     }
+
+    return admins.data.map((admin: AdminUser, index: number) => (
+      <tr
+        key={admin?.id}
+        className="text-[14px] border-b border-gray-200 leading-[20px] text-grey-primary font-medium"
+      >
+        <PrivateElement feature="ALL_STAFFS" page="delete user">
+          <td className="py-[16px] px-[24px]">
+            <input
+              type="checkbox"
+              checked={selectedUsers.includes(admin?.id)}
+              onChange={() => handleCheckboxChange(admin?.id)}
+              className="w-4 h-4 rounded border-gray-300 text-primary-700 focus:ring-primary-700"
+            />
+          </td>
+        </PrivateElement>
+        <td className="py-[16px] px-[24px]">
+          {(currentPage - 1) * itemsPerPage + index + 1}
+        </td>
+        <td
+          className="py-[16px] whitespace-nowrap gap-1 px-[24px]"
+          dangerouslySetInnerHTML={sanitizeHTML(
+            highlightText(
+              `${admin?.profile?.firstName} ${admin?.profile?.lastName}`,
+              localSearchTerm
+            )
+          )}
+        />
+        <td className="py-[16px] px-[24px]">{formatData(admin?.designation)}</td>
+        <td
+          className="py-[16px] px-[24px]"
+          dangerouslySetInnerHTML={sanitizeHTML(
+            highlightText(formatData(admin?.email), localSearchTerm)
+          )}
+        />
+        <PrivateElement feature="ALL_STAFFS" page="View Details">
+          <td
+            onClick={() => handleViewDetails(admin?.profile?.email)}
+            className="py-[16px] text-primary-700 font-medium cursor-pointer px-[24px]"
+          >
+            View details
+          </td>
+        </PrivateElement>
+      </tr>
+    ));
   }, [
     loading,
-    filteredAdmins,
+    admins?.data,
     currentPage,
     itemsPerPage,
     sanitizeHTML,
     highlightText,
     localSearchTerm,
     formatData,
+    selectedUsers,
+    handleCheckboxChange,
+    handleViewDetails,
   ]);
 
   return (
@@ -183,22 +229,42 @@ const AllStaff = () => {
         <div className="relative">
           <header className="flex items-center justify-between">
             <h1 className="font-medium text-xl">All Staff</h1>
-            <div className="flex gap-2">
-              <button.PrimaryButton
-                onClick={handleOpenModal}
-                className="mt-[1em] flex gap-2 rounded-full bg-primary-200 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300"
-              >
-                <img src={plus} alt="plus" />
-                Update Staff
-              </button.PrimaryButton>
-              <Link to="/admin/dashboard/all_staffs/create_staff">
-                <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-primary-700 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
+
+            <div className="flex items-center gap-2">
+              <PrivateElement feature="ALL_STAFFS" page="delete user">
+                {selectedUsers?.length > 0 && (
+                  <div>
+                    <button.PrimaryButton
+                      onClick={handleDeleteSelected}
+                      className="mt-[1em] flex gap-2 rounded-full bg-red-500 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300"
+                    >
+                      Delete Selected ({selectedUsers.length})
+                    </button.PrimaryButton>
+                  </div>
+                )}
+              </PrivateElement>
+
+              <PrivateElement feature="ALL_STAFFS" page="Update Staff">
+                <button.PrimaryButton
+                  onClick={handleOpenModal}
+                  className="mt-[1em] flex gap-2 rounded-full bg-primary-200 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300"
+                >
                   <img src={plus} alt="plus" />
-                  New Staff
+                  Update Staff
                 </button.PrimaryButton>
-              </Link>
+              </PrivateElement>
+
+              <PrivateElement feature="ALL_STAFFS" page="New Staff">
+                <Link to="/admin/dashboard/all_staffs/create_staff">
+                  <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-primary-700 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
+                    <img src={plus} alt="plus" />
+                    New Staff
+                  </button.PrimaryButton>
+                </Link>
+              </PrivateElement>
             </div>
           </header>
+
           <div className="flex items-center mt-3 w-64 rounded-full border-[1px] border-border bg-gray-100 dark:bg-gray-700">
             <input
               type="text"
@@ -214,6 +280,11 @@ const AllStaff = () => {
             <table className="w-full mt-4 border-collapse">
               <thead className="text-gray-500 border-b border-gray-200">
                 <tr>
+                  <PrivateElement feature="ALL_STAFFS" page="delete user">
+                    <th className="px-6 py-3 text-left text-sm font-normal">
+                      Select
+                    </th>
+                  </PrivateElement>
                   <th className="px-6 py-3 text-left text-sm font-normal">
                     S/N
                   </th>
@@ -226,9 +297,11 @@ const AllStaff = () => {
                   <th className="px-6 py-3 text-left text-sm font-normal">
                     Email Address
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-normal">
-                    Action
-                  </th>
+                  <PrivateElement feature="ALL_STAFFS" page="View Details">
+                    <th className="px-6 py-3 text-left text-sm font-normal">
+                      Action
+                    </th>
+                  </PrivateElement>
                 </tr>
               </thead>
               <tbody>{renderTableBody()}</tbody>
@@ -245,6 +318,7 @@ const AllStaff = () => {
             />
           </div>
         )}
+        
         {isModalOpen && (
           <Modal
             isOpen={isModalOpen}
@@ -255,6 +329,33 @@ const AllStaff = () => {
           </Modal>
         )}
       </div>
+
+      {showDeleteModal && (
+        <Modal
+          isOpen={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+        >
+          <DeleteStaffModal
+            selectedCount={selectedUsers.length}
+            onConfirm={handleConfirmDelete}
+            onCancel={() => setShowDeleteModal(false)}
+          />
+        </Modal>
+      )}
+
+      {showSuccessModal && (
+        <Modal
+          isOpen={showSuccessModal}
+          onClose={() => setShowSuccessModal(false)}
+        >
+          <SuccessModal
+            message={`Successfully deleted ${selectedUsers.length} staff ${
+              selectedUsers.length === 1 ? "member" : "members"
+            }.`}
+            onClose={() => setShowSuccessModal(false)}
+          />
+        </Modal>
+      )}
     </main>
   );
 };

@@ -6,6 +6,18 @@ import {
 import transaction from "../../../../../../assets/svg/Transaction.svg";
 import { Link } from "react-router-dom";
 
+const formatRoleName = (role: any) => {
+  if (!role) return "Staff";
+
+  return role
+    .split("_")
+    .map(
+      (word: any) =>
+        word?.charAt(0)?.toUpperCase() + word?.slice(1)?.toLowerCase()
+    )
+    .join(" ");
+};
+
 const SkeletonRow = () => (
   <div className="animate-pulse flex items-center justify-between py-2">
     <div className="flex items-center gap-[1em]">
@@ -72,6 +84,7 @@ const TopPeople = () => {
     error: adminError,
     fetchAdmins,
   } = useAllStaffForSuperAdmin();
+
   const {
     useTopCommission,
     loading: commissionLoading,
@@ -99,7 +112,7 @@ const TopPeople = () => {
         </p>
       </div>
       <div>
-        <h1 className="font-bold">{admin?.designation || "STAFF"}</h1>
+        <h1 className="font-bold">{formatRoleName(admin?.designation)}</h1>
       </div>
     </div>
   );

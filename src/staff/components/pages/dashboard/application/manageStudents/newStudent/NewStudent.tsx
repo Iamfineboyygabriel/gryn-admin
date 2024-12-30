@@ -1,20 +1,20 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router';
-import { AppDispatch } from '../../../../../../../shared/redux/store';
-import { createStudent } from '../../../../../../../shared/redux/shared/slices/shareApplication.slices';
-import { useAppDispatch } from '../../../../../../../shared/redux/hooks/shared/reduxHooks';
-import Modal from '../../../../../../../shared/modal/Modal';
-import StudentCreated from '../../../../../../../shared/modal/StudentCreated';
-import { button } from '../../../../../../../shared/buttons/Button';
-import { CgAsterisk } from 'react-icons/cg';
-import ReactLoading from 'react-loading';
-import { toast } from 'react-toastify';
+import React, { useState } from "react";
+import { useNavigate } from "react-router";
+import { AppDispatch } from "../../../../../../../shared/redux/store";
+import { createStudent } from "../../../../../../../shared/redux/shared/slices/shareApplication.slices";
+import { useAppDispatch } from "../../../../../../../shared/redux/hooks/shared/reduxHooks";
+import Modal from "../../../../../../../shared/modal/Modal";
+import StudentCreated from "../../../../../../../shared/modal/StudentCreated";
+import { button } from "../../../../../../../shared/buttons/Button";
+import { CgAsterisk } from "react-icons/cg";
+import ReactLoading from "react-loading";
+import { toast } from "react-toastify";
 
 const NewStudent = () => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [otherName, setOtherName] = useState('');
-  const [email, setEmail] = useState('');
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [otherName, setOtherName] = useState("");
+  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
 
@@ -41,9 +41,8 @@ const NewStudent = () => {
       await dispatch(createStudent(body)).unwrap();
       handleOpenModal();
     } catch (error: any) {
-        console.log("error",error)
       toast.error(
-        error.message || 'An error occurred while creating the application'
+        error.message || "An error occurred while creating the application"
       );
     } finally {
       setLoading(false);
@@ -71,7 +70,7 @@ const NewStudent = () => {
         </header>
         <header>
           <h1 className="text-2xl mt-[1.5em] font-bold">Personal Details</h1>
-          </header>
+        </header>
         <form
           className="mt-[1.5em] w-[77%] dark:text-white"
           onSubmit={submitApplication}
@@ -154,14 +153,18 @@ const NewStudent = () => {
                   type="spin"
                 />
               ) : (
-                'Generate Password Link'
+                "Generate Password Link"
               )}
             </button.PrimaryButton>
           </div>
         </form>
       </div>
       {isModalOpen && (
-        <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
+        <Modal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          data-aos="zoom-in"
+        >
           <StudentCreated onClose={handleCloseModal} />
         </Modal>
       )}

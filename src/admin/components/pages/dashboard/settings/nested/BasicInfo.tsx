@@ -10,7 +10,6 @@ import ConfirmDiscard from "../../../../../../shared/modal/ConfirmDiscard";
 
 const BasicInfo = () => {
   const { userProfile, updateUserProfile, uploadUserAvatar } = useUserProfile();
-  console.log("userProfi", userProfile);
   const [firstName, setFirstName] = useState(userProfile?.firstName || "");
   const [loading, setLoading] = useState(false);
   const [avatarLoading, setAvatarLoading] = useState(false);

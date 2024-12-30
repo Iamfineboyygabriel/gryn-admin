@@ -84,7 +84,6 @@ const NewApplication = () => {
           {currentStep === 2 && (
             <StepTwo
               onNext={(data) => {
-                console.log("StepTwo onNext called with data:", data);
                 handleNextClick(data);
               }}
               applicationId={applicationId}

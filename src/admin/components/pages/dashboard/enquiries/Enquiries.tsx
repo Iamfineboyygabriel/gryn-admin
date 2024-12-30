@@ -182,14 +182,14 @@ const Enquiries = () => {
                 <option value={50}>50</option>
               </select>
             </div>
-            <button.PrimaryButton
+            {/* <button.PrimaryButton
               onClick={handleFormModal}
               className="m-auto px-[2em] items-center flex justify-center gap-2 rounded-full bg-linear-gradient py-[11px] text-center font-medium text-white"
               type="submit"
             >
               <FaRegFileAlt />
               Enquiry Form
-            </button.PrimaryButton>
+            </button.PrimaryButton> */}
           </div>
         </div>
 

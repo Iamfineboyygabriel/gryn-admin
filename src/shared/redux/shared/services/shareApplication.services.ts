@@ -713,7 +713,7 @@ const updateRole = async (body: any) => {
     });
     return response.data;
   } catch (error: any) {
-    handleApiError(error);
+    throw error.response?.data || error.message || error;
   }
 };
 
@@ -1487,6 +1487,24 @@ const getUserPermittedPages = async (id: string) => {
   }
 };
 
+const deleteUser = async (userId: any) => {
+  const url = `${process.env.REACT_APP_API_URL}/users/${userId}`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "delete",
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const shareApplicationServices = {
   getUserProfile,
   uploadAvatar,
@@ -1545,6 +1563,7 @@ const shareApplicationServices = {
   getUserPermittedPages,
   budgetUploadPaymentDocument,
   updateDirectApplication,
+  deleteUser,
 };
 
 export default shareApplicationServices;

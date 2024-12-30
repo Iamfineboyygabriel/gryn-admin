@@ -56,7 +56,6 @@ const StaffEmailEnquiries = ({ id }: any) => {
         );
       }
     } catch (error: any) {
-      console.log("errniiga", error);
       setError(error);
     } finally {
       setIsAssigning(false);

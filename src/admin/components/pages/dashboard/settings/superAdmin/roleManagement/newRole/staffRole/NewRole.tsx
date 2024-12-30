@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import ReactLoading from "react-loading";
 import { button } from "../../../../../../../../../shared/buttons/Button";
 import { useStaffEmails } from "../../../../../../../../../shared/redux/hooks/admin/getAdminProfile";
@@ -8,7 +7,10 @@ import {
   Dropdown,
   DropdownItem,
 } from "../../../../../../../../../shared/dropDown/DropDown";
-import { RootState } from "../../../../../../../../../shared/redux/store";
+import {
+  AppDispatch,
+  RootState,
+} from "../../../../../../../../../shared/redux/store";
 import { toast } from "react-toastify";
 import { updateRole } from "../../../../../../../../../shared/redux/shared/slices/shareApplication.slices";
 
@@ -21,7 +23,7 @@ interface DesignationChoice {
 }
 
 const NewRole: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch();
   const { staffEmail, loading: emailLoading } = useStaffEmails();
   const [email, setEmail] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -32,13 +34,34 @@ const NewRole: React.FC = () => {
     (state: RootState) => state.shareApplication.loading
   );
 
-  const type: RoleChoice[] = [{ name: "STAFF" }, { name: "ADMIN" }];
+  const type: RoleChoice[] = [
+    { name: "STAFF" },
+    { name: "ADMIN" },
+    { name: "SUPER_ADMIN" },
+  ];
   const designationType: DesignationChoice[] = [
-    { name: "CUSTOMER_RELATIONS" },
-    { name: "STUDENT_RELATION_MANAGER" },
-    { name: "INTERNATIONAL_RELATIONAL_MANAGER" },
-    { name: "OFFICE_ADMIN" },
-    { name: "EXCUTIVE_ADMIN" },
+    { name: "CHIEF_EXECUTIVE_OFFICER" },
+    { name: "BOARD_MEMBER" },
+    { name: "CHIEF_OPERATIONS_OFFICER" },
+    { name: "MANAGEMENT_CONSULTANT" },
+    { name: "HEAD_HR" },
+    { name: "HEAD_ACCOUNT" },
+    { name: "OPERATION_MANAGER" },
+    { name: "BRANCH_MANAGER" },
+    { name: "RECRUITMENT_MANAGER" },
+    { name: "DEPUTY_RECRUITMENT_MANAGER" },
+    { name: "HR_MANAGER" },
+    { name: "ACCOUNTANT" },
+    { name: "CHIEF_FINANCIAL_OFFICER" },
+    { name: "SENIOR_ASSOCIATE" },
+    { name: "ADMINISTRATIVE_EXECUTIVE" },
+    { name: "JUNIOR_ASSOCIATE" },
+    { name: "ADMIN_OFFICER" },
+    { name: "ADMISSION_OFFICER" },
+    { name: "OFFICE_ASSISTANT" },
+    { name: "SENIOR_ADMISSION_OFFICER" },
+    { name: "ADMISSION_OFFICER_I" },
+    { name: "PROJECT_TEAM_MEMBER" },
   ];
 
   const emailItems: DropdownItem[] = useMemo(() => {
@@ -80,6 +103,7 @@ const NewRole: React.FC = () => {
       toast.success("role assigned successfully");
       resetForm();
     } catch (error: any) {
+      toast.error(error);
       setError(
         error || "An error occurred while updating the role. Please try again."
       );

@@ -1,8 +1,8 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { button } from "../buttons/Button";
-import ReactLoading from 'react-loading';
-import { RootState } from "../redux/store"; 
+import ReactLoading from "react-loading";
+import { AppDispatch, RootState } from "../redux/store";
 import { findStaffByEmail } from "../redux/shared/slices/shareApplication.slices";
 import { assignAgentToStaff } from "../redux/admin/slices/application.slices";
 import AgentAssigned from "./AgentAssigned";
@@ -20,14 +20,20 @@ interface StaffEmail {
   email: string;
 }
 
-const FindStaffByEmail: React.FC<FindStaffByEmailProps> = ({ onClose, redirect, agentId }) => {
+const FindStaffByEmail: React.FC<FindStaffByEmailProps> = ({
+  onClose,
+  redirect,
+  agentId,
+}) => {
   const { staffEmail, loading: emailLoading } = useStaffEmails();
-  const [email, setEmail] = useState<string>('');
-  const dispatch = useDispatch();
+  const [email, setEmail] = useState<string>("");
+  const dispatch: AppDispatch = useDispatch();
   const [isModalOpen, setModalOpen] = useState<boolean>(false);
   const [isSuccessModalOpen, setSuccessModalOpen] = useState<boolean>(false);
-  const { loading, error } = useSelector((state: RootState) => state?.application);
-  const [errorStaff, setErrorStaff] = useState<string>('');
+  const { loading, error } = useSelector(
+    (state: RootState) => state?.application
+  );
+  const [errorStaff, setErrorStaff] = useState<string>("");
 
   const emailItems: DropdownItem[] = useMemo(() => {
     if (Array?.isArray(staffEmail)) {
@@ -37,8 +43,8 @@ const FindStaffByEmail: React.FC<FindStaffByEmailProps> = ({ onClose, redirect, 
   }, [staffEmail]);
 
   const handleSelectEmail = useCallback((item: DropdownItem | null) => {
-    setEmail(item?.name || '');
-    setErrorStaff('');
+    setEmail(item?.name || "");
+    setErrorStaff("");
   }, []);
 
   const handleOpenModal = () => setModalOpen(true);
@@ -54,20 +60,22 @@ const FindStaffByEmail: React.FC<FindStaffByEmailProps> = ({ onClose, redirect, 
     e.preventDefault();
 
     if (!email) {
-      setErrorStaff('Please select a staff email');
+      setErrorStaff("Please select a staff email");
       return;
     }
 
     try {
       const staffResponse = await dispatch(findStaffByEmail(email) as any);
-      
+
       if (staffResponse.error) {
-        setErrorStaff('Staff not found');
+        setErrorStaff("Staff not found");
         return;
       }
 
-      const assignResponse = await dispatch(assignAgentToStaff({ agentId, email }) as any);
-      
+      const assignResponse = await dispatch(
+        assignAgentToStaff({ agentId, email }) as any
+      );
+
       if (assignResponse.payload && !assignResponse.error) {
         handleOpenSuccessModal();
       } else {
@@ -114,7 +122,7 @@ const FindStaffByEmail: React.FC<FindStaffByEmailProps> = ({ onClose, redirect, 
                 type="spin"
               />
             ) : (
-              'Continue'
+              "Continue"
             )}
           </button.PrimaryButton>
         </form>

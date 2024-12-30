@@ -9,14 +9,16 @@ import AdminRoutes from "./admin/components/dashboard/routes/DashboardRoutes";
 import DashboardGateway from "./shared/utils/DashboardGateWay";
 import PasswordSuccessful from "./staff/components/pages/auth/PasswordSuccessful";
 import Landing from "./shared/home/Landing";
+import VerifyAccount from "./shared/home/verifyOTP/VerifyAccount";
 
 function App() {
   return (
     <Router>
       <Routes>
-      <Route path="/" element={<Landing />} />
+        <Route path="/" element={<Landing />} />
         <Route path="/staff_login" element={<StaffLanding />} />
         <Route path="/admin_login" element={<AdminLogin />} />
+        <Route path="/verify_account" element={<VerifyAccount />} />
         <Route path="/forgot_Password" element={<ForgotPassword />} />
         <Route path="/recovery_mail" element={<RecoveryMail />} />
         <Route path="/reset_password" element={<ResetPassword />} />
@@ -24,16 +26,22 @@ function App() {
           path="/password_changed_Successfully"
           element={<PasswordSuccessful />}
         />
-        <Route path="/staff/dashboard/*" element={
-          <DashboardGateway>
-          <StaffRoutes />
-          </DashboardGateway>
-          } />
-        <Route path="/admin/dashboard/*" element={
-          <DashboardGateway>
-          <AdminRoutes />
-          </DashboardGateway>
-          } />
+        <Route
+          path="/staff/dashboard/*"
+          element={
+            <DashboardGateway>
+              <StaffRoutes />
+            </DashboardGateway>
+          }
+        />
+        <Route
+          path="/admin/dashboard/*"
+          element={
+            <DashboardGateway>
+              <AdminRoutes />
+            </DashboardGateway>
+          }
+        />
       </Routes>
     </Router>
   );

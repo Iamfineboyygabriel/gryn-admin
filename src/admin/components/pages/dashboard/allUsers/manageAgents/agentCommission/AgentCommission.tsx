@@ -60,7 +60,6 @@ const AgentCommission = () => {
 
   const { agentCommissions, loading, error, fetchAgentPayments } =
     useAgentCommission();
-  console.log("agg", agentCommissions);
   const handleViewDetails = (payment: CommissionItem) => {
     setSelectedPayment(payment);
     setIsModalOpen(true);
