@@ -28,7 +28,7 @@ const VerifyAccount = () => {
     if (timeLeft > 0) {
       timer = setInterval(() => {
         setTimeLeft((prevTime) => prevTime - 1);
-      }, 1000);
+      }, 83.33);
     } else {
       setCanResend(true);
     }
