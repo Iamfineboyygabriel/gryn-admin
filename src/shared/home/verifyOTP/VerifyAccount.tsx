@@ -14,7 +14,7 @@ import OTPInput from "react-otp-input";
 const VerifyAccount = () => {
   const [loading, setLoading] = useState(false);
   const [token, setToken] = useState("");
-  const [timeLeft, setTimeLeft] = useState(60);
+  const [timeLeft, setTimeLeft] = useState(10);
   const [canResend, setCanResend] = useState(false);
 
   const navigate = useNavigate();
@@ -28,7 +28,7 @@ const VerifyAccount = () => {
     if (timeLeft > 0) {
       timer = setInterval(() => {
         setTimeLeft((prevTime) => prevTime - 1);
-      }, 83.33);
+      }, 1000);
     } else {
       setCanResend(true);
     }
