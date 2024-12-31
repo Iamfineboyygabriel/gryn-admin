@@ -223,7 +223,7 @@ const Masters = ({ onNext, applicationId }: any) => {
               />
             </div>
           ) : (
-            "Submit Application"
+            "Create Application"
           )}
         </button.PrimaryButton>
       </form>

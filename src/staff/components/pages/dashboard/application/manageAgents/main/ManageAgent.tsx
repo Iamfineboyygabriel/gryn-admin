@@ -167,14 +167,6 @@ const ManageAgents = () => {
       <div className="relative">
         <header className="flex items-center justify-between">
           <h1 className="font-semibold text-xl">Assigned Agents</h1>
-          <div className="flex gap-2">
-            <Link to="/staff/dashboard/application/create_agent">
-              <button.PrimaryButton className="mt-[1em] flex gap-2 rounded-full bg-primary-700 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300">
-                <img src={plus} alt="plus" />
-                New Agent
-              </button.PrimaryButton>
-            </Link>
-          </div>
         </header>
         <div className="flex items-center mt-3 w-64 rounded-full border-[1px] border-border bg-gray-100 dark:bg-gray-700">
           <input

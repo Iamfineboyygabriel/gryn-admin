@@ -230,7 +230,7 @@ const PreMasters = ({ onNext, applicationId }: any) => {
               />
             </div>
           ) : (
-            "Submit Application"
+            "Create Application"
           )}
         </button.PrimaryButton>
       </form>

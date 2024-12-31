@@ -27,6 +27,17 @@ interface Destination {
   cca2: string;
 }
 
+interface ApiResponse {
+  status: number;
+  message: string;
+  data: {
+    id: number;
+    firstName: string;
+    lastName: string;
+    // ... other fields
+  };
+}
+
 const StepTwo = ({
   onNext,
   stepOneData,
@@ -96,20 +107,25 @@ const StepTwo = ({
         schoolName,
       };
 
-      const response = await dispatch(createVisaApplication(body)).unwrap();
+      const response = (await dispatch(
+        createVisaApplication(body)
+      ).unwrap()) as ApiResponse;
 
-      if (response.status === 201) {
-        const newApplicationId = response.data.application.id;
+      if (response.status === 201 && response.data) {
+        const newApplicationId = String(response.data.id); // Convert to string since onNext expects string
         onNext({ newApplicationId, moveToStepThree: true });
       } else {
-        toast.error(response.data.message);
+        toast.error(response.message || "Failed to create application");
       }
     } catch (error: any) {
-      toast.error(error.message);
+      toast.error(
+        error.message || "An error occurred while creating the application"
+      );
     } finally {
       setLoading(false);
     }
   };
+
   const handleCountrySelect: any = (item: any) => {
     setDestination({ name: item.name, cca2: item.cca2 });
   };

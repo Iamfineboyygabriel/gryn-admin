@@ -10,6 +10,7 @@ import DashboardGateway from "./shared/utils/DashboardGateWay";
 import PasswordSuccessful from "./staff/components/pages/auth/PasswordSuccessful";
 import Landing from "./shared/home/Landing";
 import VerifyAccount from "./shared/home/verifyOTP/VerifyAccount";
+import ProtectedRoute from "./shared/ProtectedRoute/ProtectedRoute";
 
 function App() {
   return (
@@ -26,22 +27,26 @@ function App() {
           path="/password_changed_Successfully"
           element={<PasswordSuccessful />}
         />
-        <Route
-          path="/staff/dashboard/*"
-          element={
-            <DashboardGateway>
-              <StaffRoutes />
-            </DashboardGateway>
-          }
-        />
-        <Route
-          path="/admin/dashboard/*"
-          element={
-            <DashboardGateway>
-              <AdminRoutes />
-            </DashboardGateway>
-          }
-        />
+        <Route element={<ProtectedRoute />}>
+          <Route
+            path="/staff/dashboard/*"
+            element={
+              <DashboardGateway>
+                <StaffRoutes />
+              </DashboardGateway>
+            }
+          />
+        </Route>
+        <Route element={<ProtectedRoute />}>
+          <Route
+            path="/admin/dashboard/*"
+            element={
+              <DashboardGateway>
+                <AdminRoutes />
+              </DashboardGateway>
+            }
+          />
+        </Route>
       </Routes>
     </Router>
   );
