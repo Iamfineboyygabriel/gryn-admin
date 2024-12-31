@@ -1,23 +1,26 @@
 import { useEffect, useState } from "react";
-import { uploadApplication } from "../../../../../../../shared/redux/shared/services/shareApplication.services";
+import { uploadVisaApplicationDocument } from "../../../../../../../shared/redux/shared/services/shareApplication.services";
 import FileUpload from "../../../../../../../shared/fileUpload/FileUpload";
 import { button } from "../../../../../../../shared/buttons/Button";
 import { toast } from "react-toastify";
 import { DocumentType } from "../../../../../../../data/data";
 import ReactLoading from "react-loading";
+import Modal from "../../../../../../../shared/modal/Modal";
+import VisaApplicationCreated from "../../../../../../../shared/modal/VisaApplicationCreated";
 
 const StepThree = ({ applicationId }: any) => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  const [resume, setResume] = useState<File | null>(null);
-  const [international_Passport, setInternational_Passport] =
-    useState<File | null>(null);
-  const [old_Level, setOld_Level] = useState<File | null>(null);
+  const [service_Charge, setService_Charge] = useState<File | null>(null);
+  const [ihs, setIhs] = useState<File | null>(null);
+  const [visa_Fee, setVisa_Fee] = useState<File | null>(null);
+  const [other_Payment, setOther_Payment] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [successes, setSuccesses] = useState<Record<string, boolean>>({});
+  const [isModalOpen, setModalOpen] = useState(false);
 
   const handleBrowseFileClick = (inputId: string): void => {
     const inputElement = document.getElementById(inputId) as HTMLInputElement;
@@ -25,20 +28,19 @@ const StepThree = ({ applicationId }: any) => {
       inputElement.click();
     }
   };
+
   const submitDocument = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
     setErrors({});
 
     try {
-      const endpoint = `/media/application/upload-doc/${applicationId}`;
+      const endpoint = `/media/visa/upload-doc/${applicationId}`;
       const documents = [
-        { type: DocumentType.RESUME, file: resume },
-        {
-          type: DocumentType.INTERNATIONAL_PASSPORT,
-          file: international_Passport,
-        },
-        { type: DocumentType.OLD_LEVEL, file: old_Level },
+        { type: DocumentType.SERVICE_CHARGE, file: service_Charge },
+        { type: DocumentType.IHS, file: ihs },
+        { type: DocumentType.VISA_FEE, file: visa_Fee },
+        { type: DocumentType.OTHER_PAYMENT, file: other_Payment },
       ];
 
       const documentsToUpload = documents.filter(
@@ -51,7 +53,10 @@ const StepThree = ({ applicationId }: any) => {
             const form = new FormData();
             form.append("file", file!);
             form.append("documentType", type);
-            const response = await uploadApplication(endpoint, form);
+            const response = await uploadVisaApplicationDocument(
+              endpoint,
+              form
+            );
             if (response.status === 201) {
               setSuccesses((prev) => ({ ...prev, [type]: true }));
               return { type, success: true };
@@ -74,9 +79,7 @@ const StepThree = ({ applicationId }: any) => {
       );
 
       if (allSuccessful) {
-        setTimeout(() => {
-          // onNext();
-        }, 2000);
+        setModalOpen(true);
       }
     } catch (error) {
       toast.error(
@@ -90,51 +93,49 @@ const StepThree = ({ applicationId }: any) => {
   return (
     <main>
       <form onSubmit={submitDocument}>
-        <div className="mt-[1.5em] grid w-[80%] lg:grid-cols-2 gap-8">
+        <div className="mt-[1.5em] w-full md:w-[90%] lg:w-[80%] grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 lg:gap-8">
           <FileUpload
             label="Service Charge"
             inputId="resumeFile"
-            file={resume}
-            setFile={setResume}
-            onFileChange={(file) => setResume(file)}
-            onBrowseClick={async () => handleBrowseFileClick("resumeFile")}
-            error={errors[DocumentType.RESUME]}
-            success={successes[DocumentType.RESUME]}
+            file={service_Charge}
+            setFile={setService_Charge}
+            onFileChange={(file) => setService_Charge(file)}
+            onBrowseClick={async () => handleBrowseFileClick("service_Charge")}
+            error={errors[DocumentType.SERVICE_CHARGE]}
+            success={successes[DocumentType.SERVICE_CHARGE]}
           />
 
           <FileUpload
             label="IHS Payment"
-            inputId="internationalPassportFile"
-            file={international_Passport}
-            setFile={setInternational_Passport}
-            onFileChange={(file) => setInternational_Passport(file)}
-            onBrowseClick={async () =>
-              handleBrowseFileClick("internationalPassportFile")
-            }
-            error={errors[DocumentType.INTERNATIONAL_PASSPORT]}
-            success={successes[DocumentType.INTERNATIONAL_PASSPORT]}
+            inputId="ihs"
+            file={ihs}
+            setFile={setIhs}
+            onFileChange={(file) => setIhs(file)}
+            onBrowseClick={async () => handleBrowseFileClick("ihs")}
+            error={errors[DocumentType.IHS]}
+            success={successes[DocumentType.IHS]}
           />
 
           <FileUpload
             label="Visa Fee Payment"
-            inputId="oldLevelFile"
-            file={old_Level}
-            setFile={setOld_Level}
-            onFileChange={(file) => setOld_Level(file)}
-            onBrowseClick={async () => handleBrowseFileClick("oldLevelFile")}
-            error={errors[DocumentType.OLD_LEVEL]}
-            success={successes[DocumentType.OLD_LEVEL]}
+            inputId="visa_Fee"
+            file={visa_Fee}
+            setFile={setVisa_Fee}
+            onFileChange={(file) => setVisa_Fee(file)}
+            onBrowseClick={async () => handleBrowseFileClick("visa_Fee")}
+            error={errors[DocumentType.VISA_FEE]}
+            success={successes[DocumentType.VISA_FEE]}
           />
 
           <FileUpload
             label="Other Payment"
-            inputId="oldLevelFile"
-            file={old_Level}
-            setFile={setOld_Level}
-            onFileChange={(file) => setOld_Level(file)}
-            onBrowseClick={async () => handleBrowseFileClick("oldLevelFile")}
-            error={errors[DocumentType.OLD_LEVEL]}
-            success={successes[DocumentType.OLD_LEVEL]}
+            inputId="other_Payment"
+            file={other_Payment}
+            setFile={setOther_Payment}
+            onFileChange={(file) => setOther_Payment(file)}
+            onBrowseClick={async () => handleBrowseFileClick("other_Payment")}
+            error={errors[DocumentType.OTHER_PAYMENT]}
+            success={successes[DocumentType.OTHER_PAYMENT]}
           />
         </div>
         <button.PrimaryButton
@@ -156,6 +157,19 @@ const StepThree = ({ applicationId }: any) => {
           )}
         </button.PrimaryButton>
       </form>
+
+      {isModalOpen && (
+        <Modal
+          isOpen={isModalOpen}
+          onClose={() => setModalOpen(false)}
+          data-aos="zoom-in"
+        >
+          <VisaApplicationCreated
+            onClose={() => setModalOpen(false)}
+            to="/staff/dashboard/visa"
+          />
+        </Modal>
+      )}
     </main>
   );
 };

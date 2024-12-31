@@ -57,7 +57,7 @@ const NewApplication = () => {
         <header>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="font-medium dark:text-gray-700">
+              <h1 className="font-medium">
                 Visa Application /
                 <span className="ml-1 font-medium text-primary-700">
                   New Application
