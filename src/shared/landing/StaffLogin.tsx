@@ -56,7 +56,7 @@ const StaffLanding: React.FC = () => {
       try {
         const response = await dispatch(login(formData)).unwrap();
         const role = response?.data?.role;
-        const isEmailVerified = response?.data?.isEmailVerified;
+        // const isEmailVerified = response?.data?.isEmailVerified;
 
         if (role === "STAFF") {
           // if (!isEmailVerified) {

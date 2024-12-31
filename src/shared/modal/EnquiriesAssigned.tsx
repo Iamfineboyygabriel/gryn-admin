@@ -15,7 +15,7 @@ const EnquiriesAssigned = ({ onClose }: any) => {
             <p>you have assigned an enquiry to staff</p>
           </div>
         </article>
-        <Link to="/admin/dashboard/instagram">
+        <Link to="/admin/dashboard/home">
           <button.PrimaryButton className="m-auto mt-[2em] flex w-[60%] justify-center gap-2 rounded-full bg-linear-gradient py-[10px] text-center font-medium text-white">
             Proceed to Dashboard
           </button.PrimaryButton>
