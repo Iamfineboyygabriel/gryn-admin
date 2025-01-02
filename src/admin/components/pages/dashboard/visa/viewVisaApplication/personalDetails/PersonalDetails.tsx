@@ -1,5 +1,4 @@
 import React from "react";
-import dayjs from "dayjs";
 import { useVisaApplicationDetails } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
 
 const SkeletonField = () => (

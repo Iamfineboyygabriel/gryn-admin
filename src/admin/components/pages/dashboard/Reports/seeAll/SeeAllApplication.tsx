@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 import DOMPurify from "dompurify";
 import { FiSearch } from "react-icons/fi";
@@ -6,6 +6,7 @@ import transaction from "../../../../../../assets/svg/Transaction.svg";
 import CustomPagination from "../../../../../../shared/utils/customPagination";
 import { useAllApplication } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
 import { button } from "../../../../../../shared/buttons/Button";
+import { DownLoadButton } from "../../../../../../shared/downLoad/DownLoadButton";
 
 const SkeletonRow: React.FC = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -32,6 +33,7 @@ const SeeAllApplication: React.FC = () => {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [status, setStatus] = useState<string>("");
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+  const contentRef = useRef(null);
 
   const navigate = useNavigate();
   const handleBackClick = () => {
@@ -207,10 +209,11 @@ const SeeAllApplication: React.FC = () => {
   ]);
 
   return (
-    <main className="mt-[1.3em] font-outfit">
+    <main ref={contentRef} className="mt-[1.3em] font-outfit">
       <header>
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Reports</h1>
+          <DownLoadButton applicationRef={contentRef} />
         </div>
       </header>
       <div className="mt-[1.3em] h-auto w-full overflow-auto rounded-lg bg-white px-[1em] py-3 pb-[10em]">

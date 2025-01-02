@@ -1,11 +1,18 @@
-import React, { useMemo, useState, useCallback, useEffect } from "react";
+import React, {
+  useMemo,
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
 import { useNavigate } from "react-router";
 import DOMPurify from "dompurify";
 import { FiSearch } from "react-icons/fi";
 import transaction from "../../../../../../assets/svg/Transaction.svg";
 import { useAllPendingApplication } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
 import CustomPagination from "../../../../../../shared/utils/customPagination";
-import { button } from "../../../../../../shared/buttons/Button"
+import { button } from "../../../../../../shared/buttons/Button";
+import { DownLoadButton } from "../../../../../../shared/downLoad/DownLoadButton";
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -18,18 +25,30 @@ const SkeletonRow = () => (
 );
 
 const SeeAllPendingApplication: React.FC = () => {
-  const { applications, totalPages, currentPage, loading, fetchApplications, searchTerm, updateSearchTerm } = useAllPendingApplication();
+  const {
+    applications,
+    totalPages,
+    currentPage,
+    loading,
+    fetchApplications,
+    searchTerm,
+    updateSearchTerm,
+  } = useAllPendingApplication();
   const [sortField, setSortField] = useState("lastName");
   const [sortOrder, setSortOrder] = useState("asc");
 
   const itemsPerPage = 10;
   const navigate = useNavigate();
+  const contentRef = useRef(null);
 
   useEffect(() => {
     fetchApplications(currentPage, itemsPerPage);
   }, [fetchApplications, currentPage, itemsPerPage]);
 
-  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+  const handlePageChange = (
+    event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
     fetchApplications(value, itemsPerPage);
   };
 
@@ -39,9 +58,11 @@ const SeeAllPendingApplication: React.FC = () => {
     }
 
     const filtered = applications.filter((item: any) =>
-      `${item?.lastName || ""} ${item?.firstName || ""} ${item?.middleName || ""}`
+      `${item?.lastName || ""} ${item?.firstName || ""} ${
+        item?.middleName || ""
+      }`
         .toLowerCase()
-        .includes((searchTerm || '').toLowerCase())
+        .includes((searchTerm || "").toLowerCase())
     );
 
     return filtered.sort((a: any, b: any) => {
@@ -52,12 +73,14 @@ const SeeAllPendingApplication: React.FC = () => {
       return 0;
     });
   }, [applications, searchTerm, sortField, sortOrder]);
-  
+
   const isCurrentPageEmpty = filteredAndSortedApplications.length === 0;
 
   const handleViewDetails = useCallback(
     (applicationId: string) => {
-      navigate(`/admin/dashboard/application/all_application/view_application/${applicationId}`);
+      navigate(
+        `/admin/dashboard/application/all_application/view_application/${applicationId}`
+      );
     },
     [navigate]
   );
@@ -167,16 +190,17 @@ const SeeAllPendingApplication: React.FC = () => {
     }
   };
   const handleBackClick = () => navigate(-1);
- 
+
   return (
-    <main>
-   <header>
-    <div className="flex items-center justify-between">
-      <h1 className="text-2xl font-bold">Application</h1>
-     </div>
-    </header>
-    <div className="mt-[1.3em] h-auto w-full overflow-auto rounded-lg bg-white px-[1em] py-3 pb-[10em]">
-    <header>
+    <main ref={contentRef}>
+      <header>
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Reports</h1>
+          <DownLoadButton applicationRef={contentRef} />
+        </div>
+      </header>
+      <div className="mt-[1.3em] h-auto w-full overflow-auto rounded-lg bg-white px-[1em] py-3 pb-[10em]">
+        <header>
           <div className="flex items-center justify-between">
             <div>
               <h1 className="font-medium dark:text-gray-700">
@@ -191,72 +215,73 @@ const SeeAllPendingApplication: React.FC = () => {
             </button.PrimaryButton>
           </div>
         </header>
-      <div className="flex mt-[1.2em]">
-        <div className="flex items-center gap-[1em]">
-        <div className="relative w-full">
-            <input
-              type="text"
-              className="w-full rounded-full bg-gray-100 py-2 pl-2 pr-[3em] text-sm"
-              placeholder="Search"
-              value={searchTerm || ''}
-              onChange={(e) => updateSearchTerm(e.target.value)}
-            />
-            <FiSearch className="absolute right-[1em] top-1/2 -translate-y-1/2 transform text-lg text-gray-500" />
-          </div>
-          <div
-            className="flex cursor-pointer items-center bg-gray-100 px-3 py-2"
-            onClick={() => handleSort("lastName")}
-          >
-            <p className="whitespace-nowrap text-sm">
-              Sort by Name
-              {sortField === "lastName"
-                ? sortOrder === "asc"
-                  ? " ▲"
-                  : " ▼"
-                : ""}
-            </p>
-          </div>
-          <div
-            className="flex cursor-pointer items-center bg-gray-100 px-3  py-2"
-            onClick={() => handleSort("status")}
-          >
-            <p className="whitespace-nowrap text-sm">
-              Sort by Status
-              {sortField === "status"
-                ? sortOrder === "asc"
-                  ? " ▲"
-                  : " ▼"
-                : ""}
-            </p>
+        <div className="flex mt-[1.2em]">
+          <div className="flex items-center gap-[1em]">
+            <div className="relative w-full">
+              <input
+                type="text"
+                className="w-full rounded-full bg-gray-100 py-2 pl-2 pr-[3em] text-sm"
+                placeholder="Search"
+                value={searchTerm || ""}
+                onChange={(e) => updateSearchTerm(e.target.value)}
+              />
+              <FiSearch className="absolute right-[1em] top-1/2 -translate-y-1/2 transform text-lg text-gray-500" />
+            </div>
+            <div
+              className="flex cursor-pointer items-center bg-gray-100 px-3 py-2"
+              onClick={() => handleSort("lastName")}
+            >
+              <p className="whitespace-nowrap text-sm">
+                Sort by Name
+                {sortField === "lastName"
+                  ? sortOrder === "asc"
+                    ? " ▲"
+                    : " ▼"
+                  : ""}
+              </p>
+            </div>
+            <div
+              className="flex cursor-pointer items-center bg-gray-100 px-3  py-2"
+              onClick={() => handleSort("status")}
+            >
+              <p className="whitespace-nowrap text-sm">
+                Sort by Status
+                {sortField === "status"
+                  ? sortOrder === "asc"
+                    ? " ▲"
+                    : " ▼"
+                  : ""}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
-      <table className="mt-4 w-full table-auto overflow-x-auto">
-        <thead>
-          <tr className="text-gray-700 border-b border-gray-200">
-            <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
-            <th className="whitespace-nowrap px-6 py-3 text-left text-sm font-normal">
-              Full Name
-            </th>
-            <th className="px-6 py-3 text-left text-sm font-normal">Phone</th>
-            <th className="px-6 py-3 text-left text-sm font-normal">Email</th>
-            <th className="px-6 py-3 text-left text-sm font-normal">Actions</th>
-          </tr>
-        </thead>
-        <tbody>{renderTableBody()}</tbody>
-      </table>
-      {!loading && applications?.length > 0 && (
+        <table className="mt-4 w-full table-auto overflow-x-auto">
+          <thead>
+            <tr className="text-gray-700 border-b border-gray-200">
+              <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
+              <th className="whitespace-nowrap px-6 py-3 text-left text-sm font-normal">
+                Full Name
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-normal">Phone</th>
+              <th className="px-6 py-3 text-left text-sm font-normal">Email</th>
+              <th className="px-6 py-3 text-left text-sm font-normal">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody>{renderTableBody()}</tbody>
+        </table>
+        {!loading && applications?.length > 0 && (
           <div className="mt-6 flex justify-center">
-          <CustomPagination
-          currentPage={currentPage}
-          onPageChange={handlePageChange}
-          hasMore={applications.length === itemsPerPage}
-        />
-        </div>
-      )}
-    </div>
+            <CustomPagination
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+              hasMore={applications.length === itemsPerPage}
+            />
+          </div>
+        )}
+      </div>
     </main>
-
   );
 };
 

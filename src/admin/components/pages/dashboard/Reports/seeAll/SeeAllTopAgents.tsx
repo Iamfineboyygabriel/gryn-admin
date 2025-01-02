@@ -1,10 +1,17 @@
-import React, { useMemo, useState, useCallback, useEffect } from "react";
+import React, {
+  useMemo,
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
 import { useNavigate } from "react-router";
 import DOMPurify from "dompurify";
 import transaction from "../../../../../../assets/svg/Transaction.svg";
 import { useTopAgentCommisson } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
 import CustomPagination from "../../../../../../shared/utils/customPagination";
 import { button } from "../../../../../../shared/buttons/Button";
+import { DownLoadButton } from "../../../../../../shared/downLoad/DownLoadButton";
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -29,7 +36,7 @@ const SeeAllTopAgents: React.FC = () => {
 
   const itemsPerPage = 10;
   const navigate = useNavigate();
-
+  const contentRef = useRef(null);
   useEffect(() => {
     fetchCommissions(currentPage, itemsPerPage);
   }, [fetchCommissions, currentPage, itemsPerPage]);
@@ -122,10 +129,11 @@ const SeeAllTopAgents: React.FC = () => {
   const handleBackClick = () => navigate(-1);
 
   return (
-    <main className="font-outfit">
+    <main ref={contentRef} className="font-outfit">
       <header>
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Application</h1>
+          <h1 className="text-2xl font-bold">Reports</h1>
+          <DownLoadButton applicationRef={contentRef} />
         </div>
       </header>
       <div className="mt-[1.3em] h-auto w-full overflow-auto rounded-lg bg-white px-[1em] py-3 pb-[10em]">

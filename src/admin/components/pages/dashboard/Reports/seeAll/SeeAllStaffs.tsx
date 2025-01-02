@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useCallback, useState } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useCallback,
+  useState,
+  useRef,
+} from "react";
 import { FiSearch } from "react-icons/fi";
 import transaction from "../../../../../../assets/svg/Transaction.svg";
 import { useNavigate } from "react-router-dom";
@@ -6,6 +12,7 @@ import DOMPurify from "dompurify";
 import { button } from "../../../../../../shared/buttons/Button";
 import CustomPagination from "../../../../../../shared/utils/customPagination";
 import { useAllStaffForSuperAdmin } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
+import { DownLoadButton } from "../../../../../../shared/downLoad/DownLoadButton";
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -31,6 +38,7 @@ const AllStaff = () => {
   const itemsPerPage = 10;
   const navigate = useNavigate();
   const handleBackClick = () => navigate(-1);
+  const contentRef = useRef(null);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -171,8 +179,13 @@ const AllStaff = () => {
   ]);
 
   return (
-    <main className="font-outfit">
-      <h1 className="text-2xl font-bold">Staff Management</h1>
+    <main ref={contentRef} className="font-outfit">
+      <header>
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Reports</h1>
+          <DownLoadButton applicationRef={contentRef} />
+        </div>
+      </header>
       <div className="mt-[1em] h-auto w-full overflow-auto rounded-lg bg-white px-[2em] py-3 pb-[10em]">
         <header>
           <div className="flex items-center justify-between">

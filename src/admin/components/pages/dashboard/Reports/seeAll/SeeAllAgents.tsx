@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useCallback, useState } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useCallback,
+  useState,
+  useRef,
+} from "react";
 import { FiSearch } from "react-icons/fi";
 import transaction from "../../../../../../assets/svg/Transaction.svg";
 import DOMPurify from "dompurify";
@@ -6,6 +12,7 @@ import { useAllAgent } from "../../../../../../shared/redux/hooks/shared/getUser
 import { useNavigate } from "react-router";
 import CustomPagination from "../../../../../../shared/utils/customPagination";
 import { button } from "../../../../../../shared/buttons/Button";
+import { DownLoadButton } from "../../../../../../shared/downLoad/DownLoadButton";
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -30,6 +37,7 @@ const SeeAllAgents = () => {
 
   const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
   const itemsPerPage = 10;
+  const contentRef = useRef(null);
 
   const navigate = useNavigate();
   const handleBackClick = () => navigate(-1);
@@ -179,8 +187,13 @@ const SeeAllAgents = () => {
   ]);
 
   return (
-    <main className="font-outfit">
-      <h1 className="font-bold text-2xl">Reports</h1>
+    <main ref={contentRef} className="font-outfit">
+      <header>
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Reports</h1>
+          <DownLoadButton applicationRef={contentRef} />
+        </div>
+      </header>
       <div className="mt-[1.3em] h-auto w-full overflow-auto rounded-lg bg-white px-[1em] py-3 pb-[10em]">
         <header>
           <div className="flex items-center justify-between">

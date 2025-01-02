@@ -1,11 +1,18 @@
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import React, {
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+  useRef,
+} from "react";
 import { FiSearch } from "react-icons/fi";
 import transaction from "../../../../../../assets/svg/Transaction.svg";
-import {useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { button } from "../../../../../../shared/buttons/Button";
 import DOMPurify from "dompurify";
 import CustomPagination from "../../../../../../shared/utils/customPagination";
 import { useAllStudents } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
+import { DownLoadButton } from "../../../../../../shared/downLoad/DownLoadButton";
 
 interface Student {
   profile: {
@@ -28,19 +35,27 @@ const SkeletonRow: React.FC = () => (
 );
 
 const SeeAllStudents: React.FC = () => {
-  const { useAllStudent, currentPage, loading, fetchApplications, searchTerm, updateSearchTerm } = useAllStudents();
-  const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm || '');
+  const {
+    useAllStudent,
+    currentPage,
+    loading,
+    fetchApplications,
+    searchTerm,
+    updateSearchTerm,
+  } = useAllStudents();
+  const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm || "");
 
   const navigate = useNavigate();
   const handleBackClick = () => navigate(-1);
   const itemsPerPage = 10;
+  const contentRef = useRef(null);
 
   useEffect(() => {
     fetchApplications(currentPage, itemsPerPage);
   }, [fetchApplications, currentPage, itemsPerPage]);
 
   useEffect(() => {
-    setLocalSearchTerm(searchTerm || '');
+    setLocalSearchTerm(searchTerm || "");
   }, [searchTerm]);
 
   const studentsData = useMemo(() => {
@@ -56,9 +71,12 @@ const SeeAllStudents: React.FC = () => {
     );
   }, [studentsData, localSearchTerm]);
 
-  const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, page: number) => {
-    fetchApplications(page, itemsPerPage);
-  }, [fetchApplications, itemsPerPage]);
+  const handlePageChange = useCallback(
+    (event: React.ChangeEvent<unknown>, page: number) => {
+      fetchApplications(page, itemsPerPage);
+    },
+    [fetchApplications, itemsPerPage]
+  );
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLocalSearchTerm(e.target.value);
@@ -88,12 +106,9 @@ const SeeAllStudents: React.FC = () => {
 
   const handleViewDetails = useCallback(
     (studentId: string, firstName: string, lastName: string) => {
-      navigate(
-        `/admin/dashboard/all_users/student_applications`,
-        {
-          state: { firstName, lastName, studentId },
-        }
-      );
+      navigate(`/admin/dashboard/all_users/student_applications`, {
+        state: { firstName, lastName, studentId },
+      });
     },
     [navigate]
   );
@@ -114,7 +129,7 @@ const SeeAllStudents: React.FC = () => {
           <td className="py-[16px] px-[24px]">
             {(currentPage - 1) * itemsPerPage + index + 1}
           </td>
-          <td 
+          <td
             className="py-[16px] gap-1 px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
               highlightText(
@@ -124,7 +139,7 @@ const SeeAllStudents: React.FC = () => {
               )
             )}
           />
-          <td 
+          <td
             className="py-[16px] px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
               highlightText(student?.email)
@@ -172,9 +187,14 @@ const SeeAllStudents: React.FC = () => {
   ]);
 
   return (
-    <main className="font-outfit">
-          <h1 className="font-bold text-2xl">Reports</h1>
-        <div className="mt-[1.3em] h-auto w-full overflow-auto rounded-lg bg-white px-[1em] py-3 pb-[10em]">
+    <main ref={contentRef} className="font-outfit">
+      <header>
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Reports</h1>
+          <DownLoadButton applicationRef={contentRef} />
+        </div>
+      </header>
+      <div className="mt-[1.3em] h-auto w-full overflow-auto rounded-lg bg-white px-[1em] py-3 pb-[10em]">
         <header>
           <div className="flex items-center justify-between">
             <div>
@@ -221,15 +241,15 @@ const SeeAllStudents: React.FC = () => {
           </tbody>
         </table>
 
-      {!loading &&  (
-        <div className="mt-6 flex justify-center">
-           <CustomPagination
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
-            hasMore={studentsData.length === itemsPerPage}
-          />
-        </div>
-      )}
+        {!loading && (
+          <div className="mt-6 flex justify-center">
+            <CustomPagination
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+              hasMore={studentsData.length === itemsPerPage}
+            />
+          </div>
+        )}
       </div>
     </main>
   );

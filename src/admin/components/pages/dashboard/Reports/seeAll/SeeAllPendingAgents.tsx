@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useCallback, useState } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useCallback,
+  useState,
+  useRef,
+} from "react";
 import { FiSearch } from "react-icons/fi";
 import transaction from "../../../../../../assets/svg/Transaction.svg";
 import { Link, useNavigate } from "react-router-dom";
@@ -9,6 +15,7 @@ import plus from "../../../../../../assets/svg/plus.svg";
 import Modal from "../../../../../../shared/modal/Modal";
 import FindAgentByEmail from "../../../../../../shared/modal/FindAgentByEmail";
 import CustomPagination from "../../../../../../shared/utils/customPagination";
+import { DownLoadButton } from "../../../../../../shared/downLoad/DownLoadButton";
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -21,25 +28,24 @@ const SkeletonRow = () => (
 );
 
 const SeeAllPendingAgents = () => {
-  const { 
-    agents, 
-    totalPages, 
-    currentPage, 
-    loading, 
-    fetchAgents, 
-    searchTerm, 
-    updateSearchTerm 
+  const {
+    agents,
+    totalPages,
+    currentPage,
+    loading,
+    fetchAgents,
+    searchTerm,
+    updateSearchTerm,
   } = useAllPendingAgents();
 
   const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
   const itemsPerPage = 10;
+  const contentRef = useRef(null);
 
-    
   const [isModalOpen, setModalOpen] = useState(false);
 
   const handleOpenModal = () => setModalOpen(true);
   const handleCloseModal = () => setModalOpen(false);
-
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -50,29 +56,41 @@ const SeeAllPendingAgents = () => {
     }, 300);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [localSearchTerm, updateSearchTerm, fetchAgents, itemsPerPage, searchTerm]);
+  }, [
+    localSearchTerm,
+    updateSearchTerm,
+    fetchAgents,
+    itemsPerPage,
+    searchTerm,
+  ]);
 
   useEffect(() => {
     fetchAgents(currentPage, itemsPerPage);
   }, [fetchAgents, currentPage, itemsPerPage]);
 
-  const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, value: number) => {
-    fetchAgents(value, itemsPerPage);
-  }, [fetchAgents, itemsPerPage]);
+  const handlePageChange = useCallback(
+    (event: React.ChangeEvent<unknown>, value: number) => {
+      fetchAgents(value, itemsPerPage);
+    },
+    [fetchAgents, itemsPerPage]
+  );
 
   const escapeRegExp = useCallback((string: string) => {
     return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }, []);
 
-  const highlightText = useCallback((text: string, query: string) => {
-    if (!query) return text;
-    const escapedQuery = escapeRegExp(query);
-    const regex = new RegExp(`(${escapedQuery})`, "gi");
-    return text.replace(
-      regex,
-      (match: string) => `<mark class="bg-yellow-300">${match}</mark>`
-    );
-  }, [escapeRegExp]);
+  const highlightText = useCallback(
+    (text: string, query: string) => {
+      if (!query) return text;
+      const escapedQuery = escapeRegExp(query);
+      const regex = new RegExp(`(${escapedQuery})`, "gi");
+      return text.replace(
+        regex,
+        (match: string) => `<mark class="bg-yellow-300">${match}</mark>`
+      );
+    },
+    [escapeRegExp]
+  );
 
   const sanitizeHTML = useCallback((html: string) => {
     return { __html: DOMPurify.sanitize(html) };
@@ -82,7 +100,8 @@ const SeeAllPendingAgents = () => {
 
   const filteredAgents = useMemo(() => {
     return (agents || []).filter((agent: any) => {
-      const fullName = `${agent.profile.firstName} ${agent.profile.lastName}`.toLowerCase();
+      const fullName =
+        `${agent.profile.firstName} ${agent.profile.lastName}`.toLowerCase();
       return (
         fullName.includes(localSearchTerm.toLowerCase()) ||
         agent.email.toLowerCase().includes(localSearchTerm.toLowerCase())
@@ -108,7 +127,7 @@ const SeeAllPendingAgents = () => {
           <td className="py-[16px] px-[24px]">
             {(currentPage - 1) * itemsPerPage + index + 1}
           </td>
-          <td 
+          <td
             className="py-[16px] gap-1 px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
               highlightText(
@@ -120,13 +139,10 @@ const SeeAllPendingAgents = () => {
           <td className="py-[16px] px-[24px]">
             {formatData(agent.phoneNumber)}
           </td>
-          <td 
+          <td
             className="py-[16px] px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
-              highlightText(
-                formatData(agent.email),
-                localSearchTerm
-              )
+              highlightText(formatData(agent.email), localSearchTerm)
             )}
           />
           <td className="py-[16px] px-[24px]">
@@ -153,19 +169,29 @@ const SeeAllPendingAgents = () => {
         </tr>
       );
     }
-  }, [loading, filteredAgents, currentPage, itemsPerPage, sanitizeHTML, highlightText, localSearchTerm, formatData]);
-  const navigate = useNavigate()
+  }, [
+    loading,
+    filteredAgents,
+    currentPage,
+    itemsPerPage,
+    sanitizeHTML,
+    highlightText,
+    localSearchTerm,
+    formatData,
+  ]);
+  const navigate = useNavigate();
   const handleBackClick = () => navigate(-1);
 
   return (
-    <main>
-     <header>
-    <div className="flex items-center justify-between">
-     <h1 className="text-2xl font-bold">Application</h1>
-      </div>
-     </header>
-     <div className="mt-[1.3em] h-auto w-full overflow-auto rounded-lg bg-white px-[1em] py-3 pb-[10em]">
+    <main ref={contentRef}>
       <header>
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Reports</h1>
+          <DownLoadButton applicationRef={contentRef} />
+        </div>
+      </header>
+      <div className="mt-[1.3em] h-auto w-full overflow-auto rounded-lg bg-white px-[1em] py-3 pb-[10em]">
+        <header>
           <div className="flex items-center justify-between">
             <div>
               <h1 className="font-medium dark:text-gray-700">
@@ -195,10 +221,18 @@ const SeeAllPendingAgents = () => {
           <thead className="text-gray-500 border-b border-gray-200">
             <tr>
               <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
-              <th className="px-6 py-3 text-left text-sm font-normal">Full Name</th>
-              <th className="px-6 py-3 text-left text-sm font-normal">Phone Number</th>
-              <th className="px-6 py-3 text-left text-sm font-normal">Email Address</th>
-              <th className="px-6 py-3 text-left text-sm font-normal">Action</th>
+              <th className="px-6 py-3 text-left text-sm font-normal">
+                Full Name
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-normal">
+                Phone Number
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-normal">
+                Email Address
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-normal">
+                Action
+              </th>
             </tr>
           </thead>
           <tbody>{renderTableBody()}</tbody>
@@ -207,16 +241,20 @@ const SeeAllPendingAgents = () => {
 
       {!loading && agents.length > 0 && (
         <div className="mt-6 flex justify-center">
-            <CustomPagination
+          <CustomPagination
             currentPage={currentPage}
             onPageChange={handlePageChange}
             hasMore={agents.length === itemsPerPage}
           />
         </div>
       )}
-         {isModalOpen && (
-        <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
-          <FindAgentByEmail  onClose={handleCloseModal} />
+      {isModalOpen && (
+        <Modal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          data-aos="zoom-in"
+        >
+          <FindAgentByEmail onClose={handleCloseModal} />
         </Modal>
       )}
     </main>
