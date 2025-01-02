@@ -9,69 +9,57 @@ export const DownLoadButton = ({ applicationRef }: any) => {
 
   const downloadPDF = async () => {
     setIsGeneratingPDF(true);
-    const pdf = new jsPDF("l", "mm", "a4"); // Switch to landscape
+    const pdf = new jsPDF("p", "mm", "a4");
 
     try {
       const content = applicationRef.current;
       if (content) {
-        const table = content.querySelector("table");
-        const originalStyles = {
+        // Store original styles
+        const originalStyle = {
           height: content.style.height,
           overflow: content.style.overflow,
           maxHeight: content.style.maxHeight,
-          width: content.style.width,
-          tableWidth: table.style.width,
         };
 
-        // Temporarily modify styles for full capture
+        // Remove scroll temporarily
         content.style.height = "auto";
         content.style.overflow = "visible";
         content.style.maxHeight = "none";
-        content.style.width = "auto";
-        table.style.width = "auto";
 
         const canvas = await html2canvas(content, {
-          scale: 1.5,
+          scale: 2,
           logging: false,
           useCORS: true,
-          windowWidth: table.scrollWidth,
-          width: table.scrollWidth,
+          windowHeight: content.scrollHeight,
           height: content.scrollHeight,
           onclone: (clonedDoc, element) => {
-            const clonedTable = element.querySelector("table");
-            if (!clonedTable) return;
-
             element.style.height = "auto";
             element.style.overflow = "visible";
             element.style.maxHeight = "none";
-            element.style.width = "auto";
-            clonedTable.style.width = "auto";
           },
         });
 
         // Restore original styles
-        content.style.height = originalStyles.height;
-        content.style.overflow = originalStyles.overflow;
-        content.style.maxHeight = originalStyles.maxHeight;
-        content.style.width = originalStyles.width;
-        table.style.width = originalStyles.tableWidth;
+        content.style.height = originalStyle.height;
+        content.style.overflow = originalStyle.overflow;
+        content.style.maxHeight = originalStyle.maxHeight;
 
-        const imgData = canvas.toDataURL("image/jpeg", 1);
-        const pageWidth = 277; // A4 landscape width
-        const pageHeight = 190; // A4 landscape height
-        const imgWidth = pageWidth;
+        const imgData = canvas.toDataURL("image/jpeg", 0.95);
+        const imgWidth = 170;
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
+        // Add pages if content is too long
         let heightLeft = imgHeight;
         let position = 0;
+        let pageHeight = 287; // A4 page height in mm
 
-        pdf.addImage(imgData, "JPEG", 10, 10, imgWidth, imgHeight);
+        pdf.addImage(imgData, "JPEG", 20, 20, imgWidth, imgHeight);
         heightLeft -= pageHeight;
 
         while (heightLeft >= 0) {
           position = heightLeft - imgHeight;
           pdf.addPage();
-          pdf.addImage(imgData, "JPEG", 10, position, imgWidth, imgHeight);
+          pdf.addImage(imgData, "JPEG", 20, position, imgWidth, imgHeight);
           heightLeft -= pageHeight;
         }
 
