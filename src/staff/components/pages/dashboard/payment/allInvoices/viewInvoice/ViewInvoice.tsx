@@ -44,7 +44,7 @@ const ViewInvoice = () => {
         <section>
           <div className="flex justify-between mt-[1.5em]">
             <div className="flex flex-col gap-[1.3em]">
-              <div className="flex gap-[1em]">
+              <div className="flex w-full lg:flex-row flex-col gap-[1em]">
                 <div className="flex-1">
                   <label
                     htmlFor="status"
@@ -188,8 +188,12 @@ const ViewInvoice = () => {
               </div>
             </div>
 
-            <div className="lg:flex hidden">
-              <img src={invoiceImage} alt="invoiceImg" />
+            <div className="lg:flex hidden relative h-fit">
+              <img
+                src={invoiceImage}
+                alt="invoiceImg"
+                className="sticky top-0"
+              />
             </div>
           </div>
         </section>

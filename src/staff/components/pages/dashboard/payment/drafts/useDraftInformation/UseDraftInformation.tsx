@@ -21,6 +21,7 @@ import { MdOutlineVisibility, MdOutlineVisibilityOff } from "react-icons/md";
 import { getDraftItemById } from "../../../../../../../shared/redux/shared/services/shareApplication.services";
 
 interface InvoiceItem {
+  name: string;
   productName: string;
   quantity: number;
   rate: number;
@@ -111,7 +112,7 @@ const UseDraftInformation: React.FC = () => {
     field: keyof InvoiceItem,
     value: string
   ) => {
-    const newItems = [...items];
+    const newItems: any = [...items];
     if (field === "productName") {
       newItems[index][field] = value;
     } else {
@@ -244,7 +245,7 @@ const UseDraftInformation: React.FC = () => {
                 <div key={index} className="p-4">
                   <div className="flex items-center justify-between mb-4">
                     <input
-                      value={item.productName}
+                      value={item.name}
                       onChange={(e) =>
                         handleItemChange(index, "productName", e.target.value)
                       }
@@ -354,9 +355,12 @@ const UseDraftInformation: React.FC = () => {
                 </button.PrimaryButton>
               </div>
             </div>
-
-            <div className="lg:flex hidden justify-center">
-              <img src={invoiceImage} alt="InvoiceImg" />
+            <div className="lg:flex hidden relative h-fit">
+              <img
+                src={invoiceImage}
+                alt="invoiceImg"
+                className="sticky top-0"
+              />
             </div>
           </div>
         </section>

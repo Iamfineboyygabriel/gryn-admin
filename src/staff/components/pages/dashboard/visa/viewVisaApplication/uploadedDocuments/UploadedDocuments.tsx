@@ -302,10 +302,10 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
                   </button>
                 </div>
               </div>
-              <div className="flex mt-[1em] gap-2 items-center">
+              {/* <div className="flex mt-[1em] gap-2 items-center">
                 {renderActionButton(doc, "APPROVED")}
                 {renderActionButton(doc, "REJECTED")}
-              </div>
+              </div> */}
             </div>
           ))}
         </div>
@@ -316,7 +316,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
         previewUrl={previewUrl}
         previewFileType={previewFileType}
       />
-
+      {/* 
       <PrivateElement feature="VISA_APPLICATION" page="Submit Response">
         <button.PrimaryButton
           className="m-auto mt-[5em] w-[18%] gap-2 rounded-full bg-linear-gradient py-[12px] text-center text-lg font-medium text-white"
@@ -324,7 +324,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
         >
           Submit Response
         </button.PrimaryButton>
-      </PrivateElement>
+      </PrivateElement> */}
 
       {isModalOpen && (
         <Modal

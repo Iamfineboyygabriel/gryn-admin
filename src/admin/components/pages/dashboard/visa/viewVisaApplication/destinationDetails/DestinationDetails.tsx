@@ -16,9 +16,7 @@ const DestinationDetails: React.FC<{ applicationId: any }> = ({
 
   const renderField = (label: string, value: string | undefined) => (
     <div className="w-full">
-      <label className="flex-start flex font-medium">
-        {label}
-      </label>
+      <label className="flex-start flex font-medium">{label}</label>
       {loading ? (
         <SkeletonField />
       ) : (
@@ -36,23 +34,37 @@ const DestinationDetails: React.FC<{ applicationId: any }> = ({
       <header>
         <h2 className="text-xl font-semibold">Destination Details</h2>
       </header>
-      <form className="mt-[2em] w-[77%]">
+      <form className="mt-[2em] flex flex-col gap-[1em] w-[88%]">
         <div className="flex flex-col lg:flex-row  gap-[1em] lg:gap-[3em]">
           {renderField(
             "Passport Number",
             applicationDetails?.data?.passportNumber
           )}
-          {renderField("Issued Date", applicationDetails?.data?.issuedDate)}
+          {renderField(
+            "Issued Date",
+            applicationDetails?.data?.issuedDate
+              ? new Date(applicationDetails?.data?.issuedDate)
+                  ?.toISOString()
+                  .split("T")[0]
+              : "-"
+          )}
         </div>
         <div className="flex flex-col lg:flex-row  gap-[1em] lg:gap-[3em]">
-          {renderField("Expiry Date", applicationDetails?.data?.expiryDate)}
+          {renderField(
+            "Expiry Date",
+            applicationDetails?.data?.expiryDate
+              ? new Date(applicationDetails?.data?.expiryDate)
+                  ?.toISOString()
+                  .split("T")[0]
+              : "-"
+          )}
           {renderField("Destination", applicationDetails?.data?.destination)}
         </div>
         <div className="flex flex-col lg:flex-row  gap-[1em] lg:gap-[3em]">
           {renderField("School Name", applicationDetails?.data?.schoolName)}
           {renderField("Assigned Agent", applicationDetails?.data?.destination)}
         </div>
-        <div className="flex flex-col lg:flex-row  gap-[1em] lg:gap-[3em]">
+        <div className="flex flex-col lg:flex-row w-[47%]  gap-[1em] lg:gap-[3em]">
           {renderField(
             "Agent Email Address",
             applicationDetails?.data?.agent?.profile?.email

@@ -123,7 +123,7 @@ const AllPayment: React.FC = () => {
 
     return (
       <div className={`flex flex-col items-start text-xs ${statusClass}`}>
-        <div className="flex items-center gap-2 text-black dark:text-white">
+        <div className="flex items-center gap-2 text-black">
           <p>Paid</p>
           <button
             onClick={() => {

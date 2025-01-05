@@ -99,7 +99,7 @@ const UpdateStudent: React.FC = () => {
         <header>
           <h1 className="text-2xl mt-[1.5em] font-bold">Personal Details</h1>
         </header>
-        <form className="mt-[1.5em] w-[77%]" onSubmit={submitApplication}>
+        <form className="mt-[1.5em] w-[80%]" onSubmit={submitApplication}>
           <div className="flex flex-col lg:flex-row gap-[3em]">
             <div className="w-full">
               <label

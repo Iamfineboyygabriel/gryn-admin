@@ -60,10 +60,10 @@ const findChatByUserId = async (userId: string) => {
   }
 };
 
-const UpDateReadStatus = async (chatId: string, body: any) => {
-  const url = `${process.env.REACT_APP_API_URL}/chat/message/read/${chatId}`;
+const UpDateReadStatus = async (chatId: string) => {
+  const url = `${process.env.REACT_APP_API_URL}/chat/status/${chatId}`;
   try {
-    const response = await axios.post(url, body, { headers: authHeader() });
+    const response = await axios.patch(url, {}, { headers: authHeader() });
     updateTokenInStorage(response.data);
     return response.data;
   } catch (error) {

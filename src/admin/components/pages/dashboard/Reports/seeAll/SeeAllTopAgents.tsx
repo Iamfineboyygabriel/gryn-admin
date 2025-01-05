@@ -132,7 +132,7 @@ const SeeAllTopAgents: React.FC = () => {
     <main ref={contentRef} className="font-outfit">
       <header>
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Reports</h1>
+          <h1 className="text-2xl font-bold">Report</h1>
           <DownLoadButton applicationRef={contentRef} />
         </div>
       </header>

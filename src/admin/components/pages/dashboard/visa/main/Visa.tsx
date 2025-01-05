@@ -9,6 +9,9 @@ import CustomPagination from "../../../../../../shared/utils/customPagination";
 import eye from "../../../../../../assets/svg/eyeImg.svg";
 import { PrivateElement } from "../../../../../../shared/redux/hooks/admin/PrivateElement";
 import DOMPurify from "dompurify";
+import approved from "../../../../../../assets/svg/Approved.svg";
+import rejected from "../../../../../../assets/svg/Rejected.svg";
+import pending from "../../../../../../assets/svg/Pending.svg";
 
 interface VisaData {
   lastName: string;
@@ -26,6 +29,7 @@ interface VisaData {
   document: Array<{
     documentType: string;
     publicURL: string;
+    remark: any;
   }>;
 }
 
@@ -129,6 +133,19 @@ const Visa: React.FC = () => {
     setPreviewFileType("");
   };
 
+  const getStatusClassAndIcon = (status: string) => {
+    switch (status) {
+      case "APPROVED":
+        return { class: "text-green-500", icon: approved };
+      case "REJECTED":
+        return { class: "text-red-500", icon: rejected };
+      case "PENDING":
+        return { class: "text-yellow-500", icon: pending };
+      default:
+        return { class: "text-gray-500", icon: undefined };
+    }
+  };
+
   const handlePageChange = useCallback(
     (event: React.ChangeEvent<unknown>, page: number) => {
       fetchApplications(page, itemsPerPage);
@@ -154,22 +171,35 @@ const Visa: React.FC = () => {
   );
 
   const renderPaymentStatus = (
-    documents: Array<{ documentType: string; publicURL: string }>,
+    documents: Array<{ documentType: string; publicURL: string; remark: any }>,
     type: string
   ) => {
     const document = documents.find((doc) => doc.documentType === type);
+    const { class: statusClass, icon } = getStatusClassAndIcon(
+      document?.remark
+    );
+
     if (document) {
       return (
-        <div className="flex items-center">
-          <span className="mr-3">Paid</span>
-          <button
-            type="button"
-            className="flex items-center gap-1 rounded-full bg-purple-white px-3 py-[4px] text-center font-medium text-[#660066] dark:bg-gray-600 dark:text-white"
-            onClick={() => handlePreview(document.publicURL)}
-          >
-            <img src={eye} alt="eye" />
-            <span className="mr-6">View</span>
-          </button>
+        <div className={`flex flex-col items-start text-xs ${statusClass}`}>
+          <div className="flex items-center gap-2 text-black">
+            <p>Paid</p>
+            <button
+              onClick={() => {
+                setPreviewUrl(document.publicURL);
+                setPreviewFileType(getFileTypeFromUrl(document.publicURL));
+                setIsPreviewOpen(true);
+              }}
+              className="flex items-center gap-1 rounded-full bg-purple-white px-3 py-[4px] text-center font-medium text-[#660066]"
+            >
+              <img src={eye} alt="eye" />
+              <span className="mr-3">View</span>
+            </button>
+          </div>
+          <div className="flex items-center gap-2">
+            {icon && <img src={icon} alt="Status Icon" />}
+            <p>{document.remark}</p>
+          </div>
         </div>
       );
     }
@@ -179,7 +209,7 @@ const Visa: React.FC = () => {
   return (
     <main className="mt-4 font-outfit">
       <h1 className="text-2xl font-bold">Visa Application</h1>
-      <div className="mt-4 h-auto w-full rounded-lg bg-white p-3 pb-[10em] dark:bg-gray-800">
+      <div className="mt-4 h-auto w-full rounded-lg bg-white p-3 pb-[10em]">
         <div className="flex justify-between">
           <div className="flex items-center gap-4">
             <div className="relative w-full">
@@ -298,7 +328,11 @@ const Visa: React.FC = () => {
                       {renderPaymentStatus(item?.document, "VISA_FEE")}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
-                      {renderHighlightedText(item?.issuedDate || "-")}
+                      {item?.issuedDate
+                        ? new Date(item?.issuedDate)
+                            ?.toISOString()
+                            .split("T")[0]
+                        : "-"}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
                       <button

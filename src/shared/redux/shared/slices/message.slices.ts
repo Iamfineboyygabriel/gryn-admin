@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import messageServices from "../services/message.services";
 import { setMessage } from "../../message.slices";
-import { responsiveFontSizes } from "@mui/material";
 
 interface User {
   email: any;
@@ -126,9 +125,9 @@ export const fetchUnreadCount = createAsyncThunk(
 
 export const updateReadStatus = createAsyncThunk(
   "message/updateReadStatus",
-  async ({ chatId, body }: { chatId: string; body: any }, thunkAPI) => {
+  async ({ chatId }: { chatId: string }, thunkAPI) => {
     try {
-      const response = await messageServices.UpDateReadStatus(chatId, body);
+      const response = await messageServices.UpDateReadStatus(chatId);
       return response.data;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.message);
@@ -214,7 +213,8 @@ export const messageSlice = createSlice({
         state.unreadCount = action.payload;
       })
       .addCase(updateReadStatus.fulfilled, (state, action) => {
-        const chatId = action.payload.chatId;
+        const { chatId } = action.meta.arg;
+
         state.messages = state.messages.map((message) =>
           message.chatId === chatId ? { ...message, read: true } : message
         );

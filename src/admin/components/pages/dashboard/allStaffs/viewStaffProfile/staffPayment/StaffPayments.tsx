@@ -29,9 +29,8 @@ const StaffPayments = ({ staffEmail }: any) => {
     fetchStaffPayments,
     clearPayments,
     currentPage,
-    totalPages,
   } = useAllStaffPayment();
-
+  console.log("all", allStaffInvoicePayment);
   useEffect(() => {
     return () => {
       setSelectedPayment(null);
@@ -67,7 +66,21 @@ const StaffPayments = ({ staffEmail }: any) => {
 
   const formatAmount = (amount: number) => {
     if (!amount && amount !== 0) return "-";
-    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return new Intl.NumberFormat("en-NG", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  };
+
+  const calculateTotalAmount = (items: any[]) => {
+    if (!items || !Array.isArray(items)) return 0;
+    return items.reduce((total, item) => {
+      const amount = Number(item.amount) || 0;
+      // We'll maintain discount calculation but ensure consistent decimal places
+      const discount = Number(item.discount) || 0;
+      const itemTotal = amount - (amount * discount) / 100;
+      return total + itemTotal;
+    }, 0);
   };
 
   const filteredInvoicePayment = Array.isArray(allStaffInvoicePayment?.payment)
@@ -116,10 +129,7 @@ const StaffPayments = ({ staffEmail }: any) => {
             {formatData(staff?.invoiceNumber)}
           </td>
           <td className="py-[16px] px-[24px]">
-            {formatData(staff?.item?.[0]?.name)}
-          </td>
-          <td className="py-[16px] px-[24px]">
-            {formatData(formatAmount(staff?.item?.[0]?.amount))}
+            NGN {formatData(formatAmount(calculateTotalAmount(staff?.item)))}
           </td>
           <td className="py-[16px] px-[24px]">
             {staff?.createdAt
@@ -176,10 +186,7 @@ const StaffPayments = ({ staffEmail }: any) => {
                   Invoice No
                 </th>
                 <th className="px-6 py-3 text-left text-sm font-normal whitespace-nowrap">
-                  Item Name
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-normal whitespace-nowrap">
-                  Amount
+                  Total Amount
                 </th>
                 <th className="px-6 py-3 text-left text-sm font-normal whitespace-nowrap">
                   Payment Date

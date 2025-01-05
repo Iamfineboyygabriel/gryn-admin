@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  useRef,
+} from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FiSearch } from "react-icons/fi";
 import { useDispatch } from "react-redux";
@@ -19,6 +25,7 @@ import Modal from "../../../../../../../shared/modal/Modal";
 import CustomPagination from "../../../../../../../shared/utils/customPagination";
 import BudgetPaymentReceiptResponse from "../../../../../../../shared/modal/BudgetPaymentReceiptResponse";
 import { AppDispatch } from "../../../../../../../shared/redux/store";
+import { DownLoadButton } from "../../../../../../../shared/downLoad/DownLoadButton";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -32,6 +39,7 @@ const Budgets: React.FC = () => {
   const [isApproveModalOpen, setApproveModalOpen] = useState(false);
   const [isReceiptModalOpen, setReceiptModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const contentRef = useRef(null);
 
   const { userDetails } = useCurrentUser();
   const isSuperAdmin = useMemo(
@@ -161,8 +169,13 @@ const Budgets: React.FC = () => {
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
 
   return (
-    <main className="font-outfit">
-      <h1 className="text-2xl font-bold">Reports</h1>
+    <main ref={contentRef} className="font-outfit">
+      <header>
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Reports</h1>
+          <DownLoadButton applicationRef={contentRef} />
+        </div>
+      </header>
       <header className="mt-[1em] h-auto w-full overflow-auto rounded-lg bg-white p-3 pb-[10em]">
         <div className="flex items-center justify-between">
           <h2 className="font-medium">

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { button } from "../../../../../../../../shared/buttons/Button";
 import eye from "../../../../../../../../assets/svg/eyeImg.svg";
 import fileImg from "../../../../../../../../assets/svg/File.svg";
 import download from "../../../../../../../../assets/svg/download.svg";
@@ -12,31 +11,35 @@ import { AppDispatch } from "../../../../../../../../shared/redux/store";
 import { useApplicationDetails } from "../../../../../../../../shared/redux/hooks/shared/getUserProfile";
 import { updateDocumentStatus } from "../../../../../../../../shared/redux/shared/slices/shareApplication.slices";
 import DocumentPreviewModal from "../../../../../../../../shared/modal/DocumentPreviewModal";
-import Modal from "../../../../../../../../shared/modal/Modal";
-import StudentApplicationSummary from "../../../../../../../../shared/modal/applicationSummaryModal/StudentApplicationSummary";
-import AssignApplicationToAgent from "../../../../../../../../shared/modal/AssignApplicationToAgent";
-import {
-  Alert,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-} from "@mui/material";
-import { updateApplicationToCompleted } from "../../../../../../../../shared/redux/admin/slices/application.slices";
-import { PrivateElement } from "../../../../../../../../shared/redux/hooks/admin/PrivateElement";
 
-interface Document {
+export interface ApplicationDetails {
+  status: number;
+  message: string;
+  data: {
+    id: string;
+    status: string;
+    userId: string;
+    documents: DocumentType[];
+    payment: {
+      id?: string;
+      documents: DocumentType[];
+    };
+  };
+}
+
+interface DocumentType {
   id: string;
   name: string;
   publicURL: string;
   documentType: string;
+  uploadType: string;
+  applicationId: number;
+  paymentId: null;
+  agentId: null;
+  createdAt: string;
+  updatedAt: string;
   remark: string;
   status: "PENDING" | "APPROVED" | "REJECTED";
-}
-
-interface UpdateDocStatus {
-  id: string;
-  remark: "APPROVED" | "REJECTED" | "PENDING";
 }
 
 type ActionType = "approve" | "reject";
@@ -54,7 +57,7 @@ const SkeletonRow = () => (
   </div>
 );
 
-const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
+const Payments = ({ applicationId }: { applicationId: any }) => {
   const dispatch: AppDispatch = useAppDispatch();
   const { applicationDetails, loading: applicationLoading } =
     useApplicationDetails(applicationId);
@@ -65,28 +68,13 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewFileType, setPreviewFileType] = useState<string>("");
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [isAssignModal, setIsAssignModal] = useState(false);
-  const [documents, setDocuments] = useState<Document[]>([]);
+  const [documents, setDocuments] = useState<DocumentType[]>([]);
   const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>({});
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [newApplicationStatus, setNewApplicationStatus] = useState<
-    "COMPLETED" | "DECLINED" | null
-  >(null);
-  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
-  const [alertState, setAlertState] = useState<{
-    open: boolean;
-    message: string;
-    severity: "success" | "error";
-  }>({
-    open: false,
-    message: "",
-    severity: "success",
-  });
 
   useEffect(() => {
-    if (applicationDetails?.data?.documents) {
-      setDocuments(applicationDetails.data.documents);
+    if (applicationDetails?.data?.payment?.documents) {
+      setDocuments(applicationDetails.data.payment.documents);
     }
   }, [applicationDetails]);
 
@@ -105,9 +93,6 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
       );
     }
   }, [updateDocStatus]);
-
-  const handleOpenModal = () => setModalOpen(true);
-  const handleCloseModal = () => setModalOpen(false);
 
   const getFileTypeFromUrl = (url: string): string => {
     const segments = url.split("/");
@@ -173,7 +158,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
 
       if (
         response.meta.requestStatus === "fulfilled" &&
-        response.payload?.status === 200
+        response?.payload?.status === 200
       ) {
         setDocuments((prevDocs) =>
           prevDocs.map((doc) =>
@@ -197,88 +182,39 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
     }
   };
 
-  const handleUpdateApplicationStatus = async () => {
-    if (!newApplicationStatus) return;
-
-    setIsUpdatingStatus(true);
-    try {
-      const response = await dispatch(
-        updateApplicationToCompleted({
-          body: { status: newApplicationStatus },
-          applicationId,
-        })
-      );
-
-      if (
-        response.meta.requestStatus === "fulfilled" &&
-        response.payload?.status === 200
-      ) {
-        setAlertState({
-          open: true,
-          message: `Application successfully marked as ${newApplicationStatus.toLowerCase()}`,
-          severity: "success",
-        });
-      } else {
-        throw new Error(
-          `Failed to update application status to ${newApplicationStatus}`
-        );
-      }
-    } catch (error) {
-      setAlertState({
-        open: true,
-        message: "Failed to update application status. Please try again.",
-        severity: "error",
-      });
-    } finally {
-      setIsUpdatingStatus(false);
-      setNewApplicationStatus(null);
-    }
-  };
-
-  const handleCloseAlert = () => {
-    setAlertState((prev) => ({ ...prev, open: false }));
-  };
-
   const renderActionButton = (
-    doc: Document,
+    doc: DocumentType,
     action: "APPROVED" | "REJECTED"
-  ): JSX.Element => {
-    const actionType: ActionType = action.toLowerCase() as ActionType;
+  ) => {
+    const actionType: ActionType = action?.toLowerCase() as ActionType;
     const isLoading = loadingStatus[doc.id]?.[actionType] || false;
+
     const isCurrentStatus = doc.remark === action;
-    const isPending = doc.remark === "PENDING";
+    const isPending = !doc.remark || doc.remark === "PENDING";
+    const isDisabled = doc.remark === "APPROVED" || doc.remark === "REJECTED";
 
     let buttonClass =
       "flex px-[1em] rounded-md font-medium py-[8px] items-center border gap-2 ";
-    let buttonContent;
 
-    if (action === "APPROVED") {
+    if (isPending) {
+      buttonClass += "bg-gray-200 text-gray-600 border-gray-300";
+    } else if (action === "APPROVED") {
       buttonClass += isCurrentStatus
-        ? "bg-[#F3FBF5] text-approve border-approve cursor-default"
-        : isPending
-        ? "bg-white text-approve border-approve"
-        : "bg-gray-200 text-gray-600 border-gray-300 cursor-not-allowed";
-
-      buttonContent = (
-        <>
-          {isCurrentStatus && <img src={approve} alt="approve_icon" />}
-          <small>{isCurrentStatus ? "Approved" : "Approve"}</small>
-        </>
-      );
+        ? "bg-[#F3FBF5] text-approve border-approve cursor-not-allowed opacity-50"
+        : "bg-gray-200 text-gray-600 border-gray-300 cursor-not-allowed opacity-50";
     } else {
       buttonClass += isCurrentStatus
-        ? "bg-[#FEEEEE] text-red-500 border-reject cursor-default"
-        : isPending
-        ? "bg-white text-reject border-reject"
-        : "bg-gray-200 text-gray-600 border-gray-300 cursor-not-allowed";
-
-      buttonContent = (
-        <>
-          {isCurrentStatus && <img src={reject} alt="reject_icon" />}
-          <small>{isCurrentStatus ? "Rejected" : "Reject"}</small>
-        </>
-      );
+        ? "bg-[#FEEEEE] text-red-500 border-reject cursor-not-allowed opacity-50"
+        : "bg-gray-200 text-gray-600 border-gray-300 cursor-not-allowed opacity-50";
     }
+
+    const buttonText = isPending
+      ? action === "APPROVED"
+        ? "Approve"
+        : "Reject"
+      : action === "APPROVED"
+      ? "Approved"
+      : "Rejected";
 
     return (
       <div className="flex flex-col items-start">
@@ -287,13 +223,21 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
         )}
         <button
           className={buttonClass}
-          onClick={() => isPending && handleStatusUpdate(doc.id, action)}
-          disabled={isLoading || isCurrentStatus}
+          onClick={() => handleStatusUpdate(doc.id, action)}
+          disabled={isLoading || isDisabled}
         >
           {isLoading ? (
             <ReactLoading color="#FFFFFF" width={25} height={25} type="spin" />
           ) : (
-            buttonContent
+            <>
+              {isCurrentStatus && (
+                <img
+                  src={action === "APPROVED" ? approve : reject}
+                  alt={`${action.toLowerCase()}_icon`}
+                />
+              )}
+              <small>{buttonText}</small>
+            </>
           )}
         </button>
       </div>
@@ -305,7 +249,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
       <main className="font-outfit">
         <header>
           <h2 className="text-xl font-semibold dark:text-white">
-            Uploaded Documents
+            Uploaded Payments
           </h2>
         </header>
         <div className="mt-[2em] grid w-[85%] grid-cols-2 gap-10">
@@ -318,18 +262,25 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
   }
 
   if (!documents.length) {
-    return <div className="text-red-500">No documents found 📜.</div>;
+    return (
+      <main className="font-outfit">
+        <header>
+          <h2 className="text-xl font-semibold dark:text-white">
+            Uploaded Payments
+          </h2>
+        </header>
+        <div className="text-red-500">No documents found 📜.</div>
+      </main>
+    );
   }
 
   return (
     <main className="font-outfit">
       <header>
-        <h2 className="text-xl font-semibold dark:text-white">
-          Uploaded Documents
-        </h2>
+        <h2 className="text-xl font-semibold">Uploaded Payments</h2>
       </header>
       <section>
-        <div className="mt-[2em] grid w-full lg:grid-cols-2 gap-10">
+        <div className="mt-6 md:mt-8 grid w-full grid-cols-1 md:grid-cols-2 gap-6">
           {documents.map((doc) => (
             <div key={doc.id}>
               <div>
@@ -377,7 +328,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
                       : "text-yellow-500"
                   }
                 >
-                  {doc.remark}
+                  {doc.remark || "PENDING"}
                 </span>
               </p>
               {/* <div className="flex mt-[1em] gap-2 items-center">
@@ -394,95 +345,8 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
         previewUrl={previewUrl}
         previewFileType={previewFileType}
       />
-      <div>
-        <div className="w-full mt-8">
-          {alertState.open && (
-            <Alert
-              severity={alertState.severity}
-              onClose={handleCloseAlert}
-              className="w-1/2"
-              sx={{
-                "& .MuiAlert-message": {
-                  width: "100%",
-                  textAlign: "center",
-                },
-              }}
-            >
-              {alertState.message}
-            </Alert>
-          )}
-        </div>
-
-        {/* <div className="flex flex-wrap w-full gap-4 mt-[5em]">
-          <PrivateElement feature="APPLICATION" page="Submit Response">
-            <button.PrimaryButton
-              className="w-auto rounded-full px-3 bg-linear-gradient py-[9px] text-center text-lg font-medium text-white"
-              onClick={handleOpenModal}
-            >
-              Submit Response
-            </button.PrimaryButton>
-          </PrivateElement>
-
-          <div className="flex items-center w-full gap-4 md:w-auto">
-            <FormControl className="flex-grow md:w-48">
-              <InputLabel id="application-status-select-label">
-                Application Status
-              </InputLabel>
-              <Select
-                labelId="application-status-select-label"
-                value={newApplicationStatus || ""}
-                onChange={(e) =>
-                  setNewApplicationStatus(
-                    e.target.value as "COMPLETED" | "DECLINED"
-                  )
-                }
-              >
-                <MenuItem value="">Select an action</MenuItem>
-                <MenuItem value="COMPLETED">Mark as Completed</MenuItem>
-                <MenuItem value="DECLINED">Mark as Declined</MenuItem>
-              </Select>
-            </FormControl>
-
-            <button.PrimaryButton
-              className="w-[8em] rounded-full bg-linear-gradient py-[9px] px-3 text-center text-lg font-medium text-white"
-              onClick={handleUpdateApplicationStatus}
-              disabled={!newApplicationStatus || isUpdatingStatus}
-            >
-              {isUpdatingStatus ? (
-                <div>
-                  <ReactLoading
-                    color="#FFFFFF"
-                    width={25}
-                    height={25}
-                    type="spin"
-                  />
-                </div>
-              ) : (
-                "Update Status"
-              )}
-            </button.PrimaryButton>
-          </div>
-        </div> */}
-      </div>
-      {isModalOpen && (
-        <Modal
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          data-aos="zoom-in"
-        >
-          <StudentApplicationSummary
-            onClose={handleCloseModal}
-            documents={documents}
-            userData={{
-              firstName: applicationDetails?.data?.firstName,
-              lastName: applicationDetails?.data?.lastName,
-              userId: applicationDetails?.data?.userId,
-            }}
-          />
-        </Modal>
-      )}
     </main>
   );
 };
 
-export default UploadedDocuments;
+export default Payments;

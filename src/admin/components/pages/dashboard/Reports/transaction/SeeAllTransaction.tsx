@@ -1,4 +1,10 @@
-import React, { useMemo, useState, useCallback, useEffect } from "react";
+import React, {
+  useMemo,
+  useState,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { FiSearch } from "react-icons/fi";
 import transaction from "../../../../../../assets/svg/Transaction.svg";
@@ -6,6 +12,7 @@ import CustomPagination from "../../../../../../shared/utils/customPagination";
 import { useAllSalary } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
 import { button } from "../../../../../../shared/buttons/Button";
 import AllStaffPaymentModal from "../../../../../../shared/modal/AllStaffPaymentModal";
+import { DownLoadButton } from "../../../../../../shared/downLoad/DownLoadButton";
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -72,6 +79,8 @@ const SeeAllTransaction: React.FC = () => {
   const STATUS_COMPLETED = "COMPLETED";
 
   const navigate = useNavigate();
+  const contentRef = useRef(null);
+
   const handleBackClick = () => {
     navigate(-1);
   };
@@ -194,10 +203,11 @@ const SeeAllTransaction: React.FC = () => {
   ]);
 
   return (
-    <main className="font-outfit">
+    <main ref={contentRef} className="font-outfit">
       <header>
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Reports</h1>
+          <DownLoadButton applicationRef={contentRef} />
         </div>
       </header>
       <div className="mt-[1.3em] font-outfit h-auto w-full bg-white px-[1em] py-3 pb-[10em]">

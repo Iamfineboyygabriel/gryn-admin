@@ -141,6 +141,7 @@ const Degree = ({
               selectedItem={degreeType}
               onSelectItem={() => {}}
               disabled={true}
+              placeholder="Degree Type"
             />
           </div>
 

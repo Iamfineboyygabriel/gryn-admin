@@ -21,13 +21,13 @@ const Degree = ({ applicationId }: any) => {
   return (
     <main className="font-outfit">
       <header>
-        <h2 className="text-xl font-semibold dark:text-white">Degree</h2>
+        <h2 className="text-xl font-semibold">Degree</h2>
       </header>
       {applicationLoading && (
         <small className="mt-2 block">please wait...</small>
       )}
       <div className="mt-[2em] flex flex-col gap-[1.5em]">
-        <div className="flex w-[40%] flex-col gap-[1.2em]">
+        <div className="flex w-[60%] flex-col gap-[1.2em]">
           <div className="w-full">
             <label htmlFor="country" className="flex-start flex font-medium">
               Country
@@ -37,7 +37,7 @@ const Degree = ({ applicationId }: any) => {
               name="country"
               value={country}
               readOnly
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none dark:text-white"
+              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
             />
           </div>
           <div className="w-full">
@@ -49,14 +49,11 @@ const Degree = ({ applicationId }: any) => {
               name="university"
               value={university}
               readOnly
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none dark:text-white"
+              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
             />
           </div>
           <div className="w-full">
-            <label
-              htmlFor="degree"
-              className="flex-start flex font-medium dark:text-white"
-            >
+            <label htmlFor="degree" className="flex-start flex font-medium">
               What do you want to study abroad
             </label>
             <input
@@ -65,14 +62,11 @@ const Degree = ({ applicationId }: any) => {
               type="text"
               value={degreeType}
               readOnly
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none dark:border-none dark:bg-gray-700 dark:text-white"
+              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
             />
           </div>
           <div className="w-full">
-            <label
-              htmlFor="course"
-              className="flex-start flex font-medium dark:text-white"
-            >
+            <label htmlFor="course" className="flex-start flex font-medium">
               Course
             </label>
             <input
@@ -81,7 +75,7 @@ const Degree = ({ applicationId }: any) => {
               type="text"
               value={course}
               readOnly
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none dark:border-none dark:bg-gray-700 dark:text-white"
+              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
             />
           </div>
         </div>

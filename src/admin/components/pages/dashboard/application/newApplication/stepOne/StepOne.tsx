@@ -90,7 +90,7 @@ const StepOne = ({ onNext }: any) => {
         <h2 className="text-xl font-semibold">Personal Details</h2>
       </header>
       <form
-        className="mt-[2em] w-full md:w-[90%] lg:w-[77%]"
+        className="mt-[2em] w-full md:w-[90%] lg:w-[80%]"
         onSubmit={submitApplication}
       >
         <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4 md:gap-5 lg:gap-[2em]">

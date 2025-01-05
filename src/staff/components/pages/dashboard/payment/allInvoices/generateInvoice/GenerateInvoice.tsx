@@ -7,7 +7,6 @@ import {
 } from "../../../../../../../shared/redux/shared/slices/shareApplication.slices";
 import { useAllDraftItems } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
 import { useAppDispatch } from "../../../../../../../shared/redux/hooks/shared/reduxHooks";
-import CustomDatePicker from "../../../../../../../shared/utils/CustomeDatePicker";
 import { button } from "../../../../../../../shared/buttons/Button";
 import {
   Dropdown,
@@ -174,7 +173,7 @@ const GenerateInvoice = () => {
     if (field === "productName") {
       newItems[index][field] = value;
     } else {
-      newItems[index][field] = parseFloat(value) || 0;
+      newItems[index][field] = value === "" ? 0 : parseFloat(value);
     }
 
     if (field === "quantity" || field === "rate" || field === "discount") {
@@ -185,13 +184,6 @@ const GenerateInvoice = () => {
     setItems(newItems);
   };
 
-  const formatDate = (date: any | null) => {
-    if (!date) return "";
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}T00:00:00Z`;
-  };
   const submitInvoice = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     setInvoiceLoading(true);
@@ -225,28 +217,28 @@ const GenerateInvoice = () => {
     setShowExistingItemDropdown(false);
   };
 
- const submitDraft = async (event: React.MouseEvent<HTMLButtonElement>) => {
-   event.preventDefault();
-   setDraftLoading(true);
+  const submitDraft = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    setDraftLoading(true);
 
-   try {
-     const body = {
-       status: status?.name,
-       invoiceDate: invoiceDate ? `${invoiceDate}T00:00:00Z` : "",
-       dueDate: dueDate ? `${dueDate}T00:00:00Z` : "",
-       invoiceNumber,
-       items,
-     };
+    try {
+      const body = {
+        status: status?.name,
+        invoiceDate: invoiceDate ? `${invoiceDate}T00:00:00Z` : "",
+        dueDate: dueDate ? `${dueDate}T00:00:00Z` : "",
+        invoiceNumber,
+        items,
+      };
 
-     await dispatch(createDraft(body)).unwrap();
-     toast.success("drafts saved successfully");
-     resetForm();
-   } catch (error: any) {
-     toast.error(error.message);
-   } finally {
-     setDraftLoading(false);
-   }
- };
+      await dispatch(createDraft(body)).unwrap();
+      toast.success("drafts saved successfully");
+      resetForm();
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setDraftLoading(false);
+    }
+  };
 
   const addNewItem = () => {
     const newItemIndex = items.length;
@@ -289,7 +281,7 @@ const GenerateInvoice = () => {
         <section>
           <div className="flex justify-between mt-[1.5em]">
             <div className="flex flex-col gap-[1.3em]">
-              <div className="flex w-full lg:flex-rol flex-col gap-[1em]">
+              <div className="flex w-full lg:flex-row flex-col gap-[1em]">
                 <div>
                   <Dropdown
                     label="Invoice Status"
@@ -382,6 +374,7 @@ const GenerateInvoice = () => {
               {draftItems &&
                 Array?.isArray(draftItems) &&
                 draftItems.length === 0 && <div>No existing items found</div>}
+
               {items.map((item, index) => (
                 <div key={index}>
                   <div className="flex relative items-center">
@@ -423,7 +416,7 @@ const GenerateInvoice = () => {
                             name={`quantity-${index}`}
                             required
                             type="number"
-                            value={item.quantity}
+                            value={item.quantity || ""}
                             onChange={(e) =>
                               handleItemChange(
                                 index,
@@ -446,7 +439,7 @@ const GenerateInvoice = () => {
                             name={`rate-${index}`}
                             required
                             type="number"
-                            value={item.rate}
+                            value={item.rate || ""}
                             onChange={(e) =>
                               handleItemChange(index, "rate", e.target.value)
                             }
@@ -484,7 +477,7 @@ const GenerateInvoice = () => {
                             name={`discount-${index}`}
                             required
                             type="number"
-                            value={item.discount}
+                            value={item.discount || ""}
                             onChange={(e) =>
                               handleItemChange(
                                 index,
@@ -526,7 +519,7 @@ const GenerateInvoice = () => {
                 </button.PrimaryButton>
 
                 <button.PrimaryButton
-                  className=" bg-linear-gradient rounded-full w-[45%]  py-[12px] text-center text-lg font-semibold text-white"
+                  className="bg-linear-gradient rounded-full w-[45%] py-[12px] text-center text-lg font-semibold text-white"
                   onClick={submitInvoice}
                 >
                   {invoiceLoading ? (
@@ -542,8 +535,13 @@ const GenerateInvoice = () => {
                 </button.PrimaryButton>
               </div>
             </div>
-            <div className="lg:flex hidden">
-              <img src={invoiceImage} alt="mginvoiceI" />
+
+            <div className="lg:flex hidden relative h-fit">
+              <img
+                src={invoiceImage}
+                alt="mginvoiceI"
+                className="sticky top-0"
+              />
             </div>
           </div>
         </section>

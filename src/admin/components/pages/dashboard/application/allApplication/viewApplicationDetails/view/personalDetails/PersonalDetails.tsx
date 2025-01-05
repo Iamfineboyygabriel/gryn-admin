@@ -36,7 +36,7 @@ const PersonalDetails: React.FC<{ applicationId: any }> = ({
       <header>
         <h2 className="text-xl font-semibold">Personal Details</h2>
       </header>
-      <form className="mt-[2em] w-[77%]">
+      <form className="mt-[2em] w-[85%]">
         <div className="flex flex-col lg:flex-row  gap-[1em] lg:gap-[3em]">
           {renderField("First Name", applicationDetails?.data?.firstName)}
           {renderField("Last Name", applicationDetails?.data?.lastName)}

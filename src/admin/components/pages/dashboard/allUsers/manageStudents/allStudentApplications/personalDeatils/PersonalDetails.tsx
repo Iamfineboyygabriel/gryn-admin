@@ -34,11 +34,9 @@ const PersonalDetails: React.FC<{ applicationId: any }> = ({
   return (
     <main className="font-outfit">
       <header>
-        <h2 className="text-xl font-semibold dark:text-white">
-          Personal Details
-        </h2>
+        <h2 className="text-xl font-semibold">Personal Details</h2>
       </header>
-      <form className="mt-[2em] w-[77%] dark:text-white">
+      <form className="mt-[2em] w-[85%]">
         <div className="flex flex-row gap-[3em]">
           {renderField("First Name", applicationDetails?.data?.firstName)}
           {renderField("Last Name", applicationDetails?.data?.lastName)}
@@ -55,14 +53,13 @@ const PersonalDetails: React.FC<{ applicationId: any }> = ({
               : ""
           )}
           {renderField("Country", applicationDetails?.data?.country)}
-
         </div>
         <div className="mt-[1em] flex flex-row gap-[3em]">
           {renderField("State", applicationDetails?.data?.state)}
           {renderField("L.G.A", applicationDetails?.data?.localGovtArea)}
         </div>
         <div className="mt-[1em] flex flex-row gap-[3em]">
-        {renderField("Address", applicationDetails?.data?.address)}
+          {renderField("Address", applicationDetails?.data?.address)}
           {renderField(
             "International Passport Number",
             applicationDetails?.data?.internationalPassportNumber

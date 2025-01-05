@@ -21,25 +21,25 @@ const SkeletonRow = () => (
 const AllInvoices = () => {
   const { useInvoice, fetchInvoice, loading, currentPage } = useAllInvoice();
   const [searchQuery, setSearchQuery] = useState("");
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const itemsPerPage = 10;
-  
+
   const invoiceData = useMemo(() => useInvoice || [], [useInvoice]);
 
   useEffect(() => {
     fetchInvoice(page, itemsPerPage);
   }, [fetchInvoice, page, itemsPerPage]);
 
-  const escapeRegExp = (string:any) => {
+  const escapeRegExp = (string: any) => {
     return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   };
 
-  const highlightText = (text:any, query:any) => {
+  const highlightText = (text: any, query: any) => {
     if (!query) return text;
     const escapedQuery = escapeRegExp(query);
     const parts = text.split(new RegExp(`(${escapedQuery})`, "gi"));
-    return parts?.map((part:any, index:number) =>
+    return parts?.map((part: any, index: number) =>
       part?.toLowerCase() === query?.toLowerCase() ? (
         <span key={index} style={{ backgroundColor: "yellow" }}>
           {DOMPurify.sanitize(part)}
@@ -50,28 +50,32 @@ const AllInvoices = () => {
     );
   };
 
-  const formatAmount = (amount:number) => {
-    return amount.toLocaleString('en-US', {
+  const formatAmount = (amount: number) => {
+    return amount.toLocaleString("en-US", {
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+      maximumFractionDigits: 2,
     });
   };
 
-  const calculateInvoiceTotal = (items:any[]) => {
-    return items?.reduce((sum, item) => sum + (item.amount || 0), 0) || 0;
+  const calculateInvoiceTotal = (items: any[]) => {
+    if (!items || !Array.isArray(items)) return 0;
+    return items.reduce((total, item) => {
+      const amount = Number(item.amount) || 0;
+      const discount = Number(item.discount) || 0;
+      const itemTotal = amount - (amount * discount) / 100;
+      return total + itemTotal;
+    }, 0);
   };
 
   const filteredInvoice = useMemo(
     () =>
       (invoiceData || [])?.filter(
-        (invoice:any) =>
+        (invoice: any) =>
           (invoice?.invoiceNumber || "")
             .toLowerCase()
             .includes(searchQuery?.toLowerCase()) ||
-          invoice?.item?.some((item:any) =>
-            (item?.name || "")
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase())
+          invoice?.item?.some((item: any) =>
+            (item?.name || "").toLowerCase().includes(searchQuery.toLowerCase())
           )
       ),
     [invoiceData, searchQuery]
@@ -79,27 +83,31 @@ const AllInvoices = () => {
 
   const visibleData = filteredInvoice;
 
-  const handlePageChange = (event:any, value:any) => {
+  const handlePageChange = (event: any, value: any) => {
     setPage(value);
   };
 
-  const formatData = (data:any) => (data != null ? data : "-");
+  const formatData = (data: any) => (data != null ? data : "-");
 
   const startIndex = (page - 1) * itemsPerPage;
 
-  const getSerialNumber = (invoiceIndex:any, itemIndex:any, totalPreviousItems:any) => {
+  const getSerialNumber = (
+    invoiceIndex: any,
+    itemIndex: any,
+    totalPreviousItems: any
+  ) => {
     return startIndex + totalPreviousItems + itemIndex + 1;
   };
 
   const handleViewDetails = useCallback(
-    (invoice:any) => {
+    (invoice: any) => {
       navigate("/staff/dashboard/payments/view_invoice", {
-        state: { invoiceData: invoice }
+        state: { invoiceData: invoice },
       });
     },
     [navigate]
   );
-  
+
   return (
     <main className="font-outfit">
       <div className="relative">
@@ -153,20 +161,26 @@ const AllInvoices = () => {
                   <SkeletonRow key={index} />
                 ))
               ) : visibleData?.length > 0 ? (
-                visibleData?.map((invoice:any, invoiceIndex:any) => {
+                visibleData?.map((invoice: any, invoiceIndex: any) => {
                   const previousItemsCount = visibleData
                     .slice(0, invoiceIndex)
-                    .reduce((acc:any, inv:any) => acc + inv?.item?.length, 0);
+                    .reduce((acc: any, inv: any) => acc + inv?.item?.length, 0);
 
-                  const totalInvoiceAmount = calculateInvoiceTotal(invoice?.item);
+                  const totalInvoiceAmount = calculateInvoiceTotal(
+                    invoice?.item
+                  );
 
-                  return invoice?.item?.map((item:any, itemIndex:any) => (
+                  return invoice?.item?.map((item: any, itemIndex: any) => (
                     <tr
                       key={`${invoice?.id}-${itemIndex}`}
                       className="text-[14px] leading-[20px] text-grey-primary font-medium"
                     >
                       <td className="py-[16px] px-[24px]">
-                        {getSerialNumber(invoiceIndex, itemIndex, previousItemsCount)}
+                        {getSerialNumber(
+                          invoiceIndex,
+                          itemIndex,
+                          previousItemsCount
+                        )}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
                         {highlightText(
@@ -199,7 +213,7 @@ const AllInvoices = () => {
                             ? "In Progress"
                             : "Completed"}
                         </button>
-                        <p 
+                        <p
                           className="cursor-pointer font-semibold text-primary-700"
                           onClick={() => handleViewDetails(invoice)}
                         >
@@ -211,7 +225,10 @@ const AllInvoices = () => {
                 })
               ) : (
                 <tr>
-                  <td colSpan={9} className="px-6 py-4 text-center text-gray-500">
+                  <td
+                    colSpan={9}
+                    className="px-6 py-4 text-center text-gray-500"
+                  >
                     <div className="mt-[2em] flex flex-col items-center justify-center">
                       <img src={transaction} alt="No invoices" />
                       <p className="mt-2 text-sm text-gray-500 dark:text-white">

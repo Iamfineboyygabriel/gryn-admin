@@ -71,7 +71,7 @@ const Degree = ({
   return (
     <main className="font-outfit">
       <header>
-        <h2 className="text-xl font-semibold dark:text-white">Degree</h2>
+        <h2 className="text-xl font-semibold">Degree</h2>
       </header>
       <form>
         <div className="flex flex-col gap-[1.5em]">
@@ -79,7 +79,7 @@ const Degree = ({
             <div className="w-full">
               <label
                 htmlFor="university"
-                className="flex-start flex font-medium dark:text-white"
+                className="flex-start flex font-medium"
               >
                 University
                 <CgAsterisk className="text-red-500" />
@@ -90,7 +90,7 @@ const Degree = ({
                 type="text"
                 onChange={(e) => setUniversity(e.target.value)}
                 value={university}
-                className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none dark:border-none dark:bg-gray-700 dark:text-white"
+                className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
               />
             </div>
           </div>
@@ -99,7 +99,7 @@ const Degree = ({
             {studentDegree?.map((text, index) => (
               <div
                 key={index}
-                className={`flex w-full flex-col gap-[1em] rounded-lg px-[20px] py-[1.5em] dark:bg-gray-700 dark:text-white ${
+                className={`flex w-full flex-col gap-[1em] rounded-lg px-[20px] py-[1.5em] ${
                   selectedDegreeOption === text.value
                     ? "bg-primary-700 text-white"
                     : "bg-purple-white text-primary-700 opacity-50"
@@ -141,14 +141,12 @@ const Degree = ({
               selectedItem={degreeType}
               onSelectItem={() => {}}
               disabled={true}
+              placeholder="Degree Type"
             />
           </div>
 
           <div className="lg:w-[40%] w-[80%] ">
-            <label
-              htmlFor="course"
-              className="flex-start flex font-medium dark:text-white"
-            >
+            <label htmlFor="course" className="flex-start flex font-medium">
               Course
               <CgAsterisk className="text-red-500" />
             </label>
@@ -157,7 +155,7 @@ const Degree = ({
               id="course"
               onChange={(e) => setCourse(e.target.value)}
               value={course}
-              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none dark:border-none dark:bg-gray-700 dark:text-white"
+              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none dark:border-none"
             />
           </div>
         </div>

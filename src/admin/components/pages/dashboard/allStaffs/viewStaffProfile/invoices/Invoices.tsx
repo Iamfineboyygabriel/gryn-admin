@@ -63,7 +63,11 @@ const Invoices: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
   const itemsPerPage = 10;
 
   const formatAmount = (amount: number) => {
-    return amount?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    if (!amount && amount !== 0) return "-";
+    return new Intl.NumberFormat("en-NG", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
   };
 
   const staffId = staffDetail?.data?.profile?.userId;
@@ -111,9 +115,12 @@ const Invoices: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
   const formatData = useCallback((data: any) => (data ? data : "-"), []);
 
   const calculateInvoiceTotal = (items: any[]) => {
-    return items?.reduce((total, item) => {
-      const itemAmount = item.amount || 0;
-      return total + itemAmount;
+    if (!items || !Array.isArray(items)) return 0;
+    return items.reduce((total, item) => {
+      const amount = Number(item.amount) || 0;
+      const discount = Number(item.discount) || 0;
+      const itemTotal = amount - (amount * discount) / 100;
+      return total + itemTotal;
     }, 0);
   };
 

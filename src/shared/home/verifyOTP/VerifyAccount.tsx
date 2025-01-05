@@ -1,24 +1,40 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router";
-
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../redux/store";
 import { button } from "../../buttons/Button";
 import welcome from "../../../assets/png/welcome_signup.png";
 import gryn_index_logo from "../../../assets/svg/Gryn_Index _logo.svg";
 import ReactLoading from "react-loading";
 import { toast } from "react-toastify";
+import { logOutUser } from "../../redux/shared/slices/shareLanding.slices";
 import sharedLandingServices, {
   verifyUser,
 } from "../../redux/shared/services/shareLanding.services";
 import OTPInput from "react-otp-input";
+import useUserProfile from "../../redux/hooks/shared/getUserProfile";
+import { usePermissions } from "../../redux/hooks/admin/usePermission";
+import {
+  findFirstAccessibleRoute,
+  findFirstAccessibleRouteStaff,
+} from "../../utils/findFirstAccessibleRoute";
+
+const TIMEOUT_DURATION = 2 * 60 * 1000;
 
 const VerifyAccount = () => {
   const [loading, setLoading] = useState(false);
   const [token, setToken] = useState("");
   const [timeLeft, setTimeLeft] = useState(10);
   const [canResend, setCanResend] = useState(false);
+  const [pageTimeout, setPageTimeout] = useState(TIMEOUT_DURATION / 1000);
+  const [showModal, setShowModal] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch: AppDispatch = useDispatch();
+  const { userProfile } = useUserProfile();
+  const { hasPermission } = usePermissions();
+
   const queryParams = new URLSearchParams(location.search);
   const email = queryParams.get("email");
 
@@ -40,6 +56,63 @@ const VerifyAccount = () => {
     };
   }, [timeLeft]);
 
+  useEffect(() => {
+    let timeoutTimer: NodeJS.Timeout | undefined;
+
+    if (pageTimeout > 0) {
+      timeoutTimer = setInterval(() => {
+        setPageTimeout((prevTime) => prevTime - 1);
+      }, 1000);
+    } else {
+      handleTimeout();
+    }
+
+    return () => {
+      if (timeoutTimer) {
+        clearInterval(timeoutTimer);
+      }
+    };
+  }, [pageTimeout]);
+
+  const handleTimeout = async () => {
+    if (userProfile?.userId) {
+      try {
+        await dispatch(logOutUser(userProfile.userId)).unwrap();
+        toast.info("Session expired. Please try again.");
+      } catch (error) {
+        toast.error("Error during logout. Please try again.");
+      }
+    }
+    navigate("/");
+  };
+
+  const handleLogOut = () => {
+    if (userProfile?.userId) {
+      dispatch(logOutUser(userProfile.userId));
+    }
+    navigate("/");
+  };
+
+  const Modal = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white p-8 rounded-lg shadow-lg">
+        <h2 className="text-xl font-bold mb-4">No Accessible Pages</h2>
+        <p className="mb-4">
+          You don't have permission to access any pages. You will be logged out.
+        </p>
+        <button
+          onClick={() => {
+            setShowModal(false);
+            handleLogOut();
+          }}
+          className="bg-primary-700 text-white px-4 py-2 rounded hover:bg-primary-800"
+        >
+          OK
+        </button>
+      </div>
+    </div>
+  );
+
   const handleTokenChange = (tokenValue: string) => {
     setToken(tokenValue);
   };
@@ -52,7 +125,34 @@ const VerifyAccount = () => {
 
       if (response.status === 200) {
         toast.success("Account Verified Successfully");
-        navigate(`/`);
+
+        const userRole =
+          response.data?.role || sessionStorage.getItem("userRole");
+
+        switch (userRole) {
+          case "ADMIN":
+          case "SUPER_ADMIN": {
+            const accessibleRoute = findFirstAccessibleRoute(hasPermission);
+            if (accessibleRoute) {
+              navigate(accessibleRoute);
+            } else {
+              setShowModal(true);
+            }
+            break;
+          }
+          case "STAFF": {
+            const accessibleRoute =
+              findFirstAccessibleRouteStaff(hasPermission);
+            if (accessibleRoute) {
+              navigate(accessibleRoute);
+            } else {
+              setShowModal(true);
+            }
+            break;
+          }
+          default:
+            navigate("/");
+        }
       } else {
         toast.error("Invalid OTP");
       }
@@ -83,7 +183,7 @@ const VerifyAccount = () => {
       }
     } catch (error: any) {
       const errorMessage = error?.response?.data?.message;
-      toast.error(errorMessage || "seomthing went wrong");
+      toast.error(errorMessage || "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -107,6 +207,11 @@ const VerifyAccount = () => {
               className="w-[8em] cursor-pointer md:w-[10em] lg:w-[11em]"
               onClick={landingPage}
             />
+            <div className="text-gray-500">
+              Time remaining: {Math.floor(pageTimeout / 60)}:
+              {pageTimeout % 60 < 10 ? "0" : ""}
+              {pageTimeout % 60}
+            </div>
           </nav>
           <article className="flex h-full w-full flex-col justify-center text-grey-primary">
             <header>
@@ -176,6 +281,7 @@ const VerifyAccount = () => {
           className="h-full w-full object-cover"
         />
       </aside>
+      {showModal && <Modal />}
     </main>
   );
 };

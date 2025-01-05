@@ -60,12 +60,12 @@ const AdminLogin = () => {
         const isEmailVerified = response?.data?.isEmailVerified;
 
         if (role === "ADMIN" || role === "SUPER_ADMIN") {
-          // if (role === "ADMIN" && !isEmailVerified) {
-          //   navigate(
-          //     `/verify_account?email=${encodeURIComponent(formData.email)}`
-          //   );
-          //   return;
-          // }
+          if (role === "ADMIN" && !isEmailVerified) {
+            navigate(
+              `/verify_account?email=${encodeURIComponent(formData.email)}`
+            );
+            return;
+          }
 
           toast.success("Welcome");
           const accessibleRoute = findFirstAccessibleRoute(hasPermission);

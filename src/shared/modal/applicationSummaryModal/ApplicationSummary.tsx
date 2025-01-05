@@ -1,19 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { button } from "../../buttons/Button";
 import ApprovalSuccess from "../ApprovalSuccess";
 import MessageSent from "../applicationSummaryModal/Success";
-import SendMessage from "./SendMessage";
 import approve from "../../../assets/svg/Approved.svg";
 import reject from "../../../assets/svg/Rejected.svg";
 import { LuEye } from "react-icons/lu";
 import ReactLoading from "react-loading";
-import { PrivateElement } from '../../redux/hooks/admin/PrivateElement';
+import { PrivateElement } from "../../redux/hooks/admin/PrivateElement";
 
 interface Document {
   id: string;
   name: string;
   documentType: string;
-  status?: 'APPROVED' | 'REJECTED' | 'PENDING';
+  status?: "APPROVED" | "REJECTED" | "PENDING";
 }
 
 interface ApplicationSummaryProps {
@@ -21,7 +20,7 @@ interface ApplicationSummaryProps {
   documents: Document[];
   onApprove: () => Promise<{ status: number }>;
   onReject: () => Promise<{ status: number }>;
-  approvalType: 'agent' | 'student';
+  approvalType: "agent" | "student";
   approvalError: string | null;
 }
 
@@ -31,7 +30,7 @@ const ApplicationSummary: React.FC<ApplicationSummaryProps> = ({
   onApprove,
   onReject,
   approvalType,
-  approvalError
+  approvalError,
 }) => {
   const [expandedDocuments, setExpandedDocuments] = useState<string[]>([]);
   const [approveLoading, setApproveLoading] = useState(false);
@@ -41,7 +40,9 @@ const ApplicationSummary: React.FC<ApplicationSummaryProps> = ({
   const [showMessageSent, setShowMessageSent] = useState(false);
   const [isDocumentsVisible, setIsDocumentsVisible] = useState(false);
   const [error, setError] = useState<string | null>(approvalError);
-  const [actionTaken, setActionTaken] = useState<'approve' | 'reject' | null>(null);
+  const [actionTaken, setActionTaken] = useState<"approve" | "reject" | null>(
+    null
+  );
 
   useEffect(() => {
     setError(approvalError);
@@ -62,17 +63,19 @@ const ApplicationSummary: React.FC<ApplicationSummaryProps> = ({
   const handleApprove = async () => {
     resetState();
     setApproveLoading(true);
-    setActionTaken('approve');
+    setActionTaken("approve");
     try {
       const response = await onApprove();
       if (response.status === 200) {
         setShowApprovalSuccess(true);
       } else {
-        throw new Error('Approval failed');
+        throw new Error("Approval failed");
       }
     } catch (error) {
-      console.error('Approval failed:', error);
-      setError(error instanceof Error ? error.message : 'An unexpected error occurred');
+      console.error("Approval failed:", error);
+      setError(
+        error instanceof Error ? error.message : "An unexpected error occurred"
+      );
     } finally {
       setApproveLoading(false);
     }
@@ -81,17 +84,19 @@ const ApplicationSummary: React.FC<ApplicationSummaryProps> = ({
   const handleDecline = async () => {
     resetState();
     setDeclineLoading(true);
-    setActionTaken('reject');
+    setActionTaken("reject");
     try {
       const response = await onReject();
       if (response.status === 200) {
         setShowSendMessage(true);
       } else {
-        throw new Error('Decline failed');
+        throw new Error("Decline failed");
       }
     } catch (error) {
-      console.error('Decline failed:', error);
-      setError(error instanceof Error ? error.message : 'An unexpected error occurred');
+      console.error("Decline failed:", error);
+      setError(
+        error instanceof Error ? error.message : "An unexpected error occurred"
+      );
     } finally {
       setDeclineLoading(false);
     }
@@ -142,17 +147,20 @@ const ApplicationSummary: React.FC<ApplicationSummaryProps> = ({
 
             {isDocumentsVisible && (
               <div
-                style={{ maxHeight: '200px' }}
+                style={{ maxHeight: "200px" }}
                 className="mt-[1em] flex overflow-y-auto flex-col gap-[1em]"
               >
                 {documents.map((doc: Document, index: number) => (
-                  <div key={index} className="flex w-full items-center justify-between rounded-lg border-2 bg-white px-4 py-3 text-sm">
+                  <div
+                    key={index}
+                    className="flex w-full items-center justify-between rounded-lg border-2 bg-white px-4 py-3 text-sm"
+                  >
                     <div className="flex items-center gap-3">
                       <p>{doc.documentType}</p>
                     </div>
                     <img
-                      src={doc.status === 'APPROVED' ? approve : reject}
-                      alt={doc.status?.toLowerCase() || 'pending'}
+                      src={doc.status === "APPROVED" ? approve : reject}
+                      alt={doc.status?.toLowerCase() || "pending"}
                     />
                     {expandedDocuments.includes(doc.id) && (
                       <p className="mt-2">{doc.name}</p>
@@ -184,27 +192,27 @@ const ApplicationSummary: React.FC<ApplicationSummaryProps> = ({
                 "Back"
               )}
             </button.PrimaryButton>
-            
+
             <PrivateElement feature="ALL_USERS" page="Approve/Reject Agents">
-            <button.PrimaryButton
-              onClick={handleApprove}
-              className="rounded-full cursor-pointer bg-linear-gradient px-[4em] py-[8px] text-center font-medium text-white"
-              disabled={approveLoading || declineLoading}
-            >
-              {approveLoading ? (
-                <div className='flex flex-start text-start justify-start mr-auto'>
-                  <ReactLoading
-                    color="#FFFFFF"
-                    width={25}
-                    height={25}
-                    type="spin"
-                  />
-                </div>
-              ) : (
-                "Approve"
-              )}
-            </button.PrimaryButton>
-             </PrivateElement>
+              <button.PrimaryButton
+                onClick={handleApprove}
+                className="rounded-full cursor-pointer bg-linear-gradient px-[4em] py-[8px] text-center font-medium text-white"
+                disabled={approveLoading || declineLoading}
+              >
+                {approveLoading ? (
+                  <div className="flex flex-start text-start justify-start mr-auto">
+                    <ReactLoading
+                      color="#FFFFFF"
+                      width={25}
+                      height={25}
+                      type="spin"
+                    />
+                  </div>
+                ) : (
+                  "Approve"
+                )}
+              </button.PrimaryButton>
+            </PrivateElement>
           </div>
         </div>
       </div>

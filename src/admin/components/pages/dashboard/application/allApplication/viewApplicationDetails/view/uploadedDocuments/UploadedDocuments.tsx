@@ -581,6 +581,13 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
           />
         </Modal>
       )}
+
+      <DocumentPreviewModal
+        isOpen={isPreviewOpen}
+        onRequestClose={closePreviewModal}
+        previewUrl={previewUrl}
+        previewFileType={previewFileType}
+      />
     </main>
   );
 };

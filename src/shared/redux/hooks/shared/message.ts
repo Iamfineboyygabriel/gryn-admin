@@ -5,7 +5,6 @@ import {
   searchUser,
   createChat,
   fetchAllUserChats,
-  updateReadStatus,
   fetchUnreadCount,
   selectMessageState,
   setSearch,

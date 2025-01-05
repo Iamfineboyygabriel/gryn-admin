@@ -7,6 +7,7 @@ import Degree from "../degree/Degree";
 import UploadedDocument from "../upload/UploadedDocuments";
 import { button } from "../../../../../../../../shared/buttons/Button";
 import upload from "../../../../../../../../assets/svg/Upload.svg";
+import Payments from "../payments/Payments";
 
 interface LocationState {
   applicationId: string;
@@ -20,6 +21,8 @@ const ViewApplication: React.FC = () => {
   const personalDetailsRef = useRef<HTMLDivElement>(null);
   const degreeRef = useRef<HTMLDivElement>(null);
   const uploadedDocumentRef = useRef<HTMLDivElement>(null);
+  const paymentDocumentRef = useRef<HTMLDivElement>(null);
+
   const [isGeneratingPDF, setIsGeneratingPDF] = useState<boolean>(false);
 
   const handleBackClick = () => {
@@ -33,6 +36,7 @@ const ViewApplication: React.FC = () => {
       { ref: personalDetailsRef, title: "Personal Details" },
       { ref: degreeRef, title: "Degree" },
       { ref: uploadedDocumentRef, title: "Uploaded Documents" },
+      { ref: paymentDocumentRef, title: "Payment Documents" },
     ];
 
     try {
@@ -97,25 +101,30 @@ const ViewApplication: React.FC = () => {
           <nav className="mt-[1.5em]">
             <div className="flex items-center border-b-[3px] border-gray-100 text-base font-semibold">
               <div className="flex gap-[2em]">
-                {["personalDetails", "degree", "uploadedDocument"].map(
-                  (link) => (
-                    <div
-                      key={link}
-                      className={`cursor-pointer whitespace-nowrap py-3 ${
-                        activeLink === link
-                          ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700"
-                          : "text-lg font-medium text-gray-500"
-                      }`}
-                      onClick={() => setActiveLink(link)}
-                    >
-                      {link === "personalDetails"
-                        ? "Personal Details"
-                        : link === "degree"
-                        ? "Degree"
-                        : "Uploaded Documents"}
-                    </div>
-                  )
-                )}
+                {[
+                  "personalDetails",
+                  "degree",
+                  "uploadedDocument",
+                  "paymentDocument",
+                ].map((link) => (
+                  <div
+                    key={link}
+                    className={`cursor-pointer whitespace-nowrap py-3 ${
+                      activeLink === link
+                        ? "border-b-[3px] border-primary-700 text-lg font-medium text-primary-700"
+                        : "text-lg font-medium text-gray-500"
+                    }`}
+                    onClick={() => setActiveLink(link)}
+                  >
+                    {link === "personalDetails"
+                      ? "Personal Details"
+                      : link === "degree"
+                      ? "Degree"
+                      : link === "uploadedDocument"
+                      ? "Uploaded Documents"
+                      : "Payment Documents"}
+                  </div>
+                ))}
               </div>
               <button.PrimaryButton
                 onClick={downloadPDF}
@@ -148,6 +157,14 @@ const ViewApplication: React.FC = () => {
               }}
             >
               <UploadedDocument applicationId={applicationId} />
+            </div>
+            <div
+              ref={paymentDocumentRef}
+              style={{
+                display: activeLink === "paymentDocument" ? "block" : "none",
+              }}
+            >
+              <Payments applicationId={applicationId} />
             </div>
           </section>
         </div>
