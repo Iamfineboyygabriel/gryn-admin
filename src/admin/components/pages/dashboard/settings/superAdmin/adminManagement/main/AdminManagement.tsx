@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useCallback, useState } from "react";
-import { FiSearch } from "react-icons/fi";
+import { FiSearch, FiLogOut } from "react-icons/fi";
 import transaction from "../../../../../../../../assets/svg/Transaction.svg";
 import { Link } from "react-router-dom";
 import DOMPurify from "dompurify";
@@ -13,10 +13,12 @@ import Modal from "../../../../../../../../shared/modal/Modal";
 import DeleteAdminModal from "../modal/DeleteAdminModal";
 import SuccessModal from "../modal/SuccessModal";
 import { AppDispatch } from "../../../../../../../../shared/redux/store";
+import { logoutAdminUserBySuperAdmin } from "../../../../../../../../shared/redux/shared/slices/shareLanding.slices";
+import { toast } from "react-toastify";
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
-    {Array.from({ length: 6 }).map((_, index) => (
+    {Array.from({ length: 7 }).map((_, index) => (
       <td key={index} className="px-6 py-4">
         <div className="h-4 bg-gray-200 rounded"></div>
       </td>
@@ -27,7 +29,6 @@ const SkeletonRow = () => (
 const AdminManagement = () => {
   const {
     admins = { data: [] },
-    totalPages,
     currentPage,
     loading,
     error,
@@ -35,6 +36,7 @@ const AdminManagement = () => {
     fetchAdmins,
     updateSearchTerm,
   } = useAllAdminForSuperAdmin();
+
   const dispatch: AppDispatch = useDispatch();
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm || "");
@@ -42,9 +44,34 @@ const AdminManagement = () => {
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [selectedLogoutUser, setSelectedLogoutUser] = useState<{
+    email: string;
+  } | null>(null);
+  const [logoutSuccessMessage, setLogoutSuccessMessage] = useState("");
 
   const handleDeleteSelected = () => {
     setShowDeleteModal(true);
+  };
+
+  const handleLogoutClick = (email: string) => {
+    setSelectedLogoutUser({ email });
+  };
+
+  const handleConfirmLogout = async () => {
+    if (!selectedLogoutUser) return;
+
+    try {
+      await dispatch(
+        logoutAdminUserBySuperAdmin(selectedLogoutUser.email)
+      ).unwrap();
+
+      toast.success(`Successfully logged out ${selectedLogoutUser.email}`);
+      fetchAdmins(currentPage, itemsPerPage);
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to logout admin user");
+    } finally {
+      setSelectedLogoutUser(null);
+    }
   };
 
   const handleCheckboxChange = (userId: string) => {
@@ -64,6 +91,11 @@ const AdminManagement = () => {
       );
 
       await Promise.all(deletePromises);
+      setLogoutSuccessMessage(
+        `Successfully deleted ${selectedUsers.length} admin ${
+          selectedUsers.length === 1 ? "member" : "members"
+        }.`
+      );
       setShowSuccessModal(true);
       setShowDeleteModal(false);
       setSelectedUsers([]);
@@ -188,18 +220,25 @@ const AdminManagement = () => {
               highlightText(formatData(admin?.email), localSearchTerm)
             )}
           />
+          <td className="py-[16px] px-[24px]">
+            <button
+              onClick={() => handleLogoutClick(admin?.email)}
+              className="flex items-center gap-2 text-red-500 hover:text-red-700 transition-colors duration-200"
+            >
+              <FiLogOut className="text-lg" />
+              Logout
+            </button>
+          </td>
         </tr>
       ));
     }
 
     return (
       <tr>
-        <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
+        <td colSpan={7} className="px-6 py-4 text-center text-gray-500">
           <div className="mt-[2em] flex flex-col items-center justify-center">
             <img src={transaction} alt="No admins" />
-            <p className="mt-2 text-sm text-gray-500 dark:text-white">
-              No Admins found.
-            </p>
+            <p className="mt-2 text-sm text-gray-500">No Admins found.</p>
           </div>
         </td>
       </tr>
@@ -216,6 +255,11 @@ const AdminManagement = () => {
     selectedUsers,
     handleCheckboxChange,
   ]);
+
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false);
+    setLogoutSuccessMessage("");
+  };
 
   return (
     <main className="font-outfit px-[1em]">
@@ -250,28 +294,34 @@ const AdminManagement = () => {
           />
           <FiSearch className="mr-3 text-lg text-gray-500" />
         </div>
-
-        <table className="w-full mt-4 border-collapse">
-          <thead className="text-gray-500 border-b border-gray-200">
-            <tr>
-              <th className="px-6 py-3 text-left text-sm font-normal">
-                Select
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
-              <th className="px-6 py-3 text-left text-sm font-normal">
-                Full Name
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-normal">Role</th>
-              <th className="px-6 py-3 text-left text-sm font-normal">
-                Designation
-              </th>
-              <th className="px-6 py-3 text-left text-sm font-normal">
-                Email Address
-              </th>
-            </tr>
-          </thead>
-          <tbody>{renderTableBody()}</tbody>
-        </table>
+        <div className="overflow-x-auto">
+          <table className="w-full mt-4 border-collapse">
+            <thead className="text-gray-500 border-b border-gray-200">
+              <tr>
+                <th className="px-6 py-3 text-left text-sm font-normal">
+                  Select
+                </th>
+                <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
+                <th className="px-6 whitespace-nowrap py-3 text-left text-sm font-normal">
+                  Full Name
+                </th>
+                <th className="px-6 py-3 text-left text-sm font-normal">
+                  Role
+                </th>
+                <th className="px-6 py-3 text-left text-sm font-normal">
+                  Designation
+                </th>
+                <th className="px-6 py-3 text-left text-sm font-normal">
+                  Email Address
+                </th>
+                <th className="px-6 py-3 text-left text-sm font-normal">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>{renderTableBody()}</tbody>
+          </table>
+        </div>
       </div>
 
       {!loading && filteredAdmins?.length > 0 && (
@@ -283,6 +333,7 @@ const AdminManagement = () => {
           />
         </div>
       )}
+
       {showDeleteModal && (
         <Modal
           isOpen={showDeleteModal}
@@ -296,16 +347,39 @@ const AdminManagement = () => {
         </Modal>
       )}
 
-      {showSuccessModal && (
+      {selectedLogoutUser && (
         <Modal
-          isOpen={showSuccessModal}
-          onClose={() => setShowSuccessModal(false)}
+          isOpen={!!selectedLogoutUser}
+          onClose={() => setSelectedLogoutUser(null)}
         >
+          <div className="p-6">
+            <h3 className="text-lg font-medium mb-4">Confirm Logout</h3>
+            <p className="mb-6">
+              Are you sure you want to log out {selectedLogoutUser.email}?
+            </p>
+            <div className="flex justify-end gap-4">
+              <button.PrimaryButton
+                onClick={() => setSelectedLogoutUser(null)}
+                className="px-4 text-green-500 py-2"
+              >
+                Cancel
+              </button.PrimaryButton>
+              <button.PrimaryButton
+                onClick={handleConfirmLogout}
+                className="px-4 py-2 bg-red-500 rounded-lg text-white"
+              >
+                Logout User
+              </button.PrimaryButton>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {showSuccessModal && (
+        <Modal isOpen={showSuccessModal} onClose={handleCloseSuccessModal}>
           <SuccessModal
-            message={`Successfully deleted ${selectedUsers.length} admin ${
-              selectedUsers.length === 1 ? "member" : "members"
-            }.`}
-            onClose={() => setShowSuccessModal(false)}
+            message={logoutSuccessMessage}
+            onClose={handleCloseSuccessModal}
           />
         </Modal>
       )}

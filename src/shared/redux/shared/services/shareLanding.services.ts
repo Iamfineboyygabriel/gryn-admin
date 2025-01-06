@@ -1,5 +1,6 @@
 import axios from "axios";
 import socket from "../../../../socket/socket";
+import authHeader from "../../headers";
 const API_URL_LOGIN_USER = process.env.REACT_APP_API_URL + "/auth/login";
 const API_URL_LOGOUT_USER = process.env.REACT_APP_API_URL + "/auth/logout";
 
@@ -126,12 +127,29 @@ export const resendToken: any = async (endpoint: any, body: any) => {
   }
 };
 
+export const logoutAdminUserBySuperAdmin = async (email: string) => {
+  const url = `${
+    process.env.REACT_APP_API_URL
+  }/admin/users/logout?email=${encodeURIComponent(email)}`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "get",
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const sharedLandingServices = {
   loginUser,
   ResetPassword,
   logOutUser,
   verifyUser,
   resendToken,
+  logoutAdminUserBySuperAdmin,
 };
 
 export default sharedLandingServices;

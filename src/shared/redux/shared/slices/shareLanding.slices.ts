@@ -24,6 +24,7 @@ interface SharedState {
   isLoggedIn: boolean;
   isloggedOut: boolean;
   error: string | null;
+  logOutAdmin: null;
 }
 
 export const login = createAsyncThunk<LoginResponse, LoginPayload>(
@@ -79,12 +80,27 @@ export const logOutUser = createAsyncThunk(
   }
 );
 
+export const logoutAdminUserBySuperAdmin = createAsyncThunk(
+  "shared/logoutAdminUserBySuperAdmin",
+  async (email: string, thunkAPI) => {
+    try {
+      const response = await sharedLandingServices.logoutAdminUserBySuperAdmin(
+        email
+      );
+      return response.data;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
 const initialState: SharedState = {
   user: null,
   isLoading: false,
   isLoggedIn: false,
   isloggedOut: false,
   error: null,
+  logOutAdmin: null,
 };
 
 const sharedSlice = createSlice({
@@ -140,6 +156,21 @@ const sharedSlice = createSlice({
       .addCase(resetPassword.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
+      })
+      .addCase(logoutAdminUserBySuperAdmin.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(
+        logoutAdminUserBySuperAdmin.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.isLoading = false;
+          state.logOutAdmin = action.payload;
+        }
+      )
+      .addCase(logoutAdminUserBySuperAdmin.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message || "Failed to update Notification";
       });
   },
 });
