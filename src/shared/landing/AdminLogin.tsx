@@ -12,7 +12,6 @@ import gryn_index_logo from "../../assets/svg/Gryn_Index _logo.svg";
 import welcome_signup from "../../assets/png/welcomme.png";
 import { toast } from "react-toastify";
 import ReactLoading from "react-loading";
-import useUserProfile from "../redux/hooks/shared/getUserProfile";
 
 const ROUTES = {
   ADMIN_DASHBOARD: "/admin/dashboard/home",
@@ -34,40 +33,36 @@ const AdminLogin = () => {
     password: "",
   });
   const [passwordType, togglePasswordType] = usePasswordToggle();
-  const [autoLogoutTimer, setAutoLogoutTimer] = useState<NodeJS.Timeout | null>(
-    null
-  );
-  const { userProfile } = useUserProfile();
-  console.log("uu");
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [loggedInUserId, setLoggedInUserId] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
   const { hasPermission } = usePermissions();
 
   const handleLogout = useCallback(async () => {
-    try {
-      await dispatch(logOutUser(userProfile?.id));
-      navigate("/");
-    } catch (error) {
-      console.error("Logout failed:", error);
-      navigate("/");
+    if (!loggedInUserId) {
+      console.error("No user ID found for logout");
+      return;
     }
-  }, [dispatch, navigate]);
 
-  useEffect(() => {
-    return () => {
-      if (autoLogoutTimer) {
-        clearTimeout(autoLogoutTimer);
-      }
-    };
-  }, [autoLogoutTimer]);
+    try {
+      setLoading(true);
+      const result = await dispatch(logOutUser(loggedInUserId)).unwrap();
+      setShowModal(false);
+    } catch (error) {
+      toast.error("Logout failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }, [dispatch, navigate, loggedInUserId]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
   const loginUserData = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -76,6 +71,11 @@ const AdminLogin = () => {
         const response = await dispatch(login(formData)).unwrap();
         const role = response?.data?.role;
         const isEmailVerified = response?.data?.isEmailVerified;
+        const userId = response?.data?.id;
+
+        if (userId) {
+          setLoggedInUserId(userId);
+        }
 
         if (role) {
           sessionStorage.setItem("userRole", role);
@@ -98,7 +98,6 @@ const AdminLogin = () => {
             const timer = setTimeout(() => {
               handleLogout();
             }, 3000);
-            setAutoLogoutTimer(timer);
           }
         } else {
           toast.error("Invalid credentials");
@@ -124,22 +123,30 @@ const AdminLogin = () => {
             No Accessible Pages
           </h2>
           <p className="text-gray-600 text-center">
-            You don't have permission to access any pages. You will be
-            automatically logged out in a few seconds.
+            You lack required permissions. Please log out now to ensure
+            successful future login attempts.
           </p>
           <button
-            onClick={() => {
-              setShowModal(false);
-              handleLogout();
-            }}
-            className="w-full bg-[#660066] hover:bg-[#581c87] text-white px-4 py-3 rounded-lg font-semibold transition-colors duration-200"
+            onClick={handleLogout}
+            disabled={loading}
+            className="w-full bg-[#660066] hover:bg-[#581c87] text-white px-4 py-3 rounded-lg font-semibold transition-colors duration-200 disabled:opacity-50"
           >
-            OK
+            {loading ? (
+              <ReactLoading
+                color="#FFFFFF"
+                width={25}
+                height={25}
+                type="spin"
+              />
+            ) : (
+              "Log out"
+            )}
           </button>
         </div>
       </div>
     </div>
   );
+
   return (
     <main className="fixed flex min-h-screen w-full justify-between font-outfit">
       <section

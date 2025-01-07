@@ -162,9 +162,9 @@ const AdminManagement = () => {
     return admins.data.filter((admin: any) => {
       if (!localSearchTerm) return true;
 
-      const fullName = `${admin?.profile?.firstName || ""} ${
-        admin?.profile?.lastName || ""
-      }`.toLowerCase();
+      const fullName = `${admin?.profile?.lastName || ""} ${
+        admin?.profile?.middleName || ""
+      } ${admin?.profile?.firstName || ""}`.toLowerCase();
       const searchLower = localSearchTerm.toLowerCase();
 
       return (

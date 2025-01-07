@@ -19,7 +19,7 @@ import {
   findFirstAccessibleRouteStaff,
 } from "../../utils/findFirstAccessibleRoute";
 
-const TIMEOUT_DURATION = 2 * 60 * 1000;
+const TIMEOUT_DURATION = 1 * 60 * 1000;
 
 const VerifyAccount = () => {
   const [loading, setLoading] = useState(false);

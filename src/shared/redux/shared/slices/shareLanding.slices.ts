@@ -3,6 +3,8 @@ import { setMessage } from "../../message.slices";
 import sharedLandingServices from "../services/shareLanding.services";
 
 interface User {
+  id: any;
+  userId: any;
   isEmailVerified: any;
   role: string;
 }

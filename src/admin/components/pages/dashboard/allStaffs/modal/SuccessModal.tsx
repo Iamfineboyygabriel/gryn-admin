@@ -16,11 +16,6 @@ const SuccessModal = ({ message, onClose }: any) => {
             {/* <p className="text-gray-600 mb-6">{message}</p> */}
           </div>
         </article>
-        <Link to="/admin/dashboard/all_staffs">
-          <button.PrimaryButton className="m-auto mt-[2em] flex w-[60%] justify-center gap-2 rounded-full bg-linear-gradient py-[10px] text-center font-medium text-white">
-            Proceed to Dashboard
-          </button.PrimaryButton>
-        </Link>
       </div>
     </main>
   );

@@ -2,7 +2,7 @@ import React, { useCallback, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AppDispatch } from "../redux/store";
 import { useDispatch } from "react-redux";
-import { login } from "../redux/shared/slices/shareLanding.slices";
+import { login, logOutUser } from "../redux/shared/slices/shareLanding.slices";
 import usePasswordToggle from "../utils/usePasswordToggle";
 import { button } from "../buttons/Button";
 import welcome_signup from "../../assets/png/welcomme.png";
@@ -33,6 +33,8 @@ const StaffLanding: React.FC = () => {
     email: "",
     password: "",
   });
+  const [loggedInUserId, setLoggedInUserId] = useState<string | null>(null);
+
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
   const { hasPermission } = usePermissions();
@@ -48,6 +50,23 @@ const StaffLanding: React.FC = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleLogout = useCallback(async () => {
+    if (!loggedInUserId) {
+      console.error("No user ID found for logout");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const result = await dispatch(logOutUser(loggedInUserId)).unwrap();
+      setShowModal(false);
+    } catch (error) {
+      toast.error("Logout failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }, [dispatch, navigate, loggedInUserId]);
+
   const loginUserData = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -57,14 +76,23 @@ const StaffLanding: React.FC = () => {
         const response = await dispatch(login(formData)).unwrap();
         const role = response?.data?.role;
         const isEmailVerified = response?.data?.isEmailVerified;
+        const userId = response?.data?.id;
+
+        if (userId) {
+          setLoggedInUserId(userId);
+        }
+
+        if (role) {
+          sessionStorage.setItem("userRole", role);
+        }
 
         if (role === "STAFF") {
-          // if (!isEmailVerified) {
-          //   navigate(
-          //     `/verify_account?email=${encodeURIComponent(formData.email)}`
-          //   );
-          //   return;
-          // }
+          if (!isEmailVerified) {
+            navigate(
+              `/verify_account?email=${encodeURIComponent(formData.email)}`
+            );
+            return;
+          }
 
           toast.success("Welcome");
           setIsLoggedIn(true);
@@ -94,23 +122,34 @@ const StaffLanding: React.FC = () => {
       }
     }
   }, [isLoggedIn, hasPermission, navigate]);
-
-  const Modal: React.FC = () => (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-8 rounded-lg shadow-lg">
-        <h2 className="text-xl font-bold mb-4">No Accessible Pages</h2>
-        <p className="mb-4">
-          You don't have permission to access any pages. You will be logged out.
-        </p>
-        <button
-          onClick={() => {
-            setShowModal(false);
-            handleLogOut();
-          }}
-          className="bg-primary-700 text-white px-4 py-2 rounded hover:bg-primary-800"
-        >
-          OK
-        </button>
+  const Modal = () => (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fadeIn">
+      <div className="bg-white p-8 rounded-lg shadow-xl max-w-md w-[90%]">
+        <div className="flex flex-col items-center gap-4">
+          <h2 className="text-xl font-bold text-gray-900">
+            No Accessible Pages
+          </h2>
+          <p className="text-gray-600 text-center">
+            You lack required permissions. Please log out now to ensure
+            successful future login attempts.
+          </p>
+          <button
+            onClick={handleLogout}
+            disabled={loading}
+            className="w-full bg-[#660066] hover:bg-[#581c87] text-white px-4 py-3 rounded-lg font-semibold transition-colors duration-200 disabled:opacity-50"
+          >
+            {loading ? (
+              <ReactLoading
+                color="#FFFFFF"
+                width={25}
+                height={25}
+                type="spin"
+              />
+            ) : (
+              "Log out"
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );
