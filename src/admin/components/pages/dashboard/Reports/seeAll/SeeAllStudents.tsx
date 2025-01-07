@@ -18,6 +18,7 @@ interface Student {
   profile: {
     firstName: string;
     lastName: string;
+    middleName: string;
   };
   id: string;
   email: string;
@@ -134,8 +135,8 @@ const SeeAllStudents: React.FC = () => {
             dangerouslySetInnerHTML={sanitizeHTML(
               highlightText(
                 `${formatData(student?.profile?.lastName)} ${formatData(
-                  student?.profile?.firstName
-                )}`
+                  student?.profile?.middleName
+                )} ${formatData(student?.profile?.firstName)}`
               )
             )}
           />

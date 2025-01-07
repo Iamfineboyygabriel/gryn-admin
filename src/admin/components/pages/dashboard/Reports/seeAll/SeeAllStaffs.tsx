@@ -133,7 +133,7 @@ const AllStaff = () => {
             className="py-[16px] whitespace-nowrap gap-1 px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
               highlightText(
-                `${admin?.profile?.firstName} ${admin?.profile?.lastName}`,
+                `${admin?.profile?.lastName} ${admin?.profile?.middleName} ${admin?.profile?.firstName}`,
                 localSearchTerm
               )
             )}

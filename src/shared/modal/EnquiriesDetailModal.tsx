@@ -141,6 +141,22 @@ const EnquiryDetailModal = ({ isOpen, onClose, enquiry }: any) => {
                 className="mt-[11px] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
               />
             </div>
+
+            <div>
+              <label
+                htmlFor="internartionalPassport"
+                className="flex-start flex font-medium"
+              >
+                Do you have an International Passport ?
+              </label>
+              <input
+                name="internationalPassport"
+                id="internationalPassport"
+                type="internationalPassport"
+                value={enquiry?.isInternationalPassport}
+                className="mt-[11px] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
+              />
+            </div>
           </div>
           <div className="mt-5 flex justify-center mb-9">
             <button.PrimaryButton

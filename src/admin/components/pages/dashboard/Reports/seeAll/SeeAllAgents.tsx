@@ -27,7 +27,6 @@ const SkeletonRow = () => (
 const SeeAllAgents = () => {
   const {
     agents,
-    totalPages,
     currentPage,
     loading,
     fetchAgents,
@@ -133,7 +132,7 @@ const SeeAllAgents = () => {
             className="py-[16px] whitespace-nowrap gap-1 px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
               highlightText(
-                `${agent.profile.firstName} ${agent.profile.lastName}`,
+                `${agent?.profile?.lastName} ${agent?.profile?.middleName} ${agent?.profile?.firstName}`,
                 localSearchTerm
               )
             )}

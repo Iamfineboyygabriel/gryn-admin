@@ -32,6 +32,7 @@ interface AgentData {
   profile: {
     firstName: string;
     lastName: string;
+    middleName: string;
   };
 }
 
@@ -116,9 +117,9 @@ const AssignedAgents: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
             {(currentPage - 1) * itemsPerPage + index + 1}
           </td>
           <td className="py-[16px] whitespace-nowrap px-[24px]">
-            {`${formatData(agent?.profile?.firstName)} ${formatData(
-              agent?.profile?.lastName
-            )}`}
+            {`${formatData(agent?.profile?.lastName)} ${formatData(
+              agent?.profile?.middleName
+            )} ${formatData(agent?.profile?.firstName)}`}
           </td>
           <td
             className="py-[16px] px-[24px]"

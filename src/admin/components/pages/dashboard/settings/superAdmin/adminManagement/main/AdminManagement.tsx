@@ -174,7 +174,6 @@ const AdminManagement = () => {
       );
     });
   }, [admins?.data, localSearchTerm]);
-
   const renderTableBody = useCallback(() => {
     if (loading) {
       return Array.from({ length: itemsPerPage })?.map((_, index) => (
@@ -200,11 +199,12 @@ const AdminManagement = () => {
             {(currentPage - 1) * itemsPerPage + index + 1}
           </td>
           <td
-            className="py-[16px] px-[24px]"
+            className="py-[16px] whitespace-nowrap px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
               highlightText(
-                `${admin?.profile?.firstName || ""} ${
-                  admin?.profile?.lastName || ""
+                `${admin?.profile?.lastName || ""}
+                ${admin?.profile?.middleName || ""} ${
+                  admin?.profile?.firstName || ""
                 }`,
                 localSearchTerm
               )

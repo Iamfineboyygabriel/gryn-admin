@@ -24,6 +24,7 @@ interface AdminUser {
   profile?: {
     firstName: string;
     lastName: string;
+    middleName: string;
     email: string;
     designation: string;
   };
@@ -40,8 +41,8 @@ const SkeletonRow = () => (
 );
 
 const AllStaff = () => {
-   const dispatch: AppDispatch = useDispatch();
- const [selectedUsers, setSelectedUsers] = useState<(string | number)[]>([]);
+  const dispatch: AppDispatch = useDispatch();
+  const [selectedUsers, setSelectedUsers] = useState<(string | number)[]>([]);
   const {
     admins,
     currentPage,
@@ -79,7 +80,7 @@ const AllStaff = () => {
     }
   };
 
-const handleCheckboxChange = (userId: string | number) => {
+  const handleCheckboxChange = (userId: string | number) => {
     setSelectedUsers((prev) => {
       if (prev.includes(userId)) {
         return prev.filter((id) => id !== userId);
@@ -97,44 +98,50 @@ const handleCheckboxChange = (userId: string | number) => {
       }
     }, 300);
     return () => clearTimeout(delayDebounceFn);
-  }, [localSearchTerm, searchTerm, updateSearchTerm, fetchAdmins, itemsPerPage]);
+  }, [
+    localSearchTerm,
+    searchTerm,
+    updateSearchTerm,
+    fetchAdmins,
+    itemsPerPage,
+  ]);
 
   useEffect(() => {
     fetchAdmins(currentPage, itemsPerPage);
   }, [fetchAdmins, currentPage, itemsPerPage]);
 
   const handlePageChange = useCallback(
-    (event:any, value:any) => {
+    (event: any, value: any) => {
       fetchAdmins(value, itemsPerPage);
     },
     [fetchAdmins, itemsPerPage]
   );
 
-  const escapeRegExp = useCallback((string:any) => {
+  const escapeRegExp = useCallback((string: any) => {
     return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }, []);
 
   const highlightText = useCallback(
-    (text:any, query:any) => {
+    (text: any, query: any) => {
       if (!query) return text;
       const escapedQuery = escapeRegExp(query);
       const regex = new RegExp(`(${escapedQuery})`, "gi");
       return text.replace(
         regex,
-        (match:any) => `<mark class="bg-yellow-300">${match}</mark>`
+        (match: any) => `<mark class="bg-yellow-300">${match}</mark>`
       );
     },
     [escapeRegExp]
   );
 
-  const sanitizeHTML = useCallback((html:any) => {
+  const sanitizeHTML = useCallback((html: any) => {
     return { __html: DOMPurify.sanitize(html) };
   }, []);
 
-  const formatData = useCallback((data:any) => (data ? data : "-"), []);
+  const formatData = useCallback((data: any) => (data ? data : "-"), []);
 
   const handleViewDetails = useCallback(
-    (staffEmail:any) => {
+    (staffEmail: any) => {
       navigate("/admin/dashboard/all_staffs/view_profile", {
         state: { staffEmail },
       });
@@ -186,12 +193,14 @@ const handleCheckboxChange = (userId: string | number) => {
           className="py-[16px] whitespace-nowrap gap-1 px-[24px]"
           dangerouslySetInnerHTML={sanitizeHTML(
             highlightText(
-              `${admin?.profile?.firstName} ${admin?.profile?.lastName}`,
+              `${admin?.profile?.lastName} ${admin?.profile?.middleName} ${admin?.profile?.firstName}`,
               localSearchTerm
             )
           )}
         />
-        <td className="py-[16px] px-[24px]">{formatData(admin?.designation)}</td>
+        <td className="py-[16px] px-[24px]">
+          {formatData(admin?.designation)}
+        </td>
         <td
           className="py-[16px] px-[24px]"
           dangerouslySetInnerHTML={sanitizeHTML(
@@ -318,7 +327,7 @@ const handleCheckboxChange = (userId: string | number) => {
             />
           </div>
         )}
-        
+
         {isModalOpen && (
           <Modal
             isOpen={isModalOpen}
