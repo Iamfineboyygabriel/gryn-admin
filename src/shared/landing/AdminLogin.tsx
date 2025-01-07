@@ -74,9 +74,12 @@ const AdminLogin = () => {
       setLoading(true);
       try {
         const response = await dispatch(login(formData)).unwrap();
-
         const role = response?.data?.role;
         const isEmailVerified = response?.data?.isEmailVerified;
+
+        if (role) {
+          sessionStorage.setItem("userRole", role);
+        }
 
         if (role === "ADMIN" || role === "SUPER_ADMIN") {
           if (role === "ADMIN" && !isEmailVerified) {
@@ -112,6 +115,7 @@ const AdminLogin = () => {
     },
     [dispatch, formData, navigate, hasPermission, handleLogout]
   );
+
   const Modal = () => (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fadeIn">
       <div className="bg-white p-8 rounded-lg shadow-xl max-w-md w-[90%]">

@@ -89,6 +89,7 @@ const VerifyAccount = () => {
   const handleLogOut = () => {
     if (userProfile?.userId) {
       dispatch(logOutUser(userProfile.userId));
+      sessionStorage.removeItem("userRole");
     }
     navigate("/");
   };
@@ -126,8 +127,14 @@ const VerifyAccount = () => {
       if (response.status === 200) {
         toast.success("Account Verified Successfully");
 
-        const userRole =
-          response.data?.role || sessionStorage.getItem("userRole");
+        // Get the role from session storage
+        const userRole = sessionStorage.getItem("userRole");
+
+        if (!userRole) {
+          toast.error("Session expired. Please login again.");
+          navigate("/login");
+          return;
+        }
 
         switch (userRole) {
           case "ADMIN":
@@ -135,7 +142,6 @@ const VerifyAccount = () => {
             const accessibleRoute = findFirstAccessibleRoute(hasPermission);
             if (accessibleRoute) {
               navigate(accessibleRoute);
-              // navigate("/")
             } else {
               setShowModal(true);
             }
