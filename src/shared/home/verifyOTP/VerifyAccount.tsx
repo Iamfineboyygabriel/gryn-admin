@@ -135,6 +135,7 @@ const VerifyAccount = () => {
             const accessibleRoute = findFirstAccessibleRoute(hasPermission);
             if (accessibleRoute) {
               navigate(accessibleRoute);
+              // navigate("/")
             } else {
               setShowModal(true);
             }

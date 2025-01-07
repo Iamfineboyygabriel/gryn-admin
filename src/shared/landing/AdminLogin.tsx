@@ -1,9 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { AppDispatch } from "../redux/store";
 import usePasswordToggle from "../utils/usePasswordToggle";
-import { login } from "../redux/shared/slices/shareLanding.slices";
+import { login, logOutUser } from "../redux/shared/slices/shareLanding.slices";
 import { usePermissions } from "../redux/hooks/admin/usePermission";
 import { MdOutlineVisibilityOff, MdOutlineVisibility } from "react-icons/md";
 import { findFirstAccessibleRoute } from "../utils/findFirstAccessibleRoute";
@@ -12,6 +12,7 @@ import gryn_index_logo from "../../assets/svg/Gryn_Index _logo.svg";
 import welcome_signup from "../../assets/png/welcomme.png";
 import { toast } from "react-toastify";
 import ReactLoading from "react-loading";
+import useUserProfile from "../redux/hooks/shared/getUserProfile";
 
 const ROUTES = {
   ADMIN_DASHBOARD: "/admin/dashboard/home",
@@ -33,6 +34,11 @@ const AdminLogin = () => {
     password: "",
   });
   const [passwordType, togglePasswordType] = usePasswordToggle();
+  const [autoLogoutTimer, setAutoLogoutTimer] = useState<NodeJS.Timeout | null>(
+    null
+  );
+  const { userProfile } = useUserProfile();
+  console.log("uu");
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
@@ -40,15 +46,28 @@ const AdminLogin = () => {
   const dispatch: AppDispatch = useDispatch();
   const { hasPermission } = usePermissions();
 
-  const handleLogOut = () => {
-    navigate("/");
-  };
+  const handleLogout = useCallback(async () => {
+    try {
+      await dispatch(logOutUser(userProfile?.id));
+      navigate("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+      navigate("/");
+    }
+  }, [dispatch, navigate]);
+
+  useEffect(() => {
+    return () => {
+      if (autoLogoutTimer) {
+        clearTimeout(autoLogoutTimer);
+      }
+    };
+  }, [autoLogoutTimer]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
   const loginUserData = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -73,6 +92,10 @@ const AdminLogin = () => {
             navigate(accessibleRoute);
           } else {
             setShowModal(true);
+            const timer = setTimeout(() => {
+              handleLogout();
+            }, 3000);
+            setAutoLogoutTimer(timer);
           }
         } else {
           toast.error("Invalid credentials");
@@ -87,29 +110,32 @@ const AdminLogin = () => {
         setLoading(false);
       }
     },
-    [dispatch, formData, navigate, hasPermission]
+    [dispatch, formData, navigate, hasPermission, handleLogout]
   );
-
   const Modal = () => (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-8 rounded-lg shadow-lg">
-        <h2 className="text-xl font-bold mb-4">No Accessible Pages</h2>
-        <p className="mb-4">
-          You don't have permission to access any pages. You will be logged out.
-        </p>
-        <button
-          onClick={() => {
-            setShowModal(false);
-            handleLogOut();
-          }}
-          className="bg-primary-700 text-white px-4 py-2 rounded hover:bg-primary-800"
-        >
-          OK
-        </button>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fadeIn">
+      <div className="bg-white p-8 rounded-lg shadow-xl max-w-md w-[90%]">
+        <div className="flex flex-col items-center gap-4">
+          <h2 className="text-xl font-bold text-gray-900">
+            No Accessible Pages
+          </h2>
+          <p className="text-gray-600 text-center">
+            You don't have permission to access any pages. You will be
+            automatically logged out in a few seconds.
+          </p>
+          <button
+            onClick={() => {
+              setShowModal(false);
+              handleLogout();
+            }}
+            className="w-full bg-[#660066] hover:bg-[#581c87] text-white px-4 py-3 rounded-lg font-semibold transition-colors duration-200"
+          >
+            OK
+          </button>
+        </div>
       </div>
     </div>
   );
-
   return (
     <main className="fixed flex min-h-screen w-full justify-between font-outfit">
       <section
