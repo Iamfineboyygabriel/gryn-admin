@@ -19,12 +19,12 @@ import {
   findFirstAccessibleRouteStaff,
 } from "../../utils/findFirstAccessibleRoute";
 
-const TIMEOUT_DURATION = 1 * 60 * 1000;
+const TIMEOUT_DURATION = 30 * 1000;
 
 const VerifyAccount = () => {
   const [loading, setLoading] = useState(false);
   const [token, setToken] = useState("");
-  const [timeLeft, setTimeLeft] = useState(10);
+  const [timeLeft, setTimeLeft] = useState(5);
   const [canResend, setCanResend] = useState(false);
   const [pageTimeout, setPageTimeout] = useState(TIMEOUT_DURATION / 1000);
   const [showModal, setShowModal] = useState(false);
