@@ -127,7 +127,6 @@ const VerifyAccount = () => {
       if (response.status === 200) {
         toast.success("Account Verified Successfully");
 
-        // Get the role from session storage
         const userRole = sessionStorage.getItem("userRole");
 
         if (!userRole) {
