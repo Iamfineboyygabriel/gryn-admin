@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { AppDispatch } from "../../../../../../../../../shared/redux/store";
 import { useApplicationDetails } from "../../../../../../../../../shared/redux/hooks/shared/getUserProfile";
@@ -492,6 +492,23 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
         </div>
       </section>
 
+      {alertState.open && (
+        <div className="mb-6 mt-6">
+          <Alert
+            severity={alertState.severity}
+            onClose={handleCloseAlert}
+            className="w-full md:w-1/2"
+            sx={{
+              "& .MuiAlert-message": {
+                width: "100%",
+                textAlign: "center",
+              },
+            }}
+          >
+            {alertState.message}
+          </Alert>
+        </div>
+      )}
       <div className="flex flex-wrap items-center gap-4 mt-8">
         <button.PrimaryButton
           className="w-auto rounded-full px-4 bg-purple-white py-2 text-base font-medium text-primary-700"
