@@ -26,7 +26,7 @@ const ViewApplication: React.FC = () => {
   const degreeRef = useRef<HTMLDivElement>(null);
   const uploadedDocumentRef = useRef<HTMLDivElement>(null);
   const paymentDocumentRef = useRef<HTMLDivElement>(null);
-  
+
   const { applicationDetails, loading, error } = useApplicationDetails(
     applicationId !== "" ? applicationId : null
   );
@@ -37,12 +37,12 @@ const ViewApplication: React.FC = () => {
 
   const downloadPDF = async () => {
     setIsGeneratingPDF(true);
-    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdf = new jsPDF("p", "mm", "a4");
     const components = [
       { ref: personalDetailsRef, title: "Personal Details" },
       { ref: degreeRef, title: "Degree" },
       { ref: uploadedDocumentRef, title: "Uploaded Documents" },
-      { ref: paymentDocumentRef, title: "Payments" }, 
+      { ref: paymentDocumentRef, title: "Payments" },
     ];
 
     try {
@@ -50,15 +50,15 @@ const ViewApplication: React.FC = () => {
         const { ref, title } = components[i];
         const content = ref.current;
         if (content) {
-          content.style.display = 'block';
+          content.style.display = "block";
 
           const canvas = await html2canvas(content, {
             scale: 2,
-            logging: false, 
-            useCORS: true 
+            logging: false,
+            useCORS: true,
           });
 
-          const imgData = canvas.toDataURL('image/jpeg', 0.95);
+          const imgData = canvas.toDataURL("image/jpeg", 0.95);
 
           if (i !== 0) {
             pdf.addPage();
@@ -69,16 +69,16 @@ const ViewApplication: React.FC = () => {
 
           const imgWidth = 170;
           const imgHeight = (canvas.height * imgWidth) / canvas.width;
-          pdf.addImage(imgData, 'JPEG', 20, 30, imgWidth, imgHeight);
+          pdf.addImage(imgData, "JPEG", 20, 30, imgWidth, imgHeight);
 
-          content.style.display = i === 0 ? 'block' : 'none';
+          content.style.display = i === 0 ? "block" : "none";
         }
       }
 
-      pdf.save('application.pdf');
+      pdf.save("application.pdf");
     } catch (error) {
-      console.error('Error generating PDF:', error);
-      alert('An error occurred while generating the PDF. Please try again.');
+      console.error("Error generating PDF:", error);
+      alert("An error occurred while generating the PDF. Please try again.");
     } finally {
       setIsGeneratingPDF(false);
     }
@@ -162,27 +162,43 @@ const ViewApplication: React.FC = () => {
                   Payments
                 </div>
               </div>
-              <button.PrimaryButton 
+              <button.PrimaryButton
                 onClick={downloadPDF}
                 className="ml-[3em] items-center gap-2 flex rounded-full bg-primary-200 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300 hover:bg-primary-700 hover:text-white"
               >
                 <img src={upload} alt="upload" />
-                {isGeneratingPDF ? 'Generating PDF...' : 'Download Application'}
+                {isGeneratingPDF ? "Generating PDF..." : "Download Application"}
               </button.PrimaryButton>
             </div>
           </nav>
           <section className="mt-8">
-            <div ref={personalDetailsRef} style={{display: activeLink === "personalDetails" ? "block" : "none"}}>
+            <div
+              ref={personalDetailsRef}
+              style={{
+                display: activeLink === "personalDetails" ? "block" : "none",
+              }}
+            >
               <PersonalDetails applicationId={applicationId} />
             </div>
-            <div ref={degreeRef} style={{display: activeLink === "degree" ? "block" : "none"}}>
+            <div
+              ref={degreeRef}
+              style={{ display: activeLink === "degree" ? "block" : "none" }}
+            >
               <Degree applicationId={applicationId} />
             </div>
-            <div ref={uploadedDocumentRef} style={{display: activeLink === "uploadedDocument" ? "block" : "none"}}>
-              <UploadedDocument applicationId={applicationId}/>
+            <div
+              ref={uploadedDocumentRef}
+              style={{
+                display: activeLink === "uploadedDocument" ? "block" : "none",
+              }}
+            >
+              <UploadedDocument applicationId={applicationId} />
             </div>
-            <div ref={uploadedDocumentRef} style={{display: activeLink === "payments" ? "block" : "none"}}>
-              <Payments applicationId={applicationId}/>
+            <div
+              ref={uploadedDocumentRef}
+              style={{ display: activeLink === "payments" ? "block" : "none" }}
+            >
+              <Payments applicationId={applicationId} />
             </div>
           </section>
         </div>
