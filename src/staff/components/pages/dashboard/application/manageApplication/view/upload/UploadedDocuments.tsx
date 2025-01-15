@@ -106,6 +106,14 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
     }
   }, [updateDocStatus]);
 
+  const formatDocumentType = (type: string) => {
+    if (type === "OLD_LEVEL") return "O Level";
+    return type
+      .split("_")
+      .map((word) => word?.charAt(0) + word?.slice(1)?.toLowerCase())
+      .join(" ");
+  };
+
   const handleOpenModal = () => setModalOpen(true);
   const handleCloseModal = () => setModalOpen(false);
 
@@ -330,11 +338,9 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
       </header>
       <section>
         <div className="mt-[2em] grid w-full lg:grid-cols-2 gap-10">
-          {documents.map((doc) => (
+          {documents?.map((doc) => (
             <div key={doc.id}>
-              <div>
-                <label htmlFor={doc.documentType}>{doc.documentType}</label>
-              </div>
+              <div>{formatDocumentType(doc?.documentType)}</div>
               <div className="mt-2 flex items-center justify-between rounded-lg border-[1px] border-gray-300 px-[1em] py-5">
                 <label
                   htmlFor={doc.documentType}
@@ -413,7 +419,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
           )}
         </div>
 
-         <div className="flex flex-wrap w-full gap-4 mt-[5em]">
+        <div className="flex flex-wrap w-full gap-4 mt-[5em]">
           {/* <PrivateElement feature="APPLICATION" page="Submit Response">
             <button.PrimaryButton
               className="w-auto rounded-full px-3 bg-linear-gradient py-[9px] text-center text-lg font-medium text-white"
@@ -462,7 +468,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
               )}
             </button.PrimaryButton>
           </div>
-        </div> 
+        </div>
       </div>
       {isModalOpen && (
         <Modal
