@@ -118,8 +118,8 @@ const AssignedAgents: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
           </td>
           <td className="py-[16px] whitespace-nowrap px-[24px]">
             {`${formatData(agent?.profile?.lastName)} ${formatData(
-              agent?.profile?.middleName
-            )} ${formatData(agent?.profile?.firstName)}`}
+              agent?.profile?.firstName
+            )}`}
           </td>
           <td
             className="py-[16px] px-[24px]"

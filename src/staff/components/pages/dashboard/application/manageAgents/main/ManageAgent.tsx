@@ -109,8 +109,8 @@ const ManageAgents = () => {
           </td>
           <td className="py-[16px] whitespace-nowrap flex gap-2 px-[24px]">
             {` ${formatData(agent.profile.lastName)}  ${formatData(
-              agent.profile?.middleName
-            )} ${formatData(agent.profile.firstName)}`}
+              agent.profile.firstName
+            )}`}
           </td>
           {/* <td className="py-[16px] px-[24px]">
             {formatData(agent.phoneNumber)}

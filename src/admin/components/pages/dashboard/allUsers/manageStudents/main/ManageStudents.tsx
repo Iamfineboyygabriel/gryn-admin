@@ -183,9 +183,9 @@ const AllStudents: React.FC = () => {
             className="py-[16px] whitespace-nowrap gap-1 px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
               highlightText(
-                `${formatData(student?.profile?.lastName)} ${formatData(
-                  student?.profile?.middleName
-                )} ${formatData(student?.profile?.firstName)}`
+                `${formatData(student?.profile?.lastName)}  ${formatData(
+                  student?.profile?.firstName
+                )}`
               )
             )}
           />

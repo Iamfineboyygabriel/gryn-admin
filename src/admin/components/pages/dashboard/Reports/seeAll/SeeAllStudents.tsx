@@ -135,8 +135,8 @@ const SeeAllStudents: React.FC = () => {
             dangerouslySetInnerHTML={sanitizeHTML(
               highlightText(
                 `${formatData(student?.profile?.lastName)} ${formatData(
-                  student?.profile?.middleName
-                )} ${formatData(student?.profile?.firstName)}`
+                  student?.profile?.firstName
+                )}`
               )
             )}
           />

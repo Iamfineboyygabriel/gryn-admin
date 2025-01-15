@@ -88,7 +88,6 @@ const AgentCommission = () => {
             <td className="py-[16px] px-[24px]">{index + 1}</td>
             <td className="py-[16px] px-[24px]">
               {commission?.application?.lastName}{" "}
-              {commission?.application?.middleName}{" "}
               {commission?.application?.firstName}
             </td>
             <td className="py-[16px] px-[24px]">

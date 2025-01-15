@@ -131,7 +131,7 @@ const SeeAllPendingAgents = () => {
             className="py-[16px] gap-1 px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
               highlightText(
-                `${agent?.profile?.lastName} ${agent?.profile?.middleName} ${agent?.profile?.firstName}`,
+                `${agent?.profile?.lastName} ${agent?.profile?.firstName}`,
                 localSearchTerm
               )
             )}

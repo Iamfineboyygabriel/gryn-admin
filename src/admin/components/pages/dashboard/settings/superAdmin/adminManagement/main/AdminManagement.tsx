@@ -162,9 +162,9 @@ const AdminManagement = () => {
     return admins.data.filter((admin: any) => {
       if (!localSearchTerm) return true;
 
-      const fullName = `${admin?.profile?.lastName || ""} ${
-        admin?.profile?.middleName || ""
-      } ${admin?.profile?.firstName || ""}`.toLowerCase();
+      const fullName = `${admin?.profile?.lastName || ""}  ${
+        admin?.profile?.firstName || ""
+      }`.toLowerCase();
       const searchLower = localSearchTerm.toLowerCase();
 
       return (
@@ -203,9 +203,7 @@ const AdminManagement = () => {
             dangerouslySetInnerHTML={sanitizeHTML(
               highlightText(
                 `${admin?.profile?.lastName || ""}
-                ${admin?.profile?.middleName || ""} ${
-                  admin?.profile?.firstName || ""
-                }`,
+                      ${admin?.profile?.firstName || ""}`,
                 localSearchTerm
               )
             )}

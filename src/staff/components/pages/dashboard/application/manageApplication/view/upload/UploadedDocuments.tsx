@@ -413,15 +413,15 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
           )}
         </div>
 
-        {/* <div className="flex flex-wrap w-full gap-4 mt-[5em]">
-          <PrivateElement feature="APPLICATION" page="Submit Response">
+         <div className="flex flex-wrap w-full gap-4 mt-[5em]">
+          {/* <PrivateElement feature="APPLICATION" page="Submit Response">
             <button.PrimaryButton
               className="w-auto rounded-full px-3 bg-linear-gradient py-[9px] text-center text-lg font-medium text-white"
               onClick={handleOpenModal}
             >
               Submit Response
             </button.PrimaryButton>
-          </PrivateElement>
+          </PrivateElement> */}
 
           <div className="flex items-center w-full gap-4 md:w-auto">
             <FormControl className="flex-grow md:w-48">
@@ -462,7 +462,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
               )}
             </button.PrimaryButton>
           </div>
-        </div> */}
+        </div> 
       </div>
       {isModalOpen && (
         <Modal
