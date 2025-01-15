@@ -39,7 +39,7 @@ const PersonalDetails: React.FC<{ applicationId: any }> = ({
           <div className="text-sm text-gray-600 dark:text-gray-300 flex items-center gap-2">
             <span>Assigned to:</span>
             <span className="font-medium">
-              {applicationDetails.data.staff.email}
+              {applicationDetails?.data?.staff?.email}
             </span>
           </div>
         )}

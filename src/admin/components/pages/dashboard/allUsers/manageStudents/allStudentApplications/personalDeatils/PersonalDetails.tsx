@@ -33,8 +33,16 @@ const PersonalDetails: React.FC<{ applicationId: any }> = ({
 
   return (
     <main className="font-outfit">
-      <header>
+      <header className="flex flex-col gap-2">
         <h2 className="text-xl font-semibold">Personal Details</h2>
+        {applicationDetails?.data?.staff && (
+          <div className="text-sm text-gray-600 dark:text-gray-300 flex items-center gap-2">
+            <span>Assigned to:</span>
+            <span className="font-medium">
+              {applicationDetails?.data?.staff?.email}
+            </span>
+          </div>
+        )}
       </header>
       <form className="mt-[2em] w-[85%]">
         <div className="flex flex-row gap-[3em]">
