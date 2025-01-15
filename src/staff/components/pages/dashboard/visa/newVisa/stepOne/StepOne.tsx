@@ -91,7 +91,6 @@ const StepOne = ({ onNext }: any) => {
               id="email"
               name="email"
               type="email"
-              required
               disabled={loading}
               onChange={(e) => setEmail(e.target.value)}
               className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"

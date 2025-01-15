@@ -38,7 +38,7 @@ const StepOne = ({ onNext }: any) => {
       >
         <div className="flex flex-col lg:flex-row gap-[1em] lg:gap-[3em]">
           <div className="w-full">
-            <label htmlFor="firstName" className="flex-start flex font-medium">
+            <label htmlFor="firstNsame" className="flex-start flex font-medium">
               First Name
               <CgAsterisk className="text-red-500" />
             </label>
@@ -89,7 +89,6 @@ const StepOne = ({ onNext }: any) => {
               id="email"
               name="email"
               type="email"
-              required
               disabled={loading}
               onChange={(e) => setEmail(e.target.value)}
               className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"

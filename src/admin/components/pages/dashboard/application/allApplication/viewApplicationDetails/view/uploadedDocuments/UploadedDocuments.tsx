@@ -114,6 +114,14 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
   const handleAssignOpenModal = () => setIsAssignModal(true);
   const handleAssignCloseModal = () => setIsAssignModal(false);
 
+  const formatDocumentType = (type: string) => {
+    if (type === "OLD_LEVEL") return "O Level";
+    return type
+      .split("_")
+      .map((word) => word?.charAt(0) + word?.slice(1)?.toLowerCase())
+      .join(" ");
+  };
+
   const getFileTypeFromUrl = (url: string): string => {
     const segments = url.split("/");
     const fileExtension = segments[segments.length - 1]
@@ -441,7 +449,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
             <div key={doc.id} className="flex flex-col">
               <div>
                 <label htmlFor={doc.documentType} className="font-medium">
-                  {doc.documentType}
+                  {formatDocumentType(doc?.documentType)}
                 </label>
               </div>
               <div className="mt-2 flex items-center justify-between rounded-lg border border-gray-300 p-3">
