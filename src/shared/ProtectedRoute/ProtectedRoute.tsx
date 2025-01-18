@@ -30,7 +30,7 @@ const ProtectedRoute = () => {
 
   const token = sessionStorage.getItem("userData");
   return token ? (
-    <IdleTimerProvider onIdle={handleOnIdle} timeout={20 * 60 * 1000}>
+    <IdleTimerProvider onIdle={handleOnIdle} timeout={60 * 1000}>
       <Outlet />
     </IdleTimerProvider>
   ) : (
