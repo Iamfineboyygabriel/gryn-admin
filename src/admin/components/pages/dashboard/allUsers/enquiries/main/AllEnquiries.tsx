@@ -3,9 +3,14 @@ import { useNavigate } from "react-router-dom";
 import DOMPurify from "dompurify";
 import { FiSearch } from "react-icons/fi";
 import transaction from "./../../../../../../../assets/svg/Transaction.svg";
-import { button } from "./../../../../../../../shared/buttons/Button";
 import CustomPagination from "../../../../../../../shared/utils/customPagination";
 import { useAllEnquiryData } from "../../../../../../../shared/redux/hooks/admin/getAdminProfile";
+import { AppDispatch } from "../../../../../../../shared/redux/store";
+import { useDispatch } from "react-redux";
+import { deleteEnquiry } from "../../../../../../../shared/redux/shared/slices/shareApplication.slices";
+import Modal from "../../../../../../../shared/modal/Modal";
+import SuccessModal from "../modal/SuccessModal";
+import DeleteEnquiryModal from "../modal/DeleteEnquiryModal";
 
 const SkeletonRow: React.FC = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -18,6 +23,7 @@ const SkeletonRow: React.FC = () => (
 );
 
 const ALLEnquiries: React.FC = () => {
+  const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
   const {
     enquiries,
@@ -28,9 +34,67 @@ const ALLEnquiries: React.FC = () => {
     handleLimitChange,
     loading,
   } = useAllEnquiryData(1, 10, "");
+
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [selectedUsers, setSelectedUsers] = useState<(string | number)[]>([]);
+  const [isDeletingEnquiries, setIsDeletingEnquiries] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const handleOpenModal = () => setModalOpen(true);
+  const handleCloseModal = () => setModalOpen(false);
 
   const formatData = useCallback((data: any) => (data ? data : "-"), []);
+
+  const handleDeleteSelected = () => {
+    setShowDeleteModal(true);
+    setDeleteError(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (isDeletingEnquiries) return;
+
+    setIsDeletingEnquiries(true);
+    setDeleteError(null);
+
+    try {
+      const deletePromises = selectedUsers.map((enquiryId) =>
+        dispatch(deleteEnquiry(enquiryId)).unwrap()
+      );
+
+      const results = await Promise.allSettled(deletePromises);
+      const failures = results.filter((result) => result.status === "rejected");
+
+      if (failures.length > 0) {
+        setDeleteError(
+          `Failed to delete ${failures.length} enquiries. Please try again.`
+        );
+        return;
+      }
+
+      setShowDeleteModal(false);
+      setSelectedUsers([]);
+      setShowSuccessModal(true);
+      enquiries(currentPage, itemsPerPage);
+    } catch (error) {
+      setDeleteError("An error occurred while deleting enquiries.");
+      console.error("Error deleting enquiry:", error);
+    } finally {
+      setIsDeletingEnquiries(false);
+    }
+  };
+
+  const handleCheckboxChange = (userId: string | number) => {
+    setSelectedUsers((prev) => {
+      if (prev.includes(userId)) {
+        return prev.filter((id) => id !== userId);
+      } else {
+        return [...prev, userId];
+      }
+    });
+  };
 
   const sanitizeHTML = useCallback((html: string) => {
     return { __html: DOMPurify.sanitize(html) };
@@ -92,6 +156,15 @@ const ALLEnquiries: React.FC = () => {
         key={item?.id}
         className="text-sm text-grey-primary font-medium border-b border-gray-200"
       >
+        <td className="py-[16px] px-[24px]">
+          <input
+            type="checkbox"
+            checked={selectedUsers.includes(item?.id)}
+            onChange={() => handleCheckboxChange(item?.id)}
+            className="w-4 h-4 rounded border-gray-300 text-primary-700 focus:ring-primary-700"
+            disabled={isDeletingEnquiries}
+          />
+        </td>
         <td className="whitespace-nowrap px-6 py-4">
           {(currentPage - 1) * itemsPerPage + index + 1}
         </td>
@@ -132,6 +205,8 @@ const ALLEnquiries: React.FC = () => {
     highlightText,
     formatData,
     loading,
+    isDeletingEnquiries,
+    selectedUsers,
   ]);
 
   const handleBackClick = () => {
@@ -175,10 +250,25 @@ const ALLEnquiries: React.FC = () => {
           </div>
         </div>
 
+        {selectedUsers.length > 0 && (
+          <div className="mt-4 flex items-center gap-4">
+            <button
+              onClick={handleDeleteSelected}
+              className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-full hover:bg-red-700 disabled:opacity-50"
+              disabled={isDeletingEnquiries}
+            >
+              Delete Selected ({selectedUsers.length})
+            </button>
+          </div>
+        )}
+
         <div className="overflow-x-auto mt-[1em]">
           <table className="w-full table-auto">
             <thead className="sticky top-0 bg-white">
               <tr className="text-gray-700 border-b border-gray-200">
+                <th className="px-6 py-3 text-left text-sm font-normal">
+                  Select
+                </th>
                 <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
                 <th className="whitespace-nowrap px-6 py-3 text-left text-sm font-normal">
                   Full Name
@@ -207,7 +297,7 @@ const ALLEnquiries: React.FC = () => {
           </table>
         </div>
 
-        {enquiries?.length && (
+        {enquiries?.length > 0 && (
           <div className="mt-6 flex justify-center">
             <CustomPagination
               currentPage={currentPage}
@@ -217,6 +307,35 @@ const ALLEnquiries: React.FC = () => {
           </div>
         )}
       </div>
+
+      {showDeleteModal && (
+        <Modal
+          isOpen={showDeleteModal}
+          onClose={() => !isDeletingEnquiries && setShowDeleteModal(false)}
+        >
+          <DeleteEnquiryModal
+            selectedCount={selectedUsers.length}
+            onConfirm={handleConfirmDelete}
+            onCancel={() => setShowDeleteModal(false)}
+            isDeleting={isDeletingEnquiries}
+            error={deleteError}
+          />
+        </Modal>
+      )}
+
+      {showSuccessModal && (
+        <Modal
+          isOpen={showSuccessModal}
+          onClose={() => setShowSuccessModal(false)}
+        >
+          <SuccessModal
+            message={`Successfully deleted ${selectedUsers.length} enquiry ${
+              selectedUsers.length === 1 ? "record" : "records"
+            }.`}
+            onClose={() => setShowSuccessModal(false)}
+          />
+        </Modal>
+      )}
     </main>
   );
 };

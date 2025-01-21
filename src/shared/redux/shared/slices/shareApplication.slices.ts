@@ -622,7 +622,7 @@ export const updateRole = createAsyncThunk(
       return thunkAPI.rejectWithValue(error);
     }
   }
-)
+);
 
 export const UploadStaffInvoicePaymentDocument = createAsyncThunk(
   "shareApplication/ uploadStaffInvoicePaymentDocument",
@@ -762,6 +762,18 @@ export const deleteUser = createAsyncThunk(
   }
 );
 
+export const deleteEnquiry = createAsyncThunk(
+  "shareApplication/deleteEnquiry",
+  async (enquiryId: any, thunkAPI) => {
+    try {
+      const response = await shareApplicationServices.deleteEnquiry(enquiryId);
+      return response.data;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
 export const clearStaffPayment = createAsyncThunk(
   "shareApplication/clearStaffPayment",
   async () => {
@@ -870,6 +882,7 @@ interface ApplicationState {
     status: string;
   } | null;
   removeUser: null;
+  removeEnquiry: null;
 }
 
 const initialState: ApplicationState = {
@@ -970,6 +983,7 @@ const initialState: ApplicationState = {
   allPendingAgentSearchTerm: "",
   applicationStatus: null,
   removeUser: null,
+  removeEnquiry: null,
 };
 
 export const shareApplicationSlice = createSlice({
@@ -1566,7 +1580,7 @@ export const shareApplicationSlice = createSlice({
       .addCase(CreateSalary.rejected, (state, action) => {
         state.registerSalary = null;
         const errorMessage =
-          action.error.message || "Student Application creation failed.";
+          action.error.message || "Failed to create staff salary.";
         setMessage(errorMessage);
       })
 
@@ -1590,8 +1604,7 @@ export const shareApplicationSlice = createSlice({
       )
       .addCase(getStaffSalary.rejected, (state, action) => {
         state.loading = false;
-        state.error =
-          action.error.message || "Failed to fetch payment applications";
+        state.error = action.error.message || "Failed to fetch staff salary";
       })
 
       .addCase(getAgentCommission.pending, (state) => {
@@ -1615,7 +1628,7 @@ export const shareApplicationSlice = createSlice({
       .addCase(getAgentCommission.rejected, (state, action) => {
         state.loading = false;
         state.error =
-          action.error.message || "Failed to fetch payment applications";
+          action.error.message || "Failed to fetch agent commission";
       })
 
       .addCase(
@@ -1639,7 +1652,7 @@ export const shareApplicationSlice = createSlice({
       .addCase(getUserPermittedPages.rejected, (state, action) => {
         state.permittedPages = null;
         const errorMessage =
-          action.error.message || "Failed to fetch user profile.";
+          action.error.message || "Failed to fetch user permitted pages.";
         setMessage(errorMessage);
       })
 
@@ -1653,7 +1666,8 @@ export const shareApplicationSlice = createSlice({
       })
       .addCase(updateStudentApplication.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || "Failed to update application";
+        state.error =
+          action.error.message || "Failed to update student application";
       })
 
       .addCase(deleteUser.pending, (state) => {
@@ -1666,7 +1680,20 @@ export const shareApplicationSlice = createSlice({
       })
       .addCase(deleteUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || "Failed to update Notification";
+        state.error = action.error.message || "Failed to delete User";
+      })
+
+      .addCase(deleteEnquiry.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteEnquiry.fulfilled, (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.removeEnquiry = action.payload;
+      })
+      .addCase(deleteEnquiry.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to delete Enquiry";
       });
   },
 });

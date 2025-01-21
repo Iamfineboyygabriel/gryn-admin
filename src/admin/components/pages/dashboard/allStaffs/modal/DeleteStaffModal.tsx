@@ -2,7 +2,12 @@ import React from "react";
 import question from "../../../../../../assets/svg/question.svg";
 import { button } from "../../../../../../shared/buttons/Button";
 
-const DeleteStaffModal = ({ onConfirm, onCancel, selectedCount }: any) => {
+const DeleteStaffModal = ({
+  onConfirm,
+  onCancel,
+  selectedCount,
+  isDeleting,
+}: any) => {
   return (
     <main className="px-[3em] font-outfit">
       <div className="m-auto w-[24em] py-[2em] text-center">
@@ -33,7 +38,7 @@ const DeleteStaffModal = ({ onConfirm, onCancel, selectedCount }: any) => {
             className="m-auto mt-[2em] flex w-[55%] justify-center gap-2 rounded-full bg-linear-gradient py-[10px] text-center font-medium text-white"
             onClick={onConfirm}
           >
-            Continue
+            {isDeleting ? "Deleting..." : "Continue"}
           </button.PrimaryButton>
         </div>
       </div>

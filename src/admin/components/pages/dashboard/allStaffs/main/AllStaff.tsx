@@ -59,6 +59,8 @@ const AllStaff = () => {
   const navigate = useNavigate();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [isDeletingStaff, setIsDeletingStaff] = useState(false);
+
   const [selectedLogoutUser, setSelectedLogoutUser] = useState<{
     email: string;
   } | null>(null);
@@ -91,6 +93,9 @@ const AllStaff = () => {
   };
 
   const handleConfirmDelete = async () => {
+    if (isDeletingStaff) return;
+
+    setIsDeletingStaff(true);
     try {
       const deletePromises = selectedUsers.map((userId) =>
         dispatch(deleteUser(userId)).unwrap()
@@ -102,6 +107,8 @@ const AllStaff = () => {
       fetchAdmins(currentPage, itemsPerPage);
     } catch (error) {
       console.error("Error deleting users:", error);
+    } finally {
+      setIsDeletingStaff(false);
     }
   };
 
@@ -384,6 +391,7 @@ const AllStaff = () => {
             selectedCount={selectedUsers.length}
             onConfirm={handleConfirmDelete}
             onCancel={() => setShowDeleteModal(false)}
+            isDeleting={isDeletingStaff}
           />
         </Modal>
       )}

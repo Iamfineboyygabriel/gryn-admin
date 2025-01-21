@@ -1505,6 +1505,24 @@ const deleteUser = async (userId: any) => {
   }
 };
 
+const deleteEnquiry = async (enquiryId: any) => {
+  const url = `${process.env.REACT_APP_API_URL}/enquiry/${enquiryId}`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "delete",
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const shareApplicationServices = {
   getUserProfile,
   uploadAvatar,
@@ -1564,6 +1582,7 @@ const shareApplicationServices = {
   budgetUploadPaymentDocument,
   updateDirectApplication,
   deleteUser,
+  deleteEnquiry,
 };
 
 export default shareApplicationServices;
