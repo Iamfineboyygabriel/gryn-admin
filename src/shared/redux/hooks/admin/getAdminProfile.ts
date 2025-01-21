@@ -1037,61 +1037,40 @@ export const useEnquiriesData = () => {
   };
 };
 
-export const useAllEnquiryData = (
-  initialPage: number = 1,
-  initialLimit: number = 10,
-  initialSearch: string = ""
-) => {
+export const useAllEnquiryData = () => {
   const dispatch: AppDispatch = useDispatch();
-  const { allEnquiry, allEnquirySearchTerm, loading } = useSelector(
-    (state: any) => state?.application
+  const allEnquiries: any = useSelector(
+    (state: RootState) => state?.application?.allEnq
   );
-  const [page, setPage] = useState(initialPage);
-  const [limit, setLimit] = useState(initialLimit);
-  const [search, setSearch] = useState(initialSearch);
+  const loading = useSelector(
+    (state: RootState) => state?.application?.loading
+  );
+  const error = useSelector((state: RootState) => state?.application.error);
+  const searchTerm = useSelector(
+    (state: RootState) => state?.application?.allEnquirySearchTerm
+  );
 
-  const fetchEnquiries = useCallback(() => {
-    const validPage = Math.max(1, page);
-    if (validPage !== page) {
-      setPage(validPage);
-      return;
-    }
-    dispatch(getAllEnquiry({ page: validPage, limit, search }));
-  }, [dispatch, page, limit, search]);
+  const fetchEnq = useCallback(
+    (page?: number, limit?: number) => {
+      return dispatch(getAllEnquiry({ page, limit, search: searchTerm }));
+    },
+    [dispatch, searchTerm]
+  );
 
-  useEffect(() => {
-    fetchEnquiries();
-  }, [fetchEnquiries]);
-
-  const handleSearch = (newSearch: string) => {
-    setPage(1);
-    setSearch(newSearch);
-    dispatch(setAllEnquirySearchTerm(newSearch));
-  };
-
-  const handlePageChange: any = (newPage: number) => {
-    if (newPage < 1) return;
-
-    if (!allEnquiry?.data?.length && newPage > 1) {
-      setPage(1);
-      return;
-    }
-
-    setPage(newPage);
-  };
-
-  const handleLimitChange = (newLimit: number) => {
-    setPage(1);
-    setLimit(newLimit);
-  };
+  const updateSearchTerm = useCallback(
+    (term: string) => {
+      dispatch(setAllEnquirySearchTerm(term));
+    },
+    [dispatch]
+  );
 
   return {
-    enquiries: allEnquiry?.data,
-    currentPage: page,
-    search: allEnquirySearchTerm,
-    handleSearch,
-    handlePageChange,
-    handleLimitChange,
+    allEnquiries: allEnquiries,
+    currentPage: allEnquiries?.currentPage || 1,
     loading,
+    error,
+    searchTerm,
+    fetchEnq,
+    updateSearchTerm,
   };
 };

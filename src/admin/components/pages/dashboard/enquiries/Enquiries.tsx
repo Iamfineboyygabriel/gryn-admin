@@ -1,4 +1,6 @@
-import react, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../../../../shared/redux/store";
 import PieChartEnquires from "../Reports/pieChart/PieChartEnquires";
 import CustomPagination from "../../../../../shared/utils/customPagination";
 import { FiSearch } from "react-icons/fi";
@@ -8,12 +10,15 @@ import { button } from "../../../../../shared/buttons/Button";
 import noData from "../../../../../assets/svg/Transaction.svg";
 import EnquiryDetailModal from "../../../../../shared/modal/EnquiriesDetailModal";
 import EnquiryForm from "../../../../../shared/modal/EnquiryForm";
+import Modal from "../../../../../shared/modal/Modal";
+import DeleteEnquiryModal from "./modal/DeleteEnquiryModal";
+import SuccessModal from "./modal/SuccessModal";
+import { deleteEnquiry } from "../../../../../shared/redux/shared/slices/shareApplication.slices";
 import { FaRegFileAlt } from "react-icons/fa";
-import { CiLink } from "react-icons/ci";
 
 const SkeletonRow: React.FC = () => (
   <tr className="animate-pulse border-b border-gray-200">
-    {Array.from({ length: 6 })?.map((_, index) => (
+    {Array.from({ length: 7 })?.map((_, index) => (
       <td key={index} className="px-6 py-4">
         <div className="h-4 bg-gray-200 rounded"></div>
       </td>
@@ -22,6 +27,7 @@ const SkeletonRow: React.FC = () => (
 );
 
 interface EnquiryItem {
+  id: any;
   fullName: string;
   email: string;
   currentLocation: string;
@@ -33,50 +39,143 @@ interface EnquiryItem {
   highestEducation: string;
   desiredCourse: string;
   hearAboutUs: string;
+  staff?: {
+    email: string;
+  };
 }
 
 const Enquiries = () => {
   const {
-    enquiries,
+    allEnquiries,
     currentPage,
-    search,
-    handleSearch,
-    handlePageChange,
-    handleLimitChange,
     loading,
-  } = useAllEnquiryData(1, 10, "");
-  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+    error,
+    searchTerm,
+    fetchEnq,
+    updateSearchTerm,
+  } = useAllEnquiryData();
+  const dispatch: AppDispatch = useDispatch();
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm || "");
+  const [isDeletingEnquiries, setIsDeletingEnquiries] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
   const [selectedEnquiries, setSelectedEnquiries] =
     useState<EnquiryItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
 
-  const formatData = useCallback((data: any) => (data ? data : "-"), []);
-
-  const sanitizeHTML = useCallback((html: string) => {
-    return { __html: DOMPurify.sanitize(html) };
-  }, []);
-
-  const handleViewDetails = (payment: EnquiryItem) => {
-    setSelectedEnquiries(payment);
+  const handleViewDetails = (details: EnquiryItem) => {
+    setSelectedEnquiries(details);
     setIsModalOpen(true);
   };
 
+  const handleDeleteSelected = () => {
+    if (selectedUsers?.length === 0) return;
+    setShowDeleteModal(true);
+    setDeleteError(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (isDeletingEnquiries) return;
+
+    setIsDeletingEnquiries(true);
+    setDeleteError(null);
+
+    try {
+      const deletePromises = selectedUsers?.map((enquiryId) =>
+        dispatch(deleteEnquiry(enquiryId))?.unwrap()
+      );
+
+      const results = await Promise?.allSettled(deletePromises);
+      const failures = results?.filter(
+        (result): result is PromiseRejectedResult =>
+          result?.status === "rejected"
+      );
+
+      if (failures?.length > 0) {
+        const errorMessages = failures
+          .map((failure) => failure?.reason?.message || "Unknown error")
+          .join(", ");
+        setDeleteError(
+          `Failed to delete ${failures.length} enquiries. Error: ${errorMessages}`
+        );
+        return;
+      }
+
+      setShowDeleteModal(false);
+      setSelectedUsers([]);
+      setShowSuccessModal(true);
+      fetchEnq(currentPage, itemsPerPage);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "An unknown error occurred";
+      setDeleteError(`Error deleting enquiries: ${errorMessage}`);
+    } finally {
+      setIsDeletingEnquiries(false);
+    }
+  };
   const handleFormModal = () => {
     setIsLinkModalOpen(true);
   };
 
-  const highlightText = useCallback(
-    (text: string) => {
-      if (!search?.trim()) return text;
-      const regex = new RegExp(`(${search})`, "gi");
-      return text?.replace(
-        regex,
-        (match: string) => `<mark class="bg-yellow-300">${match}</mark>`
-      );
+  const handleCheckboxChange = (enqId: any) => {
+    setSelectedUsers((prev) => {
+      if (prev.includes(enqId)) {
+        return prev.filter((id) => id !== enqId);
+      } else {
+        return [...prev, enqId];
+      }
+    });
+  };
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (localSearchTerm !== searchTerm) {
+        updateSearchTerm(localSearchTerm);
+        fetchEnq(1, itemsPerPage);
+      }
+    }, 300);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [localSearchTerm, searchTerm, fetchEnq, itemsPerPage]);
+
+  useEffect(() => {
+    fetchEnq(currentPage, itemsPerPage);
+  }, [fetchEnq, currentPage, itemsPerPage]);
+
+  const handlePageChange = useCallback(
+    (event: React.ChangeEvent<unknown>, value: number) => {
+      fetchEnq(value, itemsPerPage);
     },
-    [search]
+    [fetchEnq, itemsPerPage]
   );
+
+  const formatData = useCallback((data: any) => (data ? data : "-"), []);
+
+  const filteredEnq = useMemo(() => {
+    if (!allEnquiries?.enq?.data) return [];
+
+    return allEnquiries.enq.data.filter((enqData: any) => {
+      if (!localSearchTerm) return true;
+
+      const fullName = `${enqData?.fullName || ""}`.toLowerCase();
+      const searchLower = localSearchTerm.toLowerCase();
+
+      return (
+        fullName.includes(searchLower) ||
+        enqData?.email?.toLowerCase()?.includes(searchLower) ||
+        enqData?.role?.toLowerCase()?.includes(searchLower)
+      );
+    });
+  }, [allEnquiries?.enq?.data, localSearchTerm]);
+
+  const hasMore = useMemo(() => {
+    return filteredEnq.length === itemsPerPage;
+  }, [filteredEnq.length, itemsPerPage]);
 
   const renderTableBody = useMemo(() => {
     if (loading) {
@@ -85,10 +184,10 @@ const Enquiries = () => {
       ));
     }
 
-    if (!enquiries?.length) {
+    if (!filteredEnq?.length) {
       return (
         <tr>
-          <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
+          <td colSpan={8} className="px-6 py-4 text-center text-gray-500">
             <div className="mt-[2em] flex flex-col items-center justify-center">
               <img src={noData} alt="No applications" />
               <p className="mt-2 text-sm text-gray-500">No enquiries found.</p>
@@ -98,20 +197,25 @@ const Enquiries = () => {
       );
     }
 
-    return enquiries?.map((item: any, index: number) => (
+    return filteredEnq?.map((item: EnquiryItem, index: number) => (
       <tr
         key={item?.id}
         className="text-sm text-grey-primary font-medium border-b border-gray-200"
       >
         <td className="whitespace-nowrap px-6 py-4">
+          <input
+            type="checkbox"
+            checked={selectedUsers.includes(item?.id)}
+            onChange={() => handleCheckboxChange(item.id)}
+            className="w-4 h-4 rounded border-gray-300 text-primary-700 focus:ring-primary-700"
+          />
+        </td>
+        <td className="whitespace-nowrap px-6 py-4">
           {(currentPage - 1) * itemsPerPage + index + 1}
         </td>
-        <td
-          className="whitespace-nowrap px-6 py-4"
-          dangerouslySetInnerHTML={sanitizeHTML(
-            highlightText(`${formatData(item?.fullName)}`)
-          )}
-        />
+        <td className="whitespace-nowrap px-6 py-4">
+          {`${item?.fullName || ""}`}
+        </td>
         <td className="whitespace-nowrap px-6 py-4">
           {formatData(item?.staff?.email)}
         </td>
@@ -128,24 +232,31 @@ const Enquiries = () => {
           className="whitespace-nowrap text-primary-700 font-semibold cursor-pointer px-6 py-4"
           onClick={() => handleViewDetails(item)}
         >
-          <p>View Details</p>
+          View Details
         </td>
       </tr>
     ));
   }, [
-    enquiries,
+    filteredEnq,
     currentPage,
     itemsPerPage,
-    sanitizeHTML,
-    highlightText,
     formatData,
     loading,
+    selectedUsers,
   ]);
 
   const handleItemsPerPageChange = (newLimit: number) => {
     setItemsPerPage(newLimit);
-    handleLimitChange(newLimit);
+    fetchEnq(1, newLimit);
   };
+
+  if (error) {
+    return (
+      <div className="p-4 text-red-600 bg-red-50 rounded-md">
+        Error loading enquiries: {error}
+      </div>
+    );
+  }
 
   return (
     <main>
@@ -159,13 +270,21 @@ const Enquiries = () => {
                 type="text"
                 className="w-full rounded-full bg-gray-100 py-2 pl-2 pr-[3em] text-sm"
                 placeholder="Search by name"
-                value={search || ""}
-                onChange={(e) => handleSearch(e.target.value)}
+                value={localSearchTerm}
+                onChange={(e) => setLocalSearchTerm(e.target.value)}
               />
               <FiSearch className="absolute right-[1em] top-1/2 -translate-y-1/2 transform text-lg text-gray-500" />
             </div>
           </div>
           <div className="flex items-center gap-[1.5em]">
+            {selectedUsers?.length > 0 && (
+              <button.PrimaryButton
+                onClick={handleDeleteSelected}
+                className="mt-[1em] flex gap-2 rounded-full bg-red-500 px-[1.5em] py-[8px] font-medium text-white transition-colors duration-300"
+              >
+                Delete Selected ({selectedUsers?.length})
+              </button.PrimaryButton>
+            )}
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-500">Items per page:</span>
               <select
@@ -182,14 +301,14 @@ const Enquiries = () => {
                 <option value={50}>50</option>
               </select>
             </div>
-            {/* <button.PrimaryButton
+            <button.PrimaryButton
               onClick={handleFormModal}
               className="m-auto px-[2em] items-center flex justify-center gap-2 rounded-full bg-linear-gradient py-[11px] text-center font-medium text-white"
               type="submit"
             >
               <FaRegFileAlt />
               Enquiry Form
-            </button.PrimaryButton> */}
+            </button.PrimaryButton>
           </div>
         </div>
 
@@ -197,6 +316,9 @@ const Enquiries = () => {
           <table className="w-full table-auto">
             <thead className="sticky top-0 bg-white">
               <tr className="text-gray-700 border-b border-gray-200">
+                <th className="px-6 py-3 text-left text-sm font-normal">
+                  Select
+                </th>
                 <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
                 <th className="whitespace-nowrap px-6 py-3 text-left text-sm font-normal">
                   Full Name
@@ -221,17 +343,46 @@ const Enquiries = () => {
             <tbody>{renderTableBody}</tbody>
           </table>
         </div>
-
-        {enquiries?.length && (
+        {!loading && allEnquiries?.enq && (
           <div className="mt-6 flex justify-center">
             <CustomPagination
               currentPage={currentPage}
               onPageChange={handlePageChange}
-              hasMore={enquiries?.length >= itemsPerPage}
+              hasMore={hasMore}
             />
           </div>
         )}
       </div>
+
+      {showSuccessModal && (
+        <Modal
+          isOpen={showSuccessModal}
+          onClose={() => setShowSuccessModal(false)}
+        >
+          <SuccessModal
+            message={`Successfully deleted ${selectedUsers.length} ${
+              selectedUsers.length === 1 ? "enquiry" : "enquiries"
+            }.`}
+            onClose={() => setShowSuccessModal(false)}
+          />
+        </Modal>
+      )}
+
+      {showDeleteModal && (
+        <Modal
+          isOpen={showDeleteModal}
+          onClose={() => setShowDeleteModal(false)}
+        >
+          <DeleteEnquiryModal
+            selectedCount={selectedUsers.length}
+            onConfirm={handleConfirmDelete}
+            onCancel={() => setShowDeleteModal(false)}
+            isDeleting={isDeletingEnquiries}
+            error={deleteError}
+          />
+        </Modal>
+      )}
+
       {isModalOpen && selectedEnquiries && (
         <EnquiryDetailModal
           isOpen={isModalOpen}
@@ -239,9 +390,10 @@ const Enquiries = () => {
           enquiry={selectedEnquiries}
         />
       )}
+
       {isLinkModalOpen && (
         <EnquiryForm
-          isOpen={isModalOpen}
+          isOpen={isLinkModalOpen}
           onClose={() => setIsLinkModalOpen(false)}
         />
       )}

@@ -719,14 +719,17 @@ export async function updatePayment(endpoint: string, body: FormData) {
   }
 }
 
-const getAllEnquiry = async (
-  page: number,
-  limit: number,
+export const getAllEnquiry = async (
+  page?: number,
+  limit?: number,
   search: string = ""
 ) => {
-  const url = `${API_URL}/enquiry?page=${page}&limit=${limit}&search=${encodeURIComponent(
-    search
-  )}`;
+  let url = `${API_URL}/enquiry?`;
+
+  if (page !== undefined) url += `page=${page}&`;
+  if (limit !== undefined) url += `limit=${limit}&`;
+  if (search) url += `search=${encodeURIComponent(search)}`;
+
   try {
     const response = await axios.get(url, { headers: authHeader() });
     const token = response?.data?.data?.tokens?.accessToken;

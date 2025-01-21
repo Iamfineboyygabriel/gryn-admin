@@ -4,7 +4,7 @@ import transaction from "../../../../../../assets/svg/Transaction.svg";
 import DOMPurify from "dompurify";
 import { useAllAgent } from "../../../../../../shared/redux/hooks/shared/getUserProfile";
 import { useNavigate } from "react-router";
-import { button } from "../../../../../../shared/buttons/Button"
+import { button } from "../../../../../../shared/buttons/Button";
 import CustomPagination from "../../../../../../shared/utils/customPagination";
 
 const SkeletonRow = () => (
@@ -18,14 +18,14 @@ const SkeletonRow = () => (
 );
 
 const SeeAllAgents = () => {
-  const { 
-    agents, 
-    totalPages, 
-    currentPage, 
-    loading, 
-    fetchAgents, 
-    searchTerm, 
-    updateSearchTerm 
+  const {
+    agents,
+    totalPages,
+    currentPage,
+    loading,
+    fetchAgents,
+    searchTerm,
+    updateSearchTerm,
   } = useAllAgent();
 
   const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
@@ -42,29 +42,41 @@ const SeeAllAgents = () => {
     }, 300);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [localSearchTerm, updateSearchTerm, fetchAgents, itemsPerPage, searchTerm]);
+  }, [
+    localSearchTerm,
+    updateSearchTerm,
+    fetchAgents,
+    itemsPerPage,
+    searchTerm,
+  ]);
 
   useEffect(() => {
     fetchAgents(currentPage, itemsPerPage);
   }, [fetchAgents, currentPage, itemsPerPage]);
 
-  const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, value: number) => {
-    fetchAgents(value, itemsPerPage);
-  }, [fetchAgents, itemsPerPage]);
+  const handlePageChange = useCallback(
+    (event: React.ChangeEvent<unknown>, value: number) => {
+      fetchAgents(value, itemsPerPage);
+    },
+    [fetchAgents, itemsPerPage]
+  );
 
   const escapeRegExp = useCallback((string: string) => {
     return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }, []);
 
-  const highlightText = useCallback((text: string, query: string) => {
-    if (!query) return text;
-    const escapedQuery = escapeRegExp(query);
-    const regex = new RegExp(`(${escapedQuery})`, "gi");
-    return text.replace(
-      regex,
-      (match: string) => `<mark class="bg-yellow-300">${match}</mark>`
-    );
-  }, [escapeRegExp]);
+  const highlightText = useCallback(
+    (text: string, query: string) => {
+      if (!query) return text;
+      const escapedQuery = escapeRegExp(query);
+      const regex = new RegExp(`(${escapedQuery})`, "gi");
+      return text.replace(
+        regex,
+        (match: string) => `<mark class="bg-yellow-300">${match}</mark>`
+      );
+    },
+    [escapeRegExp]
+  );
 
   const sanitizeHTML = useCallback((html: string) => {
     return { __html: DOMPurify.sanitize(html) };
@@ -74,7 +86,8 @@ const SeeAllAgents = () => {
 
   const filteredAgents = useMemo(() => {
     return (agents || []).filter((agent: any) => {
-      const fullName = `${agent.profile.firstName} ${agent.profile.lastName}`.toLowerCase();
+      const fullName =
+        `${agent.profile.firstName} ${agent.profile.lastName}`.toLowerCase();
       return (
         fullName.includes(localSearchTerm.toLowerCase()) ||
         agent.email.toLowerCase().includes(localSearchTerm.toLowerCase())
@@ -100,7 +113,7 @@ const SeeAllAgents = () => {
           <td className="py-[16px] px-[24px]">
             {(currentPage - 1) * itemsPerPage + index + 1}
           </td>
-          <td 
+          <td
             className="py-[16px] gap-1 px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
               highlightText(
@@ -112,13 +125,10 @@ const SeeAllAgents = () => {
           <td className="py-[16px] px-[24px]">
             {formatData(agent.phoneNumber)}
           </td>
-          <td 
+          <td
             className="py-[16px] px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
-              highlightText(
-                formatData(agent.email),
-                localSearchTerm
-              )
+              highlightText(formatData(agent.email), localSearchTerm)
             )}
           />
           <td className="py-[16px] px-[24px]">
@@ -145,64 +155,81 @@ const SeeAllAgents = () => {
         </tr>
       );
     }
-  }, [loading, filteredAgents, currentPage, itemsPerPage, sanitizeHTML, highlightText, localSearchTerm, formatData]);
+  }, [
+    loading,
+    filteredAgents,
+    currentPage,
+    itemsPerPage,
+    sanitizeHTML,
+    highlightText,
+    localSearchTerm,
+    formatData,
+  ]);
 
   return (
     <main>
       <div className="relative">
-      <header className="flex items-center justify-between">
-      <h1 className="text-2xl font-bold">Application</h1>
+        <header className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Application</h1>
         </header>
-    <div className="mt-[1.3em] h-auto w-full overflow-auto rounded-lg bg-white px-[1em] py-3 pb-[10em]">
-    <header>
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="font-medium dark:text-gray-700">
-                Reports /
-                <span className="ml-1 font-medium text-primary-700 dark:text-white">
-                  All Agents
-                </span>
-              </h1>
+        <div className="mt-[1.3em] h-auto w-full overflow-auto rounded-lg bg-white px-[1em] py-3 pb-[10em]">
+          <header>
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="font-medium dark:text-gray-700">
+                  Reports /
+                  <span className="ml-1 font-medium text-primary-700 dark:text-white">
+                    All Agents
+                  </span>
+                </h1>
+              </div>
+              <button.PrimaryButton className="btn-2" onClick={handleBackClick}>
+                Back
+              </button.PrimaryButton>
             </div>
-            <button.PrimaryButton className="btn-2" onClick={handleBackClick}>
-              Back
-            </button.PrimaryButton>
+          </header>
+          <div className="flex items-center mt-3 w-64 rounded-full border-[1px] border-border bg-white -100">
+            <input
+              type="text"
+              className="flex-grow rounded-full bg-gray-100 bg-transparent py-2 pl-4 pr-2 text-sm focus:border-grey-primary focus:outline-none"
+              placeholder="Search"
+              value={localSearchTerm}
+              onChange={(e) => setLocalSearchTerm(e.target.value)}
+            />
+            <FiSearch className="mr-3 text-lg text-gray-500" />
           </div>
-        </header>
-      <div className="flex items-center mt-3 w-64 rounded-full border-[1px] border-border bg-white -100">
-          <input
-            type="text"
-            className="flex-grow rounded-full bg-gray-100 bg-transparent py-2 pl-4 pr-2 text-sm focus:border-grey-primary focus:outline-none"
-            placeholder="Search"
-            value={localSearchTerm}
-            onChange={(e) => setLocalSearchTerm(e.target.value)}
-          />
-          <FiSearch className="mr-3 text-lg text-gray-500" />
-        </div>
 
-        <table className="w-full mt-4  border-collapse">
-          <thead className="text-gray-500 border-b border-gray-200">
-            <tr>
-              <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
-              <th className="px-6 py-3 text-left text-sm font-normal">Full Name</th>
-              <th className="px-6 py-3 text-left text-sm font-normal">Phone Number</th>
-              <th className="px-6 py-3 text-left text-sm font-normal">Email Address</th>
-              <th className="px-6 py-3 text-left text-sm font-normal">Action</th>
-            </tr>
-          </thead>
-          <tbody>{renderTableBody()}</tbody>
-        </table>
-           {!loading && agents.length > 0 && (
-           <div className="mt-6 flex justify-center">
-            <CustomPagination
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
-            hasMore={agents.length === itemsPerPage}
-          />
-          </div>
-        )}
-       </div>
-     </div>
+          <table className="w-full mt-4  border-collapse">
+            <thead className="text-gray-500 border-b border-gray-200">
+              <tr>
+                <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
+                <th className="px-6 py-3 text-left text-sm font-normal">
+                  Full Name
+                </th>
+                <th className="px-6 py-3 text-left text-sm font-normal">
+                  Phone Number
+                </th>
+                <th className="px-6 py-3 text-left text-sm font-normal">
+                  Email Address
+                </th>
+                <th className="px-6 py-3 text-left text-sm font-normal">
+                  Action
+                </th>
+              </tr>
+            </thead>
+            <tbody>{renderTableBody()}</tbody>
+          </table>
+          {!loading && agents.length > 0 && (
+            <div className="mt-6 flex justify-center">
+              <CustomPagination
+                currentPage={currentPage}
+                onPageChange={handlePageChange}
+                hasMore={agents.length === itemsPerPage}
+              />
+            </div>
+          )}
+        </div>
+      </div>
     </main>
   );
 };

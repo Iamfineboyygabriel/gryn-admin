@@ -529,18 +529,25 @@ export const updateAgent = createAsyncThunk(
 
 export const getAllEnquiry = createAsyncThunk(
   "application/getAllEnquiry",
-  async (
-    { page, limit, search }: { page: number; limit: number; search: string },
-    thunkAPI
-  ) => {
-    try {
-      const data = await applicationServices.getAllEnquiry(page, limit, search);
-      return data;
-    } catch (error: any) {
-      const message = error.message;
-      error.toString();
-      return thunkAPI.rejectWithValue(message);
-    }
+  async ({
+    page,
+    limit,
+    search,
+  }: {
+    page?: number;
+    limit?: number;
+    search: string;
+  }) => {
+    const response = await applicationServices.getAllEnquiry(
+      page,
+      limit,
+      search
+    );
+    return {
+      enq: response,
+      totalPages: response.totalPages || 0,
+      currentPage: page || 1,
+    };
   }
 );
 
@@ -648,8 +655,9 @@ interface ApplicationState {
     data: any[];
     currentPage: number;
   };
-  allEnquiry: {
-    data: any[];
+  allEnq: {
+    enq: any[] | null;
+    totalPages: number;
     currentPage: number;
   };
   allUserActivity: {
@@ -750,8 +758,9 @@ const initialState: ApplicationState = {
     data: [],
     currentPage: 1,
   },
-  allEnquiry: {
-    data: [],
+  allEnq: {
+    enq: [],
+    totalPages: 0,
     currentPage: 1,
   },
   allUserActivity: {
@@ -1357,17 +1366,18 @@ export const applicationSlice = createSlice({
         (
           state,
           action: PayloadAction<{
-            data: any[];
+            enq: any[];
+            totalPages: number;
             currentPage: number;
           }>
         ) => {
           state.loading = false;
-          state.allEnquiry = action.payload;
+          state.allEnq = action.payload;
         }
       )
       .addCase(getAllEnquiry.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || "Failed to fetch enquires";
+        state.error = action.error.message || "Failed to fetch enq";
       })
 
       .addCase(assignEnquiryToStaff.pending, (state) => {
