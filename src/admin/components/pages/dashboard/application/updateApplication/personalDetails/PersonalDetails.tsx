@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { updateStudentApplication } from "../../../../../../../shared/redux/shared/services/shareApplication.services";
 import { button } from "../../../../../../../shared/buttons/Button";
 import { CgAsterisk } from "react-icons/cg";
@@ -10,6 +10,10 @@ const PersonalDeatils = ({ onNext, studentData }: any) => {
   const [firstName, setFirstName] = useState(studentData?.firstName || "");
   const [lastName, setLastName] = useState(studentData?.lastName || "");
   const [middleName, setMiddleName] = useState(studentData?.middleName || "");
+  const [intake, setIntake] = useState(studentData?.intake || "");
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [month, setMonth] = useState<string>("");
+  const [year, setYear] = useState<string>("");
   const [dateOfBirth, setDateOfBirth] = useState(
     studentData?.dateOfBirth
       ? dayjs(studentData.dateOfBirth).format("YYYY-MM-DD")
@@ -26,6 +30,56 @@ const PersonalDeatils = ({ onNext, studentData }: any) => {
   const [phoneNumber, setPhoneNumber] = useState(
     studentData?.phoneNumber || ""
   );
+
+  // Parse intake from API to display in the UI
+  useEffect(() => {
+    if (studentData?.intake) {
+      const [intakeYear, intakeMonth] = studentData.intake.split("-");
+      if (intakeYear && intakeMonth) {
+        const monthIndex = parseInt(intakeMonth, 10) - 1;
+        if (monthIndex >= 0 && monthIndex < months.length) {
+          setMonth(months[monthIndex]);
+          setYear(intakeYear);
+        }
+      }
+    }
+  }, [studentData]);
+
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 6 }, (_, i) =>
+    (currentYear + i).toString()
+  );
+
+  const handleDateSelection = () => {
+    if (month && year) {
+      const monthIndex = months.findIndex((m) => m === month) + 1;
+      const formattedMonth = String(monthIndex).padStart(2, "0");
+      const formattedDate = `${year}-${formattedMonth}`;
+      setIntake(formattedDate);
+      setIsDatePickerOpen(false);
+    } else {
+      toast.error("Please select both month and year");
+    }
+  };
+
+  const toggleDatePicker = () => {
+    setIsDatePickerOpen(!isDatePickerOpen);
+  };
 
   const [loading, setLoading] = useState(false);
 
@@ -44,6 +98,7 @@ const PersonalDeatils = ({ onNext, studentData }: any) => {
         country,
         internationalPassportNumber,
         phoneNumber,
+        intake,
       };
       const response = await updateStudentApplication(studentData.id, body);
       onNext();
@@ -65,6 +120,93 @@ const PersonalDeatils = ({ onNext, studentData }: any) => {
         onSubmit={updateDetails}
       >
         <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4 md:gap-5 lg:gap-[2em]">
+          <div className="w-full">
+            <label
+              htmlFor="intake"
+              className="flex-start flex font-medium dark:text-white"
+            >
+              Intake (Month/Year)
+              <CgAsterisk className="text-red-500" />
+            </label>
+
+            <div className="relative">
+              <input
+                type="text"
+                id="intake"
+                name="intake"
+                value={month && year ? `${month} ${year}` : ""}
+                onClick={toggleDatePicker}
+                readOnly
+                required
+                placeholder="Select Month/Year"
+                className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none dark:border-none dark:bg-gray-700 dark:text-white cursor-pointer"
+                aria-required="true"
+                role="combobox"
+                aria-expanded={isDatePickerOpen}
+                aria-haspopup="listbox"
+              />
+
+              {isDatePickerOpen && (
+                <div className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
+                  <div className="p-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-2 dark:text-white">
+                          Month
+                        </label>
+                        <select
+                          className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 dark:text-white"
+                          value={month}
+                          onChange={(e) => setMonth(e.target.value)}
+                        >
+                          <option value="">Select Month</option>
+                          {months.map((m) => (
+                            <option key={m} value={m}>
+                              {m}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2 dark:text-white">
+                          Year
+                        </label>
+                        <select
+                          className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 dark:text-white"
+                          value={year}
+                          onChange={(e) => setYear(e.target.value)}
+                        >
+                          <option value="">Select Year</option>
+                          {years.map((y) => (
+                            <option key={y} value={y}>
+                              {y}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                    <div className="mt-4 flex justify-between">
+                      <button
+                        type="button"
+                        onClick={() => setIsDatePickerOpen(false)}
+                        className="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white rounded-lg"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleDateSelection}
+                        className="px-4 py-2 bg-primary-700 text-white rounded-lg"
+                      >
+                        Apply
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
           <div className="w-full">
             <label htmlFor="firstName" className="flex-start flex font-medium">
               First Name

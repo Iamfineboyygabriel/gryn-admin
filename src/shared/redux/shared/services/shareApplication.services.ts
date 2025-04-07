@@ -1523,6 +1523,25 @@ const deleteEnquiry = async (enquiryId: any) => {
   }
 };
 
+const updateApplicationStatus = async (body: string, applicationId: string) => {
+  const url = `${process.env.REACT_APP_API_URL}/admin/application/${applicationId}/status`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "patch",
+      data: body,
+    });
+    const token = response?.data?.data?.tokens?.accessToken;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error) {
+    throw handleApiError(error);
+  }
+};
+
 const shareApplicationServices = {
   getUserProfile,
   uploadAvatar,
@@ -1583,6 +1602,7 @@ const shareApplicationServices = {
   updateDirectApplication,
   deleteUser,
   deleteEnquiry,
+  updateApplicationStatus,
 };
 
 export default shareApplicationServices;

@@ -33,9 +33,8 @@ const PersonalDetails: React.FC<{ applicationId: any }> = ({
 
   return (
     <main className="font-outfit">
-      <header className="flex flex-col gap-2">
+      <header className="flex  justify-between">
         <h2 className="text-xl font-semibold">Personal Details</h2>
-     
       </header>
       <form className="mt-[2em] w-[85%]">
         <div className="flex flex-col lg:flex-row gap-[1em] lg:gap-[3em]">
@@ -66,8 +65,9 @@ const PersonalDetails: React.FC<{ applicationId: any }> = ({
             applicationDetails?.data?.internationalPassportNumber
           )}
         </div>
-        <div className="mt-[1em] w-[100%] lg:w-[47%]">
+        <div className="mt-[1em] flex flex-col lg:flex-row gap-[1em] lg:gap-[3em]">
           {renderField("Email", applicationDetails?.data?.email)}
+          {renderField("Intake", applicationDetails?.data?.intake)}{" "}
         </div>
       </form>
     </main>

@@ -8,6 +8,7 @@ const Degree = ({ applicationId }: any) => {
   const [university, setUniversity] = useState("");
   const [degreeType, setDegreeType] = useState("");
   const [course, setCourse] = useState("");
+  const [applicationStatus, setApplicationStatus] = useState("");
 
   useEffect(() => {
     if (applicationDetails?.data) {
@@ -15,6 +16,9 @@ const Degree = ({ applicationId }: any) => {
       setUniversity(applicationDetails?.data?.degree?.university || "");
       setDegreeType(applicationDetails?.data?.degree?.degreeType || "");
       setCourse(applicationDetails.data?.degree?.course || "");
+      setCourse(applicationDetails.data?.degree?.course || "");
+      setCourse(applicationDetails.data?.degree?.course || "");
+      setApplicationStatus(applicationDetails.data?.applicationStatus || "");
     }
   }, [applicationDetails]);
 
@@ -28,6 +32,18 @@ const Degree = ({ applicationId }: any) => {
       )}
       <div className="mt-[2em] flex flex-col gap-[1.5em]">
         <div className="flex w-[60%] flex-col gap-[1.2em]">
+          <div className="w-full">
+            <label htmlFor="country" className="flex-start flex font-medium">
+              Application Status
+            </label>
+            <input
+              id="country"
+              name="country"
+              value={applicationStatus}
+              readOnly
+              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
+            />
+          </div>
           <div className="w-full">
             <label htmlFor="country" className="flex-start flex font-medium">
               Country

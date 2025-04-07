@@ -7,7 +7,7 @@ import ReactLoading from "react-loading";
 
 export interface DropdownItem {
   id?: number;
-  name?: string; 
+  name?: string;
   [key: string]: any;
 }
 
@@ -25,8 +25,9 @@ interface ToggleDropdownProps {
   renderItem?: (item: DropdownItem) => React.ReactNode;
   useEndpointSearch?: boolean;
   onDropdownToggle?: (isOpen: boolean) => void;
-  disabled?: boolean; 
+  disabled?: boolean;
   placeholder?: string;
+  buttonColor?: string;
 }
 
 const useToggleDropdown = () => {
@@ -62,15 +63,16 @@ export const Dropdown: React.FC<ToggleDropdownProps> = ({
   useEndpointSearch = false,
   onDropdownToggle,
   disabled = false,
-  placeholder, 
+  placeholder,
+  buttonColor,
 }) => {
   const { isOpen, toggleDropdown, closeDropdown } = useToggleDropdown();
   const [search, setSearch] = useState("");
 
   const sortedItems = useMemo(() => {
     return [...items].sort((a, b) => {
-      const aName = typeof a.name === 'string' ? a.name : '';
-      const bName = typeof b.name === 'string' ? b.name : '';
+      const aName = typeof a.name === "string" ? a.name : "";
+      const bName = typeof b.name === "string" ? b.name : "";
       return aName.localeCompare(bName);
     });
   }, [items]);
@@ -78,18 +80,21 @@ export const Dropdown: React.FC<ToggleDropdownProps> = ({
   const filteredItems = useMemo(() => {
     if (useEndpointSearch) return sortedItems;
     return sortedItems.filter((item) => {
-      const itemName = typeof item.name === 'string' ? item.name : '';
+      const itemName = typeof item.name === "string" ? item.name : "";
       return itemName.toLowerCase().includes(search.toLowerCase());
     });
   }, [sortedItems, search, useEndpointSearch]);
 
-  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const newSearch = e.target.value;
-    setSearch(newSearch);
-    if (useEndpointSearch) {
-      onChange?.(newSearch);
-    }
-  }, [onChange, useEndpointSearch]);
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newSearch = e.target.value;
+      setSearch(newSearch);
+      if (useEndpointSearch) {
+        onChange?.(newSearch);
+      }
+    },
+    [onChange, useEndpointSearch]
+  );
 
   const handleSelectItem = (item: DropdownItem) => {
     onSelectItem(item);
@@ -127,7 +132,7 @@ export const Dropdown: React.FC<ToggleDropdownProps> = ({
       </label>
       <div className="relative mt-[10px]">
         <button
-          className={`border-border text-l flex w-full items-center justify-between rounded-lg border-[1px] bg-inherit p-3 text-left font-medium`}
+          className={`border-border bg-white text-l flex w-full items-center justify-between rounded-lg border-[1px] bg-inherit p-3 text-left font-medium`}
           type="button"
           onClick={handleToggleDropdown}
           aria-haspopup="listbox"
@@ -142,7 +147,9 @@ export const Dropdown: React.FC<ToggleDropdownProps> = ({
           <IoIosArrowDown className="ml-auto" />
         </button>
         {isOpen && (
-          <div className="border-border absolute z-10 mt-2 max-h-[250px] w-full rounded-lg border-[2px] bg-white font-medium">
+          <div
+            className={`border-border absolute z-10 mt-2 max-h-[250px] w-full rounded-lg border-[2px] bg-${buttonColor} font-medium`}
+          >
             {searchVisible && (
               <div className="relative w-full p-2">
                 <input

@@ -4,8 +4,6 @@ import { toast } from "react-toastify";
 import ReactLoading from "react-loading";
 import { button } from "../../../../../../../shared/buttons/Button";
 import activeCertificate from "../../../../../../../assets/svg/ActiveCertificate.svg";
-import { AppDispatch } from "../../../../../../../shared/redux/store";
-import { useAppDispatch } from "../../../../../../../shared/redux/hooks/shared/reduxHooks";
 import { updateStudentDegreeApplication } from "../../../../../../../shared/redux/shared/services/shareApplication.services";
 import {
   Dropdown,
@@ -75,7 +73,7 @@ const Degree = ({
       </header>
       <form>
         <div className="flex flex-col gap-[1.5em]">
-          <div className="mt-[2em] flex w-[80%] lg:w-[40%] flex-col gap-[1.5em]">
+          <div className="flex w-[80%] lg:w-[40%] flex-col gap-[1.5em]">
             <div className="w-full">
               <label
                 htmlFor="university"

@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useDispatch } from "react-redux";
 import { button } from "../../../../../../../shared/buttons/Button";
 import upload from "../../../../../../../assets/svg/Upload.svg";
 import fileImg from "../../../../../../../assets/svg/File.svg";
@@ -7,9 +8,14 @@ import ReactLoading from "react-loading";
 import { AiOutlineEye } from "react-icons/ai";
 import { updateApplicationDocument } from "../../../../../../../shared/redux/shared/services/shareApplication.services";
 import DocumentPreviewModal from "../../../../../../../shared/modal/DocumentPreviewModal";
-import NewsCreated from "../../../../../../../shared/modal/NewsCreated";
 import Modal from "../../../../../../../shared/modal/Modal";
 import ApplicationUpdated from "../../../../../../../shared/modal/ApplicationUpdated";
+import {
+  Dropdown,
+  DropdownItem,
+} from "../../../../../../../shared/dropDown/DropDown";
+import { updateApplicationStatus } from "../../../../../../../shared/redux/shared/slices/shareApplication.slices";
+import { AppDispatch } from "../../../../../../../shared/redux/store";
 
 const SkeletonRow = () => (
   <div className="mb-4 animate-pulse space-y-4">
@@ -18,15 +24,24 @@ const SkeletonRow = () => (
   </div>
 );
 
+interface Status {
+  name: string;
+}
+
 const UploadedDocument = ({ studentData }: any) => {
+  const dispatch: AppDispatch = useDispatch();
   const [files, setFiles] = useState<{ [key: string]: File | null }>({});
   const [fileNames, setFileNames] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(false);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewFileType, setPreviewFileType] = useState<string>("");
   const [isModalOpen, setModalOpen] = useState(false);
+  const [applicationStatus, setApplicationStatus] = useState<string | null>(
+    studentData?.applicationStatus || null
+  );
 
   const handleOpenModal = () => setModalOpen(true);
   const handleCloseModal = () => setModalOpen(false);
@@ -51,6 +66,11 @@ const UploadedDocument = ({ studentData }: any) => {
       setFiles(documentFiles);
       setFileNames(documentNames);
       setLoading(false);
+
+      // Set initial application status from studentData
+      if (studentData?.applicationStatus) {
+        setApplicationStatus(studentData.applicationStatus);
+      }
     }
   }, [studentData]);
 
@@ -120,6 +140,42 @@ const UploadedDocument = ({ studentData }: any) => {
     }
   };
 
+  const handleSelectStatus = useCallback((item: DropdownItem) => {
+    setApplicationStatus(item?.name || null);
+  }, []);
+
+  const handleUpdateStatus = async () => {
+    if (!applicationStatus || !studentData?.id) {
+      toast.error("Please select an application status");
+      return;
+    }
+
+    setUpdatingStatus(true);
+    try {
+      const body = { applicationStatus };
+      const resultAction = await dispatch(
+        updateApplicationStatus({
+          body,
+          applicationId: studentData.id,
+        })
+      );
+
+      if (updateApplicationStatus.fulfilled.match(resultAction)) {
+        handleOpenModal();
+      } else if (updateApplicationStatus.rejected.match(resultAction)) {
+        toast.error(
+          (resultAction.payload as string) ||
+            "Failed to update application status"
+        );
+      }
+    } catch (error) {
+      toast.error("Failed to update application status");
+      console.error("Error updating status:", error);
+    } finally {
+      setUpdatingStatus(false);
+    }
+  };
+
   const getFileTypeFromUrl = (url: any) => {
     const segments = url.split("/");
     const fileExtension = segments.pop().split(".").pop();
@@ -169,11 +225,54 @@ const UploadedDocument = ({ studentData }: any) => {
     );
   }
 
+  const type: Status[] = [
+    { name: "CONDITIONAL_OFFER" },
+    { name: "UNCONDITIONAL_OFFER" },
+    { name: "PAID_DEPOSIT" },
+    { name: "CAS" },
+    { name: "VISA_APPROVED" },
+    { name: "STUDENT_ENROLLED" },
+    { name: "WITHDRAWN" },
+  ];
+
   return (
     <main className="font-outfit">
       <header>
         <h2 className="text-xl font-semibold">Uploaded Documents</h2>
       </header>
+      <div className="bg-[#FFF0FF] mt-8 w-[550px] rounded-xl p-4">
+        <div className="flex items-center gap-4">
+          <Dropdown
+            label="Application Status"
+            items={type}
+            selectedItem={
+              applicationStatus ? { name: applicationStatus } : null
+            }
+            onSelectItem={handleSelectStatus}
+            searchVisible
+            placeholder="Select status"
+            buttonColor="white"
+            className="w-[240px]"
+          />
+          <button.PrimaryButton
+            className="w-[240px] mt-6 justify-center rounded-full bg-linear-gradient py-[11px] text-center font-medium text-white"
+            disabled={updatingStatus || !applicationStatus}
+            type="button"
+            onClick={handleUpdateStatus}
+          >
+            {updatingStatus ? (
+              <ReactLoading
+                color="#FFFFFF"
+                type="spin"
+                width={24}
+                height={24}
+              />
+            ) : (
+              "Update Status"
+            )}
+          </button.PrimaryButton>
+        </div>
+      </div>
       <form onSubmit={updateDetails}>
         <div className="mt-[1.5em] w-full md:w-[90%] lg:w-[80%] grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 lg:gap-8">
           {studentData?.documents?.map((doc: any) => (

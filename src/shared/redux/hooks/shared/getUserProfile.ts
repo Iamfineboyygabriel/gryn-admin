@@ -59,7 +59,9 @@ export interface ApplicationDetails {
     status: string;
     userId: string;
     createdAt: string;
+    intake: string;
     updatedAt: string;
+    applicationStatus: string;
     staff: {
       email: string;
     };

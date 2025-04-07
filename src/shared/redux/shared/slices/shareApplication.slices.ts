@@ -774,6 +774,21 @@ export const deleteEnquiry = createAsyncThunk(
   }
 );
 
+export const updateApplicationStatus = createAsyncThunk(
+  "shareApplication/updateApplicationStatus",
+  async ({ body, applicationId }: any, thunkAPI) => {
+    try {
+      const data = await shareApplicationServices.updateApplicationStatus(
+        body,
+        applicationId
+      );
+      return data;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
 export const clearStaffPayment = createAsyncThunk(
   "shareApplication/clearStaffPayment",
   async () => {
@@ -883,6 +898,7 @@ interface ApplicationState {
   } | null;
   removeUser: null;
   removeEnquiry: null;
+  topAppplicationStatus: null;
 }
 
 const initialState: ApplicationState = {
@@ -984,6 +1000,7 @@ const initialState: ApplicationState = {
   applicationStatus: null,
   removeUser: null,
   removeEnquiry: null,
+  topAppplicationStatus: null,
 };
 
 export const shareApplicationSlice = createSlice({
@@ -1694,7 +1711,27 @@ export const shareApplicationSlice = createSlice({
       .addCase(deleteEnquiry.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to delete Enquiry";
-      });
+      })
+
+      .addCase(updateApplicationStatus.rejected, (state, action) => {
+        state.loading = false;
+        state.topAppplicationStatus = null;
+        state.error =
+          (action.payload as string) || "Failed to update application status.";
+      })
+
+      .addCase(updateApplicationStatus.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        updateApplicationStatus.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.loading = false;
+          state.topAppplicationStatus = action.payload;
+          state.error = null;
+        }
+      );
   },
 });
 
