@@ -27,6 +27,7 @@ const AllApplication: React.FC = () => {
     updateSortTerm,
     updateStatusTerm,
   } = useAllApplication();
+  console.log("applications", applications);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [status, setStatus] = useState<string>("");
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
@@ -164,6 +165,9 @@ const AllApplication: React.FC = () => {
         <td className="whitespace-nowrap px-6 py-4">
           {formatData(item?.documents?.length)}
         </td>
+        <td className="whitespace-nowrap px-6 py-4">
+          {formatData(item?.applicationStatus)}
+        </td>
         <td className="flex items-center whitespace-nowrap px-6 py-4">
           <button
             className={`mr-2 rounded-full px-3 py-2 w-[8em] text-white ${
@@ -271,6 +275,9 @@ const AllApplication: React.FC = () => {
               </th>
               <th className="px-6 py-3 text-left text-sm font-normal">
                 Documents
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-normal">
+                Application Status
               </th>
               <th className="px-6 py-3 text-left text-sm font-normal">
                 Action

@@ -34,11 +34,6 @@ interface Document {
   status: "PENDING" | "APPROVED" | "REJECTED";
 }
 
-interface UpdateDocStatus {
-  id: string;
-  remark: "APPROVED" | "REJECTED" | "PENDING";
-}
-
 type ActionType = "approve" | "reject";
 
 interface LoadingStatus {
@@ -444,15 +439,33 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
       </header>
 
       <section>
+        <div className="grid grid-cols-2">
+          <div className="">
+            <label
+              htmlFor="applicationStatus"
+              className="block mb-2 font-medium"
+            >
+              Application Status
+            </label>
+            <input
+              id="applicationStatus"
+              name="applicationStatus"
+              value={applicationDetails?.data?.applicationStatus}
+              readOnly
+              className="border-border focus:border-border w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
+            />
+          </div>
+        </div>
         <div className="mt-6 md:mt-8 grid w-full grid-cols-1 md:grid-cols-2 gap-6">
           {documents.map((doc) => (
             <div key={doc.id} className="flex flex-col">
-              <div>
-                <label htmlFor={doc.documentType} className="font-medium">
-                  {formatDocumentType(doc?.documentType)}
-                </label>
-              </div>
-              <div className="mt-2 flex items-center justify-between rounded-lg border border-gray-300 p-3">
+              <label
+                htmlFor={doc.documentType}
+                className="block mb-2 font-medium"
+              >
+                {formatDocumentType(doc?.documentType)}
+              </label>
+              <div className="flex items-center justify-between rounded-lg border border-gray-300 p-3">
                 <div className="flex items-center gap-3">
                   <img src={fileImg} alt="file_img" className="w-5 h-5" />
                   <p className="text-base truncate max-w-[120px] md:max-w-[150px] font-light">
@@ -517,6 +530,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
           </Alert>
         </div>
       )}
+
       <div className="flex flex-wrap items-center gap-4 mt-8">
         <button.PrimaryButton
           className="w-auto rounded-full px-4 bg-purple-white py-2 text-base font-medium text-primary-700"

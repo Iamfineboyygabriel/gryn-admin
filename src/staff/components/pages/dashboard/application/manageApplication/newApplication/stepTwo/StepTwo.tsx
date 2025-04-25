@@ -52,8 +52,13 @@ const StepTwo: React.FC<StepTwoProps> = ({
   const [degreeType, setDegreeType] = useState<DropdownItem | null>(null);
   const [selectedBox, setSelectedBox] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [intake, setIntake] = useState("");
 
   const dispatch: AppDispatch = useAppDispatch();
+
+  const [month, setMonth] = useState<string>("");
+  const [year, setYear] = useState<string>("");
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
   const bachelorTypes: DropdownItem[] = [
     { name: "BACHELOR" },
@@ -61,6 +66,42 @@ const StepTwo: React.FC<StepTwoProps> = ({
     { name: "PRE_MASTERS" },
     { name: "UNDERGRADUATE" },
   ];
+
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 6 }, (_, i) =>
+    (currentYear + i).toString()
+  );
+
+  const handleDateSelection = () => {
+    if (month && year) {
+      const monthIndex = months.findIndex((m) => m === month) + 1;
+      const formattedMonth = String(monthIndex).padStart(2, "0");
+      const formattedDate = `${year}-${formattedMonth}`;
+      setIntake(formattedDate);
+      setIsDatePickerOpen(false);
+    } else {
+      toast.error("Please select both month and year");
+    }
+  };
+
+  const toggleDatePicker = () => {
+    setIsDatePickerOpen(!isDatePickerOpen);
+  };
 
   const handleSelectItem = (item: DropdownItem | null) => {
     setDegreeType(item);
@@ -83,6 +124,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
           course,
           university,
           degreeType: finalDegreeType,
+          intake,
         };
 
         const response = await dispatch(createApplication(body)).unwrap();
@@ -117,8 +159,94 @@ const StepTwo: React.FC<StepTwoProps> = ({
         <h2 className="text-xl font-semibold">Degree</h2>
       </header>
       <form onSubmit={submitDegree}>
-        <div className="flex flex-col gap-[1.5em]">
-          <div className="mt-[2em] flex w-full lg:w-[40%] flex-col gap-[1.5em]">
+        <div className="flex mt-[2em] flex-col gap-[1.5em]">
+          <div className="lg:w-[40%] w-[80%] flex flex-col">
+            <label
+              htmlFor="intake"
+              className="flex-start flex font-medium dark:text-white"
+            >
+              Intake (Month/Year)
+              <CgAsterisk className="text-red-500" />
+            </label>
+
+            <div className="relative">
+              <input
+                type="text"
+                id="intake"
+                name="intake"
+                value={intake ? `${month} ${year}` : ""}
+                onClick={toggleDatePicker}
+                readOnly
+                required
+                placeholder="Select Month/Year"
+                className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none dark:border-none dark:bg-gray-700 dark:text-white cursor-pointer"
+                aria-required="true"
+                role="combobox"
+                aria-expanded={isDatePickerOpen}
+                aria-haspopup="listbox"
+              />
+
+              {isDatePickerOpen && (
+                <div className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
+                  <div className="p-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-2 dark:text-white">
+                          Month
+                        </label>
+                        <select
+                          className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 dark:text-white"
+                          value={month}
+                          onChange={(e) => setMonth(e.target.value)}
+                        >
+                          <option value="">Select Month</option>
+                          {months.map((m) => (
+                            <option key={m} value={m}>
+                              {m}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2 dark:text-white">
+                          Year
+                        </label>
+                        <select
+                          className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 dark:text-white"
+                          value={year}
+                          onChange={(e) => setYear(e.target.value)}
+                        >
+                          <option value="">Select Year</option>
+                          {years.map((y) => (
+                            <option key={y} value={y}>
+                              {y}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                    <div className="mt-4 flex justify-between">
+                      <button
+                        type="button"
+                        onClick={() => setIsDatePickerOpen(false)}
+                        className="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-white rounded-lg"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleDateSelection}
+                        className="px-4 py-2 bg-primary-700 text-white rounded-lg"
+                      >
+                        Apply
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="flex w-full lg:w-[40%] flex-col gap-[1.5em]">
             <div className="w-full">
               <label
                 htmlFor="university"

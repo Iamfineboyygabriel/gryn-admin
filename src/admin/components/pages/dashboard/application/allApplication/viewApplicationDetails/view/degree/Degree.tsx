@@ -35,10 +35,10 @@ const Degree: React.FC<{ applicationId: any }> = ({ applicationId }) => {
       </header>
       <div className="mt-[2em] flex flex-col gap-[1.5em]">
         <div className="flex w-[70%] lg:w-[55%] flex-col gap-[1.2em]">
-          {renderField(
+          {/* {renderField(
             "Application Status",
             applicationDetails?.data?.applicationStatus
-          )}
+          )} */}
           {renderField("Country", applicationDetails?.data?.degree?.country)}
           {renderField(
             "University",

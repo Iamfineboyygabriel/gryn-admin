@@ -439,7 +439,24 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
         <h2 className="text-xl font-semibold">Uploaded Documents</h2>
       </header>
       <section>
-        <div className="mt-[2em] grid w-full grid-cols-2 gap-10">
+        <div className="grid mt-[2em] grid-cols-2">
+          <div className="">
+            <label
+              htmlFor="applicationStatus"
+              className="block mb-2 font-medium"
+            >
+              Application Status
+            </label>
+            <input
+              id="applicationStatus"
+              name="applicationStatus"
+              value={applicationDetails?.data?.applicationStatus}
+              readOnly
+              className="border-border focus:border-border w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
+            />
+          </div>
+        </div>
+        <div className="grid mt-[1.5em] w-full grid-cols-2 gap-10">
           {documents.map((doc) => (
             <div key={doc.id}>
               <label htmlFor={doc.documentType} className="font-medium">
