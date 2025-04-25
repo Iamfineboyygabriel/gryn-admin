@@ -71,7 +71,6 @@ const StepTwo: React.FC<StepTwoProps> = ({
     setDegreeType(item);
   };
 
-  // Generate month options
   const months = [
     "January",
     "February",
@@ -156,11 +155,13 @@ const StepTwo: React.FC<StepTwoProps> = ({
   return (
     <main className="font-outfit">
       <header>
-        <h2 className="text-xl font-semibold dark:text-white">Degree</h2>
+        <h2 className="text-xl font-semibold mb-[2em] dark:text-white">
+          Degree
+        </h2>
       </header>
       <form onSubmit={submitDegree}>
-        <div className="flex flex-col mt-[2em] gap-[1.5em]">
-          <div className="lg:w-[40%] w-[80%] flex flex-col">
+        <div className="flex flex-col">
+          <div className="lg:w-[40%] mt-[2em] w-[80%] flex flex-col">
             <label
               htmlFor="intake"
               className="flex-start flex font-medium dark:text-white"
@@ -270,6 +271,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
               />
             </div>
           </div>
+
           <p>What do you want to study abroad?</p>
           <div className="flex lg:w-[70%] gap-[2em]">
             {studentDegree?.map((text, index) => (
