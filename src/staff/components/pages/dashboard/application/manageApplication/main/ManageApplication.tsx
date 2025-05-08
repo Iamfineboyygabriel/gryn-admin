@@ -167,23 +167,23 @@ const AllApplication: React.FC = () => {
           )}
         />
         <td className="whitespace-nowrap px-6 py-4">
-          {formatData(item?.phoneNumber)}
-        </td>
-        <td className="whitespace-nowrap px-6 py-4">
           {formatData(item?.email)}
         </td>
         <td className="whitespace-nowrap px-6 py-4">
-          {formatData(item?.degree?.degreeType)}
+          {formatData(item?.degree?.university)}
+        </td>
+        <td className="whitespace-nowrap px-6 py-4">
+          {formatData(item?.intake)}
         </td>
         <td className="whitespace-nowrap px-6 py-4">
           {formatData(item?.degree?.course)}
         </td>
         <td className="whitespace-nowrap px-6 py-4">
-          {formatData(item?.documents?.length)}
+          {formatData(item?.applicationStatus)}
         </td>
         <td className="flex items-center whitespace-nowrap px-6 py-4">
           <button
-            className={`mr-2 rounded-full w-[7em] px-3 py-2 text-white ${
+            className={`mr-2 rounded-full px-3 py-2 w-[8em] text-white ${
               item?.status === "SUBMITTED"
                 ? "bg-yellow-500"
                 : item?.status === "COMPLETED"
@@ -311,16 +311,18 @@ const AllApplication: React.FC = () => {
               <th className="whitespace-nowrap px-6 py-3 text-left text-sm font-normal">
                 Full Name
               </th>
-              <th className="px-6 py-3 text-left text-sm font-normal">Phone</th>
               <th className="px-6 py-3 text-left text-sm font-normal">Email</th>
+              <th className="px-6 py-3 text-left text-sm font-normal">
+                University
+              </th>
               <th className="px-6 py-3 whitespace-nowrap text-left text-sm font-normal">
-                Degree Type
+                Intake
               </th>
               <th className="px-6 py-3 text-left text-sm font-normal">
                 Course
               </th>
               <th className="px-6 py-3 text-left text-sm font-normal">
-                Documents
+                Application Status
               </th>
               <th className="px-6 py-3 text-left text-sm font-normal">
                 Action
