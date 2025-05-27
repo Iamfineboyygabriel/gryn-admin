@@ -4,14 +4,13 @@ import { button } from "../../../../shared/buttons/Button";
 import { usePermissions } from "../../../../shared/redux/hooks/admin/usePermission";
 import { staffSidebarLinks } from "../../../../data/data";
 import gryn_index_logo from "../../../../assets/svg/Gryn_Index _logo.svg";
-import { AppDispatch } from "../../../../shared/redux/store";
-import { useAppDispatch } from "../../../../shared/redux/hooks/shared/reduxHooks";
 import useUserProfile from "../../../../shared/redux/hooks/shared/getUserProfile";
 import { logOutUser } from "../../../../shared/redux/shared/slices/shareLanding.slices";
 import { toast } from "react-toastify";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Loader2 } from "lucide-react";
 import { useMessage } from "../../../../shared/redux/hooks/shared/message";
 import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../../../shared/redux/store";
 
 const Sidebar = () => {
   const location = useLocation();
@@ -38,18 +37,19 @@ const Sidebar = () => {
         const response = await dispatch(
           logOutUser(userProfile.userId)
         ).unwrap();
-
         if (response.status === 200) {
           toast.success("Logout successful");
+          sessionStorage.clear();
+          localStorage.clear();
+          navigate("/");
+        } else {
+          toast.error("Logout failed. Please try again.");
         }
+      } else {
+        toast.error("User ID not found. Please try again.");
       }
-      sessionStorage.clear();
-      localStorage.clear();
-      navigate("/");
     } catch (error) {
-      sessionStorage.clear();
-      localStorage.clear();
-      navigate("/");
+      toast.error("Logout failed due to an error. Please try again.");
     } finally {
       setIsLoggingOut(false);
     }
@@ -145,9 +145,16 @@ const Sidebar = () => {
           <button.PrimaryButton
             onClick={handleLogout}
             disabled={isLoggingOut}
-            className="btn-auth mx-auto w-full rounded-lg py-2 text-sm font-medium text-white"
+            className="btn-auth mx-auto w-full rounded-lg py-2 text-sm font-medium text-white flex items-center justify-center"
           >
-            Log Out
+            {isLoggingOut ? (
+              <>
+                <Loader2 className="animate-spin mr-2" size={16} />
+                Logging Out...
+              </>
+            ) : (
+              "Log Out"
+            )}
           </button.PrimaryButton>
         </div>
       </div>

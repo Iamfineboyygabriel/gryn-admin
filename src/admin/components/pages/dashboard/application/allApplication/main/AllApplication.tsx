@@ -165,6 +165,9 @@ const AllApplication: React.FC = () => {
         <td className="whitespace-nowrap px-6 py-4">
           {formatData(item?.applicationStatus)}
         </td>
+        <td className="whitespace-nowrap px-6 py-4">
+          {formatData(item?.createdBy?.profile?.email || "N/A")}
+        </td>
         <td className="flex items-center whitespace-nowrap px-6 py-4">
           <button
             className={`mr-2 rounded-full px-3 py-2 w-[8em] text-white ${
@@ -274,6 +277,9 @@ const AllApplication: React.FC = () => {
               </th>
               <th className="px-6 py-3 text-left text-sm font-normal">
                 Application Status
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-normal">
+                Created By
               </th>
               <th className="px-6 py-3 text-left text-sm font-normal">
                 Action

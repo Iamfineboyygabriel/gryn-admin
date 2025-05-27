@@ -17,7 +17,16 @@ const SkeletonRow = () => (
 );
 
 const AllApplication: React.FC = () => {
-  const { applications, totalPages, currentPage, loading, fetchApplications, searchTerm, updateSearchTerm } = useAllApplication();
+  const {
+    applications,
+    totalPages,
+    currentPage,
+    loading,
+    fetchApplications,
+    searchTerm,
+    updateSearchTerm,
+  } = useAllApplication();
+  console.log("applications", applications);
   const [sortField, setSortField] = useState("lastName");
   const [sortOrder, setSortOrder] = useState("asc");
 
@@ -28,9 +37,12 @@ const AllApplication: React.FC = () => {
     fetchApplications(currentPage, itemsPerPage);
   }, [fetchApplications, currentPage, itemsPerPage]);
 
-  const handlePageChange = useCallback((event: React.ChangeEvent<unknown>, page: number) => {
-    fetchApplications(page, itemsPerPage);
-  }, [fetchApplications, itemsPerPage])
+  const handlePageChange = useCallback(
+    (event: React.ChangeEvent<unknown>, page: number) => {
+      fetchApplications(page, itemsPerPage);
+    },
+    [fetchApplications, itemsPerPage]
+  );
 
   const filteredAndSortedApplications = useMemo(() => {
     if (!applications || !Array.isArray(applications)) {
@@ -38,9 +50,11 @@ const AllApplication: React.FC = () => {
     }
 
     const filtered = applications.filter((item: any) =>
-      `${item?.lastName || ""} ${item?.firstName || ""} ${item?.middleName || ""}`
+      `${item?.lastName || ""} ${item?.firstName || ""} ${
+        item?.middleName || ""
+      }`
         .toLowerCase()
-        .includes((searchTerm || '').toLowerCase())
+        .includes((searchTerm || "").toLowerCase())
     );
 
     return filtered.sort((a: any, b: any) => {
@@ -51,10 +65,12 @@ const AllApplication: React.FC = () => {
       return 0;
     });
   }, [applications, searchTerm, sortField, sortOrder]);
-  
+
   const handleViewDetails = useCallback(
     (applicationId: string) => {
-      navigate(`/staff/dashboard/application/manage_application/view_application/${applicationId}`);
+      navigate(
+        `/staff/dashboard/application/manage_application/view_application/${applicationId}`
+      );
     },
     [navigate]
   );
@@ -91,7 +107,7 @@ const AllApplication: React.FC = () => {
     if (filteredAndSortedApplications.length > 0) {
       return filteredAndSortedApplications.map((item: any, index: number) => (
         <tr
-          key={item.id}
+          key={item?.id}
           className="text-sm text-grey-primary font-medium border-b border-gray-200"
         >
           <td className="whitespace-nowrap px-6 py-4">
@@ -108,35 +124,42 @@ const AllApplication: React.FC = () => {
             )}
           />
           <td className="whitespace-nowrap px-6 py-4">
-            {formatData(item?.phoneNumber)}
-          </td>
-          <td className="whitespace-nowrap px-6 py-4">
             {formatData(item?.email)}
           </td>
           <td className="whitespace-nowrap px-6 py-4">
-            {formatData(item?.degree?.degreeType)}
+            {formatData(item?.degree?.university)}
+          </td>
+          <td className="whitespace-nowrap px-6 py-4">
+            {formatData(item?.intake)}
           </td>
           <td className="whitespace-nowrap px-6 py-4">
             {formatData(item?.degree?.course)}
           </td>
           <td className="whitespace-nowrap px-6 py-4">
-            {formatData(item?.documents?.length)}
+            {formatData(item?.applicationStatus)}
           </td>
-          <td className="whitespace-nowrap px-6 py-4">-</td>
           <td className="flex items-center whitespace-nowrap px-6 py-4">
             <button
-              className={`mr-2 rounded-full px-3 py-2 text-white ${
-                item?.status === "SUBMITTED" ? "bg-yellow-500" : "bg-green-500"
+              className={`mr-2 rounded-full px-3 py-2 w-[8em] text-white ${
+                item?.status === "SUBMITTED"
+                  ? "bg-yellow-500"
+                  : item?.status === "COMPLETED"
+                  ? "bg-green-500"
+                  : "bg-red-500"
               }`}
             >
-              {item?.status === "SUBMITTED" ? "In Progress" : "Completed"}
+              {item?.status === "SUBMITTED"
+                ? "In Progress"
+                : item?.status === "COMPLETED"
+                ? "Completed"
+                : "Declined"}
             </button>
-            <p
+            <button
               onClick={() => handleViewDetails(item?.id)}
               className="cursor-pointer font-semibold text-primary-700"
             >
               View details
-            </p>
+            </button>
           </td>
         </tr>
       ));
@@ -178,12 +201,12 @@ const AllApplication: React.FC = () => {
     <main>
       <div className="flex mt-[1.5em]">
         <div className="flex items-center gap-[1em]">
-        <div className="relative w-full">
+          <div className="relative w-full">
             <input
               type="text"
               className="w-full rounded-full bg-gray-100 py-2 pl-2 pr-[3em] text-sm"
               placeholder="Search"
-              value={searchTerm || ''}
+              value={searchTerm || ""}
               onChange={(e) => updateSearchTerm(e.target.value)}
             />
             <FiSearch className="absolute right-[1em] top-1/2 -translate-y-1/2 transform text-lg text-gray-500" />
@@ -204,40 +227,46 @@ const AllApplication: React.FC = () => {
         </div>
       </div>
       <div className="overflow-x-auto mt-[1em]">
-      <table className="mt-4 w-full table-auto">
-        <thead>
-          <tr className="text-gray-700  border-b border-gray-200">
-            <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
-            <th className="whitespace-nowrap px-6 py-3 text-left text-sm font-normal">
-              Full Name
-            </th>
-            <th className="px-6 py-3 text-left text-sm font-normal">Phone Number</th>
-            <th className="px-6 py-3 text-left text-sm font-normal">Email</th>
-            <th className="px-6 py-3 whitespace-nowrap text-left text-sm font-normal">
-              Degree Type
-            </th>
-            <th className="px-6 py-3 text-left text-sm font-normal">Course</th>
-            <th className="px-6 py-3 text-left text-sm font-normal">
-              Documents
-            </th>
-            <th className="px-6 py-3 text-left whitespace-nowrap text-sm font-normal">
-              Assigned Agent
-            </th>
-            <th className="px-6 py-3 text-left text-sm font-normal">Actions</th>
-          </tr>
-        </thead>
-        <tbody>{renderTableBody()}</tbody>
-      </table>
+        <table className="mt-4 w-full table-auto">
+          <thead>
+            <tr className="text-gray-700  border-b border-gray-200">
+              <th className="px-6 py-3 text-left text-sm font-normal">S/N</th>
+              <th className="whitespace-nowrap px-6 py-3 text-left text-sm font-normal">
+                Full Name
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-normal">
+                Phone Number
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-normal">Email</th>
+              <th className="px-6 py-3 whitespace-nowrap text-left text-sm font-normal">
+                Degree Type
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-normal">
+                Course
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-normal">
+                Documents
+              </th>
+              <th className="px-6 py-3 text-left whitespace-nowrap text-sm font-normal">
+                Assigned Agent
+              </th>
+              <th className="px-6 py-3 text-left text-sm font-normal">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody>{renderTableBody()}</tbody>
+        </table>
       </div>
       {!loading && applications?.length > 0 && (
         <div className="mt-6 flex justify-center">
-            <div className="mt-6 flex justify-center">
+          <div className="mt-6 flex justify-center">
             <CustomPagination
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
-            hasMore={applications.length === itemsPerPage}
-          />
-        </div>
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+              hasMore={applications.length === itemsPerPage}
+            />
+          </div>
         </div>
       )}
     </main>

@@ -6,31 +6,29 @@ import PersonalDetails from "../personalDetails/PersonalDetails";
 import Degree from "../degree/Degree";
 import UploadedDocuments from "../uploadedDocuments/UploadedDocuments";
 
-
 interface StudentData {
-    id: number;
-    phoneNumber: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    middleName: string;
-    dateOfBirth: string;
-    address: string;
-    localGovtArea: string;
-    state: string;
-    country: string;
-    internationalPassportNumber: string;
-    status: string;
-    userId: string;
-    agentId: string | null;
-    staffId: string | null;
-    isAssignedToStaff: boolean;
-    isAssignedToAgent: boolean;
-    createdAt: string;
-    updatedAt: string;
-    payment: any;
-  }
-
+  id: number;
+  phoneNumber: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  middleName: string;
+  dateOfBirth: string;
+  address: string;
+  localGovtArea: string;
+  state: string;
+  country: string;
+  internationalPassportNumber: string;
+  status: string;
+  userId: string;
+  agentId: string | null;
+  staffId: string | null;
+  isAssignedToStaff: boolean;
+  isAssignedToAgent: boolean;
+  createdAt: string;
+  updatedAt: string;
+  payment: any;
+}
 
 const UpdateApplication = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -91,7 +89,7 @@ const UpdateApplication = () => {
         <div className="mt-[2em]">
           {currentStep === 1 && (
             <PersonalDetails
-            studentData={studentData}
+              studentData={studentData}
               onNext={(data: any) => {
                 handleNextClick();
               }}
@@ -99,7 +97,7 @@ const UpdateApplication = () => {
           )}
           {currentStep === 2 && (
             <Degree
-             studentData={studentData}
+              studentData={studentData}
               onNext={(data: any) => handleNextClick(data)}
               applicationId={applicationId}
             />
