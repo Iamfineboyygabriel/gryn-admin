@@ -50,12 +50,12 @@ const DestinationDetails: React.FC<{ applicationId: any }> = ({
           {renderField("School Name", applicationDetails?.data?.schoolName)}
           {renderField("Assigned Agent", applicationDetails?.data?.destination)}
         </div>
-        <div className="mt-[1em] flex w-full lg:w-[47%] flex-col lg:flex-row gap-[3em]">
+        {/* <div className="mt-[1em] flex w-full lg:w-[47%] flex-col lg:flex-row gap-[3em]">
           {renderField(
             "Agent Email Address",
             applicationDetails?.data?.agent?.profile?.email
           )}
-        </div>
+        </div> */}
       </form>
     </main>
   );

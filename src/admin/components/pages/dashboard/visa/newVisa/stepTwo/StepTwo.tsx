@@ -19,7 +19,7 @@ interface CreateApplicationBody {
   issuedDate: string;
   expiryDate: string;
   destination: string;
-  agentEmail: string;
+  // agentEmail: string;
   schoolName: string;
 }
 
@@ -48,7 +48,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
   const [expiryDate, setExpiryDate] = useState("");
   const [passportNumber, setPassportNumber] = useState("");
   const [destination, setDestination] = useState<Country | null>(null);
-  const [agentEmail, setAgentEmail] = useState("");
+  // const [agentEmail, setAgentEmail] = useState("");
   const [schoolName, setSchoolName] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -63,8 +63,8 @@ const StepTwo: React.FC<StepTwoProps> = ({
       !destination ||
       !issuedDate ||
       !expiryDate ||
-      !passportNumber ||
-      !agentEmail
+      !passportNumber
+      // !agentEmail
     ) {
       return "Please fill in all required fields.";
     }
@@ -88,7 +88,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
         passportNumber,
         expiryDate,
         destination: destination?.name || "",
-        agentEmail,
+        // agentEmail,
         schoolName,
       };
 
@@ -246,7 +246,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
             </div>
           </div>
 
-          <div className="lg:mt-[1em] flex flex-col lg:flex-row gap-[1em] lg:gap-[3em]">
+          <div className="lg:mt-[1em] flex flex-col lg:flex-row gap-[1em] w-1/2 lg:gap-[3em]">
             <div className="w-full">
               <label htmlFor="schoolName" className="flex-start font-medium">
                 School Name
@@ -259,7 +259,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
                 className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none dark:text-white"
               />
             </div>
-            <div className="w-full">
+            {/* <div className="w-full">
               <label
                 htmlFor="assignedAgent"
                 className="flex-start flex font-medium"
@@ -275,7 +275,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
                 onChange={(e) => setAgentEmail(e.target.value)}
                 className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none dark:text-white"
               />
-            </div>
+            </div> */}
           </div>
         </div>
 

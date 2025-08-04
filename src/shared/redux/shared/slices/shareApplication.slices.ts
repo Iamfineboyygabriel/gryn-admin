@@ -35,7 +35,7 @@ interface CreateVisaApplicationBody {
   issuedDate: string;
   expiryDate: string;
   destination: string | null;
-  agentEmail: string;
+  // agentEmail: string;
   schoolName: string;
 }
 

@@ -18,7 +18,7 @@ interface CreateApplicationBody {
   issuedDate: string;
   expiryDate: string;
   destination: string | null;
-  agentEmail: string;
+  // agentEmail: string;
   schoolName: string;
 }
 
@@ -58,7 +58,7 @@ const StepTwo = ({
   const [expiryDate, setExpiryDate] = useState("");
   const [passportNumber, setPassportNumber] = useState("");
   const [destination, setDestination] = useState<Destination | null>(null);
-  const [agentEmail, setAgentEmail] = useState("");
+  // const [agentEmail, setAgentEmail] = useState("");
   const [schoolName, setSchoolName] = useState("");
 
   const dispatch: AppDispatch = useAppDispatch();
@@ -103,7 +103,7 @@ const StepTwo = ({
         passportNumber,
         expiryDate: expiryDate ? `${expiryDate}T00:00:00Z` : "",
         destination: destination?.name || null,
-        agentEmail,
+        // agentEmail,
         schoolName,
       };
 
@@ -112,7 +112,7 @@ const StepTwo = ({
       ).unwrap()) as ApiResponse;
 
       if (response.status === 201 && response.data) {
-        const newApplicationId = String(response.data.id); // Convert to string since onNext expects string
+        const newApplicationId = String(response.data.id);
         onNext({ newApplicationId, moveToStepThree: true });
       } else {
         toast.error(response.message || "Failed to create application");
@@ -226,7 +226,7 @@ const StepTwo = ({
               />
             </div>
 
-            <div className="w-full">
+            {/* <div className="w-full">
               <label
                 htmlFor="assignedAgent"
                 className="flex-start flex font-medium"
@@ -242,7 +242,7 @@ const StepTwo = ({
                 onChange={(e) => setAgentEmail(e.target.value)}
                 className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
               />
-            </div>
+            </div> */}
           </div>
         </div>
 
