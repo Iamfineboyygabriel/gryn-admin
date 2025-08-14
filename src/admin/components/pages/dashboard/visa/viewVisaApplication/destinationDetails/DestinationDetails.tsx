@@ -64,12 +64,6 @@ const DestinationDetails: React.FC<{ applicationId: any }> = ({
           {renderField("School Name", applicationDetails?.data?.schoolName)}
           {renderField("Assigned Agent", applicationDetails?.data?.destination)}
         </div>
-        <div className="flex flex-col lg:flex-row w-[47%]  gap-[1em] lg:gap-[3em]">
-          {renderField(
-            "Agent Email Address",
-            applicationDetails?.data?.agent?.profile?.email
-          )}
-        </div>
       </form>
     </main>
   );

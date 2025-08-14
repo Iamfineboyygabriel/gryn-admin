@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import transaction from "../../../../../../assets/svg/Transaction.svg";
 import DocumentPreviewModal from "../../../../../../shared/modal/DocumentPreviewModal";
 import { useAllVisa } from "../../../../../../shared/redux/hooks/shared/getUserProfile";
+
 import { FiSearch } from "react-icons/fi";
 import CustomPagination from "../../../../../../shared/utils/customPagination";
 import eye from "../../../../../../assets/svg/eyeImg.svg";
@@ -13,22 +14,22 @@ import rejected from "../../../../../../assets/svg/Rejected.svg";
 import pending from "../../../../../../assets/svg/Pending.svg";
 
 interface VisaData {
-  lastName: string;
-  firstName: string;
-  schoolName: string;
-  id: string;
-  agent: {
-    profile: {
-      lastName: string;
-      firstName: string;
+  lastName?: string;
+  firstName?: string;
+  schoolName?: string;
+  id?: string;
+  agent?: {
+    profile?: {
+      lastName?: string;
+      firstName?: string;
     };
   };
-  destination: string;
-  issuedDate: string;
-  document: Array<{
-    documentType: string;
-    publicURL: string;
-    remark: any;
+  destination?: string;
+  issuedDate?: string;
+  document?: Array<{
+    documentType?: string;
+    publicURL?: string;
+    remark?: any;
   }>;
 }
 
@@ -43,15 +44,7 @@ const SkeletonRow: React.FC = () => (
 );
 
 const Visa: React.FC = () => {
-  const {
-    visa,
-    loading,
-    totalPages,
-    currentPage,
-    fetchApplications,
-    searchTerm,
-    updateSearchTerm,
-  } = useAllVisa();
+  const { visa, loading, currentPage, fetchApplications } = useAllVisa();
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewFileType, setPreviewFileType] = useState<string>("");
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -60,8 +53,8 @@ const Visa: React.FC = () => {
   const navigate = useNavigate();
 
   const getFileTypeFromUrl = (url: string) => {
-    const segments = url.split("/");
-    const fileExtension = segments.pop()?.split(".").pop();
+    const segments = url?.split("/");
+    const fileExtension = segments?.pop()?.split(".")?.pop();
     switch (fileExtension) {
       case "pdf":
         return "application/pdf";
@@ -77,16 +70,6 @@ const Visa: React.FC = () => {
     }
   };
 
-  const handlePreview = (url: string) => {
-    const fileType = getFileTypeFromUrl(url);
-    if (fileType === "application/pdf") {
-      url += "&viewer=pdf";
-    }
-    setPreviewUrl(url);
-    setPreviewFileType(fileType);
-    setIsPreviewOpen(true);
-  };
-
   const closePreviewModal = () => {
     setIsPreviewOpen(false);
     setPreviewUrl(null);
@@ -94,12 +77,12 @@ const Visa: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchApplications(currentPage, itemsPerPage);
+    fetchApplications?.(currentPage, itemsPerPage);
   }, [fetchApplications, currentPage, itemsPerPage]);
 
   const handlePageChange = useCallback(
     (event: React.ChangeEvent<unknown>, page: number) => {
-      fetchApplications(page, itemsPerPage);
+      fetchApplications?.(page, itemsPerPage);
     },
     [fetchApplications, itemsPerPage]
   );
@@ -107,9 +90,9 @@ const Visa: React.FC = () => {
   const highlightText = (text: string, query: string) => {
     if (!query) return text;
     const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const parts = text.split(new RegExp(`(${escapedQuery})`, "gi"));
-    return parts.map((part, index) =>
-      part.toLowerCase() === query.toLowerCase() ? (
+    const parts = text?.split(new RegExp(`(${escapedQuery})`, "gi"));
+    return parts?.map((part, index) =>
+      part?.toLowerCase() === query?.toLowerCase() ? (
         <span key={index} className="bg-yellow-200">
           {part}
         </span>
@@ -128,7 +111,7 @@ const Visa: React.FC = () => {
     [navigate]
   );
 
-  const getStatusClassAndIcon = (status: string) => {
+  const getStatusClassAndIcon = (status?: string) => {
     switch (status) {
       case "APPROVED":
         return { class: "text-green-500", icon: approved };
@@ -142,10 +125,14 @@ const Visa: React.FC = () => {
   };
 
   const renderPaymentStatus = (
-    documents: Array<{ documentType: string; publicURL: string; remark: any }>,
-    type: string
+    documents?: Array<{
+      documentType?: string;
+      publicURL?: string;
+      remark?: any;
+    }>,
+    type?: string
   ) => {
-    const document = documents.find((doc) => doc.documentType === type);
+    const document = documents?.find((doc) => doc?.documentType === type);
     const { class: statusClass, icon } = getStatusClassAndIcon(
       document?.remark
     );
@@ -157,8 +144,10 @@ const Visa: React.FC = () => {
             <p>Paid</p>
             <button
               onClick={() => {
-                setPreviewUrl(document.publicURL);
-                setPreviewFileType(getFileTypeFromUrl(document.publicURL));
+                setPreviewUrl(document?.publicURL || null);
+                setPreviewFileType(
+                  getFileTypeFromUrl(document?.publicURL || "")
+                );
                 setIsPreviewOpen(true);
               }}
               className="flex items-center gap-1 rounded-full bg-purple-white px-3 py-[4px] text-center font-medium text-[#660066]"
@@ -169,7 +158,7 @@ const Visa: React.FC = () => {
           </div>
           <div className="flex items-center gap-2">
             {icon && <img src={icon} alt="Status Icon" />}
-            <p>{document.remark}</p>
+            <p>{document?.remark}</p>
           </div>
         </div>
       );
@@ -188,7 +177,7 @@ const Visa: React.FC = () => {
                 type="text"
                 className="border-border w-full rounded-full border-[1px] bg-gray-100 py-2 pl-2 pr-[3em] text-sm focus:border-grey-primary focus:outline-none dark:bg-gray-700 dark:text-white"
                 placeholder="Search..."
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => setSearchQuery(e.target?.value)}
               />
               <FiSearch className="absolute right-[1em] top-1/2 -translate-y-1/2 transform text-lg text-gray-500" />
             </div>
@@ -246,8 +235,8 @@ const Visa: React.FC = () => {
                 Array.from({ length: 5 }).map((_, index) => (
                   <SkeletonRow key={index} />
                 ))
-              ) : visa && visa.length > 0 ? (
-                visa.map((item: VisaData, index: number) => (
+              ) : visa?.length > 0 ? (
+                visa?.map((item: VisaData, index: number) => (
                   <tr
                     key={index}
                     className="text-sm font-medium text-grey-primary font-outfit"
@@ -255,49 +244,51 @@ const Visa: React.FC = () => {
                     <td className="whitespace-nowrap px-6 py-4">{index + 1}</td>
                     <td className="whitespace-nowrap gap-2 px-6 py-4">
                       {highlightText(
-                        `${item.lastName} ${item.firstName}`,
+                        `${item?.lastName || ""} ${item?.firstName || ""}`,
                         searchQuery
                       )}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
-                      {highlightText(item.schoolName || "-", searchQuery)}
+                      {highlightText(item?.schoolName || "-", searchQuery)}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
                       {highlightText(
-                        `${item.agent.profile.lastName} ${item.agent.profile.firstName}`,
+                        `${item?.agent?.profile?.lastName || ""} ${
+                          item?.agent?.profile?.firstName || ""
+                        }`,
                         searchQuery
                       )}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
-                      {highlightText(item.destination || "-", searchQuery)}
+                      {highlightText(item?.destination || "-", searchQuery)}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
-                      {renderPaymentStatus(item.document, "SERVICE_CHARGE")}
+                      {renderPaymentStatus(item?.document, "SERVICE_CHARGE")}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
-                      {renderPaymentStatus(item.document, "IHS")}
+                      {renderPaymentStatus(item?.document, "IHS")}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
-                      {renderPaymentStatus(item.document, "VISA_FEE")}
+                      {renderPaymentStatus(item?.document, "VISA_FEE")}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
                       {item?.issuedDate
                         ? highlightText(
                             new Date(item?.issuedDate)
-                              .toLocaleDateString("en-GB", {
+                              ?.toLocaleDateString("en-GB", {
                                 day: "2-digit",
                                 month: "2-digit",
                                 year: "numeric",
                               })
-                              .split("/")
-                              .join("-"),
+                              ?.split("/")
+                              ?.join("-"),
                             searchQuery
                           )
                         : "-"}
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
                       <button
-                        onClick={() => handleViewDetails(item.id)}
+                        onClick={() => handleViewDetails(item?.id)}
                         className="font-medium text-primary-700 dark:text-gray-500"
                       >
                         View Details
@@ -325,12 +316,12 @@ const Visa: React.FC = () => {
             </tbody>
           </table>
         </section>
-        {!loading && visa && visa.length > 0 && (
+        {!loading && visa?.length > 0 && (
           <div className="mt-6 flex justify-center">
             <CustomPagination
               currentPage={currentPage}
               onPageChange={handlePageChange}
-              hasMore={visa.length === itemsPerPage}
+              hasMore={visa?.length === itemsPerPage}
             />
           </div>
         )}
