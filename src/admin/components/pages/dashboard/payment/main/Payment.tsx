@@ -19,22 +19,22 @@ const SkeletonRow = () => (
 );
 
 interface SalaryItem {
-  id: number;
-  invoice?: {
+  id?: number;
+  salary?: {
     user?: {
       designation?: string;
       profile?: {
         lastName?: string;
         firstName?: string;
       };
-      item: {
-        name: string;
-        amount: number;
+      item?: {
+        name?: string;
+        amount?: number;
       }[];
     };
     document?: any[];
   };
-  createdAt: string;
+  createdAt?: string;
 }
 
 const Payment: React.FC = () => {
@@ -57,7 +57,7 @@ const Payment: React.FC = () => {
 
   const isSuperAdmin = useMemo(
     () => userProfile?.user?.role === "SUPER_ADMIN",
-    [userProfile]
+    [userProfile?.user?.role]
   );
 
   const itemsPerPage = 10;
@@ -68,12 +68,12 @@ const Payment: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchSalaries(currentPage, itemsPerPage, "COMPLETED");
+    fetchSalaries?.(currentPage, itemsPerPage, "COMPLETED");
   }, [fetchSalaries, currentPage, itemsPerPage]);
 
   const handlePageChange = useCallback(
     (event: React.ChangeEvent<unknown>, page: number) => {
-      fetchSalaries(page, itemsPerPage, "COMPLETED");
+      fetchSalaries?.(page, itemsPerPage, "COMPLETED");
     },
     [fetchSalaries, itemsPerPage]
   );
@@ -83,39 +83,45 @@ const Payment: React.FC = () => {
       return [];
     }
 
-    const filtered = salaries?.filter((item: SalaryItem) => {
-      const fullName = `${item?.invoice?.user?.profile?.lastName || ""} ${
-        item?.invoice?.user?.profile?.firstName || ""
+    const filtered = salaries?.filter?.((item: SalaryItem) => {
+      const fullName = `${item?.salary?.user?.profile?.lastName || ""} ${
+        item?.salary?.user?.profile?.firstName || ""
       }`.toLowerCase();
-      return fullName?.includes((searchTerm || "").toLowerCase());
+      return fullName?.includes?.((searchTerm || "").toLowerCase());
     });
 
-    return filtered.sort((a: SalaryItem, b: SalaryItem) => {
-      const aValue = (a?.invoice?.user?.profile?.lastName || "")
-        .toString()
-        .toLowerCase();
-      const bValue = (b?.invoice?.user?.profile?.lastName || "")
-        .toString()
-        .toLowerCase();
-      if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
-      if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
-      return 0;
-    });
+    return (
+      filtered?.sort?.((a: SalaryItem, b: SalaryItem) => {
+        const aValue =
+          (a?.salary?.user?.profile?.lastName || "")
+            ?.toString?.()
+            ?.toLowerCase?.() || "";
+        const bValue =
+          (b?.salary?.user?.profile?.lastName || "")
+            ?.toString?.()
+            ?.toLowerCase?.() || "";
+        if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
+        if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
+        return 0;
+      }) || []
+    );
   }, [salaries, searchTerm, sortOrder]);
 
   const formatData = useCallback((data: any) => (data ? data : "-"), []);
 
   const sanitizeHTML = useCallback((html: string) => {
-    return { __html: DOMPurify.sanitize(html) };
+    return { __html: DOMPurify?.sanitize?.(html) || "" };
   }, []);
 
   const highlightText = useCallback(
     (text: string) => {
-      if (!searchTerm?.trim()) return text;
+      if (!searchTerm?.trim?.()) return text;
       const regex = new RegExp(`(${searchTerm})`, "gi");
-      return text.replace(
-        regex,
-        (match: string) => `<mark class="bg-yellow-300">${match}</mark>`
+      return (
+        text?.replace?.(
+          regex,
+          (match: string) => `<mark class="bg-yellow-300">${match}</mark>`
+        ) || text
       );
     },
     [searchTerm]
@@ -129,10 +135,10 @@ const Payment: React.FC = () => {
     }
 
     if (filteredAndSortedSalaries?.length > 0) {
-      return filteredAndSortedSalaries?.map(
+      return filteredAndSortedSalaries?.map?.(
         (item: SalaryItem, index: number) => (
           <tr
-            key={item?.id}
+            key={item?.id || index}
             className="text-sm text-grey-primary font-medium border-b border-gray-200"
           >
             <td className="whitespace-nowrap px-6 py-4">
@@ -143,16 +149,13 @@ const Payment: React.FC = () => {
               dangerouslySetInnerHTML={sanitizeHTML(
                 highlightText(
                   `${formatData(
-                    item?.invoice?.user?.profile?.lastName
-                  )} ${formatData(item?.invoice?.user?.profile?.firstName)}`
+                    item?.salary?.user?.profile?.lastName
+                  )} ${formatData(item?.salary?.user?.profile?.firstName)}`
                 )
               )}
             />
             <td className="whitespace-nowrap px-6 py-4">
-              {formatData(item?.invoice?.user?.designation)}
-            </td>
-            <td className="whitespace-nowrap px-6 py-4">
-              {formatData(item?.invoice?.document?.length)}
+              {formatData(item?.salary?.user?.designation)}
             </td>
             <PrivateElement feature="PAYMENTS" page="View Details">
               <td className="flex items-center whitespace-nowrap px-6 py-4">
@@ -203,7 +206,7 @@ const Payment: React.FC = () => {
             className="w-full rounded-full bg-gray-100 py-2 pl-2 pr-[3em] text-sm"
             placeholder="Search"
             value={searchTerm || ""}
-            onChange={(e) => updateSearchTerm(e.target.value)}
+            onChange={(e) => updateSearchTerm?.(e?.target?.value)}
           />
           <FiSearch className="mr-3 text-lg text-gray-500" />
         </div>
@@ -219,9 +222,9 @@ const Payment: React.FC = () => {
               <th className="px-6 py-3 text-left text-sm font-normal">
                 Designation
               </th>
-              <th className="px-6 py-3 text-left whitespace-nowrap text-sm font-normal">
+              {/* <th className="px-6 py-3 text-left whitespace-nowrap text-sm font-normal">
                 Uploaded Documents
-              </th>
+              </th> */}
               <PrivateElement feature="PAYMENTS" page="View Details">
                 <th className="px-6 py-3 text-left text-sm font-normal">
                   Action
@@ -232,12 +235,12 @@ const Payment: React.FC = () => {
           <tbody className="overflow-y-auto">{renderTableBody()}</tbody>
         </table>
       </div>
-      {!loading && salaries?.length > 0 && (
+      {!loading && (salaries?.length || 0) > 0 && (
         <div className="mt-6 flex justify-center">
           <CustomPagination
             currentPage={currentPage}
             onPageChange={handlePageChange}
-            hasMore={salaries?.length === itemsPerPage}
+            hasMore={(salaries?.length || 0) === itemsPerPage}
           />
         </div>
       )}

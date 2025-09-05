@@ -117,8 +117,8 @@ const AllStaffPaymentModal = ({ isOpen, onClose, payment }: any) => {
                 </p>
                 <p className="font-semibold text-primary-700 mt-[4px] text-2xl">
                   NGN{" "}
-                  {payment?.invoice?.item[0]?.amount
-                    ? formatAmount(payment?.invoice?.item[0].amount)
+                  {payment?.salary?.amount
+                    ? formatAmount(payment?.salary?.amount)
                     : "-"}
                 </p>
               </h1>
@@ -129,7 +129,7 @@ const AllStaffPaymentModal = ({ isOpen, onClose, payment }: any) => {
             <div className="flex justify-between">
               <p className="text-sm text-gray-500">Invoice No.</p>
               <p className="font-semibold text-sm">
-                {payment?.invoice?.invoiceNumber || "-"}
+                {payment?.receiptNo || "-"}
               </p>
             </div>
 
@@ -137,8 +137,8 @@ const AllStaffPaymentModal = ({ isOpen, onClose, payment }: any) => {
               <p className="text-sm text-gray-500">Amount</p>
               <p className="font-semibold text-sm">
                 NGN{" "}
-                {payment?.invoice?.item[0]?.amount
-                  ? formatAmount(payment?.invoice?.item[0].amount)
+                {payment?.salary?.amount
+                  ? formatAmount(payment?.salary?.amount)
                   : "-"}
               </p>
             </div>
@@ -146,7 +146,7 @@ const AllStaffPaymentModal = ({ isOpen, onClose, payment }: any) => {
             <div className="flex justify-between">
               <p className="text-sm text-gray-500">Payment Name</p>
               <p className="font-semibold text-sm">
-                {payment?.invoice?.item?.[0]?.name || "-"}
+                {payment?.salary.description || "-"}
               </p>
             </div>
 
