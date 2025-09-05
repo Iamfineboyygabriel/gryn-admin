@@ -1,16 +1,11 @@
 import React, { useMemo, useState, useCallback, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
 import DOMPurify from "dompurify";
 import { FiSearch } from "react-icons/fi";
 import transaction from "../../../../../../assets/svg/Transaction.svg";
 import CustomPagination from "../../../../../../shared/utils/customPagination";
 import { useAllSalary } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
-import { button } from "../../../../../../shared/buttons/Button";
-import plus from "../../../../../../assets/svg/plus.svg";
 import AllStaffPaymentModal from "../../../../../../shared/modal/AllStaffPaymentModal";
-import useUserProfile, {
-  useCurrentUser,
-} from "../../../../../../shared/redux/hooks/shared/getUserProfile";
+import useUserProfile from "../../../../../../shared/redux/hooks/shared/getUserProfile";
 import { PrivateElement } from "../../../../../../shared/redux/hooks/admin/PrivateElement";
 
 const SkeletonRow = () => (
@@ -51,6 +46,7 @@ const Payment: React.FC = () => {
     searchTerm,
     updateSearchTerm,
   } = useAllSalary();
+  console.log("salaries", salaries);
   const [selectedPayment, setSelectedPayment] = useState<SalaryItem | null>(
     null
   );

@@ -117,6 +117,11 @@ export interface VisaApplicationDetails {
     otherName: string;
     id: string;
     phoneNumber: string;
+    createdBy: {
+      profile: {
+        email: string;
+      };
+    };
     firstName: string;
     lastName: string;
     middleName: string;

@@ -18,7 +18,7 @@ interface VisaData {
   firstName: string;
   schoolName: string;
   id: string;
-  agent: {
+  createdBy: {
     profile: {
       lastName: string;
       firstName: string;
@@ -115,16 +115,6 @@ const Visa: React.FC = () => {
       default:
         return "application/octet-stream";
     }
-  };
-
-  const handlePreview = (url: string) => {
-    const fileType = getFileTypeFromUrl(url);
-    if (fileType === "application/pdf") {
-      url += "&viewer=pdf";
-    }
-    setPreviewUrl(url);
-    setPreviewFileType(fileType);
-    setIsPreviewOpen(true);
   };
 
   const closePreviewModal = () => {
@@ -266,7 +256,7 @@ const Visa: React.FC = () => {
                   School Name
                 </th>
                 <th className="px-6 py-3 whitespace-nowrap text-left text-sm font-normal">
-                  Assigned Agent
+                  Created By
                 </th>
                 <th className="px-6 py-3 whitespace-nowrap text-left text-sm font-normal">
                   Destination
@@ -312,9 +302,13 @@ const Visa: React.FC = () => {
                     </td>
                     <td className="whitespace-nowrap px-6 py-4">
                       {renderHighlightedText(
-                        `${item?.agent?.profile?.lastName} ${item?.agent?.profile?.firstName}`
+                        item?.createdBy?.profile?.lastName &&
+                          item?.createdBy?.profile?.firstName
+                          ? `${item.createdBy.profile.lastName} ${item.createdBy.profile.firstName}`
+                          : "N/A"
                       )}
                     </td>
+
                     <td className="whitespace-nowrap px-6 py-4">
                       {renderHighlightedText(item?.destination || "-")}
                     </td>
