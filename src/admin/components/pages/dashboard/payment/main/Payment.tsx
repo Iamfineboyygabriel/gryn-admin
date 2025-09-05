@@ -46,7 +46,6 @@ const Payment: React.FC = () => {
     searchTerm,
     updateSearchTerm,
   } = useAllSalary();
-  console.log("salaries", salaries);
   const [selectedPayment, setSelectedPayment] = useState<SalaryItem | null>(
     null
   );
