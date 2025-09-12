@@ -1,12 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../../../../../shared/redux/store";
 import CustomPagination from "../../../../../../shared/utils/customPagination";
 import { FiSearch } from "react-icons/fi";
 import { useAllEnquiryData } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
 import { button } from "../../../../../../shared/buttons/Button";
 import noData from "../../../../../../assets/svg/Transaction.svg";
-import EnquiryDetailModal from "../../../../../../shared/modal/EnquiriesDetailModal";
 import EnquiryForm from "../../../../../../shared/modal/EnquiryForm";
 import { FaRegFileAlt } from "react-icons/fa";
 import EnquiryDetailModalStaff from "../../../../../../shared/modal/EnquiriesDetailModalStaff";
@@ -25,6 +22,7 @@ interface EnquiryItem {
   id: any;
   fullName: string;
   email: string;
+  status: EnquiryStatus;
   currentLocation: string;
   phoneNumber: string;
   sponsor: string;
@@ -39,6 +37,12 @@ interface EnquiryItem {
   };
 }
 
+enum EnquiryStatus {
+  SUBMITTED = "SUBMITTED",
+  COMPLETED = "COMPLETED",
+  DECLINED = "DECLINED",
+}
+
 const Enquiries = () => {
   const {
     allEnquiries,
@@ -49,7 +53,6 @@ const Enquiries = () => {
     fetchEnq,
     updateSearchTerm,
   } = useAllEnquiryData();
-  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm || "");
 
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
@@ -76,7 +79,20 @@ const Enquiries = () => {
     }, 300);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [localSearchTerm, searchTerm, fetchEnq, itemsPerPage]);
+  }, [localSearchTerm, searchTerm, fetchEnq, itemsPerPage, updateSearchTerm]);
+
+  const getStatusLabel = (status: EnquiryStatus) => {
+    switch (status) {
+      case EnquiryStatus.SUBMITTED:
+        return "Submitted";
+      case EnquiryStatus.COMPLETED:
+        return "Completed";
+      case EnquiryStatus.DECLINED:
+        return "Declined";
+      default:
+        return status || "Submitted";
+    }
+  };
 
   useEffect(() => {
     fetchEnq(currentPage, itemsPerPage);
@@ -155,6 +171,22 @@ const Enquiries = () => {
         <td className="whitespace-nowrap px-6 py-4">
           {formatData(item?.hearAboutUs)}
         </td>
+        <td className="whitespace-nowrap px-6 py-4">
+          <span
+            className={`px-3 py-1 rounded-full text-xs font-medium ${
+              item?.status === EnquiryStatus.SUBMITTED
+                ? "bg-blue-100 text-blue-600"
+                : item?.status === EnquiryStatus.COMPLETED
+                ? "bg-green-100 text-green-600"
+                : item?.status === EnquiryStatus.DECLINED
+                ? "bg-red-100 text-red-600"
+                : "bg-gray-100 text-gray-600"
+            }`}
+          >
+            {getStatusLabel(formatData(item?.status))}
+          </span>
+        </td>
+
         <td
           className="whitespace-nowrap text-primary-700 font-semibold cursor-pointer px-6 py-4"
           onClick={() => handleViewDetails(item)}
@@ -163,14 +195,7 @@ const Enquiries = () => {
         </td>
       </tr>
     ));
-  }, [
-    filteredEnq,
-    currentPage,
-    itemsPerPage,
-    formatData,
-    loading,
-    selectedUsers,
-  ]);
+  }, [filteredEnq, currentPage, itemsPerPage, formatData, loading]);
 
   const handleItemsPerPageChange = (newLimit: number) => {
     setItemsPerPage(newLimit);
@@ -249,6 +274,9 @@ const Enquiries = () => {
                 </th>
                 <th className="px-6 py-3 whitespace-nowrap text-left text-sm font-normal">
                   Social Media
+                </th>
+                <th className="px-6 py-3 whitespace-nowrap text-left text-sm font-normal">
+                  Status
                 </th>
                 <th className="px-6 py-3 text-left text-sm font-normal">
                   Action

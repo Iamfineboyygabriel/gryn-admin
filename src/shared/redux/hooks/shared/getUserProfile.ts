@@ -115,6 +115,7 @@ export interface VisaApplicationDetails {
   data: {
     email: string;
     otherName: string;
+    type: string;
     id: string;
     phoneNumber: string;
     createdBy: {

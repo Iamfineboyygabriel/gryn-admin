@@ -3,7 +3,6 @@ import gryn_index_logo from "../../assets/svg/Gryn_Index _logo.svg";
 import Success from "../../assets/svg/ResetPassword.svg";
 import dayjs from "dayjs";
 import DocumentPreviewModal from "./DocumentPreviewModal";
-import eye from "../../assets/svg/eyeImg.svg";
 import download from "../../assets/svg/download.svg";
 import file from "../../assets/svg/File.svg";
 
@@ -41,34 +40,6 @@ const AllStaffPaymentModal = ({ isOpen, onClose, payment }: any) => {
         document.body.removeChild(link);
       })
       .catch((error) => console.error("Download failed:", error));
-  };
-
-  const getFileTypeFromUrl = (url: string) => {
-    const segments = url?.split("/");
-    const fileExtension = segments?.pop()?.split(".")?.pop();
-    switch (fileExtension) {
-      case "pdf":
-        return "application/pdf";
-      case "jpg":
-      case "jpeg":
-        return "image/jpeg";
-      case "png":
-        return "image/png";
-      case "gif":
-        return "image/gif";
-      default:
-        return "application/octet-stream";
-    }
-  };
-
-  const handlePreview = (url: string) => {
-    const fileType = getFileTypeFromUrl(url);
-    if (fileType === "application/pdf") {
-      url += "&viewer=pdf";
-    }
-    setPreviewUrl(url);
-    setPreviewFileType(fileType);
-    setIsPreviewOpen(true);
   };
 
   const closePreviewModal = () => {
@@ -176,14 +147,6 @@ const AllStaffPaymentModal = ({ isOpen, onClose, payment }: any) => {
                   <span className="text-sm">Document {index + 1}</span>
                 </p>
                 <div className="flex gap-[1px]">
-                  {/* <button
-                  onClick={() => handlePreview(doc.publicURL)}
-                  className="flex items-center gap-1 rounded-full bg-white px-2 py-[3px] text-center font-medium text-[#660066]"
-                >
-                  <img src={eye} alt="eye" />
-                  <span className="mr-3">View</span>
-                </button> */}
-
                   <button
                     onClick={() => handleDownload(doc.publicURL, doc.name)}
                     className="flex items-center gap-1 rounded-full bg-white px-2 py-[3px] text-center font-medium text-[#660066]"

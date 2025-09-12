@@ -563,6 +563,22 @@ export const assignEnquiryToStaff = createAsyncThunk(
   }
 );
 
+export const updateEnquiryStatus = createAsyncThunk(
+  "application/updateEnquiryStatus",
+  async ({ body, enquiryId }: { body: any; enquiryId: any }, thunkAPI) => {
+    try {
+      const data = await applicationServices.updateEnquiryStatus(
+        body,
+        enquiryId
+      );
+      return data;
+    } catch (error: any) {
+      error.toString();
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
 export const clearStaffPayment = createAsyncThunk(
   "application/clearStaffPayment",
   async () => {
@@ -607,6 +623,7 @@ interface ApplicationState {
   getApexChatStats: any;
   getStaffStats: any;
   markCompleted: null;
+  markEnquiryStatus: null;
   registerSchool: null;
   assignAgent: null;
   assignApplicationStaff: null;
@@ -678,6 +695,7 @@ const initialState: ApplicationState = {
   getApexChatStats: null,
   getStaffStats: null,
   markCompleted: null,
+  markEnquiryStatus: null,
   registerSchool: null,
   assignAgent: null,
   assignApplicationStaff: null,
@@ -1397,6 +1415,19 @@ export const applicationSlice = createSlice({
         state.assignEnquiryStaff = null;
         state.error =
           (action.payload as string) || "Failed to assign enquiry to staff.";
+      })
+
+      .addCase(updateEnquiryStatus.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateEnquiryStatus.fulfilled, (state, action) => {
+        state.loading = false;
+        state.markEnquiryStatus = action.payload as null;
+      })
+      .addCase(updateEnquiryStatus.rejected, (state) => {
+        state.loading = false;
+        state.markCompleted = null;
       });
   },
 });

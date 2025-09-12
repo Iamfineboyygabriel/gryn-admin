@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useCallback, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useCallback, useState } from "react";
 import { FiSearch, FiLogOut } from "react-icons/fi";
 import transaction from "../../../../../../assets/svg/Transaction.svg";
 import { Link, useNavigate } from "react-router-dom";
@@ -14,7 +15,7 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../../../../../shared/redux/store";
 import { deleteUser } from "../../../../../../shared/redux/shared/slices/shareApplication.slices";
 import DeleteStaffModal from "../modal/DeleteStaffModal";
-import SuccessModal from "../modal/SuccessModal";
+
 import { logoutAdminUserBySuperAdmin } from "../../../../../../shared/redux/shared/slices/shareLanding.slices";
 import { toast } from "react-toastify";
 
@@ -401,7 +402,7 @@ const AllStaff = () => {
           isOpen={showSuccessModal}
           onClose={() => setShowSuccessModal(false)}
         >
-          <SuccessModal
+          <DeleteStaffModal
             message={`Successfully deleted ${selectedUsers.length} staff ${
               selectedUsers.length === 1 ? "member" : "members"
             }.`}

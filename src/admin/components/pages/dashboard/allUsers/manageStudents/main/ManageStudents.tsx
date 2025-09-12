@@ -13,7 +13,6 @@ import { useAllStudents } from "../../../../../../../shared/redux/hooks/admin/ge
 import { PrivateElement } from "../../../../../../../shared/redux/hooks/admin/PrivateElement";
 import { deleteUser } from "../../../../../../../shared/redux/shared/slices/shareApplication.slices";
 import DeleteStudentModal from "../modal/DeleteStudentModal";
-import SuccessModal from "../modal/SuccessModal";
 import { AppDispatch } from "../../../../../../../shared/redux/store";
 
 interface Student {
@@ -80,6 +79,7 @@ const AllStudents: React.FC = () => {
   const navigate = useNavigate();
   const itemsPerPage = 10;
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleCheckboxChange = (studentId: string) => {
     setSelectedStudents((prev) => {
       if (prev.includes(studentId)) {
@@ -353,7 +353,7 @@ const AllStudents: React.FC = () => {
           isOpen={showSuccessModal}
           onClose={() => setShowSuccessModal(false)}
         >
-          <SuccessModal
+          <DeleteStudentModal
             message={`Successfully deleted ${selectedStudents.length} staff ${
               selectedStudents.length === 1 ? "member" : "members"
             }.`}

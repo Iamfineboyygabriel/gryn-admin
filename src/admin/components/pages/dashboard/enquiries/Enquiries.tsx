@@ -4,8 +4,8 @@ import { AppDispatch } from "../../../../../shared/redux/store";
 import PieChartEnquires from "../Reports/pieChart/PieChartEnquires";
 import CustomPagination from "../../../../../shared/utils/customPagination";
 import { FiSearch } from "react-icons/fi";
+import { FaRegFileAlt, FaPen } from "react-icons/fa";
 import { useAllEnquiryData } from "../../../../../shared/redux/hooks/admin/getAdminProfile";
-import DOMPurify from "dompurify";
 import { button } from "../../../../../shared/buttons/Button";
 import noData from "../../../../../assets/svg/Transaction.svg";
 import EnquiryDetailModal from "../../../../../shared/modal/EnquiriesDetailModal";
@@ -14,11 +14,11 @@ import Modal from "../../../../../shared/modal/Modal";
 import DeleteEnquiryModal from "./modal/DeleteEnquiryModal";
 import SuccessModal from "./modal/SuccessModal";
 import { deleteEnquiry } from "../../../../../shared/redux/shared/slices/shareApplication.slices";
-import { FaRegFileAlt } from "react-icons/fa";
+import EnquiryStatusUpdateModal from "../../../../../shared/modal/UpdateEnquiryStatusModal";
 
 const SkeletonRow: React.FC = () => (
   <tr className="animate-pulse border-b border-gray-200">
-    {Array.from({ length: 7 })?.map((_, index) => (
+    {Array.from({ length: 8 }).map((_, index) => (
       <td key={index} className="px-6 py-4">
         <div className="h-4 bg-gray-200 rounded"></div>
       </td>
@@ -39,6 +39,7 @@ interface EnquiryItem {
   highestEducation: string;
   desiredCourse: string;
   hearAboutUs: string;
+  status: "SUBMITTED" | "COMPLETED" | "DECLINED" | string;
   staff?: {
     email: string;
   };
@@ -59,6 +60,10 @@ const Enquiries = () => {
   const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm || "");
   const [isDeletingEnquiries, setIsDeletingEnquiries] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [statusModalOpen, setStatusModalOpen] = useState(false);
+  const [enquiryToUpdate, setEnquiryToUpdate] = useState<EnquiryItem | null>(
+    null
+  );
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -71,6 +76,11 @@ const Enquiries = () => {
   const handleViewDetails = (details: EnquiryItem) => {
     setSelectedEnquiries(details);
     setIsModalOpen(true);
+  };
+
+  const handleOpenStatusModal = (enquiry: EnquiryItem) => {
+    setEnquiryToUpdate(enquiry);
+    setStatusModalOpen(true);
   };
 
   const handleDeleteSelected = () => {
@@ -118,6 +128,7 @@ const Enquiries = () => {
       setIsDeletingEnquiries(false);
     }
   };
+
   const handleFormModal = () => {
     setIsLinkModalOpen(true);
   };
@@ -132,6 +143,32 @@ const Enquiries = () => {
     });
   };
 
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "SUBMITTED":
+        return "Submitted";
+      case "COMPLETED":
+        return "Completed";
+      case "DECLINED":
+        return "Declined";
+      default:
+        return status || "-";
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "SUBMITTED":
+        return "text-blue-600 bg-blue-50 border border-blue-200 px-2 py-1 rounded-full text-xs";
+      case "COMPLETED":
+        return "text-green-600 bg-green-50 border border-green-200 px-2 py-1 rounded-full text-xs";
+      case "DECLINED":
+        return "text-red-600 bg-red-50 border border-red-200 px-2 py-1 rounded-full text-xs";
+      default:
+        return "text-gray-600 bg-gray-50 border border-gray-200 px-2 py-1 rounded-full text-xs";
+    }
+  };
+
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       if (localSearchTerm !== searchTerm) {
@@ -141,7 +178,7 @@ const Enquiries = () => {
     }, 300);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [localSearchTerm, searchTerm, fetchEnq, itemsPerPage]);
+  }, [localSearchTerm, searchTerm, fetchEnq, itemsPerPage, updateSearchTerm]);
 
   useEffect(() => {
     fetchEnq(currentPage, itemsPerPage);
@@ -187,7 +224,7 @@ const Enquiries = () => {
     if (!filteredEnq?.length) {
       return (
         <tr>
-          <td colSpan={8} className="px-6 py-4 text-center text-gray-500">
+          <td colSpan={9} className="px-6 py-4 text-center text-gray-500">
             <div className="mt-[2em] flex flex-col items-center justify-center">
               <img src={noData} alt="No applications" />
               <p className="mt-2 text-sm text-gray-500">No enquiries found.</p>
@@ -228,11 +265,22 @@ const Enquiries = () => {
         <td className="whitespace-nowrap px-6 py-4">
           {formatData(item?.hearAboutUs)}
         </td>
-        <td
-          className="whitespace-nowrap text-primary-700 font-semibold cursor-pointer px-6 py-4"
-          onClick={() => handleViewDetails(item)}
-        >
-          View Details
+        <td className="whitespace-nowrap px-6 py-4">
+          <span className={getStatusColor(item?.status)}>
+            {getStatusLabel(item?.status)}
+          </span>
+        </td>
+        <td className="whitespace-nowrap px-6 py-4 flex items-center gap-3">
+          <span
+            className="text-primary-700 font-semibold cursor-pointer"
+            onClick={() => handleViewDetails(item)}
+          >
+            View Details
+          </span>
+          <FaPen
+            className="text-gray-600 cursor-pointer"
+            onClick={() => handleOpenStatusModal(item)}
+          />
         </td>
       </tr>
     ));
@@ -335,6 +383,9 @@ const Enquiries = () => {
                 <th className="px-6 py-3 whitespace-nowrap text-left text-sm font-normal">
                   Social Media
                 </th>
+                <th className="px-6 py-3 whitespace-nowrap text-left text-sm font-normal">
+                  Status
+                </th>
                 <th className="px-6 py-3 text-left text-sm font-normal">
                   Action
                 </th>
@@ -388,6 +439,14 @@ const Enquiries = () => {
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           enquiry={selectedEnquiries}
+        />
+      )}
+
+      {statusModalOpen && enquiryToUpdate && (
+        <EnquiryStatusUpdateModal
+          isOpen={statusModalOpen}
+          onClose={() => setStatusModalOpen(false)}
+          enquiry={enquiryToUpdate}
         />
       )}
 

@@ -16,6 +16,7 @@ const NewApplication = () => {
     lastName: "",
     email: "",
     otherName: "",
+    type: "",
   });
 
   const navigate = useNavigate();

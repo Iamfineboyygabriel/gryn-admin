@@ -81,39 +81,9 @@ const ApplicationSummary: React.FC<ApplicationSummaryProps> = ({
     }
   };
 
-  const handleDecline = async () => {
-    resetState();
-    setDeclineLoading(true);
-    setActionTaken("reject");
-    try {
-      const response = await onReject();
-      if (response.status === 200) {
-        setShowSendMessage(true);
-      } else {
-        throw new Error("Decline failed");
-      }
-    } catch (error) {
-      console.error("Decline failed:", error);
-      setError(
-        error instanceof Error ? error.message : "An unexpected error occurred"
-      );
-    } finally {
-      setDeclineLoading(false);
-    }
-  };
-
-  const handleSendMessageSubmit = () => {
-    setShowSendMessage(false);
-    setShowMessageSent(true);
-  };
-
   if (showApprovalSuccess) {
     return <ApprovalSuccess onClose={onClose} approvalType={approvalType} />;
   }
-
-  // if (showSendMessage) {
-  //   return <SendMessage onClose={() => setShowSendMessage(false)} onSubmit={handleSendMessageSubmit} />;
-  // }
 
   if (showMessageSent) {
     return <MessageSent onClose={onClose} />;

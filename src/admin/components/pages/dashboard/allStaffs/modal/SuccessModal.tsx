@@ -1,7 +1,5 @@
 import React from "react";
 import success from "../../../../../../assets/svg/deleted.svg";
-import { button } from "../../../../../../shared/buttons/Button";
-import { Link } from "react-router-dom";
 
 const SuccessModal = ({ message, onClose }: any) => {
   return (

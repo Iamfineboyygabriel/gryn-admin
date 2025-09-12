@@ -16,11 +16,13 @@ const NewApplication = () => {
     lastName: string;
     otherName: string;
     email: string;
+    type: string;
   }>({
     firstName: "",
     lastName: "",
     email: "",
     otherName: "",
+    type: "",
   });
 
   const navigate = useNavigate();
@@ -81,12 +83,14 @@ const NewApplication = () => {
                 lastName: string;
                 otherName: string;
                 email: string;
+                type: string,
               }) => {
                 setStepOneData({
                   firstName: data.firstName,
                   lastName: data.lastName,
                   otherName: data.otherName,
                   email: data.email,
+                  type: data.type
                 });
                 handleNextClick();
               }}

@@ -8,6 +8,16 @@ const SkeletonField = () => (
   </div>
 );
 
+const visaTypes = [
+  { name: "Tourist Visa", value: "TOURIST_VISA" },
+  { name: "Study Visa", value: "STUDY_VISA" },
+  { name: "Freelance Visa", value: "FREELANCE_VISA" },
+];
+
+const getVisaTypeName = (value?: string) => {
+  return visaTypes.find((item) => item.value === value)?.name || value || "";
+};
+
 const PersonalDetails: React.FC<{ applicationId: any }> = ({
   applicationId,
 }) => {
@@ -34,15 +44,15 @@ const PersonalDetails: React.FC<{ applicationId: any }> = ({
       <header>
         <h2 className="text-xl font-semibold">Personal Details</h2>
       </header>
-      <form className="mt-[2em] w-[77%]">
-        <div className="flex flex-col lg:flex-row  gap-[1em] lg:gap-[3em]">
-          {renderField("First Name", applicationDetails?.data?.firstName)}
-          {renderField("Last Name", applicationDetails?.data?.lastName)}
-        </div>
-        <div className="mt-[1em] flex flex-col lg:flex-row gap-[1em] lg:gap-[3em]">
-          {renderField("Middle Name", applicationDetails?.data?.otherName)}
-          {renderField("Email Address", applicationDetails?.data?.email)}
-        </div>
+      <form className="mt-[2em] grid grid-cols-2 w-[77%] gap-4">
+        {renderField("First Name", applicationDetails?.data?.firstName)}
+        {renderField("Last Name", applicationDetails?.data?.lastName)}
+        {renderField("Middle Name", applicationDetails?.data?.otherName)}
+        {renderField("Email Address", applicationDetails?.data?.email)}
+        {renderField(
+          "Visa Type",
+          getVisaTypeName(applicationDetails?.data?.type)
+        )}
       </form>
     </main>
   );

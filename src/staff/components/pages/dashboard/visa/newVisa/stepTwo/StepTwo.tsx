@@ -136,113 +136,82 @@ const StepTwo = ({
         <h2 className="text-xl font-semibold">Degree</h2>
       </header>
       <form onSubmit={submitApplication} className="mt-[2em] w-[77%]">
-        <div className="flex flex-col gap-[1.5em]">
-          <div className="mt-[1em] flex flex-col lg:flex-row gap-[1em] lg:gap-[3em]">
-            <div className="w-full">
-              <label
-                htmlFor="passportNumber"
-                className="flex-start flex font-medium"
-              >
-                Passport Number
-              </label>
-              <input
-                id="passportNumber"
-                name="passportNumber"
-                required
-                disabled={loading}
-                type="text"
-                onChange={(e) => setPassportNumber(e.target.value)}
-                className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
-              />
-            </div>
-
-            <div className="w-full">
-              <label
-                htmlFor="issuedDate"
-                className="flex-start flex font-medium"
-              >
-                Issued Date
-              </label>
-              <input
-                type="date"
-                name="date"
-                id="date"
-                className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
-                onChange={(e) => setIssuedDate(e.target.value)}
-              />
-            </div>
+        <div className="grid grid-cols-2 gap-[1.5em]">
+          <div className="w-full">
+            <label
+              htmlFor="passportNumber"
+              className="flex-start flex font-medium"
+            >
+              Passport Number
+            </label>
+            <input
+              id="passportNumber"
+              name="passportNumber"
+              required
+              disabled={loading}
+              type="text"
+              onChange={(e) => setPassportNumber(e.target.value)}
+              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
+            />
+          </div>
+          <div className="w-full">
+            <label htmlFor="issuedDate" className="flex-start flex font-medium">
+              Issued Date
+            </label>
+            <input
+              type="date"
+              name="date"
+              id="date"
+              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
+              onChange={(e) => setIssuedDate(e.target.value)}
+            />
           </div>
 
-          <div className="lg:mt-[1em] flex flex-col lg:flex-row gap-[1em] lg:gap-[3em]">
-            <div className="w-full">
-              <label
-                htmlFor="expiryDate"
-                className="flex-start flex font-medium"
-              >
-                Expiry Date
-              </label>
-              <input
-                type="date"
-                onChange={(e) => setExpiryDate(e.target.value)}
-                className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
-                name="expDate"
-                id="expDate"
-              />
-            </div>
-
-            <div className="w-full">
-              <Dropdown
-                label="Destination"
-                items={destinationDropdownItems}
-                selectedItem={
-                  destination
-                    ? {
-                        name: destination.name,
-                        cca2: destination.cca2,
-                        label: destinationDropdownItems.find(
-                          (item) => item.name === destination.name
-                        )?.label,
-                      }
-                    : null
-                }
-                onSelectItem={handleCountrySelect}
-                asterisk
-                searchVisible
-                placeholder="Destination"
-              />
-            </div>
+          <div className="w-full">
+            <label htmlFor="expiryDate" className="flex-start flex font-medium">
+              Expiry Date
+            </label>
+            <input
+              type="date"
+              onChange={(e) => setExpiryDate(e.target.value)}
+              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
+              name="expDate"
+              id="expDate"
+            />
           </div>
 
-          <div className="lg:mt-[1em] flex flex-col lg:flex-row gap-[1em] lg:gap-[3em]">
-            <div className="w-full">
-              <label htmlFor="schoolName" className="flex-start font-medium">
-                School Name
-              </label>
-              <input
-                id="schoolName"
-                name="schoolName"
-                onChange={(e) => setSchoolName(e.target.value)}
-                className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
-              />
-            </div>
+          <div className="w-full">
+            <Dropdown
+              label="Destination"
+              items={destinationDropdownItems}
+              selectedItem={
+                destination
+                  ? {
+                      name: destination.name,
+                      cca2: destination.cca2,
+                      label: destinationDropdownItems.find(
+                        (item) => item.name === destination.name
+                      )?.label,
+                    }
+                  : null
+              }
+              onSelectItem={handleCountrySelect}
+              asterisk
+              searchVisible
+              placeholder="Destination"
+            />
+          </div>
 
-            {/* <div className="w-full">
-              <label
-                htmlFor="assignedAgent"
-                className="flex-start flex font-medium"
-              >
-                Agent Email Address
-              </label>
-              <input
-                id="assignedAgent"
-                name="assignedAgent"
-                type="text"
-                required
-                disabled={loading}
-                onChange={(e) => setAgentEmail(e.target.value)}
-                className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
-              />
-            </div> */}
+          <div className="w-full">
+            <label htmlFor="schoolName" className="flex-start font-medium">
+              School Name
+            </label>
+            <input
+              id="schoolName"
+              name="schoolName"
+              onChange={(e) => setSchoolName(e.target.value)}
+              className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
+            />
           </div>
         </div>
 

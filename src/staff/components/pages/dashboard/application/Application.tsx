@@ -27,18 +27,6 @@ const Application = () => {
                   Manage Application
                 </button.PrimaryButton>
               </div>
-              {/* <div
-                className={`${
-                  activeLink === "manageStudents"
-                    ? "bg-purple-white text-primary-700"
-                    : "bg-gray-100 text-grey-primary"
-                } cursor-pointer rounded-lg px-[1em] py-[10px] font-medium`}
-                onClick={() => setActiveLink("manageStudents")}
-              >
-                <button.PrimaryButton className="m-auto flex justify-center gap-2 font-medium text-black">
-                  Assigned Student
-                </button.PrimaryButton>
-              </div> */}
               <div
                 className={`${
                   activeLink === "enquiries"

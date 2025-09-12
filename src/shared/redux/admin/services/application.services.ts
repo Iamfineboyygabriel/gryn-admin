@@ -760,6 +760,25 @@ const assignEnquiryToStaff = async (id: string, email: string) => {
   }
 };
 
+const updateEnquiryStatus = async (body: any, enquiryId: any) => {
+  const url = `${process.env.REACT_APP_API_URL}/enquiry/${enquiryId}`;
+  try {
+    const response = await axios({
+      url,
+      headers: authHeader(),
+      method: "patch",
+      data: body,
+    });
+    const token = response.data.data?.accessTokenEncrypt;
+    if (token) {
+      sessionStorage.setItem("userData", token);
+    }
+    return response.data;
+  } catch (error: any) {
+    handleApiError(error);
+  }
+};
+
 const applicationServices = {
   getStats,
   getStaffDashboardStats,
@@ -795,6 +814,7 @@ const applicationServices = {
   getAllEnquiry,
   getAdminEnquiresStats,
   assignEnquiryToStaff,
+  updateEnquiryStatus,
 };
 
 export default applicationServices;
