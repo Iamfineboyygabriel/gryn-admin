@@ -13,6 +13,7 @@ const PersonalDetails: React.FC<{ applicationId: any }> = ({
   applicationId,
 }) => {
   const { applicationDetails, loading } = useApplicationDetails(applicationId);
+  console.log("application details", applicationDetails);
 
   const renderField = (label: string, value: string | undefined) => (
     <div className="w-full">

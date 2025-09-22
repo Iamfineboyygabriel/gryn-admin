@@ -27,7 +27,6 @@ const AllApplication: React.FC = () => {
     updateSortTerm,
     updateStatusTerm,
   } = useAllApplication();
-  console.log("applications", applications);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [status, setStatus] = useState<string>("");
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);

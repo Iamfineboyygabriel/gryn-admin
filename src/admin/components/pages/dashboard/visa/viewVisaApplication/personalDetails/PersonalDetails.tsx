@@ -23,7 +23,6 @@ const PersonalDetails: React.FC<{ applicationId: any }> = ({
 }) => {
   const { applicationDetails, loading } =
     useVisaApplicationDetails(applicationId);
-
   const renderField = (label: string, value: string | undefined) => (
     <div className="w-full">
       <label className="flex-start flex font-medium">{label}</label>
