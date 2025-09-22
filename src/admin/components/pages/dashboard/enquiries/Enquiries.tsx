@@ -277,10 +277,10 @@ const Enquiries = () => {
           >
             View Details
           </span>
-          <FaPen
+          {/* <FaPen
             className="text-gray-600 cursor-pointer"
             onClick={() => handleOpenStatusModal(item)}
-          />
+          /> */}
         </td>
       </tr>
     ));

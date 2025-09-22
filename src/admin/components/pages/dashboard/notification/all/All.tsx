@@ -22,7 +22,6 @@ const SkeletonRow = () => (
 const All = () => {
   const dispatch: AppDispatch = useDispatch();
   const { updates, fetchNotification, currentPage } = useAllNotification();
-  console.log("updates", updates);
   const [isNewsModalOpen, setNewsModalOpen] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);

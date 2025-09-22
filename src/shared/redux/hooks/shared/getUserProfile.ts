@@ -165,7 +165,7 @@ export const useUserProfile = () => {
   const userProfile = useSelector(
     (state: any) => state.shareApplication?.userProfile?.data?.userprofile
   );
-
+  console.log("user profile:", userProfile);
   useEffect(() => {
     if (userToken) {
       setLoading(true);

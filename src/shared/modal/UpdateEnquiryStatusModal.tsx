@@ -13,12 +13,14 @@ interface EnquiryStatusUpdateModalProps {
   isOpen: boolean;
   onClose: () => void;
   enquiry: any;
+  onStatusUpdate?: () => void;
 }
 
 const EnquiryStatusUpdateModal: React.FC<EnquiryStatusUpdateModalProps> = ({
   isOpen,
   onClose,
   enquiry,
+  onStatusUpdate,
 }) => {
   const dispatch = useDispatch();
   const [selectedStatus, setSelectedStatus] = useState<EnquiryStatus>(
@@ -37,7 +39,7 @@ const EnquiryStatusUpdateModal: React.FC<EnquiryStatusUpdateModalProps> = ({
           enquiryId: enquiry.id,
         }) as any
       );
-
+      onStatusUpdate?.();
       onClose();
     } catch (error) {
       console.error("Failed to update enquiry status:", error);
