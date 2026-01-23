@@ -143,6 +143,21 @@ export const logoutAdminUserBySuperAdmin = async (email: string) => {
   }
 };
 
+export const forgotPassword = async (
+  endpoint: string,
+  body: { email: string }
+) => {
+  try {
+    const response = await axios.post(endpoint, body);
+    return response?.data;
+  } catch (error: any) {
+    if (!error.response) {
+      throw new Error("Network Error: Please check your internet connection.");
+    }
+    return error.response.data;
+  }
+};
+
 const sharedLandingServices = {
   loginUser,
   ResetPassword,
@@ -150,6 +165,7 @@ const sharedLandingServices = {
   verifyUser,
   resendToken,
   logoutAdminUserBySuperAdmin,
+  forgotPassword,
 };
 
 export default sharedLandingServices;

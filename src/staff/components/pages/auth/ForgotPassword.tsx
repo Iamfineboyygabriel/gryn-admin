@@ -1,15 +1,43 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { button } from "../../../../shared/buttons/Button";
 import Password from "../../../../assets/svg/ForgotPassword.svg";
 import { CgAsterisk } from "react-icons/cg";
+import sharedLandingServices from "../../../../shared/redux/shared/services/shareLanding.services";
 
 const ForgotPassword = () => {
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
   const Back = () => {
     navigate(-1);
   };
 
+  const forgotPassword = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setLoading(true);
+    const endpoint = `${process.env.REACT_APP_API_URL}/auth/forgot-password`;
+
+    try {
+      const response = await sharedLandingServices.forgotPassword(endpoint, {
+        email,
+      });
+
+      if (response?.status === 200) {
+        toast.success("Password reset link sent to your email");
+        navigate(`/recovery_mail`);
+      } else {
+        toast.error(response?.message || "Failed to send reset link");
+      }
+    } catch (error: any) {
+      toast.error(error?.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <main className="flex h-screen flex-col items-center justify-center text-center font-outfit">
@@ -28,6 +56,7 @@ const ForgotPassword = () => {
         </p>
       </header>
       <form
+        onSubmit={forgotPassword} // Add this
         className="mt-[2em] flex flex-col gap-[1em] text-grey-primary"
       >
         <div className="m-auto w-[27em]">
@@ -40,15 +69,18 @@ const ForgotPassword = () => {
               name="email"
               id="email"
               type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-25% mt-[11px] w-full rounded-lg border-[2px] bg-inherit p-3 focus:outline-none"
             />
           </div>
           <button.PrimaryButton
             className="mt-[3em] w-full rounded-full bg-linear-gradient py-[13px] text-lg font-semibold text-white"
             type="submit"
+            disabled={loading}
           >
-        
-              Continue
+            {loading ? "Sending..." : "Continue"}
           </button.PrimaryButton>
         </div>
       </form>
