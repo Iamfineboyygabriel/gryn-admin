@@ -30,7 +30,6 @@ const SkeletonRow = () => (
 const SeeAllPendingAgents = () => {
   const {
     agents,
-    totalPages,
     currentPage,
     loading,
     fetchAgents,
@@ -72,7 +71,7 @@ const SeeAllPendingAgents = () => {
     (event: React.ChangeEvent<unknown>, value: number) => {
       fetchAgents(value, itemsPerPage);
     },
-    [fetchAgents, itemsPerPage]
+    [fetchAgents, itemsPerPage],
   );
 
   const escapeRegExp = useCallback((string: string) => {
@@ -86,10 +85,10 @@ const SeeAllPendingAgents = () => {
       const regex = new RegExp(`(${escapedQuery})`, "gi");
       return text.replace(
         regex,
-        (match: string) => `<mark class="bg-yellow-300">${match}</mark>`
+        (match: string) => `<mark class="bg-yellow-300">${match}</mark>`,
       );
     },
-    [escapeRegExp]
+    [escapeRegExp],
   );
 
   const sanitizeHTML = useCallback((html: string) => {
@@ -109,7 +108,6 @@ const SeeAllPendingAgents = () => {
     });
   }, [agents, localSearchTerm]);
 
-  const isCurrentPageEmpty = filteredAgents.length === 0;
 
   const renderTableBody = useCallback(() => {
     if (loading) {
@@ -132,8 +130,8 @@ const SeeAllPendingAgents = () => {
             dangerouslySetInnerHTML={sanitizeHTML(
               highlightText(
                 `${agent?.profile?.lastName} ${agent?.profile?.firstName}`,
-                localSearchTerm
-              )
+                localSearchTerm,
+              ),
             )}
           />
           <td className="py-[16px] px-[24px]">
@@ -142,7 +140,7 @@ const SeeAllPendingAgents = () => {
           <td
             className="py-[16px] px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
-              highlightText(formatData(agent.email), localSearchTerm)
+              highlightText(formatData(agent.email), localSearchTerm),
             )}
           />
           <td className="py-[16px] px-[24px]">
@@ -179,6 +177,7 @@ const SeeAllPendingAgents = () => {
     localSearchTerm,
     formatData,
   ]);
+
   const navigate = useNavigate();
   const handleBackClick = () => navigate(-1);
 
@@ -187,9 +186,22 @@ const SeeAllPendingAgents = () => {
       <header>
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Reports</h1>
-          <DownLoadButton applicationRef={contentRef} />
+
+          {/* USED button, plus, handleOpenModal */}
+          <div className="flex items-center gap-2">
+            <button.PrimaryButton
+              onClick={handleOpenModal}
+              className="flex items-center gap-2"
+            >
+              <img src={plus} alt="add" />
+              Add Agent
+            </button.PrimaryButton>
+
+            <DownLoadButton applicationRef={contentRef} />
+          </div>
         </div>
       </header>
+
       <div className="mt-[1.3em] h-auto w-full overflow-auto rounded-lg bg-white px-[1em] py-3 pb-[10em]">
         <header>
           <div className="flex items-center justify-between">
@@ -248,6 +260,7 @@ const SeeAllPendingAgents = () => {
           />
         </div>
       )}
+
       {isModalOpen && (
         <Modal
           isOpen={isModalOpen}

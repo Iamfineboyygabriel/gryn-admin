@@ -8,7 +8,6 @@ const Degree = ({ applicationId }: any) => {
   const [university, setUniversity] = useState("");
   const [degreeType, setDegreeType] = useState("");
   const [course, setCourse] = useState("");
-  const [applicationStatus, setApplicationStatus] = useState("");
 
   useEffect(() => {
     if (applicationDetails?.data) {
@@ -18,7 +17,6 @@ const Degree = ({ applicationId }: any) => {
       setCourse(applicationDetails.data?.degree?.course || "");
       setCourse(applicationDetails.data?.degree?.course || "");
       setCourse(applicationDetails.data?.degree?.course || "");
-      setApplicationStatus(applicationDetails.data?.applicationStatus || "");
     }
   }, [applicationDetails]);
 

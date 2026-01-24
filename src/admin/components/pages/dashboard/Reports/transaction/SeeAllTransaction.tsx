@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useRef,
 } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 import { FiSearch } from "react-icons/fi";
 import transaction from "../../../../../../assets/svg/Transaction.svg";
 import CustomPagination from "../../../../../../shared/utils/customPagination";

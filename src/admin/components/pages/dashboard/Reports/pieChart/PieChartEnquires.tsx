@@ -1,6 +1,5 @@
 import { PieChart, Pie, Cell } from "recharts";
 import { useEnquiriesData } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
-import { Link } from "react-router-dom";
 
 const PieChartEnquiries = () => {
   const { data, isLoading, total, isError } = useEnquiriesData();

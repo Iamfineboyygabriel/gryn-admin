@@ -43,7 +43,6 @@ const AssignedAgents: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
     agentDetail,
     loading: agentsLoading,
     clearAgentData,
-    error,
   } = useStaffAssignedAgents(staffId);
   const [localSearchTerm, setLocalSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -165,6 +164,7 @@ const AssignedAgents: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
     highlightText,
     localSearchTerm,
     formatData,
+    handleViewDetails
   ]);
 
   return (

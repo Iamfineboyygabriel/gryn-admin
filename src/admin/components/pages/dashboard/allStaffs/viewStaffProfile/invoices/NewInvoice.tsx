@@ -4,7 +4,10 @@ import { AppDispatch } from "../../../../../../../shared/redux/store";
 import { createInvoicePaymentForStaff } from "../../../../../../../shared/redux/shared/slices/shareApplication.slices";
 import { useAppDispatch } from "../../../../../../../shared/redux/hooks/shared/reduxHooks";
 import { button } from "../../../../../../../shared/buttons/Button";
-import { Dropdown, DropdownItem } from "../../../../../../../shared/dropDown/DropDown";
+import {
+  Dropdown,
+  DropdownItem,
+} from "../../../../../../../shared/dropDown/DropDown";
 import Modal from "../../../../../../../shared/modal/Modal";
 import InvoiceSent from "../../../../../../../shared/modal/InvoiceSent";
 import invoiceImage from "../../../../../../../assets/png/invoice.png";
@@ -36,13 +39,11 @@ const NewInvoice = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [visibleItems, setVisibleItems] = useState<number[]>([]);
   const dispatch: AppDispatch = useAppDispatch();
-  
+
   const handleOpenModal = () => setModalOpen(true);
   const handleCloseModal = () => setModalOpen(false);
 
-  const choice: Item[] = [
-    { name: "Add New Item" },
-  ];
+  const choice: Item[] = [{ name: "Add New Item" }];
 
   const handleChoiceItem = (item: DropdownItem) => {
     const selectedItem = item as Item;
@@ -56,13 +57,18 @@ const NewInvoice = () => {
   };
 
   const toggleItemVisibility = (index: number) => {
-    setVisibleItems(visibleItems.includes(index)
-      ? visibleItems.filter((i) => i !== index)
-      : [...visibleItems, index]
+    setVisibleItems(
+      visibleItems.includes(index)
+        ? visibleItems.filter((i) => i !== index)
+        : [...visibleItems, index],
     );
   };
 
-  const calculateAmount = (quantity: number, rate: number, discount: number) => {
+  const calculateAmount = (
+    quantity: number,
+    rate: number,
+    discount: number,
+  ) => {
     const subtotal = quantity * rate;
     const discountAmount = (subtotal * discount) / 100;
     return subtotal - discountAmount;
@@ -71,7 +77,7 @@ const NewInvoice = () => {
   const handleItemChange = (
     index: number,
     field: keyof InvoiceItem,
-    value: string
+    value: string,
   ) => {
     const newItems = [...items];
     if (field === "productName") {
@@ -90,7 +96,7 @@ const NewInvoice = () => {
 
   const formatDate = (dateString: string): string => {
     if (!dateString) return "";
-    const [year, month, day] = dateString.split('-');
+    const [year, month, day] = dateString.split("-");
     return `${year}-${month}-${day}T00:00:00Z`;
   };
 
@@ -107,7 +113,7 @@ const NewInvoice = () => {
         email: staffEmail,
       };
 
-      const response = await dispatch(createInvoicePaymentForStaff(body)).unwrap();
+      await dispatch(createInvoicePaymentForStaff(body)).unwrap();
       resetForm();
       handleOpenModal();
     } catch (error: any) {
@@ -167,7 +173,10 @@ const NewInvoice = () => {
           <div className="flex flex-col gap-[1.3em] w-[50%]">
             <div className="flex flex-col gap-[1em]">
               <div className="flex-1">
-                <label htmlFor="issuedDate" className="flex-start flex font-medium mb-2">
+                <label
+                  htmlFor="issuedDate"
+                  className="flex-start flex font-medium mb-2"
+                >
                   Issued Date
                 </label>
                 <input
@@ -179,7 +188,10 @@ const NewInvoice = () => {
                 />
               </div>
               <div className="flex-1">
-                <label htmlFor="email" className="flex-start flex font-medium mb-2">
+                <label
+                  htmlFor="email"
+                  className="flex-start flex font-medium mb-2"
+                >
                   Email
                 </label>
                 <input
@@ -191,10 +203,13 @@ const NewInvoice = () => {
                 />
               </div>
             </div>
-            
+
             <div className="flex gap-[1em]">
               <div className="flex-1">
-                <label htmlFor="dueDate" className="flex-start flex font-medium mb-2">
+                <label
+                  htmlFor="dueDate"
+                  className="flex-start flex font-medium mb-2"
+                >
                   Due Date
                 </label>
                 <input
@@ -206,7 +221,10 @@ const NewInvoice = () => {
                 />
               </div>
               <div className="flex-1">
-                <label htmlFor="invoiceNumber" className="flex-start flex font-medium mb-2">
+                <label
+                  htmlFor="invoiceNumber"
+                  className="flex-start flex font-medium mb-2"
+                >
                   Invoice No
                 </label>
                 <input
@@ -238,7 +256,9 @@ const NewInvoice = () => {
                     name={`productName-${index}`}
                     required
                     value={item.productName}
-                    onChange={(e) => handleItemChange(index, "productName", e.target.value)}
+                    onChange={(e) =>
+                      handleItemChange(index, "productName", e.target.value)
+                    }
                     placeholder="product name"
                     className="border-border w-full focus:border-border rounded-lg border-[1px] bg-inherit p-3 focus:outline-none pr-10"
                   />
@@ -258,7 +278,10 @@ const NewInvoice = () => {
                   <>
                     <div className="flex mt-[1em] gap-[1em]">
                       <div className="flex-1">
-                        <label htmlFor={`quantity-${index}`} className="flex-start flex font-medium mb-2">
+                        <label
+                          htmlFor={`quantity-${index}`}
+                          className="flex-start flex font-medium mb-2"
+                        >
                           Quantity
                         </label>
                         <input
@@ -267,12 +290,17 @@ const NewInvoice = () => {
                           required
                           type="number"
                           value={item.quantity}
-                          onChange={(e) => handleItemChange(index, "quantity", e.target.value)}
+                          onChange={(e) =>
+                            handleItemChange(index, "quantity", e.target.value)
+                          }
                           className="border-border w-full focus:border-border rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
                         />
                       </div>
                       <div className="flex-1">
-                        <label htmlFor={`rate-${index}`} className="flex-start flex font-medium mb-2">
+                        <label
+                          htmlFor={`rate-${index}`}
+                          className="flex-start flex font-medium mb-2"
+                        >
                           Rate
                         </label>
                         <input
@@ -281,14 +309,19 @@ const NewInvoice = () => {
                           required
                           type="number"
                           value={item.rate}
-                          onChange={(e) => handleItemChange(index, "rate", e.target.value)}
+                          onChange={(e) =>
+                            handleItemChange(index, "rate", e.target.value)
+                          }
                           className="border-border w-full focus:border-border rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
                         />
                       </div>
                     </div>
                     <div className="flex mt-[1em] gap-[1em]">
                       <div className="flex-1">
-                        <label htmlFor={`amount-${index}`} className="flex-start flex font-medium mb-2">
+                        <label
+                          htmlFor={`amount-${index}`}
+                          className="flex-start flex font-medium mb-2"
+                        >
                           Amount
                         </label>
                         <input
@@ -302,7 +335,10 @@ const NewInvoice = () => {
                         />
                       </div>
                       <div className="flex-1">
-                        <label htmlFor={`discount-${index}`} className="flex-start flex font-medium mb-2">
+                        <label
+                          htmlFor={`discount-${index}`}
+                          className="flex-start flex font-medium mb-2"
+                        >
                           Tax/Discount (%)
                         </label>
                         <input
@@ -311,7 +347,9 @@ const NewInvoice = () => {
                           required
                           type="number"
                           value={item.discount}
-                          onChange={(e) => handleItemChange(index, "discount", e.target.value)}
+                          onChange={(e) =>
+                            handleItemChange(index, "discount", e.target.value)
+                          }
                           className="border-border w-full focus:border-border rounded-lg border-[1px] bg-inherit p-3 focus:outline-none"
                         />
                       </div>
@@ -322,9 +360,7 @@ const NewInvoice = () => {
             ))}
             <button onClick={addNewItem} className="flex gap-2 items-center">
               <img src={addItem} alt="" />
-              <span className="font-medium text-primary-700">
-                Add New Item
-              </span>
+              <span className="font-medium text-primary-700">Add New Item</span>
             </button>
             <div className="flex mt-[1em] justify-between items-center">
               <button.PrimaryButton
@@ -332,7 +368,12 @@ const NewInvoice = () => {
                 onClick={submitInvoice}
               >
                 {invoiceLoading ? (
-                  <ReactLoading color="#FFFFFF" width={25} height={25} type="spin" />
+                  <ReactLoading
+                    color="#FFFFFF"
+                    width={25}
+                    height={25}
+                    type="spin"
+                  />
                 ) : (
                   "Send Invoice"
                 )}
@@ -345,8 +386,15 @@ const NewInvoice = () => {
         </section>
       </div>
       {isModalOpen && (
-        <Modal isOpen={isModalOpen} onClose={handleCloseModal} data-aos="zoom-in">
-          <InvoiceSent to="/admin/dashboard/all_staffs" onClose={handleCloseModal} />
+        <Modal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          data-aos="zoom-in"
+        >
+          <InvoiceSent
+            to="/admin/dashboard/all_staffs"
+            onClose={handleCloseModal}
+          />
         </Modal>
       )}
     </main>

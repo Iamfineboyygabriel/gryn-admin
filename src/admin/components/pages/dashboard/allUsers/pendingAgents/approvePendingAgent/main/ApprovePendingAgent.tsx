@@ -21,8 +21,8 @@ const ApprovePendingAgent = () => {
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
 
-  const { agent, loading, error } = useSelector(
-    (state: RootState) => state.shareApplication
+  const { agent, loading } = useSelector(
+    (state: RootState) => state.shareApplication,
   );
 
   const personalDetailsRef = useRef<HTMLDivElement>(null);

@@ -36,22 +36,29 @@ const SeeAllApplication: React.FC = () => {
   const contentRef = useRef(null);
 
   const navigate = useNavigate();
+
   const handleBackClick = () => {
     navigate(-1);
   };
 
+  /*
+   FIX: Added missing dependencies
+  */
   useEffect(() => {
     updateSortTerm("desc");
     fetchApplications(1, itemsPerPage);
-  }, []);
+  }, [updateSortTerm, fetchApplications, itemsPerPage]);
 
+  /*
+   FIX: Added fetchApplications dependency
+  */
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchApplications(1, itemsPerPage);
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [searchTerm, sortOrder, status, itemsPerPage]);
+  }, [searchTerm, sortOrder, status, itemsPerPage, fetchApplications]);
 
   const handleSortChange = useCallback(
     (newOrder: "asc" | "desc") => {
@@ -59,7 +66,7 @@ const SeeAllApplication: React.FC = () => {
       updateSortTerm(newOrder);
       fetchApplications(currentPage, itemsPerPage);
     },
-    [currentPage, itemsPerPage, updateSortTerm, fetchApplications]
+    [currentPage, itemsPerPage, updateSortTerm, fetchApplications],
   );
 
   const handleStatusChange = useCallback(
@@ -68,7 +75,7 @@ const SeeAllApplication: React.FC = () => {
       updateStatusTerm(newStatus);
       fetchApplications(1, itemsPerPage);
     },
-    [updateStatusTerm, fetchApplications, itemsPerPage]
+    [updateStatusTerm, fetchApplications, itemsPerPage],
   );
 
   const handleItemsPerPageChange = useCallback(
@@ -76,14 +83,14 @@ const SeeAllApplication: React.FC = () => {
       setItemsPerPage(newItemsPerPage);
       fetchApplications(1, newItemsPerPage);
     },
-    [fetchApplications]
+    [fetchApplications],
   );
 
   const handlePageChange = useCallback(
     (event: React.ChangeEvent<unknown>, newPage: number) => {
       fetchApplications(newPage, itemsPerPage);
     },
-    [fetchApplications, itemsPerPage, sortOrder]
+    [fetchApplications, itemsPerPage],
   );
 
   const handleViewDetails = useCallback(
@@ -92,10 +99,10 @@ const SeeAllApplication: React.FC = () => {
         "/admin/dashboard/application/all_application/view_application",
         {
           state: { applicationId: applicationId },
-        }
+        },
       );
     },
-    [navigate]
+    [navigate],
   );
 
   const formatData = useCallback((data: any) => (data ? data : "-"), []);
@@ -110,15 +117,15 @@ const SeeAllApplication: React.FC = () => {
       const regex = new RegExp(`(${searchTerm})`, "gi");
       return text?.replace(
         regex,
-        (match: string) => `<mark class="bg-yellow-300">${match}</mark>`
+        (match: string) => `<mark class="bg-yellow-300">${match}</mark>`,
       );
     },
-    [searchTerm]
+    [searchTerm],
   );
 
   const renderTableBody = useCallback(() => {
     if (loading) {
-      return Array?.from({ length: itemsPerPage })?.map((_, index) => (
+      return Array.from({ length: itemsPerPage }).map((_, index) => (
         <SkeletonRow key={`skeleton-${index}`} />
       ));
     }
@@ -146,48 +153,57 @@ const SeeAllApplication: React.FC = () => {
         <td className="whitespace-nowrap px-6 py-4">
           {(currentPage - 1) * itemsPerPage + index + 1}
         </td>
+
         <td
           className="whitespace-nowrap px-6 py-4"
           dangerouslySetInnerHTML={sanitizeHTML(
             highlightText(
               `${formatData(item?.lastName)} ${formatData(
-                item?.middleName
-              )} ${formatData(item?.firstName)}`
-            )
+                item?.middleName,
+              )} ${formatData(item?.firstName)}`,
+            ),
           )}
         />
+
         <td className="whitespace-nowrap px-6 py-4">
           {formatData(item?.phoneNumber)}
         </td>
+
         <td className="whitespace-nowrap px-6 py-4">
           {formatData(item?.email)}
         </td>
+
         <td className="whitespace-nowrap px-6 py-4">
           {formatData(item?.degree?.degreeType)}
         </td>
+
         <td className="whitespace-nowrap px-6 py-4">
           {formatData(item?.degree?.course)}
         </td>
+
         <td className="whitespace-nowrap px-6 py-4">
           {formatData(item?.documents?.length)}
         </td>
+
         <td className="whitespace-nowrap px-6 py-4">-</td>
+
         <td className="flex items-center whitespace-nowrap px-6 py-4">
           <button
             className={`mr-2 rounded-full px-3 py-2 text-white ${
               item?.status === "SUBMITTED"
                 ? "bg-yellow-500"
                 : item?.status === "COMPLETED"
-                ? "bg-green-500"
-                : "bg-red-500"
+                  ? "bg-green-500"
+                  : "bg-red-500"
             }`}
           >
             {item?.status === "SUBMITTED"
               ? "In Progress"
               : item?.status === "COMPLETED"
-              ? "Completed"
-              : "Declined"}
+                ? "Completed"
+                : "Declined"}
           </button>
+
           <button
             onClick={() => handleViewDetails(item?.id)}
             className="cursor-pointer font-semibold text-primary-700"
@@ -216,6 +232,7 @@ const SeeAllApplication: React.FC = () => {
           <DownLoadButton applicationRef={contentRef} />
         </div>
       </header>
+
       <div className="mt-[1.3em] h-auto w-full overflow-auto rounded-lg bg-white px-[1em] py-3 pb-[10em]">
         <header>
           <div className="flex items-center justify-between">
@@ -227,11 +244,13 @@ const SeeAllApplication: React.FC = () => {
                 </span>
               </h1>
             </div>
+
             <button.PrimaryButton className="btn-2" onClick={handleBackClick}>
               Back
             </button.PrimaryButton>
           </div>
         </header>
+
         <div className="flex mt-[2em] justify-between items-center">
           <div className="flex items-center gap-[1em]">
             <div className="relative w-full">
@@ -244,6 +263,7 @@ const SeeAllApplication: React.FC = () => {
               />
               <FiSearch className="absolute right-[1em] top-1/2 -translate-y-1/2 transform text-lg text-gray-500" />
             </div>
+
             <div className="flex gap-2">
               <select
                 className="bg-gray-100 px-3 py-2 rounded text-sm cursor-pointer"
@@ -255,6 +275,7 @@ const SeeAllApplication: React.FC = () => {
                 <option value="asc">Ascending</option>
                 <option value="desc">Descending</option>
               </select>
+
               <select
                 className="bg-gray-100 px-3 py-2 rounded text-sm cursor-pointer"
                 value={status}
@@ -267,6 +288,8 @@ const SeeAllApplication: React.FC = () => {
               </select>
             </div>
           </div>
+
+          {/* THIS PART REMAINS — handleItemsPerPageChange IS STILL USED */}
           <div className="lg:flex hidden items-center gap-2">
             <span className="text-sm text-gray-500">Items per page:</span>
             <select

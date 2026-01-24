@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { button } from "../../../../../../shared/buttons/Button";
-import { CgAsterisk } from "react-icons/cg";
 import ReactLoading from "react-loading";
 import { findStaffByEmail } from "../../../../../../shared/redux/shared/slices/shareApplication.slices";
 import { useNavigate } from "react-router";

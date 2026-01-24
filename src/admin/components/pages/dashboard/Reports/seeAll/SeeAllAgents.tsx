@@ -183,6 +183,7 @@ const SeeAllAgents = () => {
     highlightText,
     localSearchTerm,
     formatData,
+    handleViewDetails
   ]);
 
   return (

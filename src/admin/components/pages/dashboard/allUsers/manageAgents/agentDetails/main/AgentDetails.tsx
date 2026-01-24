@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useLocation, useParams, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useSingleAgentApplication } from "../../../../../../../../shared/redux/hooks/shared/getUserProfile";
 import { button } from "../../../../../../../../shared/buttons/Button";
 import ManageApplication from "../manageApplication/ManageApplication";
@@ -15,7 +15,7 @@ const AgentDetails: React.FC = () => {
   const location = useLocation();
   const { agentId, email } = location.state as LocationState;
   const [activeLink, setActiveLink] = useState("agentProfile");
-  
+
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
@@ -29,8 +29,8 @@ const AgentDetails: React.FC = () => {
       limit: itemsPerPage,
       search: searchTerm,
       sort: sortOrder,
-      status: status
-    }
+      status: status,
+    },
   );
   const navigate = useNavigate();
 
@@ -89,7 +89,7 @@ const AgentDetails: React.FC = () => {
         <div>
           <nav>
             <div className="flex gap-[2em] border-b-[2px] border-gray-100 py-4 text-base font-semibold">
-            <div
+              <div
                 className={`${
                   activeLink === "agentProfile"
                     ? "bg-purple-white text-primary-700"
@@ -131,9 +131,9 @@ const AgentDetails: React.FC = () => {
           </nav>
           <section className="mt-3">
             {activeLink === "manageApplication" && (
-              <ManageApplication 
-                error={error} 
-                loading={loading} 
+              <ManageApplication
+                error={error}
+                loading={loading}
                 applicationDetails={applicationDetails}
                 searchTerm={searchTerm}
                 sortOrder={sortOrder}
@@ -147,8 +147,15 @@ const AgentDetails: React.FC = () => {
                 onPageChange={handlePageChange}
               />
             )}
-            {activeLink === "agentProfile" && <AgentProfile error={error} agentId={agentId} loading={loading} email={email}/>}
-            {activeLink === "agentCommission" && <AgentCommission/>}
+            {activeLink === "agentProfile" && (
+              <AgentProfile
+                error={error}
+                agentId={agentId}
+                loading={loading}
+                email={email}
+              />
+            )}
+            {activeLink === "agentCommission" && <AgentCommission />}
           </section>
         </div>
       </header>

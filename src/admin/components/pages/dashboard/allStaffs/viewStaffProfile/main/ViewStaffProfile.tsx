@@ -1,7 +1,7 @@
 import { useState } from "react";
 import PersonalDetails from "../personalDetails/PersonalDetails";
 import BankDetails from "../bankDetails/BankDetails";
-import { useLocation, useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { button } from "../../../../../../../shared/buttons/Button";
 import UploadedDocuments from "../uplodadedDocuments/UploadedDocuments";
 import AssignedAgents from "../assignedAgents/AssignedAgents";
@@ -9,7 +9,6 @@ import StaffPayments from "../staffPayment/StaffPayments";
 import Invoices from "../invoices/Invoices";
 import Activity from "../activity/Activity";
 import Salary from "../salary/main/Salary";
-import { PrivateElement } from "../../../../../../../shared/redux/hooks/admin/PrivateElement";
 
 interface LocationState {
   staffEmail: string;

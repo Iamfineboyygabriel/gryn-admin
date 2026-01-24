@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import transaction from "../../../../../../../assets/svg/Transaction.svg";
 import { useAgentCommission } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
 import { button } from "../../../../../../../shared/buttons/Button";
@@ -45,20 +45,19 @@ const AgentCommission = () => {
   const { agentId } = location.state as LocationState;
   const [isFindByModalOpen, setIsFindByModalOpen] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState<CommissionItem | null>(
-    null
+    null,
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleFindByAllOpen = async () => setIsFindByModalOpen(true);
   const handleFindByAllClose = () => setIsFindByModalOpen(false);
-  const formatData = useCallback((data: any) => (data ? data : "-"), []);
 
   const formatAmount = (amount: any) => {
     if (!amount && amount !== 0) return "-";
     return amount?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
-  const { agentCommissions, loading, error, fetchAgentPayments } =
+  const { agentCommissions, loading, fetchAgentPayments } =
     useAgentCommission();
   const handleViewDetails = (payment: CommissionItem) => {
     setSelectedPayment(payment);
@@ -111,7 +110,7 @@ const AgentCommission = () => {
               </button>
             </td>
           </tr>
-        )
+        ),
       );
     } else {
       return (

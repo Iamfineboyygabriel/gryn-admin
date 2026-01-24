@@ -40,7 +40,7 @@ interface SalaryItem {
 const StaffSalary = ({ staffEmail }: { staffEmail: any | null }) => {
   const dispatch: AppDispatch = useDispatch();
   const [selectedPayment, setSelectedPayment] = useState<SalaryItem | null>(
-    null
+    null,
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -48,7 +48,7 @@ const StaffSalary = ({ staffEmail }: { staffEmail: any | null }) => {
   const { staffDetail, loading: staffLoading } = useStaffDetails(staffEmail);
   const staffId = staffDetail?.data?.profile?.userId;
 
-  const { staffSalary, loading, error, fetchStaffPayments } = useStaffSalary();
+  const { staffSalary, loading, fetchStaffPayments } = useStaffSalary();
 
   const formatAmount = (amount: number) =>
     amount?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -74,7 +74,7 @@ const StaffSalary = ({ staffEmail }: { staffEmail: any | null }) => {
         setCurrentPage(newPage);
       }
     },
-    []
+    [],
   );
 
   const formatData = useCallback((data: any) => (data ? data : "-"), []);

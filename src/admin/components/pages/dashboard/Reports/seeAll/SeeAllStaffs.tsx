@@ -175,6 +175,7 @@ const AllStaff = () => {
     sanitizeHTML,
     highlightText,
     localSearchTerm,
+    handleViewDetails,
     formatData,
   ]);
 

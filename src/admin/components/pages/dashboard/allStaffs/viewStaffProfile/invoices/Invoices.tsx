@@ -10,14 +10,13 @@ import {
   useStaffDetails,
   useStaffInvoices,
 } from "../../../../../../../shared/redux/hooks/admin/getAdminProfile";
-import useUserProfile, {
-  useCurrentUser,
-} from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
+
 import Modal from "../../../../../../../shared/modal/Modal";
 import ApproveInvoiceModal from "../../../../../../../shared/modal/ApproveInvoiceModal";
 import ApproveInvoiceAdmin from "../../../../../../../shared/modal/ApproveInvoiceAdmin";
 import PaymentReceiptResponse from "../../../../../../../shared/modal/PaymentReceiptResponse";
 import CustomPagination from "../../../../../../../shared/utils/customPagination";
+import useUserProfile from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
 
 interface AssignedAgentsProps {
   staffEmail: any;
@@ -51,12 +50,12 @@ const Invoices: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
   const { userProfile } = useUserProfile();
   const isSuperAdmin = useMemo(
     () => userProfile?.user?.role === "SUPER_ADMIN",
-    [userProfile]
+    [userProfile],
   );
   const [isApproveModalOpen, setApproveModalOpen] = useState(false);
   const [isReceiptModalOpen, setReceiptModalOpen] = useState(false);
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(
-    null
+    null,
   );
   const [localSearchTerm, setLocalSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -74,12 +73,12 @@ const Invoices: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
   const { staffInvoices, loading } = useStaffInvoices(
     staffId || "",
     currentPage,
-    itemsPerPage
+    itemsPerPage,
   );
 
   const handlePageChange = (
     event: React.ChangeEvent<unknown>,
-    value: number
+    value: number,
   ) => {
     setCurrentPage(value);
   };
@@ -130,7 +129,7 @@ const Invoices: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
     return staffInvoices?.data?.invoices.filter((staff: StaffData) =>
       staff.invoiceNumber
         ?.toLowerCase()
-        .includes(localSearchTerm?.toLowerCase())
+        .includes(localSearchTerm?.toLowerCase()),
     );
   }, [staffInvoices, localSearchTerm]);
 
@@ -191,7 +190,7 @@ const Invoices: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
           <td className="flex items-center whitespace-nowrap px-6 py-4">
             <button
               className={`mr-2 rounded-full px-3 py-2 ${getStatusStyle(
-                staff?.status
+                staff?.status,
               )}`}
             >
               {getStatusText(staff?.status)}
