@@ -11,13 +11,6 @@ import ConfirmDiscard from "../../modal/ConfirmDiscard";
 import AgentUpdated from "../../modal/AgentUpdated";
 import Modal from "../../modal/Modal";
 
-const SkeletonRow: React.FC = () => (
-  <div className="mb-4 animate-pulse space-y-4">
-    <div className="h-4 w-1/4 rounded bg-gray-200"></div>
-    <div className="h-12 w-full rounded bg-gray-200"></div>
-  </div>
-);
-
 interface UploadedDocumentsProps {
   agentData: any;
   onNext: any;
@@ -54,7 +47,7 @@ const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({
           acc[doc.documentType] = null;
           return acc;
         },
-        {}
+        {},
       );
 
       const documentNames = agentData?.agentRegistrationDoc.reduce(
@@ -62,7 +55,7 @@ const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({
           acc[doc.documentType] = doc.name;
           return acc;
         },
-        {}
+        {},
       );
       setFiles(documentFiles);
       setFileNames(documentNames);
@@ -88,7 +81,7 @@ const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({
   const handleUploadClick = (documentType: string) => () => {
     if (!editMode) return;
     const inputElement = document.getElementById(
-      documentType
+      documentType,
     ) as HTMLInputElement;
     inputElement?.click();
   };
@@ -104,7 +97,7 @@ const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({
       await Promise.all(
         Object.entries(files).map(async ([documentType, file]) => {
           const doc = agentData?.agentRegistrationDoc?.find(
-            (d: any) => d?.documentType === documentType
+            (d: any) => d?.documentType === documentType,
           );
           if (file && doc) {
             try {
@@ -113,7 +106,7 @@ const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({
               const endpoint = `/media/registration/upload-doc/${doc?.id}`;
               const response = await updateStaffRegistrationDocument(
                 endpoint,
-                form
+                form,
               );
               if (response?.status === 201) {
                 successfulUploads.push(documentType);
@@ -125,7 +118,7 @@ const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({
               failedUploads.push(documentType);
             }
           }
-        })
+        }),
       );
 
       if (successfulUploads.length > 0) {
@@ -158,7 +151,7 @@ const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({
           acc[doc.documentType] = null;
           return acc;
         },
-        {}
+        {},
       );
 
       const documentNames = agentData?.agentRegistrationDoc.reduce(
@@ -166,7 +159,7 @@ const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({
           acc[doc.documentType] = doc.name;
           return acc;
         },
-        {}
+        {},
       );
 
       setFiles(documentFiles);

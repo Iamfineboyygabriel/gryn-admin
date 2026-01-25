@@ -375,12 +375,7 @@ interface Message {
   read: boolean;
 }
 
-interface Chat {
-  id: string;
-  sender: User;
-  receiver: User;
-  messages: Message[];
-}
+
 
 const MessageChat: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();

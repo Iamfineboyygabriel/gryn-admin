@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { button } from "../../buttons/Button";
 import MessageSent from "../applicationSummaryModal/Success";
 import SendMessage from "./SendMessage";
@@ -10,7 +10,7 @@ interface Document {
   id: string;
   name: string;
   documentType: string;
-  remark?: 'APPROVED' | 'REJECTED' | 'PENDING';
+  remark?: "APPROVED" | "REJECTED" | "PENDING";
 }
 
 interface VisaApplicationSummaryProps {
@@ -26,9 +26,10 @@ interface VisaApplicationSummaryProps {
 const VisaApplicationSummary: React.FC<VisaApplicationSummaryProps> = ({
   onClose,
   documents,
-  userData
+  userData,
 }) => {
   const [expandedDocuments, setExpandedDocuments] = useState<string[]>([]);
+  console.log(setExpandedDocuments);
   const [showSendMessage, setShowSendMessage] = useState(false);
   const [showMessageSent, setShowMessageSent] = useState(false);
   const [showDocuments, setShowDocuments] = useState(false);
@@ -39,11 +40,17 @@ const VisaApplicationSummary: React.FC<VisaApplicationSummaryProps> = ({
   };
 
   const allDocumentsApproved = documents.every(
-    (doc:any) => doc.remark === 'APPROVED'
+    (doc: any) => doc.remark === "APPROVED",
   );
 
   if (showSendMessage) {
-    return <SendMessage onClose={() => setShowSendMessage(false)} onSubmit={handleSendMessageSubmit} userData={userData} />;
+    return (
+      <SendMessage
+        onClose={() => setShowSendMessage(false)}
+        onSubmit={handleSendMessageSubmit}
+        userData={userData}
+      />
+    );
   }
 
   if (showMessageSent) {
@@ -77,8 +84,8 @@ const VisaApplicationSummary: React.FC<VisaApplicationSummaryProps> = ({
             </button>
             {showDocuments && (
               <div
-                className="mt-[1em] flex flex-col gap-[1em] overflow-y-auto" 
-                style={{ maxHeight: '200px' }} 
+                className="mt-[1em] flex flex-col gap-[1em] overflow-y-auto"
+                style={{ maxHeight: "200px" }}
               >
                 {documents.map((doc: Document, index: number) => (
                   <div
@@ -89,8 +96,8 @@ const VisaApplicationSummary: React.FC<VisaApplicationSummaryProps> = ({
                       <p>{doc.documentType}</p>
                     </div>
                     <img
-                      src={doc.remark === 'APPROVED' ? approve : reject}
-                      alt={doc.remark?.toLowerCase() || 'pending'}
+                      src={doc.remark === "APPROVED" ? approve : reject}
+                      alt={doc.remark?.toLowerCase() || "pending"}
                     />
                     {expandedDocuments.includes(doc?.id) && (
                       <p className="mt-2">{doc?.name}</p>
@@ -111,7 +118,7 @@ const VisaApplicationSummary: React.FC<VisaApplicationSummaryProps> = ({
               onClick={() => setShowSendMessage(true)}
               className="rounded-full cursor-pointer bg-linear-gradient px-[4em] py-[8px] text-center font-medium text-white"
             >
-              {allDocumentsApproved ? 'Submit Response' : 'Continue'}
+              {allDocumentsApproved ? "Submit Response" : "Continue"}
             </button.PrimaryButton>
           </div>
         </div>

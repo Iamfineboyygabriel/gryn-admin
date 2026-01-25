@@ -1,11 +1,10 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 import { FiSearch } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
 import plus from "../../../../../../assets/svg/plus.svg";
 import DOMPurify from "dompurify";
 import transaction from "../../../../../../assets/svg/Transaction.svg";
 import eyeImg from "../../../../../../assets/svg/eyeImg.svg";
-import deleteImg from "../../../../../../assets/svg/delete.svg";
 import { useAllDraftedNews } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
 import CustomPagination from "../../../../../../shared/utils/customPagination";
 

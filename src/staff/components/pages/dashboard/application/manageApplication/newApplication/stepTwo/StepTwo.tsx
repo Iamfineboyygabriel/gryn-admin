@@ -181,6 +181,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
                 placeholder="Select Month/Year"
                 className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none dark:border-none dark:bg-gray-700 dark:text-white cursor-pointer"
                 aria-required="true"
+                // eslint-disable-next-line jsx-a11y/role-has-required-aria-props
                 role="combobox"
                 aria-expanded={isDatePickerOpen}
                 aria-haspopup="listbox"

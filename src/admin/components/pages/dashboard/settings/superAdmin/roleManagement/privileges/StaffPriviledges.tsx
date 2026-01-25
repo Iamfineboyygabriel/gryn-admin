@@ -277,7 +277,7 @@ const Privileges: React.FC = () => {
           setPrivilegesLoading(false);
         });
     }
-  }, [staffId, dispatch]);
+  }, [staffId, dispatch, privilegesData]);
 
   const handleToggle = useCallback((feature: Features) => {
     setPrivilegesData((prev) =>

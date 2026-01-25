@@ -31,7 +31,6 @@ const AdminManagement = () => {
     admins = { data: [] },
     currentPage,
     loading,
-    error,
     searchTerm,
     fetchAdmins,
     updateSearchTerm,
@@ -62,7 +61,7 @@ const AdminManagement = () => {
 
     try {
       await dispatch(
-        logoutAdminUserBySuperAdmin(selectedLogoutUser.email)
+        logoutAdminUserBySuperAdmin(selectedLogoutUser.email),
       ).unwrap();
 
       toast.success(`Successfully logged out ${selectedLogoutUser.email}`);
@@ -74,27 +73,27 @@ const AdminManagement = () => {
     }
   };
 
-  const handleCheckboxChange = (userId: string) => {
-    setSelectedUsers((prev) => {
-      if (prev.includes(userId)) {
-        return prev.filter((id) => id !== userId);
-      } else {
-        return [...prev, userId];
-      }
-    });
-  };
+const handleCheckboxChange = useCallback((userId: string) => {
+  setSelectedUsers((prev) => {
+    if (prev.includes(userId)) {
+      return prev.filter((id) => id !== userId);
+    }
+    return [...prev, userId];
+  });
+}, []);
+
 
   const handleConfirmDelete = async () => {
     try {
       const deletePromises = selectedUsers.map((userId) =>
-        dispatch(deleteUser(userId) as any).unwrap()
+        dispatch(deleteUser(userId) as any).unwrap(),
       );
 
       await Promise.all(deletePromises);
       setLogoutSuccessMessage(
         `Successfully deleted ${selectedUsers.length} admin ${
           selectedUsers.length === 1 ? "member" : "members"
-        }.`
+        }.`,
       );
       setShowSuccessModal(true);
       setShowDeleteModal(false);
@@ -130,7 +129,7 @@ const AdminManagement = () => {
     (event: React.ChangeEvent<unknown>, value: number) => {
       fetchAdmins(value, itemsPerPage);
     },
-    [fetchAdmins, itemsPerPage]
+    [fetchAdmins, itemsPerPage],
   );
 
   const escapeRegExp = useCallback((string: string) => {
@@ -144,10 +143,10 @@ const AdminManagement = () => {
       const regex = new RegExp(`(${escapedQuery})`, "gi");
       return text.replace(
         regex,
-        (match: string) => `<mark class="bg-yellow-300">${match}</mark>`
+        (match: string) => `<mark class="bg-yellow-300">${match}</mark>`,
       );
     },
-    [escapeRegExp]
+    [escapeRegExp],
   );
 
   const sanitizeHTML = useCallback((html: string) => {
@@ -204,8 +203,8 @@ const AdminManagement = () => {
               highlightText(
                 `${admin?.profile?.lastName || ""}
                       ${admin?.profile?.firstName || ""}`,
-                localSearchTerm
-              )
+                localSearchTerm,
+              ),
             )}
           />
           <td className="py-[16px] px-[24px]">{formatData(admin?.role)}</td>
@@ -215,7 +214,7 @@ const AdminManagement = () => {
           <td
             className="py-[16px] px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
-              highlightText(formatData(admin?.email), localSearchTerm)
+              highlightText(formatData(admin?.email), localSearchTerm),
             )}
           />
           <td className="py-[16px] px-[24px]">

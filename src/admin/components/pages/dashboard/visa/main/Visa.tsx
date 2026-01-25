@@ -85,7 +85,7 @@ const Visa: React.FC = () => {
 
   useEffect(() => {
     fetchApplications(1, itemsPerPage);
-  }, []);
+  });
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -93,7 +93,7 @@ const Visa: React.FC = () => {
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [searchTerm, itemsPerPage]);
+  }, [searchTerm, itemsPerPage, fetchApplications]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     updateSearchTerm(e.target.value);

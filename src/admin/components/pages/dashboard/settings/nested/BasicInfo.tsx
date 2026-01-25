@@ -3,9 +3,7 @@ import { button } from "../../../../../../shared/buttons/Button";
 import user from "../../../../../../assets/png/avatar.png";
 import ReactLoading from "react-loading";
 import { toast } from "react-toastify";
-import useUserProfile, {
-  useCurrentUser,
-} from "../../../../../../shared/redux/hooks/shared/getUserProfile";
+import useUserProfile from "../../../../../../shared/redux/hooks/shared/getUserProfile";
 import ConfirmDiscard from "../../../../../../shared/modal/ConfirmDiscard";
 import { PrivateElement } from "../../../../../../shared/redux/hooks/admin/PrivateElement";
 

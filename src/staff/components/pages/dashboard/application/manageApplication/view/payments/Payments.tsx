@@ -3,13 +3,7 @@ import { useSelector } from "react-redux";
 import eye from "../../../../../../../../assets/svg/eyeImg.svg";
 import fileImg from "../../../../../../../../assets/svg/File.svg";
 import download from "../../../../../../../../assets/svg/download.svg";
-import approve from "../../../../../../../../assets/svg/Approved.svg";
-import reject from "../../../../../../../../assets/svg/Rejected.svg";
-import ReactLoading from "react-loading";
-import { useAppDispatch } from "../../../../../../../../shared/redux/hooks/shared/reduxHooks";
-import { AppDispatch } from "../../../../../../../../shared/redux/store";
 import { useApplicationDetails } from "../../../../../../../../shared/redux/hooks/shared/getUserProfile";
-import { updateDocumentStatus } from "../../../../../../../../shared/redux/shared/slices/shareApplication.slices";
 import DocumentPreviewModal from "../../../../../../../../shared/modal/DocumentPreviewModal";
 
 export interface ApplicationDetails {
@@ -42,13 +36,6 @@ interface DocumentType {
   status: "PENDING" | "APPROVED" | "REJECTED";
 }
 
-type ActionType = "approve" | "reject";
-
-interface LoadingStatus {
-  [key: string]: {
-    [key in ActionType]: boolean;
-  };
-}
 
 const SkeletonRow = () => (
   <div className="mb-4 animate-pulse space-y-4">
@@ -58,20 +45,16 @@ const SkeletonRow = () => (
 );
 
 const Payments = ({ applicationId }: { applicationId: any }) => {
-  const dispatch: AppDispatch = useAppDispatch();
   const { applicationDetails, loading: applicationLoading } =
     useApplicationDetails(applicationId);
-  const { updateDocStatus, error } = useSelector(
-    (state: any) => state.shareApplication
+  const { updateDocStatus } = useSelector(
+    (state: any) => state.shareApplication,
   );
 
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewFileType, setPreviewFileType] = useState<string>("");
   const [documents, setDocuments] = useState<DocumentType[]>([]);
-  const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>({});
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
-
   useEffect(() => {
     if (applicationDetails?.data?.payment?.documents) {
       setDocuments(applicationDetails.data.payment.documents);
@@ -88,8 +71,8 @@ const Payments = ({ applicationId }: { applicationId: any }) => {
                 status: updateDocStatus.remark,
                 remark: updateDocStatus.remark,
               }
-            : doc
-        )
+            : doc,
+        ),
       );
     }
   }, [updateDocStatus]);
@@ -140,108 +123,6 @@ const Payments = ({ applicationId }: { applicationId: any }) => {
         document.body.removeChild(link);
       })
       .catch((error) => console.error("Download failed:", error));
-  };
-
-  const handleStatusUpdate = async (
-    id: string,
-    remark: "APPROVED" | "REJECTED"
-  ) => {
-    const action: ActionType = remark.toLowerCase() as ActionType;
-    setLoadingStatus((prev) => ({
-      ...prev,
-      [id]: { ...prev[id], [action]: true },
-    }));
-    setErrors((prev) => ({ ...prev, [id]: "" }));
-
-    try {
-      const response = await dispatch(updateDocumentStatus({ id, remark }));
-
-      if (
-        response.meta.requestStatus === "fulfilled" &&
-        response?.payload?.status === 200
-      ) {
-        setDocuments((prevDocs) =>
-          prevDocs.map((doc) =>
-            doc.id === id ? { ...doc, status: remark, remark: remark } : doc
-          )
-        );
-      } else {
-        throw new Error("Failed to update document status");
-      }
-    } catch (error) {
-      console.error("Failed to update document status:", error);
-      setErrors((prev) => ({
-        ...prev,
-        [id]: "Failed to update status. Please try again.",
-      }));
-    } finally {
-      setLoadingStatus((prev) => ({
-        ...prev,
-        [id]: { ...prev[id], [action]: false },
-      }));
-    }
-  };
-
-  const renderActionButton = (
-    doc: DocumentType,
-    action: "APPROVED" | "REJECTED"
-  ) => {
-    const actionType: ActionType = action?.toLowerCase() as ActionType;
-    const isLoading = loadingStatus[doc.id]?.[actionType] || false;
-
-    const isCurrentStatus = doc.remark === action;
-    const isPending = !doc.remark || doc.remark === "PENDING";
-    const isDisabled = doc.remark === "APPROVED" || doc.remark === "REJECTED";
-
-    let buttonClass =
-      "flex px-[1em] rounded-md font-medium py-[8px] items-center border gap-2 ";
-
-    if (isPending) {
-      buttonClass += "bg-gray-200 text-gray-600 border-gray-300";
-    } else if (action === "APPROVED") {
-      buttonClass += isCurrentStatus
-        ? "bg-[#F3FBF5] text-approve border-approve cursor-not-allowed opacity-50"
-        : "bg-gray-200 text-gray-600 border-gray-300 cursor-not-allowed opacity-50";
-    } else {
-      buttonClass += isCurrentStatus
-        ? "bg-[#FEEEEE] text-red-500 border-reject cursor-not-allowed opacity-50"
-        : "bg-gray-200 text-gray-600 border-gray-300 cursor-not-allowed opacity-50";
-    }
-
-    const buttonText = isPending
-      ? action === "APPROVED"
-        ? "Approve"
-        : "Reject"
-      : action === "APPROVED"
-      ? "Approved"
-      : "Rejected";
-
-    return (
-      <div className="flex flex-col items-start">
-        {errors[doc.id] && (
-          <small className="text-red-500 mb-1">{errors[doc.id]}</small>
-        )}
-        <button
-          className={buttonClass}
-          onClick={() => handleStatusUpdate(doc.id, action)}
-          disabled={isLoading || isDisabled}
-        >
-          {isLoading ? (
-            <ReactLoading color="#FFFFFF" width={25} height={25} type="spin" />
-          ) : (
-            <>
-              {isCurrentStatus && (
-                <img
-                  src={action === "APPROVED" ? approve : reject}
-                  alt={`${action.toLowerCase()}_icon`}
-                />
-              )}
-              <small>{buttonText}</small>
-            </>
-          )}
-        </button>
-      </div>
-    );
   };
 
   if (applicationLoading) {
@@ -324,8 +205,8 @@ const Payments = ({ applicationId }: { applicationId: any }) => {
                     doc.remark === "APPROVED"
                       ? "text-approve"
                       : doc.remark === "REJECTED"
-                      ? "text-red-600"
-                      : "text-yellow-500"
+                        ? "text-red-600"
+                        : "text-yellow-500"
                   }
                 >
                   {doc.remark || "PENDING"}
