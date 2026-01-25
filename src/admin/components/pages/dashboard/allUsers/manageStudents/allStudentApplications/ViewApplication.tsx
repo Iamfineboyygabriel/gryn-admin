@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate} from "react-router-dom";
 import PersonalDetails from "../allStudentApplications/personalDeatils/PersonalDetails";
 import Degree from "../allStudentApplications/degree/Degree";
 import UploadedDocument from "../allStudentApplications/upload/UploadedDocuments";

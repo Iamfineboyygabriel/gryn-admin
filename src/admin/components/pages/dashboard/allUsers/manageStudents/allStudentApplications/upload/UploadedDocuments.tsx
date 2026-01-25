@@ -33,10 +33,6 @@ interface Document {
   status: "PENDING" | "APPROVED" | "REJECTED";
 }
 
-interface UpdateDocStatus {
-  id: string;
-  remark: "APPROVED" | "REJECTED" | "PENDING";
-}
 
 type ActionType = "approve" | "reject";
 

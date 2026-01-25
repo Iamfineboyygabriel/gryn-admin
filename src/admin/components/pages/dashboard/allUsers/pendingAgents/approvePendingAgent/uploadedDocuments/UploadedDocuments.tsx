@@ -50,7 +50,7 @@ interface LoadingStatus {
 
 const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({ agentData }) => {
   const dispatch: AppDispatch = useAppDispatch();
-  const { updateDocStatus, error } = useSelector(
+  const { updateDocStatus} = useSelector(
     (state: RootState) => state.shareApplication
   ) as {
     updateDocStatus: {
@@ -68,10 +68,8 @@ const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({ agentData }) => {
   );
   const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>({});
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [approvalError, setApprovalError] = useState<string | null>(null);
-  const loading = useSelector(
-    (state: any) => state?.shareApplication?.loading || false
-  );
+  const [approvalError] = useState<string | null>(null);
+
 
   useEffect(() => {
     if (updateDocStatus) {

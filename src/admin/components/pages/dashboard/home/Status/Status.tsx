@@ -36,7 +36,7 @@ const Status = () => {
       return [];
     }
     return applications;
-  }, [applications, handleViewDetails]);
+  }, [applications]);
 
   const renderTableBody = useCallback(() => {
     if (loading) {
@@ -94,7 +94,7 @@ const Status = () => {
         </tr>
       );
     }
-  }, [filteredAndSortedApplications, loading]);
+  }, [filteredAndSortedApplications, loading, handleViewDetails]);
 
   return (
     <main className="font-outfit">

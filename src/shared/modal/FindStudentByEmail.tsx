@@ -2,7 +2,6 @@ import React, { useCallback, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { button } from "../buttons/Button";
-import { CgAsterisk } from "react-icons/cg";
 import { findStudentByEmail } from "../redux/shared/slices/shareApplication.slices";
 import ReactLoading from "react-loading";
 import { useStudentEmails } from "../redux/hooks/admin/getAdminProfile";

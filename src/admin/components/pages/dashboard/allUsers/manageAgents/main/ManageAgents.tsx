@@ -58,20 +58,18 @@ const ManageAgents = () => {
   const handleAssignModal = () => setIsAssignModalOpen(true);
   const handleAssignModalClose = () => setIsAssignModalOpen(false);
 
-  const handleCheckboxChange = (agentId: string) => {
-    setSelectedAgents((prev) => {
-      if (prev.includes(agentId)) {
-        return prev.filter((id) => id !== agentId);
-      } else {
-        return [...prev, agentId];
-      }
-    });
-  };
+  const handleCheckboxChange = useCallback((agentId: string) => {
+    setSelectedAgents((prev) =>
+      prev.includes(agentId)
+        ? prev.filter((id) => id !== agentId)
+        : [...prev, agentId],
+    );
+  }, []);
 
   const handleConfirmDelete = async () => {
     try {
       const deletePromises = selectedAgents.map((agentId) =>
-        dispatch(deleteUser(agentId) as any).unwrap()
+        dispatch(deleteUser(agentId) as any).unwrap(),
       );
 
       await Promise.all(deletePromises);
@@ -107,7 +105,7 @@ const ManageAgents = () => {
         state: { firstName, lastName, agentId, email },
       });
     },
-    [navigate]
+    [navigate],
   );
 
   useEffect(() => {
@@ -118,7 +116,7 @@ const ManageAgents = () => {
     (event: React.ChangeEvent<unknown>, value: number) => {
       fetchAgents(value, itemsPerPage);
     },
-    [fetchAgents, itemsPerPage]
+    [fetchAgents, itemsPerPage],
   );
 
   const escapeRegExp = useCallback((string: string) => {
@@ -132,10 +130,10 @@ const ManageAgents = () => {
       const regex = new RegExp(`(${escapedQuery})`, "gi");
       return text.replace(
         regex,
-        (match: string) => `<mark class="bg-yellow-300">${match}</mark>`
+        (match: string) => `<mark class="bg-yellow-300">${match}</mark>`,
       );
     },
-    [escapeRegExp]
+    [escapeRegExp],
   );
 
   const sanitizeHTML = useCallback((html: string) => {
@@ -186,14 +184,14 @@ const ManageAgents = () => {
             dangerouslySetInnerHTML={sanitizeHTML(
               highlightText(
                 `${agent?.profile?.lastName} ${agent?.profile?.firstName}`,
-                localSearchTerm
-              )
+                localSearchTerm,
+              ),
             )}
           />
           <td
             className="py-[16px] px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
-              highlightText(formatData(agent.email), localSearchTerm)
+              highlightText(formatData(agent.email), localSearchTerm),
             )}
           />
           <td className="py-[16px] px-[24px]">
@@ -203,7 +201,7 @@ const ManageAgents = () => {
                   agent?.id,
                   agent?.profile?.firstName,
                   agent?.profile?.lastName,
-                  agent?.profile?.email
+                  agent?.profile?.email,
                 )
               }
               className="text-primary-700 whitespace-nowrap cursor-pointer font-[600] flex items-center gap-[8px]"
@@ -238,7 +236,7 @@ const ManageAgents = () => {
     formatData,
     selectedAgents,
     handleCheckboxChange,
-    handleViewDetails
+    handleViewDetails,
   ]);
 
   return (

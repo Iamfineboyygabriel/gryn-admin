@@ -36,7 +36,7 @@ const AllApplication: React.FC = () => {
   useEffect(() => {
     updateSortTerm("desc");
     fetchApplications(1, itemsPerPage);
-  }, []);
+  }, [fetchApplications, itemsPerPage, updateSortTerm]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -44,7 +44,7 @@ const AllApplication: React.FC = () => {
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [searchTerm, sortOrder, status, itemsPerPage]);
+  }, [searchTerm, sortOrder, status, itemsPerPage, fetchApplications]);
 
   const handleSortChange = useCallback(
     (newOrder: "asc" | "desc") => {
@@ -76,7 +76,7 @@ const AllApplication: React.FC = () => {
     (event: React.ChangeEvent<unknown>, newPage: number) => {
       fetchApplications(newPage, itemsPerPage);
     },
-    [fetchApplications, itemsPerPage, sortOrder]
+    [fetchApplications, itemsPerPage]
   );
 
   const handleViewDetails = useCallback(

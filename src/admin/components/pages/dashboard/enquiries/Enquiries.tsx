@@ -4,7 +4,7 @@ import { AppDispatch } from "../../../../../shared/redux/store";
 import PieChartEnquires from "../Reports/pieChart/PieChartEnquires";
 import CustomPagination from "../../../../../shared/utils/customPagination";
 import { FiSearch } from "react-icons/fi";
-import { FaRegFileAlt, FaPen } from "react-icons/fa";
+import { FaRegFileAlt } from "react-icons/fa";
 import { useAllEnquiryData } from "../../../../../shared/redux/hooks/admin/getAdminProfile";
 import { button } from "../../../../../shared/buttons/Button";
 import noData from "../../../../../assets/svg/Transaction.svg";
@@ -61,8 +61,8 @@ const Enquiries = () => {
   const [isDeletingEnquiries, setIsDeletingEnquiries] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [statusModalOpen, setStatusModalOpen] = useState(false);
-  const [enquiryToUpdate, setEnquiryToUpdate] = useState<EnquiryItem | null>(
-    null
+  const [enquiryToUpdate] = useState<EnquiryItem | null>(
+    null,
   );
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -76,11 +76,6 @@ const Enquiries = () => {
   const handleViewDetails = (details: EnquiryItem) => {
     setSelectedEnquiries(details);
     setIsModalOpen(true);
-  };
-
-  const handleOpenStatusModal = (enquiry: EnquiryItem) => {
-    setEnquiryToUpdate(enquiry);
-    setStatusModalOpen(true);
   };
 
   const handleDeleteSelected = () => {
@@ -97,13 +92,13 @@ const Enquiries = () => {
 
     try {
       const deletePromises = selectedUsers?.map((enquiryId) =>
-        dispatch(deleteEnquiry(enquiryId))?.unwrap()
+        dispatch(deleteEnquiry(enquiryId))?.unwrap(),
       );
 
       const results = await Promise?.allSettled(deletePromises);
       const failures = results?.filter(
         (result): result is PromiseRejectedResult =>
-          result?.status === "rejected"
+          result?.status === "rejected",
       );
 
       if (failures?.length > 0) {
@@ -111,7 +106,7 @@ const Enquiries = () => {
           .map((failure) => failure?.reason?.message || "Unknown error")
           .join(", ");
         setDeleteError(
-          `Failed to delete ${failures.length} enquiries. Error: ${errorMessages}`
+          `Failed to delete ${failures.length} enquiries. Error: ${errorMessages}`,
         );
         return;
       }
@@ -188,7 +183,7 @@ const Enquiries = () => {
     (event: React.ChangeEvent<unknown>, value: number) => {
       fetchEnq(value, itemsPerPage);
     },
-    [fetchEnq, itemsPerPage]
+    [fetchEnq, itemsPerPage],
   );
 
   const formatData = useCallback((data: any) => (data ? data : "-"), []);
