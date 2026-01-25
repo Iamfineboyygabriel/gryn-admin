@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useLocation } from "react-router";
 import { uploadPayment } from "../../../../../../../shared/redux/shared/services/shareApplication.services";
 import { DocumentType } from "../../../../../../../data/data";

@@ -1,14 +1,9 @@
 import React, { useCallback, useState, useMemo } from "react";
 import { FiSearch } from "react-icons/fi";
 import transaction from "../../../../../../../assets/svg/Transaction.svg";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import DOMPurify from "dompurify";
-import { button } from "../../../../../../../shared/buttons/Button";
-import plus from "../../../../../../../assets/svg/plus.svg";
-import {
-  useStaffAssignedAgents,
-  useStaffDetails,
-} from "../../../../../../../shared/redux/hooks/admin/getAdminProfile";
+import { useStaffAssignedAgents } from "../../../../../../../shared/redux/hooks/admin/getAdminProfile";
 import useUserProfile from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
 
 const SkeletonRow: React.FC = () => (
@@ -34,7 +29,7 @@ interface AgentData {
       firstName: string,
       lastName: string,
       middleName: string,
-      email: any
+      email: any,
     ): void;
     firstName: string;
     lastName: string;
@@ -49,7 +44,7 @@ const ManageAgents = () => {
   const { agentDetail, loading: agentsLoading } =
     useStaffAssignedAgents(staffId);
   const [localSearchTerm, setLocalSearchTerm] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage] = useState(1);
   const itemsPerPage = 10;
 
   const escapeRegExp = useCallback((string: string) => {
@@ -63,10 +58,10 @@ const ManageAgents = () => {
       const regex = new RegExp(`(${escapedQuery})`, "gi");
       return text.replace(
         regex,
-        (match: string) => `<mark class="bg-yellow-300">${match}</mark>`
+        (match: string) => `<mark class="bg-yellow-300">${match}</mark>`,
       );
     },
-    [escapeRegExp]
+    [escapeRegExp],
   );
 
   const sanitizeHTML = useCallback((html: string) => {
@@ -78,7 +73,7 @@ const ManageAgents = () => {
   const filteredAgents = useMemo(() => {
     if (!agentDetail || !Array.isArray(agentDetail.data)) return [];
     return agentDetail.data.filter((agent: AgentData) =>
-      agent.email.toLowerCase().includes(localSearchTerm.toLowerCase())
+      agent.email.toLowerCase().includes(localSearchTerm.toLowerCase()),
     );
   }, [agentDetail, localSearchTerm]);
 
@@ -88,7 +83,7 @@ const ManageAgents = () => {
         state: { firstName, lastName, agentId, email },
       });
     },
-    [navigate]
+    [navigate],
   );
 
   const renderTableBody = useCallback(() => {
@@ -109,7 +104,7 @@ const ManageAgents = () => {
           </td>
           <td className="py-[16px] whitespace-nowrap flex gap-2 px-[24px]">
             {` ${formatData(agent.profile.lastName)}  ${formatData(
-              agent.profile.firstName
+              agent.profile.firstName,
             )}`}
           </td>
           {/* <td className="py-[16px] px-[24px]">
@@ -118,7 +113,7 @@ const ManageAgents = () => {
           <td
             className="py-[16px] px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
-              highlightText(formatData(agent.email), localSearchTerm)
+              highlightText(formatData(agent.email), localSearchTerm),
             )}
           />
           <td className="py-[16px] px-[24px]">
@@ -128,7 +123,7 @@ const ManageAgents = () => {
                   agent.profile.userId,
                   agent.profile.firstName,
                   agent.profile.lastName,
-                  agent?.profile?.email
+                  agent?.profile?.email,
                 )
               }
               className="text-primary-700 whitespace-nowrap cursor-pointer font-[600] flex items-center gap-[8px]"
@@ -154,7 +149,6 @@ const ManageAgents = () => {
     }
   }, [
     agentsLoading,
-    agentsLoading,
     filteredAgents,
     currentPage,
     itemsPerPage,
@@ -162,6 +156,7 @@ const ManageAgents = () => {
     highlightText,
     localSearchTerm,
     formatData,
+    handleViewDetails
   ]);
 
   return (

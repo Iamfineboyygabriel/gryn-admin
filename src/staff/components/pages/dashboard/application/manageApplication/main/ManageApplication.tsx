@@ -26,7 +26,6 @@ const SkeletonRow: React.FC = () => (
 const AllApplication: React.FC = () => {
   const {
     applications,
-    totalPages,
     currentPage,
     loading,
     fetchApplications,
@@ -61,7 +60,7 @@ const AllApplication: React.FC = () => {
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [searchTerm, sortOrder, status, itemsPerPage]);
+  }, [searchTerm, sortOrder, status, itemsPerPage, fetchApplications]);
 
   const handleSortChange = useCallback(
     (newOrder: "asc" | "desc") => {
@@ -93,7 +92,7 @@ const AllApplication: React.FC = () => {
     (event: React.ChangeEvent<unknown>, newPage: number) => {
       fetchApplications(newPage, itemsPerPage);
     },
-    [fetchApplications, itemsPerPage, sortOrder]
+    [fetchApplications, itemsPerPage]
   );
 
   const handleViewDetails = useCallback(

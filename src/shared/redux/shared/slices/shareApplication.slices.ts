@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { setMessage } from "../../message.slices";
 import shareApplicationServices from "../services/shareApplication.services";
-import { RootState } from "../../store";
 
 interface UpdateProfile {
   email?: string;
@@ -55,10 +54,6 @@ interface UpdateStudentPayload {
   userId: string;
 }
 
-interface UpdateApplicationBody {
-  isDirect: boolean;
-  status: string;
-}
 
 interface UpdateBankDetailsBody {
   bankCode?: string;

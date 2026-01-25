@@ -55,7 +55,6 @@ const AllPayment: React.FC = () => {
   const {
     allApplicationPayment,
     loading,
-    totalPages,
     currentPage,
     fetchApplicationPayments,
   } = useAllApplicationPayment();

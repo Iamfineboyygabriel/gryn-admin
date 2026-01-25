@@ -4,17 +4,13 @@ import { button } from "../../../../../../../../shared/buttons/Button";
 import eye from "../../../../../../../../assets/svg/eyeImg.svg";
 import fileImg from "../../../../../../../../assets/svg/File.svg";
 import download from "../../../../../../../../assets/svg/download.svg";
-import approve from "../../../../../../../../assets/svg/Approved.svg";
-import reject from "../../../../../../../../assets/svg/Rejected.svg";
 import ReactLoading from "react-loading";
 import { useAppDispatch } from "../../../../../../../../shared/redux/hooks/shared/reduxHooks";
 import { AppDispatch } from "../../../../../../../../shared/redux/store";
 import { useApplicationDetails } from "../../../../../../../../shared/redux/hooks/shared/getUserProfile";
-import { updateDocumentStatus } from "../../../../../../../../shared/redux/shared/slices/shareApplication.slices";
 import DocumentPreviewModal from "../../../../../../../../shared/modal/DocumentPreviewModal";
 import Modal from "../../../../../../../../shared/modal/Modal";
 import StudentApplicationSummary from "../../../../../../../../shared/modal/applicationSummaryModal/StudentApplicationSummary";
-import AssignApplicationToAgent from "../../../../../../../../shared/modal/AssignApplicationToAgent";
 import {
   Alert,
   FormControl,
@@ -23,7 +19,6 @@ import {
   MenuItem,
 } from "@mui/material";
 import { updateApplicationToCompleted } from "../../../../../../../../shared/redux/admin/slices/application.slices";
-import { PrivateElement } from "../../../../../../../../shared/redux/hooks/admin/PrivateElement";
 
 interface Document {
   id: string;
@@ -34,18 +29,9 @@ interface Document {
   status: "PENDING" | "APPROVED" | "REJECTED";
 }
 
-interface UpdateDocStatus {
-  id: string;
-  remark: "APPROVED" | "REJECTED" | "PENDING";
-}
 
-type ActionType = "approve" | "reject";
 
-interface LoadingStatus {
-  [key: string]: {
-    [key in ActionType]: boolean;
-  };
-}
+
 
 const SkeletonRow = () => (
   <div className="mb-4 animate-pulse space-y-4">
@@ -58,7 +44,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
   const dispatch: AppDispatch = useAppDispatch();
   const { applicationDetails, loading: applicationLoading } =
     useApplicationDetails(applicationId);
-  const { updateDocStatus, error } = useSelector(
+  const { updateDocStatus } = useSelector(
     (state: any) => state.shareApplication
   );
 
@@ -66,10 +52,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewFileType, setPreviewFileType] = useState<string>("");
   const [isModalOpen, setModalOpen] = useState(false);
-  const [isAssignModal, setIsAssignModal] = useState(false);
   const [documents, setDocuments] = useState<Document[]>([]);
-  const [loadingStatus, setLoadingStatus] = useState<LoadingStatus>({});
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [newApplicationStatus, setNewApplicationStatus] = useState<
     "COMPLETED" | "DECLINED" | null
   >(null);
@@ -114,7 +97,6 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
       .join(" ");
   };
 
-  const handleOpenModal = () => setModalOpen(true);
   const handleCloseModal = () => setModalOpen(false);
 
   const getFileTypeFromUrl = (url: string): string => {
@@ -165,45 +147,6 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
       .catch((error) => console.error("Download failed:", error));
   };
 
-  const handleStatusUpdate = async (
-    id: string,
-    remark: "APPROVED" | "REJECTED"
-  ) => {
-    const action: ActionType = remark.toLowerCase() as ActionType;
-    setLoadingStatus((prev) => ({
-      ...prev,
-      [id]: { ...prev[id], [action]: true },
-    }));
-    setErrors((prev) => ({ ...prev, [id]: "" }));
-
-    try {
-      const response = await dispatch(updateDocumentStatus({ id, remark }));
-
-      if (
-        response.meta.requestStatus === "fulfilled" &&
-        response.payload?.status === 200
-      ) {
-        setDocuments((prevDocs) =>
-          prevDocs.map((doc) =>
-            doc.id === id ? { ...doc, status: remark, remark: remark } : doc
-          )
-        );
-      } else {
-        throw new Error("Failed to update document status");
-      }
-    } catch (error) {
-      console.error("Failed to update document status:", error);
-      setErrors((prev) => ({
-        ...prev,
-        [id]: "Failed to update status. Please try again.",
-      }));
-    } finally {
-      setLoadingStatus((prev) => ({
-        ...prev,
-        [id]: { ...prev[id], [action]: false },
-      }));
-    }
-  };
 
   const handleUpdateApplicationStatus = async () => {
     if (!newApplicationStatus) return;
@@ -247,67 +190,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
     setAlertState((prev) => ({ ...prev, open: false }));
   };
 
-  const renderActionButton = (
-    doc: Document,
-    action: "APPROVED" | "REJECTED"
-  ): JSX.Element => {
-    const actionType: ActionType = action.toLowerCase() as ActionType;
-    const isLoading = loadingStatus[doc.id]?.[actionType] || false;
-    const isCurrentStatus = doc.remark === action;
-    const isPending = doc.remark === "PENDING";
-
-    let buttonClass =
-      "flex px-[1em] rounded-md font-medium py-[8px] items-center border gap-2 ";
-    let buttonContent;
-
-    if (action === "APPROVED") {
-      buttonClass += isCurrentStatus
-        ? "bg-[#F3FBF5] text-approve border-approve cursor-default"
-        : isPending
-        ? "bg-white text-approve border-approve"
-        : "bg-gray-200 text-gray-600 border-gray-300 cursor-not-allowed";
-
-      buttonContent = (
-        <>
-          {isCurrentStatus && <img src={approve} alt="approve_icon" />}
-          <small>{isCurrentStatus ? "Approved" : "Approve"}</small>
-        </>
-      );
-    } else {
-      buttonClass += isCurrentStatus
-        ? "bg-[#FEEEEE] text-red-500 border-reject cursor-default"
-        : isPending
-        ? "bg-white text-reject border-reject"
-        : "bg-gray-200 text-gray-600 border-gray-300 cursor-not-allowed";
-
-      buttonContent = (
-        <>
-          {isCurrentStatus && <img src={reject} alt="reject_icon" />}
-          <small>{isCurrentStatus ? "Rejected" : "Reject"}</small>
-        </>
-      );
-    }
-
-    return (
-      <div className="flex flex-col items-start">
-        {errors[doc.id] && (
-          <small className="text-red-500 mb-1">{errors[doc.id]}</small>
-        )}
-        <button
-          className={buttonClass}
-          onClick={() => isPending && handleStatusUpdate(doc.id, action)}
-          disabled={isLoading || isCurrentStatus}
-        >
-          {isLoading ? (
-            <ReactLoading color="#FFFFFF" width={25} height={25} type="spin" />
-          ) : (
-            buttonContent
-          )}
-        </button>
-      </div>
-    );
-  };
-
+ 
   if (applicationLoading) {
     return (
       <main className="font-outfit">

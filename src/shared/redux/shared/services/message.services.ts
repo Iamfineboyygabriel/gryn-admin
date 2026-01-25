@@ -121,10 +121,7 @@
 import axios from "axios";
 import authHeader from "../../headers";
 
-interface ApiResponse<T> {
-  data: T;
-  message: string;
-}
+
 
 const handleApiError = (error: any) => {
   if (axios.isAxiosError(error)) {

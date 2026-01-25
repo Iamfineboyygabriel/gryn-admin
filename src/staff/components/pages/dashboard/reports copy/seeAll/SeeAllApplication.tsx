@@ -20,7 +20,6 @@ const SkeletonRow = () => (
 const SeeAllApplication: React.FC = () => {
   const {
     applications,
-    totalPages,
     currentPage,
     loading,
     fetchApplications,
@@ -66,7 +65,6 @@ const SeeAllApplication: React.FC = () => {
     });
   }, [applications, searchTerm, sortField, sortOrder]);
 
-  const isCurrentPageEmpty = filteredAndSortedApplications.length === 0;
 
   const handleViewDetails = useCallback(
     (applicationId: string) => {

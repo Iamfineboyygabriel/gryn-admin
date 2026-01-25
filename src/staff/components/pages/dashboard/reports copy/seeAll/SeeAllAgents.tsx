@@ -20,7 +20,6 @@ const SkeletonRow = () => (
 const SeeAllAgents = () => {
   const {
     agents,
-    totalPages,
     currentPage,
     loading,
     fetchAgents,
@@ -95,7 +94,6 @@ const SeeAllAgents = () => {
     });
   }, [agents, localSearchTerm]);
 
-  const isCurrentPageEmpty = filteredAgents.length === 0;
 
   const renderTableBody = useCallback(() => {
     if (loading) {

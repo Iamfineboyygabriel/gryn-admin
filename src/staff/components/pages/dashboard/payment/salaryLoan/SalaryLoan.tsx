@@ -38,7 +38,7 @@ const SalaryLoan = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const staffId = userProfile?.userId;
-  const { staffSalary, loading, error, fetchStaffPayments } = useStaffSalary();
+  const { staffSalary, loading,  fetchStaffPayments } = useStaffSalary();
 
   useEffect(() => {
     if (staffId) {

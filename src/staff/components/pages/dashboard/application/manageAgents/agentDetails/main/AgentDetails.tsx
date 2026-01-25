@@ -1,39 +1,38 @@
 import React, { useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { button } from "../../../../../../../../shared/buttons/Button";
 import AgentProfile from "../agentProfile/AgentProfile";
 import ManageApplication from "../manageApplication/main/ManageApplication";
-import ManageStudents from "../manageStudents/main/ManageStudents";
 import { useSingleAgentApplication } from "../../../../../../../../shared/redux/hooks/shared/getUserProfile";
 import AgentCommission from "../../agentCommission/AgentCommission";
-
-
-interface LocationState {
-  agentId: string;
-}
 
 const AgentDetails: React.FC = () => {
   const location = useLocation();
   const [activeLink, setActiveLink] = useState("manageApplication");
-  
-  const { firstName, lastName, agentId, email } =
-    (location.state as { firstName?: string; lastName?: string, agentId: any, email: any }) || {};
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [status, setStatus] = useState("");
+  const { firstName, lastName, agentId, email } =
+    (location.state as {
+      firstName?: string;
+      lastName?: string;
+      agentId: any;
+      email: any;
+    }) || {};
+
+  const [currentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
+  const [searchTerm] = useState("");
+  const [sortOrder] = useState<"asc" | "desc">("asc");
+  const [status] = useState("");
 
   const { applicationDetails, loading, error } = useSingleAgentApplication(
-    agentId ?? "", 
+    agentId ?? "",
     {
       page: currentPage,
       limit: itemsPerPage,
       search: searchTerm,
       sort: sortOrder,
-      status: status
-    }
+      status: status,
+    },
   );
 
   const navigate = useNavigate();
@@ -108,17 +107,21 @@ const AgentDetails: React.FC = () => {
           </nav>
           <section className="mt-3">
             {activeLink === "manageApplication" && (
-              <ManageApplication error={error} loading={loading} applicationDetails={applicationDetails}/>)}
-            {activeLink === "agentProfile" && <AgentProfile error={error} loading={loading} email={email}/>}
+              <ManageApplication
+                error={error}
+                loading={loading}
+                applicationDetails={applicationDetails}
+              />
+            )}
+            {activeLink === "agentProfile" && (
+              <AgentProfile error={error} loading={loading} email={email} />
+            )}
             {activeLink === "agentCommission" && <AgentCommission />}
-
           </section>
         </div>
-  
       </header>
     </main>
   );
 };
 
 export default AgentDetails;
-

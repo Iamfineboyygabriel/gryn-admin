@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { FiSearch } from "react-icons/fi";
 import transaction from "../../../../../../assets/svg/Transaction.svg";
-import { Link, useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import { button } from "../../../../../../shared/buttons/Button";
 import DOMPurify from "dompurify";
 import CustomPagination from "../../../../../../shared/utils/customPagination";
@@ -28,12 +28,8 @@ const SkeletonRow: React.FC = () => (
 );
 
 const SeeAllStudents: React.FC = () => {
-  const { useAllStudent, totalPages, currentPage, loading, fetchApplications, searchTerm, updateSearchTerm } = useAllStudents();
-  const [isModalOpen, setModalOpen] = useState(false);
+  const { useAllStudent,  currentPage, loading, fetchApplications, searchTerm, updateSearchTerm } = useAllStudents();
   const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm || '');
-
-  const handleOpenModal = () => setModalOpen(true);
-  const handleCloseModal = () => setModalOpen(false);
 
   const navigate = useNavigate();
   const itemsPerPage = 10;

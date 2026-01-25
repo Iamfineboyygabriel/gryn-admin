@@ -108,19 +108,6 @@ const UpdatePayment = () => {
     }
   }, [state?.document]);
 
-  const renderFileInfo = (documentType: DocumentType) => {
-    const doc = documents[documentType];
-    const currentFileName = doc.file?.name || doc.originalName;
-
-    if (!currentFileName) return null;
-
-    return (
-      <div className="mt-2 text-sm flex items-center gap-2">
-        <span className="text-gray-500">Current file:</span>
-        <span className="font-medium text-gray-700">{currentFileName}</span>
-      </div>
-    );
-  };
 
   const handleFileChange = (documentType: DocumentType, file: File | null) => {
     if (documents[documentType].canUpdate) {

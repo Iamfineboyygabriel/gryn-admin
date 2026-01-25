@@ -55,7 +55,6 @@ const NewPayment = () => {
     setError(null);
   }, []);
 
-  const handleOpenModal = () => setModalOpen(true);
   const handleCloseModal = () => setModalOpen(false);
 
   const choice: Item[] = [

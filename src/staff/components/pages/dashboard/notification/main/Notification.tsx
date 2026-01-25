@@ -2,7 +2,6 @@ import { useState } from "react";
 import All from "../all/All";
 import UnRead from "../unRead/UnRead";
 import Read from "../read/Read";
-import News from "../news/main/News";
 
 const Notification = () => {
   const [activeLink, setActiveLink] = useState("all");

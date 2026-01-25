@@ -8,7 +8,7 @@ import ReactLoading from "react-loading";
 import useUserProfile from "../../../../../../shared/redux/hooks/shared/getUserProfile";
 
 const Documents = () => {
-  const { userProfile, loading: isLoading } = useUserProfile();
+  const { userProfile} = useUserProfile();
   const [pASSPORT, setPASSPORT] = useState<File | null>(null);
   const [rEfLETTER, setREFLETTER] = useState<File | null>(null);
   const [iDCard, setIDCard] = useState<File | null>(null);

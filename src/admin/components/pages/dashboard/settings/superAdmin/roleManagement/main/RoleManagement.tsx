@@ -1,6 +1,5 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import transaction from "../../../../../../../../assets/svg/Transaction.svg";
 import { button } from "../../../../../../../../shared/buttons/Button";
 import plus from "../../../../../../../../assets/svg/plus.svg";
 
