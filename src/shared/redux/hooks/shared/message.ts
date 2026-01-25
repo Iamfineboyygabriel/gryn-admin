@@ -46,14 +46,16 @@ export const useMessage = () => {
     };
   }, [dispatch, socketService, userDetails?.data?.id]);
 
-  const handleSearch =
-    (debounce((searchTerm: string) => {
-      if (searchTerm.trim()) {
-        dispatch(setSearch(searchTerm));
-        dispatch(searchUser(searchTerm));
-      }
-    }, 300),
-    [dispatch]);
+  const handleSearch = useMemo(
+    () =>
+      debounce((searchTerm: string) => {
+        if (searchTerm.trim()) {
+          dispatch(setSearch(searchTerm));
+          dispatch(searchUser(searchTerm));
+        }
+      }, 300),
+    [dispatch],
+  );
 
   const handleCreateChat = useCallback(
     async (userId: string) => {
