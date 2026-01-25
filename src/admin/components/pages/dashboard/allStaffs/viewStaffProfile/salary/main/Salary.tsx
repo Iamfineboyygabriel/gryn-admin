@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import dayjs from "dayjs";
@@ -63,8 +63,10 @@ const StaffSalary = ({ staffEmail }: { staffEmail: any | null }) => {
     }
   }, [staffId, currentPage, fetchStaffPayments]);
 
-  const filteredSalary =
-    staffSalary && staffSalary[0]?.salary ? staffSalary[0]?.salary : [];
+  const filteredSalary = useMemo(
+    () => (staffSalary && staffSalary[0]?.salary ? staffSalary[0]?.salary : []),
+    [staffSalary],
+  );
   const shouldShowPagination =
     !loading && (currentPage > 1 || (filteredSalary?.length ?? 0) > 0);
 
@@ -79,10 +81,10 @@ const StaffSalary = ({ staffEmail }: { staffEmail: any | null }) => {
 
   const formatData = useCallback((data: any) => (data ? data : "-"), []);
 
-  const handleViewDetails = (payment: SalaryItem) => {
+  const handleViewDetails = useCallback((payment: SalaryItem) => {
     setSelectedPayment(payment);
     setIsModalOpen(true);
-  };
+  }, []);
 
   const renderTableBody = useCallback(() => {
     if (loading || staffLoading) {

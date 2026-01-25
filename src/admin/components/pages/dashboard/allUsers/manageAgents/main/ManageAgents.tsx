@@ -238,6 +238,7 @@ const ManageAgents = () => {
     formatData,
     selectedAgents,
     handleCheckboxChange,
+    handleViewDetails
   ]);
 
   return (

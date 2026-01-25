@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useAllStaffPayment } from "../../../../../../../shared/redux/hooks/shared/getUserProfile";
 import { useStaffDetails } from "../../../../../../../shared/redux/hooks/admin/getAdminProfile";
 import transaction from "../../../../../../../assets/svg/Transaction.svg";
@@ -21,7 +21,7 @@ const StaffPayments = ({ staffEmail }: any) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const itemsPerPage = 10;
 
-  const { staffDetail, loading: staffLoading } = useStaffDetails(staffEmail);
+  const { staffDetail } = useStaffDetails(staffEmail);
   const staffId = staffDetail?.data?.profile.userId;
   const {
     allStaffInvoicePayment,
@@ -61,7 +61,7 @@ const StaffPayments = ({ staffEmail }: any) => {
         fetchStaffPayments(staffId, value, itemsPerPage);
       }
     },
-    [fetchStaffPayments, staffId, itemsPerPage]
+    [fetchStaffPayments, staffId, itemsPerPage],
   );
 
   const formatAmount = (amount: number) => {
@@ -83,16 +83,19 @@ const StaffPayments = ({ staffEmail }: any) => {
     }, 0);
   };
 
-  const filteredInvoicePayment = Array.isArray(allStaffInvoicePayment?.payment)
-    ? allStaffInvoicePayment?.payment
-    : [];
-
+  const filteredInvoicePayment = useMemo(
+    () =>
+      Array.isArray(allStaffInvoicePayment?.payment)
+        ? allStaffInvoicePayment?.payment
+        : [],
+    [allStaffInvoicePayment?.payment],
+  );
   const formatData = useCallback((data: any) => (data ? data : "-"), []);
 
-  const handleViewDetails = (payment: any) => {
+  const handleViewDetails = useCallback((payment: any) => {
     setSelectedPayment(payment);
     setIsModalOpen(true);
-  };
+  }, []);
 
   const renderTableBody = useCallback(() => {
     if (!staffId) {
