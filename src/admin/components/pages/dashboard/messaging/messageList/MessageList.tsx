@@ -66,12 +66,11 @@ const MessageList: React.FC = () => {
     };
   }, [handleSearch]);
 
-  // Sync local search with Redux search
   useEffect(() => {
     if (localSearch === "" && search !== "") {
       setLocalSearch(search);
     }
-  }, [search]);
+  }, [search, localSearch]);
 
   // Handle socket events
   useEffect(() => {
@@ -82,10 +81,10 @@ const MessageList: React.FC = () => {
           prevChats.map((chat) =>
             chat.id === data.chatId
               ? { ...chat, messages: [...chat.messages, data.message] }
-              : chat
-          )
+              : chat,
+          ),
         );
-      }
+      },
     );
 
     socketService.on(
@@ -104,10 +103,10 @@ const MessageList: React.FC = () => {
                   })),
                   unreadCount: 0,
                 }
-              : chat
-          )
+              : chat,
+          ),
         );
-      }
+      },
     );
 
     return () => {
@@ -125,7 +124,7 @@ const MessageList: React.FC = () => {
         chat.receiver &&
         (chat.messages.length > 0 ||
           chat.sender.id === currentUserId ||
-          chat.receiver.id === currentUserId)
+          chat.receiver.id === currentUserId),
     );
     return validChats.sort((a, b) => {
       const aLatest = a.messages.length
@@ -174,7 +173,7 @@ const MessageList: React.FC = () => {
 
   const getUnreadCount = (chat: Chat): number => {
     return chat.messages.filter(
-      (msg) => !msg.read && msg.senderId !== currentUserId
+      (msg) => !msg.read && msg.senderId !== currentUserId,
     ).length;
   };
 
@@ -184,7 +183,7 @@ const MessageList: React.FC = () => {
       const existingChat = localChats.find(
         (chat) =>
           (chat.sender.id === userId && chat.receiver.id === currentUserId) ||
-          (chat.sender.id === currentUserId && chat.receiver.id === userId)
+          (chat.sender.id === currentUserId && chat.receiver.id === userId),
       );
 
       if (existingChat) {

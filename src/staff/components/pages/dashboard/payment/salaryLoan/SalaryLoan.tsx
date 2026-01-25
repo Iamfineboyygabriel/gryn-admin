@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import transaction from "../../../../../../assets/svg/Transaction.svg";
 import dayjs from "dayjs";
 import useUserProfile, {
@@ -33,12 +33,12 @@ interface SalaryItem {
 const SalaryLoan = () => {
   const { userProfile } = useUserProfile();
   const [selectedPayment, setSelectedPayment] = useState<SalaryItem | null>(
-    null
+    null,
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const staffId = userProfile?.userId;
-  const { staffSalary, loading,  fetchStaffPayments } = useStaffSalary();
+  const { staffSalary, loading, fetchStaffPayments } = useStaffSalary();
 
   useEffect(() => {
     if (staffId) {
@@ -52,18 +52,20 @@ const SalaryLoan = () => {
         setCurrentPage(newPage);
       }
     },
-    []
+    [],
   );
 
-  const filteredSalary =
-    staffSalary && staffSalary[0]?.salary ? staffSalary[0].salary : [];
+  const filteredSalary = useMemo(
+    () => (staffSalary && staffSalary[0]?.salary ? staffSalary[0].salary : []),
+    [staffSalary],
+  );
 
   const formatData = useCallback((data: any) => (data ? data : "-"), []);
 
-  const handleViewDetails = (payment: SalaryItem) => {
+  const handleViewDetails = useCallback((payment: SalaryItem) => {
     setSelectedPayment(payment);
     setIsModalOpen(true);
-  };
+  }, []);
 
   const formatAmount = (amount: number) => {
     return amount?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",");

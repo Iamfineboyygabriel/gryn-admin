@@ -82,32 +82,33 @@ const UpdatePayment = () => {
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
   const [errors, setErrors] = useState<Record<DocumentType, string>>(
-    {} as Record<DocumentType, string>
+    {} as Record<DocumentType, string>,
   );
   const [successes, setSuccesses] = useState<Record<DocumentType, boolean>>(
-    {} as Record<DocumentType, boolean>
+    {} as Record<DocumentType, boolean>,
   );
 
+  // Remove 'documents' from the dependency array since you're using functional update
   useEffect(() => {
     if (state?.document) {
-      const newDocuments = { ...documents };
       state.document.forEach((doc) => {
         if (doc?.documentType in DocumentType) {
           const docType = doc?.documentType as DocumentType;
           const canUpdate = doc?.remark === "REJECTED";
-          newDocuments[docType] = {
-            id: doc.id,
-            file: null,
-            status: doc.remark as DocumentStatus,
-            canUpdate: canUpdate,
-            originalName: doc.name,
-          };
+          setDocuments((prev) => ({
+            ...prev,
+            [docType]: {
+              id: doc.id,
+              file: null,
+              status: doc.remark as DocumentStatus,
+              canUpdate: canUpdate,
+              originalName: doc.name,
+            },
+          }));
         }
       });
-      setDocuments(newDocuments);
     }
   }, [state?.document]);
-
 
   const handleFileChange = (documentType: DocumentType, file: File | null) => {
     if (documents[documentType].canUpdate) {
@@ -176,7 +177,7 @@ const UpdatePayment = () => {
     try {
       const uploadPromises = Object.entries(documents)
         .filter(
-          ([_, docState]) => docState.canUpdate && docState.file && docState.id
+          ([_, docState]) => docState.canUpdate && docState.file && docState.id,
         )
         .map(async ([docType, docState]) => {
           const formData = new FormData();
@@ -219,7 +220,7 @@ const UpdatePayment = () => {
   const handleBackClick = () => navigate(-1);
 
   const canSubmit = Object.values(documents).some(
-    (doc) => doc.canUpdate && doc.file !== null
+    (doc) => doc.canUpdate && doc.file !== null,
   );
 
   return (

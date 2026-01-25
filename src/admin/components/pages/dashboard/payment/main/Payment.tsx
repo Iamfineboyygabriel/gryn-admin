@@ -5,7 +5,6 @@ import transaction from "../../../../../../assets/svg/Transaction.svg";
 import CustomPagination from "../../../../../../shared/utils/customPagination";
 import { useAllSalary } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
 import AllStaffPaymentModal from "../../../../../../shared/modal/AllStaffPaymentModal";
-import useUserProfile from "../../../../../../shared/redux/hooks/shared/getUserProfile";
 import { PrivateElement } from "../../../../../../shared/redux/hooks/admin/PrivateElement";
 
 const SkeletonRow = () => (
@@ -48,24 +47,16 @@ const Payment: React.FC = () => {
   } = useAllSalary();
   console.log("payments", salaries);
   const [selectedPayment, setSelectedPayment] = useState<SalaryItem | null>(
-    null
+    null,
   );
-  const [sortOrder, setSortOrder] = useState("asc");
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const { userProfile } = useUserProfile();
-
-  const isSuperAdmin = useMemo(
-    () => userProfile?.user?.role === "SUPER_ADMIN",
-    [userProfile?.user?.role]
-  );
 
   const itemsPerPage = 10;
 
-  const handleViewDetails = (payment: SalaryItem) => {
+  const handleViewDetails = useCallback((payment: SalaryItem) => {
     setSelectedPayment(payment);
     setIsModalOpen(true);
-  };
+  }, []);
 
   useEffect(() => {
     fetchSalaries?.(currentPage, itemsPerPage, "COMPLETED");
@@ -75,7 +66,7 @@ const Payment: React.FC = () => {
     (event: React.ChangeEvent<unknown>, page: number) => {
       fetchSalaries?.(page, itemsPerPage, "COMPLETED");
     },
-    [fetchSalaries, itemsPerPage]
+    [fetchSalaries, itemsPerPage],
   );
 
   const filteredAndSortedSalaries = useMemo(() => {
@@ -90,22 +81,8 @@ const Payment: React.FC = () => {
       return fullName?.includes?.((searchTerm || "").toLowerCase());
     });
 
-    return (
-      filtered?.sort?.((a: SalaryItem, b: SalaryItem) => {
-        const aValue =
-          (a?.salary?.user?.profile?.lastName || "")
-            ?.toString?.()
-            ?.toLowerCase?.() || "";
-        const bValue =
-          (b?.salary?.user?.profile?.lastName || "")
-            ?.toString?.()
-            ?.toLowerCase?.() || "";
-        if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
-        if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
-        return 0;
-      }) || []
-    );
-  }, [salaries, searchTerm, sortOrder]);
+    return filtered || [];
+  }, [salaries, searchTerm]);
 
   const formatData = useCallback((data: any) => (data ? data : "-"), []);
 
@@ -120,11 +97,11 @@ const Payment: React.FC = () => {
       return (
         text?.replace?.(
           regex,
-          (match: string) => `<mark class="bg-yellow-300">${match}</mark>`
+          (match: string) => `<mark class="bg-yellow-300">${match}</mark>`,
         ) || text
       );
     },
-    [searchTerm]
+    [searchTerm],
   );
 
   const renderTableBody = useCallback(() => {
@@ -149,9 +126,9 @@ const Payment: React.FC = () => {
               dangerouslySetInnerHTML={sanitizeHTML(
                 highlightText(
                   `${formatData(
-                    item?.salary?.user?.profile?.lastName
-                  )} ${formatData(item?.salary?.user?.profile?.firstName)}`
-                )
+                    item?.salary?.user?.profile?.lastName,
+                  )} ${formatData(item?.salary?.user?.profile?.firstName)}`,
+                ),
               )}
             />
             <td className="whitespace-nowrap px-6 py-4">
@@ -168,7 +145,7 @@ const Payment: React.FC = () => {
               </td>
             </PrivateElement>
           </tr>
-        )
+        ),
       );
     } else {
       return (
@@ -192,6 +169,7 @@ const Payment: React.FC = () => {
     highlightText,
     formatData,
     loading,
+    handleViewDetails,
   ]);
 
   return (
@@ -222,9 +200,6 @@ const Payment: React.FC = () => {
               <th className="px-6 py-3 text-left text-sm font-normal">
                 Designation
               </th>
-              {/* <th className="px-6 py-3 text-left whitespace-nowrap text-sm font-normal">
-                Uploaded Documents
-              </th> */}
               <PrivateElement feature="PAYMENTS" page="View Details">
                 <th className="px-6 py-3 text-left text-sm font-normal">
                   Action

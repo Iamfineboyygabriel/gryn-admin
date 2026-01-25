@@ -15,22 +15,25 @@ const SkeletonRow = () => (
 );
 
 const AllApplication = () => {
-  const { applications, loading, fetchApplications, updateSortTerm } = useAllApplication();
+  const { applications, loading, fetchApplications, updateSortTerm } =
+    useAllApplication();
   const navigate = useNavigate();
 
   useEffect(() => {
     updateSortTerm("desc");
-    fetchApplications(1, 5);  
-  }, []); 
+    fetchApplications(1, 5);
+  }, [fetchApplications, updateSortTerm]);
 
- 
   const handleViewDetails = useCallback(
     (applicationId: number) => {
-      navigate("/staff/dashboard/application/manage_application/view_application", {
-        state: { applicationId: applicationId }
-      });
+      navigate(
+        "/staff/dashboard/application/manage_application/view_application",
+        {
+          state: { applicationId: applicationId },
+        },
+      );
     },
-    [navigate]
+    [navigate],
   );
 
   const formatData = (data: any) => data || "-";
@@ -41,7 +44,7 @@ const AllApplication = () => {
 
   const renderTableBody = () => {
     if (loading) {
-      return Array.from({ length: 5 }).map((_, index) => (  
+      return Array.from({ length: 5 }).map((_, index) => (
         <SkeletonRow key={`skeleton-${index}`} />
       ));
     }
@@ -62,12 +65,15 @@ const AllApplication = () => {
     }
 
     return applications?.map((item: any, index: number) => (
-      <tr key={item?.id} className="text-sm text-grey-primary font-medium border-b border-gray-200">
+      <tr
+        key={item?.id}
+        className="text-sm text-grey-primary font-medium border-b border-gray-200"
+      >
         <td className="whitespace-nowrap px-6 py-4">{index + 1}</td>
         <td
           className="whitespace-nowrap px-6 py-4"
           dangerouslySetInnerHTML={sanitizeHTML(
-            `${formatData(item?.lastName)} ${formatData(item?.middleName)} ${formatData(item?.firstName)}`
+            `${formatData(item?.lastName)} ${formatData(item?.middleName)} ${formatData(item?.firstName)}`,
           )}
         />
         <td className="whitespace-nowrap px-6 py-4">
@@ -88,14 +94,18 @@ const AllApplication = () => {
         <td className="flex items-center whitespace-nowrap px-6 py-4">
           <button
             className={`mr-2 rounded-full w-[7em] px-3 py-2 text-white ${
-              item?.status === "SUBMITTED" ? "bg-yellow-500" : 
-              item?.status === "COMPLETED" ? "bg-green-500" :
-              "bg-red-500"
+              item?.status === "SUBMITTED"
+                ? "bg-yellow-500"
+                : item?.status === "COMPLETED"
+                  ? "bg-green-500"
+                  : "bg-red-500"
             }`}
           >
-            {item?.status === "SUBMITTED" ? "In Progress" : 
-             item?.status === "COMPLETED" ? "Completed" :
-             "Declined"}
+            {item?.status === "SUBMITTED"
+              ? "In Progress"
+              : item?.status === "COMPLETED"
+                ? "Completed"
+                : "Declined"}
           </button>
           <button
             onClick={() => handleViewDetails(item?.id)}
@@ -128,11 +138,15 @@ const AllApplication = () => {
               <th className="px-6 py-3 whitespace-nowrap text-left text-sm font-normal">
                 Degree Type
               </th>
-              <th className="px-6 py-3 text-left text-sm font-normal">Course</th>
+              <th className="px-6 py-3 text-left text-sm font-normal">
+                Course
+              </th>
               <th className="px-6 py-3 text-left text-sm font-normal">
                 Documents
               </th>
-              <th className="px-6 py-3 text-left text-sm font-normal">Action</th>
+              <th className="px-6 py-3 text-left text-sm font-normal">
+                Action
+              </th>
             </tr>
           </thead>
           <tbody>{renderTableBody()}</tbody>
