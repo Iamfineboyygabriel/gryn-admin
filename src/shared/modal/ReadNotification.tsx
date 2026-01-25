@@ -1,5 +1,4 @@
 import React from "react";
-import trashCan from "../../assets/svg/trash.svg";
 
 const ReadNotification = ({ onClose, news }: any) => {
   const hasPayload = news?.payload && news?.payload?.application;

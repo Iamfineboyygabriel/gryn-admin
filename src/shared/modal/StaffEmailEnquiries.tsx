@@ -3,7 +3,6 @@ import { Dropdown, DropdownItem } from "../dropDown/DropDown";
 import { button } from "../../shared/buttons/Button";
 import { useStaffEmails } from "../redux/hooks/admin/getAdminProfile";
 import Modal from "./Modal";
-import ApplicationAssignedSuccess from "./ApplicatonAssignedSuccess";
 import { useAppDispatch } from "../redux/hooks/shared/reduxHooks";
 import { AppDispatch } from "../redux/store";
 import ReactLoading from "react-loading";

@@ -78,21 +78,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
     }
   };
 
-  const getPreviewURL = (url: string, fileType: string): string => {
-    // For PDF files, add PDF viewer parameters
-    if (fileType === "application/pdf") {
-      // Try to use browser's PDF viewer
-      return `${url}#toolbar=0&view=FitH`;
-    }
-
-    // For images, return URL as is
-    if (fileType.startsWith("image/")) {
-      return url;
-    }
-
-    // For other file types, you might want to handle differently
-    return url;
-  };
 
   const getFileTypeFromUrl = (url: string): string => {
     const extension = url.split(".").pop()?.toLowerCase() || "";

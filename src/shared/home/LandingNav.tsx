@@ -1,8 +1,6 @@
-import { useNavigate } from "react-router";
 import gryn_index_logo from "../../assets/svg/Gryn_Index _logo.svg";
 
 const LandingNav = () => {
-  const navigate = useNavigate();
 
   return (
     <nav className="flex w-full justify-between">

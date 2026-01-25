@@ -2,9 +2,6 @@ import { Link } from "react-router-dom";
 import Success from "../../assets/svg/ResetPassword.svg";
 import { button } from "../../shared/buttons/Button";
 
-interface NewsSentProps {
-  onClose?: () => void;
-}
 
 const AgentAssigned = ({onClose}:any) => {
   return (

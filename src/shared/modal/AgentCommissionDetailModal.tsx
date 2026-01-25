@@ -6,7 +6,6 @@ import DocumentPreviewModal from "./DocumentPreviewModal";
 import { useState } from "react";
 import eye from "../../assets/svg/eyeImg.svg";
 import download from "../../assets/svg/download.svg";
-import { formatAmountWithCommas } from "../utils/dateFormat";
 
 
 const AgentCommissionDetailModal = ({ isOpen, onClose, payment }:any) => {

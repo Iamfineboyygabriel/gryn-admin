@@ -9,7 +9,6 @@ const EnquiryForm = ({ onClose }: any) => {
 
   const handleCopyLink = async () => {
     try {
-      const link = window.location.href;
       await navigator.clipboard.writeText("https://grynindexedu.com/enquiry/");
       setCopied(true);
 

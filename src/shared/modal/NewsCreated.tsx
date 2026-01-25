@@ -2,10 +2,6 @@ import { Link } from "react-router-dom";
 import Success from "../../assets/svg/ResetPassword.svg";
 import { button } from "../../shared/buttons/Button";
 
-interface NewsSentProps {
-  onClose?: () => void;
-}
-
 const NewsCreated = ({onClose}:any) => {
   return (
     <main className="px-[5em] font-outfit">

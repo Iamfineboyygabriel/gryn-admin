@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { setMessage } from "../../message.slices";
-import { RootState } from "../../store";
 import notificationApplicationServices from "../services/notificationApplication.services";
 
 export const createNews = createAsyncThunk(

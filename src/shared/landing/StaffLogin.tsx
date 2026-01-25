@@ -54,14 +54,14 @@ const StaffLanding: React.FC = () => {
 
     try {
       setLoading(true);
-      const result = await dispatch(logOutUser(loggedInUserId)).unwrap();
+       await dispatch(logOutUser(loggedInUserId)).unwrap();
       setShowModal(false);
     } catch (error) {
       toast.error("Logout failed. Please try again.");
     } finally {
       setLoading(false);
     }
-  }, [dispatch, navigate, loggedInUserId]);
+  }, [dispatch,  loggedInUserId]);
 
   const loginUserData = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {

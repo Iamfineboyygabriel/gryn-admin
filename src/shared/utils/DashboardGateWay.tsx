@@ -11,7 +11,6 @@ interface DashboardGatewayProps {
 
 const DashboardGateway: React.FC<DashboardGatewayProps> = ({ children }) => {
   const [showModal, setShowModal] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const [hasAccess, setHasAccess] = useState(false);
   const [isLogoutLoading, setIsLogoutLoading] = useState(false);
 
@@ -43,7 +42,6 @@ const DashboardGateway: React.FC<DashboardGatewayProps> = ({ children }) => {
 
   useEffect(() => {
     const checkAccess = () => {
-      setIsLoading(true);
 
       if (!user) {
         console.error("User not available");
@@ -53,7 +51,6 @@ const DashboardGateway: React.FC<DashboardGatewayProps> = ({ children }) => {
 
       if (user.role === "SUPER_ADMIN") {
         setHasAccess(true);
-        setIsLoading(false);
         return;
       }
 
@@ -67,7 +64,6 @@ const DashboardGateway: React.FC<DashboardGatewayProps> = ({ children }) => {
         setHasAccess(true);
       }
 
-      setIsLoading(false);
     };
 
     checkAccess();

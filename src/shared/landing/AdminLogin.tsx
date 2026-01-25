@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { AppDispatch } from "../redux/store";
 import usePasswordToggle from "../utils/usePasswordToggle";
 import { login, logOutUser } from "../redux/shared/slices/shareLanding.slices";
@@ -49,14 +49,14 @@ const AdminLogin = () => {
 
     try {
       setLoading(true);
-      const result = await dispatch(logOutUser(loggedInUserId)).unwrap();
+      await dispatch(logOutUser(loggedInUserId)).unwrap();
       setShowModal(false);
     } catch (error) {
       toast.error("Logout failed. Please try again.");
     } finally {
       setLoading(false);
     }
-  }, [dispatch, navigate, loggedInUserId]);
+  }, [dispatch, loggedInUserId]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -84,7 +84,7 @@ const AdminLogin = () => {
         if (role === "ADMIN" || role === "SUPER_ADMIN") {
           if (role === "ADMIN" && !isEmailVerified) {
             navigate(
-              `/verify_account?email=${encodeURIComponent(formData.email)}`
+              `/verify_account?email=${encodeURIComponent(formData.email)}`,
             );
             return;
           }
@@ -95,7 +95,7 @@ const AdminLogin = () => {
             navigate(accessibleRoute);
           } else {
             setShowModal(true);
-            const timer = setTimeout(() => {
+            setTimeout(() => {
               handleLogout();
             }, 3000);
           }
@@ -112,7 +112,7 @@ const AdminLogin = () => {
         setLoading(false);
       }
     },
-    [dispatch, formData, navigate, hasPermission, handleLogout]
+    [dispatch, formData, navigate, hasPermission, handleLogout],
   );
 
   const Modal = () => (

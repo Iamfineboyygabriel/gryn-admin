@@ -7,7 +7,6 @@ import { useAppDispatch } from '../../redux/hooks/shared/reduxHooks';
 import { AppDispatch } from '../../redux/store';
 import MessageSent from '../MessageSent';
 import Modal from '../Modal';
-import { useCurrentUser } from '../../redux/hooks/shared/getUserProfile';
 
 interface SendMessageProps {
   onClose: () => void;
@@ -17,12 +16,9 @@ interface SendMessageProps {
 
 const SendMessage: React.FC<SendMessageProps> = ({ onClose, onSubmit, userData }) => {
   const [loading, setLoading] = useState(false);
-  const [header, setHeader] = useState('');
   const [description, setDescription] = useState('');
   const dispatch: AppDispatch = useAppDispatch();
   const [isModalOpen, setModalOpen] = useState(false);  
-  const { userDetails } = useCurrentUser();
-  const role = userDetails?.data?.role 
 
 
   const handleOpenModal = () => {
@@ -49,7 +45,6 @@ const SendMessage: React.FC<SendMessageProps> = ({ onClose, onSubmit, userData }
       };
       const userId = userData.userId;
        await dispatch(CreateNotification({ body, userId })).unwrap();
-      setHeader('');
       setDescription('');
       handleOpenModal(); 
       

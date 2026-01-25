@@ -4,7 +4,6 @@ import debounce from "lodash/debounce";
 import {
   searchUser,
   createChat,
-  fetchAllUserChats,
   fetchUnreadCount,
   selectMessageState,
   setSearch,
@@ -14,36 +13,6 @@ import {
 import { AppDispatch } from "../../store";
 import { useCurrentUser } from "./getUserProfile";
 import socket from "../../../../socket/socket";
-
-interface User {
-  id: string;
-  email: string;
-  profile: {
-    email: string;
-    avatar?: {
-      publicURL?: string;
-    };
-  };
-}
-
-interface Message {
-  id: string;
-  chatId: string;
-  senderId: string;
-  message: string;
-  createdAt: string;
-  read: boolean;
-  sender: User;
-}
-
-interface Chat {
-  id: string;
-  sender: User;
-  receiver: User;
-  messages: Message[];
-  createdAt: string;
-  unreadCount: number;
-}
 
 export const useMessage = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -77,15 +46,14 @@ export const useMessage = () => {
     };
   }, [dispatch, socketService, userDetails?.data?.id]);
 
-  const handleSearch = useCallback(
-    debounce((searchTerm: string) => {
+  const handleSearch =
+    (debounce((searchTerm: string) => {
       if (searchTerm.trim()) {
         dispatch(setSearch(searchTerm));
         dispatch(searchUser(searchTerm));
       }
     }, 300),
-    [dispatch]
-  );
+    [dispatch]);
 
   const handleCreateChat = useCallback(
     async (userId: string) => {
@@ -97,7 +65,7 @@ export const useMessage = () => {
           updateReadStatus({
             chatId: result.id,
             currentUserId: userDetails?.data?.id || "",
-          })
+          }),
         );
         return result;
       } catch (error) {
@@ -105,7 +73,7 @@ export const useMessage = () => {
         throw error;
       }
     },
-    [dispatch, userDetails?.data?.id]
+    [dispatch, userDetails?.data?.id],
   );
 
   return {
