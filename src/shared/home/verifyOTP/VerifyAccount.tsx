@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../redux/store";
@@ -38,6 +38,18 @@ const VerifyAccount = () => {
   const queryParams = new URLSearchParams(location.search);
   const email = queryParams.get("email");
 
+  const handleTimeout = useCallback(async () => {
+    if (userProfile?.userId) {
+      try {
+        await dispatch(logOutUser(userProfile.userId)).unwrap();
+        toast.info("Session expired. Please try again.");
+      } catch (error) {
+        toast.error("Error during logout. Please try again.");
+      }
+    }
+    navigate("/");
+  }, [userProfile?.userId, dispatch, navigate]);
+
   useEffect(() => {
     let timer: NodeJS.Timeout | undefined;
 
@@ -72,19 +84,7 @@ const VerifyAccount = () => {
         clearInterval(timeoutTimer);
       }
     };
-  }, [pageTimeout]);
-
-  const handleTimeout = async () => {
-    if (userProfile?.userId) {
-      try {
-        await dispatch(logOutUser(userProfile.userId)).unwrap();
-        toast.info("Session expired. Please try again.");
-      } catch (error) {
-        toast.error("Error during logout. Please try again.");
-      }
-    }
-    navigate("/");
-  };
+  }, [pageTimeout, handleTimeout]);
 
   const handleLogOut = () => {
     if (userProfile?.userId) {

@@ -83,14 +83,17 @@ const Invoices: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
     setCurrentPage(value);
   };
 
-  const handleOpenModal = (invoiceId: string, status: string) => {
-    setSelectedInvoiceId(invoiceId);
-    if (status === "COMPLETED" && isSuperAdmin) {
-      setReceiptModalOpen(true);
-    } else {
-      setApproveModalOpen(true);
-    }
-  };
+  const handleOpenModal = useCallback(
+    (invoiceId: string, status: string) => {
+      setSelectedInvoiceId(invoiceId);
+      if (status === "COMPLETED" && isSuperAdmin) {
+        setReceiptModalOpen(true);
+      } else {
+        setApproveModalOpen(true);
+      }
+    },
+    [isSuperAdmin],
+  );
 
   const handleCloseApproveModal = () => {
     setSelectedInvoiceId(null);
@@ -218,13 +221,29 @@ const Invoices: React.FC<AssignedAgentsProps> = ({ staffEmail }) => {
         </tr>
       );
     }
-  }, [loading, filteredInvoices, formatData, currentPage, itemsPerPage]);
+  }, [
+    loading,
+    filteredInvoices,
+    formatData,
+    currentPage,
+    itemsPerPage,
+    handleOpenModal,
+  ]);
 
   return (
     <main className="font-outfit">
       <div className="relative">
-        <header className="flex items-center justify-between">
-          <h1 className="font-semibold text-xl">All Invoices</h1>
+        <header className="flex items-center justify-between mb-4">
+          <div className="flex flex-col gap-2">
+            <h1 className="font-semibold text-xl">All Invoices</h1>
+            <input
+              type="text"
+              placeholder="Search by invoice number..."
+              value={localSearchTerm}
+              onChange={(e) => setLocalSearchTerm(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-700 w-64"
+            />
+          </div>
           <Link
             to={`/admin/dashboard/all_staffs/view_profile/${staffEmail}/new_invoice`}
           >

@@ -1,6 +1,5 @@
 import React, {
   useState,
-  useEffect,
   useMemo,
   useCallback,
   useRef,
@@ -18,7 +17,6 @@ import {
   setSearch,
 } from "../../../../../../../shared/redux/shared/slices/shareApplication.slices";
 import noData from "../../../../../../../assets/svg/Transaction.svg";
-import { button } from "../../../../../../../shared/buttons/Button";
 import plus from "../../../../../../../assets/svg/plus.svg";
 import BudgetPaymentDetail from "../../../../../../../shared/modal/BudgetPaymentDetail";
 import Modal from "../../../../../../../shared/modal/Modal";
@@ -165,7 +163,6 @@ const Budgets: React.FC = () => {
     return amount?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
-  const totalItems = budgets?.total || 0;
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
 
   return (

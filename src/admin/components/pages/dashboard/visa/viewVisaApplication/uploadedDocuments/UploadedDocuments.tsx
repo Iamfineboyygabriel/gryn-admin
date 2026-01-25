@@ -25,11 +25,6 @@ interface Document {
   status: "PENDING" | "APPROVED" | "REJECTED";
 }
 
-interface UpdateDocStatus {
-  id: string;
-  remark: "APPROVED" | "REJECTED" | "PENDING";
-}
-
 type ActionType = "approve" | "reject";
 
 interface LoadingStatus {
@@ -50,7 +45,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
   const { applicationDetails, loading: applicationLoading } =
     useVisaApplicationDetails(applicationId);
   const { updateDocStatus } = useSelector(
-    (state: any) => state.shareApplication
+    (state: any) => state.shareApplication,
   );
 
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
@@ -77,8 +72,8 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
                 status: updateDocStatus.remark,
                 remark: updateDocStatus.remark,
               }
-            : doc
-        )
+            : doc,
+        ),
       );
     }
   }, [updateDocStatus]);
@@ -136,7 +131,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
 
   const handleStatusUpdate = async (
     id: string,
-    remark: "APPROVED" | "REJECTED"
+    remark: "APPROVED" | "REJECTED",
   ) => {
     const action: ActionType = remark.toLowerCase() as ActionType;
     setLoadingStatus((prev) => ({
@@ -154,8 +149,8 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
       ) {
         setDocuments((prevDocs) =>
           prevDocs.map((doc) =>
-            doc.id === id ? { ...doc, status: remark, remark: remark } : doc
-          )
+            doc.id === id ? { ...doc, status: remark, remark: remark } : doc,
+          ),
         );
       } else {
         throw new Error("Failed to update document status");
@@ -176,7 +171,7 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
 
   const renderActionButton = (
     doc: Document,
-    action: "APPROVED" | "REJECTED"
+    action: "APPROVED" | "REJECTED",
   ) => {
     const actionType: ActionType = action.toLowerCase() as ActionType;
     const isLoading = loadingStatus[doc.id]?.[actionType] || false;
@@ -205,8 +200,8 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
         ? "Approve"
         : "Reject"
       : action === "APPROVED"
-      ? "Approved"
-      : "Rejected";
+        ? "Approved"
+        : "Rejected";
 
     const buttonContent = (
       <>
@@ -311,8 +306,8 @@ const UploadedDocuments = ({ applicationId }: { applicationId: any }) => {
                     doc.remark === "APPROVED"
                       ? "text-approve"
                       : doc.remark === "REJECTED"
-                      ? "text-red-600"
-                      : "text-yellow-500"
+                        ? "text-red-600"
+                        : "text-yellow-500"
                   }
                 >
                   {doc.remark || "PENDING"}

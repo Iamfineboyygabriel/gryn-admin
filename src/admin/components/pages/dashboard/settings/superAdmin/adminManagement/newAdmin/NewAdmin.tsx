@@ -3,7 +3,6 @@ import { useNavigate } from "react-router";
 import { AppDispatch } from "../../../../../../../../shared/redux/store";
 import { useAppDispatch } from "../../../../../../../../shared/redux/hooks/shared/reduxHooks";
 import Modal from "../../../../../../../../shared/modal/Modal";
-import StaffCreated from "../../../../../../../../shared/modal/StaffCreated";
 import { button } from "../../../../../../../../shared/buttons/Button";
 import { CgAsterisk } from "react-icons/cg";
 import ReactLoading from "react-loading";
@@ -95,7 +94,7 @@ const NewAdmin = () => {
       handleOpenModal();
     } catch (error: any) {
       toast.error(
-        error.message || "An error occurred while creating the application"
+        error.message || "An error occurred while creating the application",
       );
     } finally {
       setLoading(false);

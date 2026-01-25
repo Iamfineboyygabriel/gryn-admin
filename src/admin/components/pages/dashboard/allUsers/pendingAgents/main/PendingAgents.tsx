@@ -31,7 +31,6 @@ const PendingAgents = () => {
   const [selectedAgents, setSelectedAgents] = useState<string[]>([]);
   const {
     agents,
-    totalPages,
     currentPage,
     loading,
     fetchAgents,
@@ -54,7 +53,7 @@ const PendingAgents = () => {
     setShowDeleteModal(true);
   };
 
-  const handleCheckboxChange = (agentId: string) => {
+  const handleCheckboxChange = useCallback((agentId: string) => {
     setSelectedAgents((prev) => {
       if (prev.includes(agentId)) {
         return prev.filter((id) => id !== agentId);
@@ -62,12 +61,12 @@ const PendingAgents = () => {
         return [...prev, agentId];
       }
     });
-  };
+  }, []);
 
   const handleConfirmDelete = async () => {
     try {
       const deletePromises = selectedAgents.map((agentId) =>
-        dispatch(deleteUser(agentId) as any).unwrap()
+        dispatch(deleteUser(agentId) as any).unwrap(),
       );
 
       await Promise.all(deletePromises);
@@ -105,7 +104,7 @@ const PendingAgents = () => {
     (event: React.ChangeEvent<unknown>, value: number) => {
       fetchAgents(value, itemsPerPage);
     },
-    [fetchAgents, itemsPerPage]
+    [fetchAgents, itemsPerPage],
   );
 
   const escapeRegExp = useCallback((string: string) => {
@@ -119,10 +118,10 @@ const PendingAgents = () => {
       const regex = new RegExp(`(${escapedQuery})`, "gi");
       return text.replace(
         regex,
-        (match: string) => `<mark class="bg-yellow-300">${match}</mark>`
+        (match: string) => `<mark class="bg-yellow-300">${match}</mark>`,
       );
     },
-    [escapeRegExp]
+    [escapeRegExp],
   );
 
   const sanitizeHTML = useCallback((html: string) => {
@@ -173,14 +172,14 @@ const PendingAgents = () => {
             dangerouslySetInnerHTML={sanitizeHTML(
               highlightText(
                 `${agent?.profile?.lastName} ${agent?.profile?.firstName}`,
-                localSearchTerm
-              )
+                localSearchTerm,
+              ),
             )}
           />
           <td
             className="py-[16px] px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
-              highlightText(formatData(agent?.email), localSearchTerm)
+              highlightText(formatData(agent?.email), localSearchTerm),
             )}
           />
           <td className="py-[16px] px-[24px]">

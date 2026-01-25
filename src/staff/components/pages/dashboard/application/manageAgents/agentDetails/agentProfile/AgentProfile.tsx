@@ -1,4 +1,8 @@
-import React, { useState, useEffect } from "react";
+// ============================================================================
+// FIRST COMPONENT (Document 7) - Fixed
+// ============================================================================
+
+import React, { useState, useEffect, useCallback } from "react";
 import { useAppDispatch } from "../../../../../../../../shared/redux/hooks/shared/reduxHooks";
 import { findAgentByEmail } from "../../../../../../../../shared/redux/shared/slices/shareApplication.slices";
 import user from "../../../../../../../../assets/avatar.png";
@@ -10,11 +14,6 @@ import upload from "../../../../../../../../assets/svg/Upload.svg";
 import ReactLoading from "react-loading";
 import { toast } from "react-toastify";
 import { updateRegistrationUploadedDocument } from "../../../../../../../../shared/redux/shared/services/shareApplication.services";
-
-interface Application {
-  id: number;
-  email: string;
-}
 
 interface AgentProfileProps {
   loading: boolean;
@@ -50,7 +49,7 @@ const AgentProfile: React.FC<AgentProfileProps> = ({
     [key: string]: string;
   }>({});
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     if (email) {
       try {
         setLoading(true);
@@ -64,13 +63,13 @@ const AgentProfile: React.FC<AgentProfileProps> = ({
         setLoading(false);
       }
     }
-  };
+  }, [email, dispatch]);
 
   useEffect(() => {
     if (email) {
       handleSubmit();
     }
-  }, [email]);
+  }, [email, handleSubmit]);
 
   const getFileTypeFromUrl = (url: string): string => {
     const extension = url.split(".").pop()?.toLowerCase();
@@ -104,7 +103,7 @@ const AgentProfile: React.FC<AgentProfileProps> = ({
 
   const handleFileChange = (
     event: React.ChangeEvent<HTMLInputElement>,
-    documentType: string
+    documentType: string,
   ) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -123,7 +122,7 @@ const AgentProfile: React.FC<AgentProfileProps> = ({
       await Promise.all(
         Object.entries(files).map(async ([documentType, file]) => {
           const doc = agentData?.agentRegistrationDoc?.find(
-            (d: any) => d?.documentType === documentType
+            (d: any) => d?.documentType === documentType,
           );
           if (file && doc) {
             try {
@@ -132,7 +131,7 @@ const AgentProfile: React.FC<AgentProfileProps> = ({
               const endpoint = `/media/registration/upload-doc/${doc?.id}`;
               const response = await updateRegistrationUploadedDocument(
                 endpoint,
-                form
+                form,
               );
               if (response?.status === 201) {
                 successfulUploads.push(documentType);
@@ -143,7 +142,7 @@ const AgentProfile: React.FC<AgentProfileProps> = ({
               failedUploads.push(documentType);
             }
           }
-        })
+        }),
       );
 
       if (successfulUploads.length > 0) {

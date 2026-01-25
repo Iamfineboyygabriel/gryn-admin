@@ -19,23 +19,17 @@ const SkeletonRow: React.FC = () => (
 const AllApplication: React.FC = () => {
   const {
     applications,
-    totalPages,
     currentPage,
     loading,
     fetchApplications,
     searchTerm,
     updateSearchTerm,
-    sortTerm,
     updateSortTerm,
-    statusTerm,
-    updateStatusTerm,
-    isDirectTerm,
     updateIsDirectTerm,
   } = useAllDirectApplication();
 
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-  const [status, setStatus] = useState<string>("");
-  const [isDirect, setIsDirect] = useState<string | any>("PENDING");
+  const [isDirect, setIsDirect] = useState<string>("PENDING");
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
 
   const navigate = useNavigate();
@@ -44,7 +38,7 @@ const AllApplication: React.FC = () => {
     updateSortTerm("desc");
     updateIsDirectTerm("PENDING");
     fetchApplications(1, itemsPerPage);
-  }, []);
+  }, [fetchApplications, itemsPerPage, updateSortTerm, updateIsDirectTerm]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -52,7 +46,7 @@ const AllApplication: React.FC = () => {
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [searchTerm, sortOrder, status, isDirect, itemsPerPage]);
+  }, [searchTerm, sortOrder, isDirect, itemsPerPage, fetchApplications]);
 
   const handleSortChange = useCallback(
     (newOrder: "asc" | "desc") => {
@@ -60,25 +54,16 @@ const AllApplication: React.FC = () => {
       updateSortTerm(newOrder);
       fetchApplications(currentPage, itemsPerPage);
     },
-    [currentPage, itemsPerPage, updateSortTerm, fetchApplications]
-  );
-
-  const handleStatusChange = useCallback(
-    (newStatus: string) => {
-      setStatus(newStatus);
-      updateStatusTerm(newStatus);
-      fetchApplications(1, itemsPerPage);
-    },
-    [updateStatusTerm, fetchApplications, itemsPerPage]
+    [currentPage, itemsPerPage, updateSortTerm, fetchApplications],
   );
 
   const handleIsDirectChange = useCallback(
-    (newIsDirect: string | boolean) => {
+    (newIsDirect: string) => {
       setIsDirect(newIsDirect);
       updateIsDirectTerm(newIsDirect);
       fetchApplications(1, itemsPerPage);
     },
-    [updateIsDirectTerm, fetchApplications, itemsPerPage]
+    [updateIsDirectTerm, fetchApplications, itemsPerPage],
   );
 
   const handleItemsPerPageChange = useCallback(
@@ -86,14 +71,14 @@ const AllApplication: React.FC = () => {
       setItemsPerPage(newItemsPerPage);
       fetchApplications(1, newItemsPerPage);
     },
-    [fetchApplications]
+    [fetchApplications],
   );
 
   const handlePageChange = useCallback(
     (event: React.ChangeEvent<unknown>, newPage: number) => {
       fetchApplications(newPage, itemsPerPage);
     },
-    [fetchApplications, itemsPerPage, sortOrder]
+    [fetchApplications, itemsPerPage],
   );
 
   const handleViewDetails = useCallback(
@@ -102,10 +87,10 @@ const AllApplication: React.FC = () => {
         "/admin/dashboard/application/direct_application/view_application",
         {
           state: { applicationId: applicationId },
-        }
+        },
       );
     },
-    [navigate]
+    [navigate],
   );
 
   const formatData = useCallback((data: any) => (data ? data : "-"), []);
@@ -120,10 +105,10 @@ const AllApplication: React.FC = () => {
       const regex = new RegExp(`(${searchTerm})`, "gi");
       return text?.replace(
         regex,
-        (match: string) => `<mark class="bg-yellow-300">${match}</mark>`
+        (match: string) => `<mark class="bg-yellow-300">${match}</mark>`,
       );
     },
-    [searchTerm]
+    [searchTerm],
   );
 
   const renderTableBody = useCallback(() => {
@@ -161,9 +146,9 @@ const AllApplication: React.FC = () => {
           dangerouslySetInnerHTML={sanitizeHTML(
             highlightText(
               `${formatData(item?.lastName)} ${formatData(
-                item?.middleName
-              )} ${formatData(item?.firstName)}`
-            )
+                item?.middleName,
+              )} ${formatData(item?.firstName)}`,
+            ),
           )}
         />
         <td className="whitespace-nowrap px-6 py-4">
@@ -190,15 +175,15 @@ const AllApplication: React.FC = () => {
               item?.isDirect === "PENDING"
                 ? "bg-yellow-500"
                 : item?.isDirect === "APPROVED"
-                ? "bg-green-500"
-                : "bg-red-500"
+                  ? "bg-green-500"
+                  : "bg-red-500"
             }`}
           >
             {item?.isDirect === "PENDING"
               ? "In Progress"
               : item?.isDirect === "APPROVED"
-              ? "Completed"
-              : "Declined"}
+                ? "Completed"
+                : "Declined"}
           </button>
           <button
             onClick={() => handleViewDetails(item?.id)}

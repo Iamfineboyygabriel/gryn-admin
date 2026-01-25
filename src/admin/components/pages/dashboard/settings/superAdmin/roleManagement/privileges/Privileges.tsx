@@ -1,4 +1,10 @@
-import React, { useCallback, useMemo, useState, useEffect } from "react";
+import React, {
+  useCallback,
+  useMemo,
+  useState,
+  useEffect,
+  useRef,
+} from "react";
 import { useDispatch } from "react-redux";
 import notApproved from "../../../../../../../../assets/svg/not-approve.svg";
 import approve from "../../../../../../../../assets/svg/Approved.svg";
@@ -121,7 +127,8 @@ const Privileges: React.FC = () => {
   const [privilegesLoading, setPrivilegesLoading] = useState(false);
   const [hasNoPrivileges, setHasNoPrivileges] = useState(false);
 
-  const [privilegesData, setPrivilegesData] = useState<FeaturePrivileges[]>([
+  // Use ref to store initial privileges structure
+  const initialPrivilegesRef = useRef<FeaturePrivileges[]>([
     {
       sn: 1,
       features: Features.DASHBOARD,
@@ -212,6 +219,10 @@ const Privileges: React.FC = () => {
     },
   ]);
 
+  const [privilegesData, setPrivilegesData] = useState<FeaturePrivileges[]>(
+    initialPrivilegesRef.current,
+  );
+
   const emailItems: DropdownItem[] = useMemo(() => {
     if (Array?.isArray(adminsEmail)) {
       return adminsEmail?.map((item: any) => ({ name: item.email }));
@@ -238,30 +249,38 @@ const Privileges: React.FC = () => {
           if (response?.payload && response?.payload?.pages) {
             if (response?.payload?.pages?.length === 0) {
               setHasNoPrivileges(true);
+              // Reset to initial state when no privileges
+              setPrivilegesData(initialPrivilegesRef.current);
               return;
             }
-            const updatedPrivilegesData = privilegesData?.map((feature) => {
-              const permittedFeature = response?.payload?.pages?.find(
-                (p: any) => p?.feature === feature?.features
-              );
-              if (permittedFeature) {
-                const updatedPrivileges = feature?.privileges?.map(
-                  (privilege) => ({
-                    ...privilege,
-                    active: permittedFeature?.pages?.includes(privilege?.name),
-                  })
+            const updatedPrivilegesData = initialPrivilegesRef.current.map(
+              (feature) => {
+                const permittedFeature = response?.payload?.pages?.find(
+                  (p: any) => p?.feature === feature?.features,
                 );
-                return {
-                  ...feature,
-                  privileges: updatedPrivileges,
-                  completed: updatedPrivileges?.some((p) => p?.active),
-                };
-              }
-              return feature;
-            });
+                if (permittedFeature) {
+                  const updatedPrivileges = feature?.privileges?.map(
+                    (privilege) => ({
+                      ...privilege,
+                      active: permittedFeature?.pages?.includes(
+                        privilege?.name,
+                      ),
+                    }),
+                  );
+                  return {
+                    ...feature,
+                    privileges: updatedPrivileges,
+                    completed: updatedPrivileges?.some((p) => p?.active),
+                  };
+                }
+                return feature;
+              },
+            );
             setPrivilegesData(updatedPrivilegesData);
           } else {
             setHasNoPrivileges(true);
+            // Reset to initial state when no privileges
+            setPrivilegesData(initialPrivilegesRef.current);
           }
         })
         .catch((error: any) => {
@@ -288,7 +307,7 @@ const Privileges: React.FC = () => {
           };
         }
         return item;
-      })
+      }),
     );
   }, []);
 
@@ -298,7 +317,7 @@ const Privileges: React.FC = () => {
         prev.map((item) => {
           if (item.features === feature) {
             const updatedPrivileges = item?.privileges?.map((p) =>
-              p.name === privilegeName ? { ...p, active: !p.active } : p
+              p.name === privilegeName ? { ...p, active: !p.active } : p,
             );
             return {
               ...item,
@@ -307,10 +326,10 @@ const Privileges: React.FC = () => {
             };
           }
           return item;
-        })
+        }),
       );
     },
-    []
+    [],
   );
 
   const handleSave = useCallback(async () => {
@@ -322,7 +341,7 @@ const Privileges: React.FC = () => {
     const body = {
       pages: privilegesData
         .filter(
-          (item) => item?.completed && item?.privileges?.some((p) => p?.active)
+          (item) => item?.completed && item?.privileges?.some((p) => p?.active),
         )
         .map((item) => ({
           feature: item?.features,
@@ -338,19 +357,19 @@ const Privileges: React.FC = () => {
 
     try {
       const response = await dispatch(
-        UpdatePagePermission({ body, email }) as any
+        UpdatePagePermission({ body, email }) as any,
       );
 
       if (response?.error) {
         throw new Error(
-          response.error.message || "Failed to update privileges"
+          response.error.message || "Failed to update privileges",
         );
       }
 
       setSuccess("Privileges updated successfully");
     } catch (error: any) {
       setError(
-        error.message || "Failed to update privileges. Please try again."
+        error.message || "Failed to update privileges. Please try again.",
       );
     } finally {
       setLoading(false);

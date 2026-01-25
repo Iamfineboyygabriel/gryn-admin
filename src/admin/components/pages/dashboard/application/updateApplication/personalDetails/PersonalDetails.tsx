@@ -6,6 +6,22 @@ import ReactLoading from "react-loading";
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
 
+// Move months array outside component to avoid dependency issues
+const MONTHS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
 const PersonalDeatils = ({ onNext, studentData }: any) => {
   const [firstName, setFirstName] = useState(studentData?.firstName || "");
   const [lastName, setLastName] = useState(studentData?.lastName || "");
@@ -17,18 +33,18 @@ const PersonalDeatils = ({ onNext, studentData }: any) => {
   const [dateOfBirth, setDateOfBirth] = useState(
     studentData?.dateOfBirth
       ? dayjs(studentData.dateOfBirth).format("YYYY-MM-DD")
-      : ""
+      : "",
   );
   const [address, setAddress] = useState(studentData?.address || "");
   const [state, setState] = useState(studentData?.state || "");
   const [localGovtArea, setLocalGovtArea] = useState(
-    studentData?.localGovtArea || ""
+    studentData?.localGovtArea || "",
   );
   const [country, setCountry] = useState(studentData?.country || "");
   const [internationalPassportNumber, setInternationalPassportNumber] =
     useState(studentData?.internationalPassportNumber || "");
   const [phoneNumber, setPhoneNumber] = useState(
-    studentData?.phoneNumber || ""
+    studentData?.phoneNumber || "",
   );
 
   // Parse intake from API to display in the UI
@@ -37,37 +53,22 @@ const PersonalDeatils = ({ onNext, studentData }: any) => {
       const [intakeYear, intakeMonth] = studentData.intake.split("-");
       if (intakeYear && intakeMonth) {
         const monthIndex = parseInt(intakeMonth, 10) - 1;
-        if (monthIndex >= 0 && monthIndex < months.length) {
-          setMonth(months[monthIndex]);
+        if (monthIndex >= 0 && monthIndex < MONTHS.length) {
+          setMonth(MONTHS[monthIndex]);
           setYear(intakeYear);
         }
       }
     }
   }, [studentData]);
 
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 6 }, (_, i) =>
-    (currentYear + i).toString()
+    (currentYear + i).toString(),
   );
 
   const handleDateSelection = () => {
     if (month && year) {
-      const monthIndex = months.findIndex((m) => m === month) + 1;
+      const monthIndex = MONTHS.findIndex((m) => m === month) + 1;
       const formattedMonth = String(monthIndex).padStart(2, "0");
       const formattedDate = `${year}-${formattedMonth}`;
       setIntake(formattedDate);
@@ -144,10 +145,14 @@ const PersonalDeatils = ({ onNext, studentData }: any) => {
                 role="combobox"
                 aria-expanded={isDatePickerOpen}
                 aria-haspopup="listbox"
+                aria-controls="intake-picker"
               />
 
               {isDatePickerOpen && (
-                <div className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
+                <div
+                  id="intake-picker"
+                  className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg"
+                >
                   <div className="p-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
@@ -160,7 +165,7 @@ const PersonalDeatils = ({ onNext, studentData }: any) => {
                           onChange={(e) => setMonth(e.target.value)}
                         >
                           <option value="">Select Month</option>
-                          {months.map((m) => (
+                          {MONTHS.map((m) => (
                             <option key={m} value={m}>
                               {m}
                             </option>

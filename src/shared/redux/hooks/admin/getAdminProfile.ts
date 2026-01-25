@@ -495,7 +495,7 @@ export const useUserActivity = () => {
   const dispatch: AppDispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const [limit] = useState(10);
 
   const userActivity = useSelector(selectUserActivity);
   const userToken = sessionStorage.getItem("userData");
