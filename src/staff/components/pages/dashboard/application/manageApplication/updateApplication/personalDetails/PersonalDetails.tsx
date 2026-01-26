@@ -6,6 +6,21 @@ import ReactLoading from "react-loading";
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
 
+const months = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
 const PersonalDeatils = ({ onNext, studentData }: any) => {
   const [firstName, setFirstName] = useState(studentData?.firstName || "");
   const [lastName, setLastName] = useState(studentData?.lastName || "");
@@ -17,18 +32,18 @@ const PersonalDeatils = ({ onNext, studentData }: any) => {
   const [dateOfBirth, setDateOfBirth] = useState(
     studentData?.dateOfBirth
       ? dayjs(studentData.dateOfBirth).format("YYYY-MM-DD")
-      : ""
+      : "",
   );
   const [address, setAddress] = useState(studentData?.address || "");
   const [state, setState] = useState(studentData?.state || "");
   const [localGovtArea, setLocalGovtArea] = useState(
-    studentData?.localGovtArea || ""
+    studentData?.localGovtArea || "",
   );
   const [country, setCountry] = useState(studentData?.country || "");
   const [internationalPassportNumber, setInternationalPassportNumber] =
     useState(studentData?.internationalPassportNumber || "");
   const [phoneNumber, setPhoneNumber] = useState(
-    studentData?.phoneNumber || ""
+    studentData?.phoneNumber || "",
   );
 
   useEffect(() => {
@@ -44,24 +59,9 @@ const PersonalDeatils = ({ onNext, studentData }: any) => {
     }
   }, [studentData]);
 
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 6 }, (_, i) =>
-    (currentYear + i).toString()
+    (currentYear + i).toString(),
   );
 
   const handleDateSelection = () => {
@@ -141,6 +141,7 @@ const PersonalDeatils = ({ onNext, studentData }: any) => {
                 className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none dark:border-none dark:bg-gray-700 dark:text-white cursor-pointer"
                 aria-required="true"
                 role="combobox"
+                aria-controls="intake-picker"
                 aria-expanded={isDatePickerOpen}
                 aria-haspopup="listbox"
               />

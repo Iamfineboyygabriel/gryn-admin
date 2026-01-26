@@ -61,7 +61,7 @@ const Payments = ({ applicationId }: { applicationId: any }) => {
   const dispatch: AppDispatch = useAppDispatch();
   const { applicationDetails, loading: applicationLoading } =
     useApplicationDetails(applicationId);
-  const { updateDocStatus, error } = useSelector(
+  const { updateDocStatus} = useSelector(
     (state: any) => state.shareApplication
   );
 

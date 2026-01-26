@@ -88,7 +88,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 6 }, (_, i) =>
-    (currentYear + i).toString()
+    (currentYear + i).toString(),
   );
 
   const handleDateSelection = () => {
@@ -183,6 +183,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
                 className="border-border focus:border-border mt-[1em] w-full rounded-lg border-[1px] bg-inherit p-3 focus:outline-none dark:border-none dark:bg-gray-700 dark:text-white cursor-pointer"
                 aria-required="true"
                 role="combobox"
+                aria-controls="intake-picker"
                 aria-expanded={isDatePickerOpen}
                 aria-haspopup="listbox"
               />
