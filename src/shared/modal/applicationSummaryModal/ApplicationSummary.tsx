@@ -17,6 +17,7 @@ interface ApplicationSummaryProps {
   onClose: () => void;
   documents: Document[];
   onApprove: () => Promise<{ status: number }>;
+  onReject: () => Promise<{ status: number }>;
   approvalType: "agent" | "student";
   approvalError: string | null;
 }
