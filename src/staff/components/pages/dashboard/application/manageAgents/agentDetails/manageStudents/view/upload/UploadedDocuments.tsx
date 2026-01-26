@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { button } from "../../../../../../../../../../shared/buttons/Button";
 import Modal from "../../../../../../../../../../shared/modal/Modal";
-import ApplicationSummary from "../../../../../../../../../../shared/modal/applicationSummaryModal/ApplicationSummary";
 
 const UploadedDocuments = () => {
   const [isModalOpen, setModalOpen] = useState(false);
