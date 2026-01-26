@@ -4,8 +4,6 @@ import { toast } from "react-toastify";
 import ReactLoading from "react-loading";
 import { button } from "../../../../../../../../shared/buttons/Button";
 import activeCertificate from "../../../../../../../../assets/svg/ActiveCertificate.svg";
-import { AppDispatch } from "../../../../../../../../shared/redux/store";
-import { useAppDispatch } from "../../../../../../../../shared/redux/hooks/shared/reduxHooks";
 import { updateStudentDegreeApplication } from "../../../../../../../../shared/redux/shared/services/shareApplication.services";
 import {
   Dropdown,

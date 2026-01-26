@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AppDispatch } from "../../../shared/redux/store";
 import { updateAgentCreated } from "../../../shared/redux/shared/slices/shareApplication.slices";
 import { useAppDispatch } from "../../../shared/redux/hooks/shared/reduxHooks";
