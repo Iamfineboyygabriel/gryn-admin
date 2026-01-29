@@ -15,6 +15,21 @@ interface LogoutRequestBody {
   id: string;
 }
 
+// Add axios interceptor to handle token expiration globally
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token expired or unauthorized
+      sessionStorage.clear();
+      localStorage.clear();
+      socket.disconnect();
+      window.location.href = "/";
+    }
+    return Promise.reject(error);
+  },
+);
+
 const loginUser = async (body: any) => {
   try {
     const response = await axios.post(API_URL_LOGIN_USER, body);
@@ -41,7 +56,7 @@ const loginUser = async (body: any) => {
 export const ResetPassword = async (
   token: string,
   email: string,
-  password: { password: string }
+  password: { password: string },
 ) => {
   const url = `${process.env.REACT_APP_API_URL}/auth/reset-password?token=${token}&email=${email}`;
   try {
@@ -61,7 +76,7 @@ export const ResetPassword = async (
 
 export const submitBankDetails = async (
   email: string,
-  { accountNumber, accountName, bankCode, bankName }: SubmitBankDetailsParams
+  { accountNumber, accountName, bankCode, bankName }: SubmitBankDetailsParams,
 ) => {
   const url = `${
     process.env.REACT_APP_API_URL
@@ -145,7 +160,7 @@ export const logoutAdminUserBySuperAdmin = async (email: string) => {
 
 export const forgotPassword = async (
   endpoint: string,
-  body: { email: string }
+  body: { email: string },
 ) => {
   try {
     const response = await axios.post(endpoint, body);
