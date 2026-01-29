@@ -29,6 +29,7 @@ const SeeAllApplication: React.FC = () => {
     updateSortTerm,
     updateStatusTerm,
   } = useAllApplication();
+  console.log("applications", applications);
 
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [status, setStatus] = useState<string>("");
@@ -123,6 +124,11 @@ const SeeAllApplication: React.FC = () => {
     [searchTerm],
   );
 
+  const formatStatus = useCallback((status: string) => {
+    if (!status) return "-";
+    return status.replace(/_/g, " ");
+  }, []);
+
   const renderTableBody = useCallback(() => {
     if (loading) {
       return Array.from({ length: itemsPerPage }).map((_, index) => (
@@ -185,7 +191,15 @@ const SeeAllApplication: React.FC = () => {
           {formatData(item?.documents?.length)}
         </td>
 
-        <td className="whitespace-nowrap px-6 py-4">-</td>
+        <td className="whitespace-nowrap px-6 py-4">
+          {item?.agent?.profile
+            ? `${formatData(item?.agent?.profile?.firstName)} ${formatData(item?.agent?.profile?.lastName)}`
+            : "-"}
+        </td>
+
+        <td className="whitespace-nowrap px-6 py-4">
+          {formatStatus(item?.applicationStatus)}
+        </td>
 
         <td className="flex items-center whitespace-nowrap px-6 py-4">
           <button
@@ -221,6 +235,7 @@ const SeeAllApplication: React.FC = () => {
     sanitizeHTML,
     highlightText,
     formatData,
+    formatStatus,
     handleViewDetails,
   ]);
 
@@ -289,7 +304,6 @@ const SeeAllApplication: React.FC = () => {
             </div>
           </div>
 
-          {/* THIS PART REMAINS — handleItemsPerPageChange IS STILL USED */}
           <div className="lg:flex hidden items-center gap-2">
             <span className="text-sm text-gray-500">Items per page:</span>
             <select
@@ -331,6 +345,9 @@ const SeeAllApplication: React.FC = () => {
                 </th>
                 <th className="px-6 py-3 text-left whitespace-nowrap text-sm font-normal">
                   Assigned Agent
+                </th>
+                <th className="px-6 py-3 text-left whitespace-nowrap text-sm font-normal">
+                  Application Status
                 </th>
                 <th className="px-6 py-3 text-left text-sm font-normal">
                   Action

@@ -83,10 +83,13 @@ const Visa: React.FC = () => {
     [highlightText, sanitizeHTML]
   );
 
+  // FIXED: Initial load only - removed infinite loop
   useEffect(() => {
     fetchApplications(1, itemsPerPage);
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run on mount
 
+  // FIXED: Debounced search with proper dependencies
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchApplications(1, itemsPerPage);
@@ -99,7 +102,7 @@ const Visa: React.FC = () => {
     updateSearchTerm(e.target.value);
   };
 
-  const getFileTypeFromUrl = (url: string) => {
+  const getFileTypeFromUrl = useCallback((url: string) => {
     const segments = url.split("/");
     const fileExtension = segments.pop()?.split(".").pop();
     switch (fileExtension) {
@@ -115,15 +118,15 @@ const Visa: React.FC = () => {
       default:
         return "application/octet-stream";
     }
-  };
+  }, []);
 
-  const closePreviewModal = () => {
+  const closePreviewModal = useCallback(() => {
     setIsPreviewOpen(false);
     setPreviewUrl(null);
     setPreviewFileType("");
-  };
+  }, []);
 
-  const getStatusClassAndIcon = (status: string) => {
+  const getStatusClassAndIcon = useCallback((status: string) => {
     switch (status) {
       case "APPROVED":
         return { class: "text-green-500", icon: approved };
@@ -134,7 +137,7 @@ const Visa: React.FC = () => {
       default:
         return { class: "text-gray-500", icon: undefined };
     }
-  };
+  }, []);
 
   const handlePageChange = useCallback(
     (event: React.ChangeEvent<unknown>, page: number) => {
@@ -160,7 +163,13 @@ const Visa: React.FC = () => {
     [navigate]
   );
 
-  const renderPaymentStatus = (
+  const handlePreview = useCallback((url: string) => {
+    setPreviewUrl(url);
+    setPreviewFileType(getFileTypeFromUrl(url));
+    setIsPreviewOpen(true);
+  }, [getFileTypeFromUrl]);
+
+  const renderPaymentStatus = useCallback((
     documents: Array<{ documentType: string; publicURL: string; remark: any }>,
     type: string
   ) => {
@@ -175,11 +184,7 @@ const Visa: React.FC = () => {
           <div className="flex items-center gap-2 text-black">
             <p>Paid</p>
             <button
-              onClick={() => {
-                setPreviewUrl(document.publicURL);
-                setPreviewFileType(getFileTypeFromUrl(document.publicURL));
-                setIsPreviewOpen(true);
-              }}
+              onClick={() => handlePreview(document.publicURL)}
               className="flex items-center gap-1 rounded-full bg-purple-white px-3 py-[4px] text-center font-medium text-[#660066]"
             >
               <img src={eye} alt="eye" />
@@ -194,7 +199,7 @@ const Visa: React.FC = () => {
       );
     }
     return "-";
-  };
+  }, [getStatusClassAndIcon, handlePreview]);
 
   return (
     <main className="mt-4 font-outfit">
@@ -286,7 +291,7 @@ const Visa: React.FC = () => {
               ) : visa && visa?.length > 0 ? (
                 visa.map((item: VisaData, index: number) => (
                   <tr
-                    key={index}
+                    key={item.id}
                     className="text-sm font-medium text-grey-primary font-outfit"
                   >
                     <td className="whitespace-nowrap px-6 py-4">

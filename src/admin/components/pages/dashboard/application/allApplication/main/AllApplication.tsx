@@ -52,8 +52,13 @@ const AllApplication: React.FC = () => {
       updateSortTerm(newOrder);
       fetchApplications(currentPage, itemsPerPage);
     },
-    [currentPage, itemsPerPage, updateSortTerm, fetchApplications]
+    [currentPage, itemsPerPage, updateSortTerm, fetchApplications],
   );
+
+  const formatStatus = useCallback((status: string) => {
+    if (!status) return "-";
+    return status.replace(/_/g, " ");
+  }, []);
 
   const handleStatusChange = useCallback(
     (newStatus: string) => {
@@ -61,7 +66,7 @@ const AllApplication: React.FC = () => {
       updateStatusTerm(newStatus);
       fetchApplications(1, itemsPerPage);
     },
-    [updateStatusTerm, fetchApplications, itemsPerPage]
+    [updateStatusTerm, fetchApplications, itemsPerPage],
   );
 
   const handleItemsPerPageChange = useCallback(
@@ -69,14 +74,14 @@ const AllApplication: React.FC = () => {
       setItemsPerPage(newItemsPerPage);
       fetchApplications(1, newItemsPerPage);
     },
-    [fetchApplications]
+    [fetchApplications],
   );
 
   const handlePageChange = useCallback(
     (event: React.ChangeEvent<unknown>, newPage: number) => {
       fetchApplications(newPage, itemsPerPage);
     },
-    [fetchApplications, itemsPerPage]
+    [fetchApplications, itemsPerPage],
   );
 
   const handleViewDetails = useCallback(
@@ -85,10 +90,10 @@ const AllApplication: React.FC = () => {
         "/admin/dashboard/application/all_application/view_application",
         {
           state: { applicationId: applicationId },
-        }
+        },
       );
     },
-    [navigate]
+    [navigate],
   );
 
   const formatData = useCallback((data: any) => (data ? data : "-"), []);
@@ -103,10 +108,10 @@ const AllApplication: React.FC = () => {
       const regex = new RegExp(`(${searchTerm})`, "gi");
       return text?.replace(
         regex,
-        (match: string) => `<mark class="bg-yellow-300">${match}</mark>`
+        (match: string) => `<mark class="bg-yellow-300">${match}</mark>`,
       );
     },
-    [searchTerm]
+    [searchTerm],
   );
 
   const renderTableBody = useCallback(() => {
@@ -144,9 +149,9 @@ const AllApplication: React.FC = () => {
           dangerouslySetInnerHTML={sanitizeHTML(
             highlightText(
               `${formatData(item?.lastName)} ${formatData(
-                item?.middleName
-              )} ${formatData(item?.firstName)}`
-            )
+                item?.middleName,
+              )} ${formatData(item?.firstName)}`,
+            ),
           )}
         />
         <td className="whitespace-nowrap px-6 py-4">
@@ -162,7 +167,7 @@ const AllApplication: React.FC = () => {
           {formatData(item?.degree?.course)}
         </td>
         <td className="whitespace-nowrap px-6 py-4">
-          {formatData(item?.applicationStatus)}
+          {formatStatus(item?.applicationStatus)}
         </td>
         <td className="whitespace-nowrap px-6 py-4">
           {formatData(item?.createdBy?.profile?.email || "N/A")}
@@ -173,15 +178,15 @@ const AllApplication: React.FC = () => {
               item?.status === "SUBMITTED"
                 ? "bg-yellow-500"
                 : item?.status === "COMPLETED"
-                ? "bg-green-500"
-                : "bg-red-500"
+                  ? "bg-green-500"
+                  : "bg-red-500"
             }`}
           >
             {item?.status === "SUBMITTED"
               ? "In Progress"
               : item?.status === "COMPLETED"
-              ? "Completed"
-              : "Declined"}
+                ? "Completed"
+                : "Declined"}
           </button>
           <button
             onClick={() => handleViewDetails(item?.id)}
@@ -201,6 +206,7 @@ const AllApplication: React.FC = () => {
     highlightText,
     formatData,
     handleViewDetails,
+    formatStatus,
   ]);
 
   return (
