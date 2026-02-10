@@ -6,13 +6,13 @@ import React, {
   useRef,
 } from "react";
 import { FiSearch } from "react-icons/fi";
+import * as XLSX from "xlsx";
 import transaction from "../../../../../../assets/svg/Transaction.svg";
 import { useNavigate } from "react-router-dom";
 import { button } from "../../../../../../shared/buttons/Button";
 import DOMPurify from "dompurify";
 import CustomPagination from "../../../../../../shared/utils/customPagination";
 import { useAllStudents } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
-import { DownLoadButton } from "../../../../../../shared/downLoad/DownLoadButton";
 
 interface Student {
   profile: {
@@ -45,6 +45,10 @@ const SeeAllStudents: React.FC = () => {
     updateSearchTerm,
   } = useAllStudents();
   const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm || "");
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [shouldDownload, setShouldDownload] = useState(false);
+  const [originalPage, setOriginalPage] = useState(1);
+  const [originalItemsPerPage, setOriginalItemsPerPage] = useState(10);
 
   const navigate = useNavigate();
   const handleBackClick = () => navigate(-1);
@@ -68,7 +72,7 @@ const SeeAllStudents: React.FC = () => {
     return studentsData?.filter((student: Student) =>
       `${student?.profile?.firstName} ${student?.profile?.lastName} ${student?.email}`
         .toLowerCase()
-        .includes(localSearchTerm.toLowerCase())
+        .includes(localSearchTerm.toLowerCase()),
     );
   }, [studentsData, localSearchTerm]);
 
@@ -76,7 +80,7 @@ const SeeAllStudents: React.FC = () => {
     (event: React.ChangeEvent<unknown>, page: number) => {
       fetchApplications(page, itemsPerPage);
     },
-    [fetchApplications, itemsPerPage]
+    [fetchApplications, itemsPerPage],
   );
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,7 +90,7 @@ const SeeAllStudents: React.FC = () => {
 
   const formatData = useCallback(
     (data: string | undefined): string => (data ? data : "-"),
-    []
+    [],
   );
 
   const sanitizeHTML = useCallback((html: string) => {
@@ -99,10 +103,10 @@ const SeeAllStudents: React.FC = () => {
       const regex = new RegExp(`(${localSearchTerm})`, "gi");
       return text.replace(
         regex,
-        (match: string) => `<mark class="bg-yellow-300">${match}</mark>`
+        (match: string) => `<mark class="bg-yellow-300">${match}</mark>`,
       );
     },
-    [localSearchTerm]
+    [localSearchTerm],
   );
 
   const handleViewDetails = useCallback(
@@ -111,8 +115,89 @@ const SeeAllStudents: React.FC = () => {
         state: { firstName, lastName, studentId },
       });
     },
-    [navigate]
+    [navigate],
   );
+
+  const performDownload = useCallback(() => {
+    try {
+      if (!studentsData || studentsData.length === 0) {
+        alert("No data available to download");
+        setShouldDownload(false);
+        setIsDownloading(false);
+        return;
+      }
+
+      const excelData = studentsData.map((student: Student, index: number) => {
+        return {
+          "S/N": index + 1,
+          "Full Name": `${formatData(student?.profile?.lastName)} ${formatData(student?.profile?.firstName)}`,
+          "Email Address": formatData(student?.email),
+          "Phone Number": formatData(student?.phoneNumber),
+        };
+      });
+
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+      // Set column widths
+      const columnWidths = [
+        { wch: 8 }, // S/N
+        { wch: 30 }, // Full Name
+        { wch: 35 }, // Email Address
+        { wch: 20 }, // Phone Number
+      ];
+      worksheet["!cols"] = columnWidths;
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Students Report");
+
+      const currentDate = new Date().toISOString().split("T")[0];
+      const filename = `Students_Report_${currentDate}.xlsx`;
+
+      XLSX.writeFile(workbook, filename);
+
+      fetchApplications(originalPage, originalItemsPerPage);
+
+      setShouldDownload(false);
+      setIsDownloading(false);
+    } catch (error) {
+      console.error("Error downloading Excel:", error);
+      alert("Failed to download report. Please try again.");
+
+      fetchApplications(originalPage, originalItemsPerPage);
+      setShouldDownload(false);
+      setIsDownloading(false);
+    }
+  }, [
+    studentsData,
+    formatData,
+    fetchApplications,
+    originalPage,
+    originalItemsPerPage,
+  ]);
+
+  useEffect(() => {
+    if (shouldDownload && !loading && studentsData && studentsData.length > 0) {
+      performDownload();
+    }
+  }, [shouldDownload, loading, studentsData, performDownload]);
+
+  const handleDownloadExcel = async () => {
+    try {
+      setIsDownloading(true);
+
+      setOriginalPage(currentPage);
+      setOriginalItemsPerPage(itemsPerPage);
+
+      setShouldDownload(true);
+
+      await fetchApplications(1, 9999);
+    } catch (error) {
+      console.error("Error downloading Excel:", error);
+      alert("Failed to download report. Please try again.");
+      setShouldDownload(false);
+      setIsDownloading(false);
+    }
+  };
 
   const renderTableBody = useCallback(() => {
     if (loading) {
@@ -135,15 +220,15 @@ const SeeAllStudents: React.FC = () => {
             dangerouslySetInnerHTML={sanitizeHTML(
               highlightText(
                 `${formatData(student?.profile?.lastName)} ${formatData(
-                  student?.profile?.firstName
-                )}`
-              )
+                  student?.profile?.firstName,
+                )}`,
+              ),
             )}
           />
           <td
             className="py-[16px] px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
-              highlightText(student?.email)
+              highlightText(student?.email),
             )}
           />
           <td className="py-[16px] px-[24px]">
@@ -152,7 +237,7 @@ const SeeAllStudents: React.FC = () => {
                 handleViewDetails(
                   student?.id,
                   student?.profile?.firstName,
-                  student?.profile?.lastName
+                  student?.profile?.lastName,
                 )
               }
               className="text-primary-700 cursor-pointer font-[600] flex items-center gap-[8px]"
@@ -192,7 +277,50 @@ const SeeAllStudents: React.FC = () => {
       <header>
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Reports</h1>
-          <DownLoadButton applicationRef={contentRef} />
+          <button
+            onClick={handleDownloadExcel}
+            disabled={isDownloading}
+            className="flex items-center gap-2 rounded-full bg-primary-700 px-6 py-3 font-medium text-white transition-colors duration-300 hover:bg-primary-800 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isDownloading ? (
+              <>
+                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+                Downloading...
+              </>
+            ) : (
+              <>
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+                  />
+                </svg>
+                Download Report
+              </>
+            )}
+          </button>
         </div>
       </header>
       <div className="mt-[1.3em] h-auto w-full overflow-auto rounded-lg bg-white px-[1em] py-3 pb-[10em]">

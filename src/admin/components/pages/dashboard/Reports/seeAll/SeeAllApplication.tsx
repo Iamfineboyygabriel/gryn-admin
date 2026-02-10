@@ -2,11 +2,11 @@ import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 import DOMPurify from "dompurify";
 import { FiSearch } from "react-icons/fi";
+import * as XLSX from "xlsx";
 import transaction from "../../../../../../assets/svg/Transaction.svg";
 import CustomPagination from "../../../../../../shared/utils/customPagination";
 import { useAllApplication } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
 import { button } from "../../../../../../shared/buttons/Button";
-import { DownLoadButton } from "../../../../../../shared/downLoad/DownLoadButton";
 
 const SkeletonRow: React.FC = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -29,11 +29,14 @@ const SeeAllApplication: React.FC = () => {
     updateSortTerm,
     updateStatusTerm,
   } = useAllApplication();
-  console.log("applications", applications);
 
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [status, setStatus] = useState<string>("");
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [shouldDownload, setShouldDownload] = useState(false);
+  const [originalPage, setOriginalPage] = useState(1);
+  const [originalItemsPerPage, setOriginalItemsPerPage] = useState(10);
   const contentRef = useRef(null);
 
   const navigate = useNavigate();
@@ -42,17 +45,11 @@ const SeeAllApplication: React.FC = () => {
     navigate(-1);
   };
 
-  /*
-   FIX: Added missing dependencies
-  */
   useEffect(() => {
     updateSortTerm("desc");
     fetchApplications(1, itemsPerPage);
   }, [updateSortTerm, fetchApplications, itemsPerPage]);
 
-  /*
-   FIX: Added fetchApplications dependency
-  */
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchApplications(1, itemsPerPage);
@@ -128,6 +125,117 @@ const SeeAllApplication: React.FC = () => {
     if (!status) return "-";
     return status.replace(/_/g, " ");
   }, []);
+
+  const performDownload = useCallback(() => {
+    try {
+      // Format data for Excel
+      const excelData = applications.map((item: any, index: number) => {
+        const fullName = `${formatData(item?.lastName)} ${formatData(item?.middleName)} ${formatData(item?.firstName)}`;
+        const agentName = item?.agent?.profile
+          ? `${formatData(item?.agent?.profile?.firstName)} ${formatData(item?.agent?.profile?.lastName)}`
+          : "-";
+
+        const statusText =
+          item?.status === "SUBMITTED"
+            ? "In Progress"
+            : item?.status === "COMPLETED"
+              ? "Completed"
+              : "Declined";
+
+        return {
+          "S/N": index + 1,
+          "Full Name": fullName,
+          Phone: formatData(item?.phoneNumber),
+          Email: formatData(item?.email),
+          "Degree Type": formatData(item?.degree?.degreeType),
+          Course: formatData(item?.degree?.course),
+          Documents: formatData(item?.documents?.length),
+          "Assigned Agent": agentName,
+          "Application Status": formatStatus(item?.applicationStatus),
+          Status: statusText,
+        };
+      });
+
+      // Create worksheet
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+      // Set column widths
+      const columnWidths = [
+        { wch: 8 }, // S/N
+        { wch: 25 }, // Full Name
+        { wch: 15 }, // Phone
+        { wch: 30 }, // Email
+        { wch: 15 }, // Degree Type
+        { wch: 30 }, // Course
+        { wch: 12 }, // Documents
+        { wch: 25 }, // Assigned Agent
+        { wch: 20 }, // Application Status
+        { wch: 15 }, // Status
+      ];
+      worksheet["!cols"] = columnWidths;
+
+      // Create workbook
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Applications Report");
+
+      // Generate filename with current date
+      const currentDate = new Date().toISOString().split("T")[0];
+      const filename = `Applications_Report_${currentDate}.xlsx`;
+
+      // Download file
+      XLSX.writeFile(workbook, filename);
+
+      // Restore original pagination
+      fetchApplications(originalPage, originalItemsPerPage);
+
+      // Reset download state
+      setShouldDownload(false);
+      setIsDownloading(false);
+    } catch (error) {
+      console.error("Error downloading Excel:", error);
+      alert("Failed to download report. Please try again.");
+
+      // Restore original pagination on error
+      fetchApplications(originalPage, originalItemsPerPage);
+      setShouldDownload(false);
+      setIsDownloading(false);
+    }
+  }, [
+    applications,
+    formatData,
+    formatStatus,
+    fetchApplications,
+    originalPage,
+    originalItemsPerPage,
+  ]);
+
+  // Effect to trigger download when data is ready
+  useEffect(() => {
+    if (shouldDownload && !loading && applications && applications.length > 0) {
+      performDownload();
+    }
+  }, [shouldDownload, loading, applications, performDownload]);
+
+  const handleDownloadExcel = async () => {
+    try {
+      setIsDownloading(true);
+
+      // Store current pagination
+      setOriginalPage(currentPage);
+      setOriginalItemsPerPage(itemsPerPage);
+
+      // Set flag to trigger download after data loads
+      setShouldDownload(true);
+
+      // Fetch ALL applications
+      await fetchApplications(1, 9999);
+    } catch (error) {
+      console.error("Error downloading Excel:", error);
+      alert("Failed to download report. Please try again.");
+      setShouldDownload(false);
+      setIsDownloading(false);
+    }
+  };
 
   const renderTableBody = useCallback(() => {
     if (loading) {
@@ -244,7 +352,50 @@ const SeeAllApplication: React.FC = () => {
       <header>
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Reports</h1>
-          <DownLoadButton applicationRef={contentRef} />
+          <button
+            onClick={handleDownloadExcel}
+            disabled={isDownloading}
+            className="flex items-center gap-2 rounded-full bg-primary-700 px-6 py-3 font-medium text-white transition-colors duration-300 hover:bg-primary-800 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isDownloading ? (
+              <>
+                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+                Downloading...
+              </>
+            ) : (
+              <>
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+                  />
+                </svg>
+                Download Report
+              </>
+            )}
+          </button>
         </div>
       </header>
 

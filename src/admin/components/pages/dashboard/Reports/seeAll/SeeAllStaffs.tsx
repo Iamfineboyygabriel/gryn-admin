@@ -6,13 +6,13 @@ import React, {
   useRef,
 } from "react";
 import { FiSearch } from "react-icons/fi";
+import * as XLSX from "xlsx";
 import transaction from "../../../../../../assets/svg/Transaction.svg";
 import { useNavigate } from "react-router-dom";
 import DOMPurify from "dompurify";
 import { button } from "../../../../../../shared/buttons/Button";
 import CustomPagination from "../../../../../../shared/utils/customPagination";
 import { useAllStaffForSuperAdmin } from "../../../../../../shared/redux/hooks/admin/getAdminProfile";
-import { DownLoadButton } from "../../../../../../shared/downLoad/DownLoadButton";
 
 const SkeletonRow = () => (
   <tr className="animate-pulse border-b border-gray-200">
@@ -35,6 +35,10 @@ const AllStaff = () => {
   } = useAllStaffForSuperAdmin();
 
   const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [shouldDownload, setShouldDownload] = useState(false);
+  const [originalPage, setOriginalPage] = useState(1);
+  const [originalItemsPerPage, setOriginalItemsPerPage] = useState(10);
   const itemsPerPage = 10;
   const navigate = useNavigate();
   const handleBackClick = () => navigate(-1);
@@ -65,7 +69,7 @@ const AllStaff = () => {
     (event: React.ChangeEvent<unknown>, value: number) => {
       fetchAdmins(value, itemsPerPage);
     },
-    [fetchAdmins, itemsPerPage]
+    [fetchAdmins, itemsPerPage],
   );
 
   const escapeRegExp = useCallback((string: string) => {
@@ -79,10 +83,10 @@ const AllStaff = () => {
       const regex = new RegExp(`(${escapedQuery})`, "gi");
       return text.replace(
         regex,
-        (match: string) => `<mark class="bg-yellow-300">${match}</mark>`
+        (match: string) => `<mark class="bg-yellow-300">${match}</mark>`,
       );
     },
-    [escapeRegExp]
+    [escapeRegExp],
   );
 
   const sanitizeHTML = useCallback((html: string) => {
@@ -110,8 +114,89 @@ const AllStaff = () => {
         state: { staffEmail },
       });
     },
-    [navigate]
+    [navigate],
   );
+
+  const performDownload = useCallback(() => {
+    try {
+      if (!admins?.data || admins.data.length === 0) {
+        alert("No data available to download");
+        setShouldDownload(false);
+        setIsDownloading(false);
+        return;
+      }
+
+      // Format data for Excel
+      const excelData = admins.data.map((admin: any, index: number) => {
+        return {
+          "S/N": index + 1,
+          "Full Name": `${admin?.profile?.lastName} ${admin?.profile?.firstName}`,
+          Role: formatData(admin?.role),
+          "Email Address": formatData(admin?.email),
+          "Phone Number": formatData(admin?.phoneNumber),
+        };
+      });
+
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+      const columnWidths = [
+        { wch: 8 }, // S/N
+        { wch: 30 }, // Full Name
+        { wch: 25 }, // Role
+        { wch: 35 }, // Email Address
+        { wch: 20 }, // Phone Number
+      ];
+      worksheet["!cols"] = columnWidths;
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Staff Report");
+
+      const currentDate = new Date().toISOString().split("T")[0];
+      const filename = `Staff_Report_${currentDate}.xlsx`;
+
+      XLSX.writeFile(workbook, filename);
+
+      fetchAdmins(originalPage, originalItemsPerPage);
+
+      setShouldDownload(false);
+      setIsDownloading(false);
+    } catch (error) {
+      console.error("Error downloading Excel:", error);
+      alert("Failed to download report. Please try again.");
+
+      fetchAdmins(originalPage, originalItemsPerPage);
+      setShouldDownload(false);
+      setIsDownloading(false);
+    }
+  }, [admins, formatData, fetchAdmins, originalPage, originalItemsPerPage]);
+
+  // Effect to trigger download when data is ready
+  useEffect(() => {
+    if (shouldDownload && !loading && admins?.data && admins.data.length > 0) {
+      performDownload();
+    }
+  }, [shouldDownload, loading, admins, performDownload]);
+
+  const handleDownloadExcel = async () => {
+    try {
+      setIsDownloading(true);
+
+      // Store current pagination
+      setOriginalPage(currentPage);
+      setOriginalItemsPerPage(itemsPerPage);
+
+      // Set flag to trigger download after data loads
+      setShouldDownload(true);
+
+      // Fetch ALL staff
+      await fetchAdmins(1, 9999);
+    } catch (error) {
+      console.error("Error downloading Excel:", error);
+      alert("Failed to download report. Please try again.");
+      setShouldDownload(false);
+      setIsDownloading(false);
+    }
+  };
 
   const renderTableBody = useCallback(() => {
     if (loading) {
@@ -134,8 +219,8 @@ const AllStaff = () => {
             dangerouslySetInnerHTML={sanitizeHTML(
               highlightText(
                 `${admin?.profile?.lastName} ${admin?.profile?.firstName}`,
-                localSearchTerm
-              )
+                localSearchTerm,
+              ),
             )}
           />
           <td className="py-[16px] whitespace-nowrap px-[24px]">
@@ -144,7 +229,7 @@ const AllStaff = () => {
           <td
             className="py-[16px] whitespace-nowrap px-[24px]"
             dangerouslySetInnerHTML={sanitizeHTML(
-              highlightText(formatData(admin?.email), localSearchTerm)
+              highlightText(formatData(admin?.email), localSearchTerm),
             )}
           />
           <td
@@ -184,7 +269,50 @@ const AllStaff = () => {
       <header>
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Reports</h1>
-          <DownLoadButton applicationRef={contentRef} />
+          <button
+            onClick={handleDownloadExcel}
+            disabled={isDownloading}
+            className="flex items-center gap-2 rounded-full bg-primary-700 px-6 py-3 font-medium text-white transition-colors duration-300 hover:bg-primary-800 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isDownloading ? (
+              <>
+                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+                Downloading...
+              </>
+            ) : (
+              <>
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+                  />
+                </svg>
+                Download Report
+              </>
+            )}
+          </button>
         </div>
       </header>
       <div className="mt-[1em] h-auto w-full overflow-auto rounded-lg bg-white px-[2em] py-3 pb-[10em]">

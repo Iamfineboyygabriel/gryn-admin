@@ -1,12 +1,8 @@
-import React, {
-  useState,
-  useMemo,
-  useCallback,
-  useRef,
-} from "react";
+import React, { useState, useMemo, useCallback, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FiSearch } from "react-icons/fi";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import * as XLSX from "xlsx";
 import {
   useBudgetFetch,
   useCurrentUser,
@@ -15,6 +11,7 @@ import {
   setSort,
   setMonth,
   setSearch,
+  getAllBudget,
 } from "../../../../../../../shared/redux/shared/slices/shareApplication.slices";
 import noData from "../../../../../../../assets/svg/Transaction.svg";
 import plus from "../../../../../../../assets/svg/plus.svg";
@@ -23,7 +20,6 @@ import Modal from "../../../../../../../shared/modal/Modal";
 import CustomPagination from "../../../../../../../shared/utils/customPagination";
 import BudgetPaymentReceiptResponse from "../../../../../../../shared/modal/BudgetPaymentReceiptResponse";
 import { AppDispatch } from "../../../../../../../shared/redux/store";
-import { DownLoadButton } from "../../../../../../../shared/downLoad/DownLoadButton";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -37,12 +33,17 @@ const Budgets: React.FC = () => {
   const [isApproveModalOpen, setApproveModalOpen] = useState(false);
   const [isReceiptModalOpen, setReceiptModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isDownloading, setIsDownloading] = useState(false);
   const contentRef = useRef(null);
 
   const { userDetails } = useCurrentUser();
   const isSuperAdmin = useMemo(
     () => userDetails?.data?.role === "SUPER_ADMIN",
-    [userDetails]
+    [userDetails],
+  );
+
+  const { sort, status, month, search } = useSelector(
+    (state: any) => state.shareApplication,
   );
 
   const { budgets, loading } = useBudgetFetch(currentPage, ITEMS_PER_PAGE);
@@ -53,7 +54,7 @@ const Budgets: React.FC = () => {
         setCurrentPage(newPage);
       }
     },
-    []
+    [],
   );
 
   const handleCloseApproveModal = () => {
@@ -154,13 +155,92 @@ const Budgets: React.FC = () => {
     return (
       budgetItems?.reduce(
         (sum: number, item: any) => sum + (item?.amount || 0),
-        0
+        0,
       ) || 0
     );
   };
 
   const formatAmount = (amount: number) => {
     return amount?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
+  const handleDownloadExcel = async () => {
+    try {
+      setIsDownloading(true);
+
+      // Fetch all budgets with current filters
+      const response = await dispatch(
+        getAllBudget({
+          page: 1,
+          limit: 9999, // Fetch all records
+          sort,
+          status,
+          month,
+          search,
+        }),
+      ).unwrap();
+
+      // Check if we have data
+      if (!response?.data || response.data.length === 0) {
+        alert("No data available to download");
+        return;
+      }
+
+      // Format data for Excel
+      const excelData = response.data.map((budget: any, index: number) => {
+        const totalAmount = calculateTotalAmount(budget?.BudgetItem);
+        const formattedDate = budget.updatedAt
+          ? new Date(budget.updatedAt)
+              .toLocaleString("en-GB", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                hour12: true,
+              })
+              .replace(",", "")
+              .toLowerCase()
+          : "-";
+
+        return {
+          "S/N": index + 1,
+          Amount: totalAmount > 0 ? `NGN ${formatAmount(totalAmount)}` : "-",
+          Location: budget.location || "-",
+          "Date & Time": formattedDate,
+          Status: getStatusText(budget.status),
+        };
+      });
+
+      // Create worksheet
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+      // Set column widths
+      const columnWidths = [
+        { wch: 8 }, // S/N
+        { wch: 20 }, // Amount
+        { wch: 30 }, // Location
+        { wch: 25 }, // Date & Time
+        { wch: 15 }, // Status
+      ];
+      worksheet["!cols"] = columnWidths;
+
+      // Create workbook
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Budgets Report");
+
+      // Generate filename with current date
+      const currentDate = new Date().toISOString().split("T")[0];
+      const filename = `Budgets_Report_${currentDate}.xlsx`;
+
+      // Download file
+      XLSX.writeFile(workbook, filename);
+    } catch (error) {
+      console.error("Error downloading Excel:", error);
+      alert("Failed to download report. Please try again.");
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -170,7 +250,50 @@ const Budgets: React.FC = () => {
       <header>
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Reports</h1>
-          <DownLoadButton applicationRef={contentRef} />
+          <button
+            onClick={handleDownloadExcel}
+            disabled={isDownloading}
+            className="flex items-center gap-2 rounded-full bg-primary-700 px-6 py-3 font-medium text-white transition-colors duration-300 hover:bg-primary-800 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isDownloading ? (
+              <>
+                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+                Downloading...
+              </>
+            ) : (
+              <>
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+                  />
+                </svg>
+                Download Report
+              </>
+            )}
+          </button>
         </div>
       </header>
       <header className="mt-[1em] h-auto w-full overflow-auto rounded-lg bg-white p-3 pb-[10em]">
@@ -283,14 +406,13 @@ const Budgets: React.FC = () => {
                     <td className="px-3 py-2 text-sm">
                       {budget.BudgetItem?.length > 0
                         ? `NGN ${formatAmount(
-                            calculateTotalAmount(budget?.BudgetItem)
+                            calculateTotalAmount(budget?.BudgetItem),
                           )}`
                         : "-"}
                     </td>
                     <td className="px-3 py-2 text-sm">
                       {budget.location || "-"}
                     </td>
-                    {/* <td className="px-3 py-2 text-sm">-</td> */}
                     <td className="px-3 py-2 text-sm">
                       {budget.updatedAt
                         ? new Date(budget.updatedAt)
@@ -309,7 +431,7 @@ const Budgets: React.FC = () => {
                     <td className="px-3 py-2">
                       <button
                         className={`mr-2 rounded-full px-3 py-2 ${getStatusStyle(
-                          budget.status
+                          budget.status,
                         )}`}
                       >
                         {getStatusText(budget.status)}

@@ -9,6 +9,27 @@ interface SalaryItem {
   id: number;
   receiptNo: string;
   status: string;
+  senderName: string;
+  salaryId: number | null;
+  invoiceId: number | null;
+  createdAt: string;
+  salary?: {
+    id: number;
+    paymentNo: string;
+    description: string;
+    amount: number;
+    status: string;
+    userId: string;
+    createdAt: string;
+    updatedAt: string;
+    user?: {
+      designation?: string;
+      profile?: {
+        firstName?: string;
+        lastName?: string;
+      };
+    };
+  };
   invoice?: {
     id: number;
     status: string;
@@ -65,7 +86,7 @@ const Transaction = () => {
     return (
       budgetItems?.reduce(
         (sum: number, item: any) => sum + (item?.amount || 0),
-        0
+        0,
       ) || 0
     );
   };
@@ -74,18 +95,28 @@ const Transaction = () => {
     return amount?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
+  const formatStatus = useCallback((status: string): string => {
+    const statusMap: { [key: string]: string } = {
+      MONEY_OUT: "Money Out",
+      MONEY_IN: "Money In",
+      PAID: "Paid",
+      PENDING: "Pending",
+      APPROVED: "Approved",
+      OPEN: "Open",
+      COMPLETED: "Completed",
+    };
+    return statusMap[status] || status;
+  }, []);
+
   useEffect(() => {
     fetchSalaries(currentPage, itemsPerPage, STATUS_COMPLETED);
   }, [fetchSalaries, currentPage]);
 
   const filteredAndSortedSalaries = useMemo(() => {
     if (!salaries || !Array?.isArray(salaries)) return [];
-    return salaries?.filter(
-      (item: SalaryItem) => item.invoice?.status === STATUS_COMPLETED
-    );
-  }, [salaries]);
 
-  const formatData = useCallback((data: any) => data || "-", []);
+    return salaries;
+  }, [salaries]);
 
   const getStatusColor = (status: string): string => {
     const statusColors = {
@@ -94,6 +125,8 @@ const Transaction = () => {
       APPROVED: "bg-pink-500 text-white",
       MONEY_OUT: "bg-red-500",
       MONEY_IN: "bg-green-500",
+      OPEN: "bg-blue-500",
+      COMPLETED: "bg-green-500",
     };
     return statusColors[status as keyof typeof statusColors] || "bg-gray-500";
   };
@@ -109,40 +142,35 @@ const Transaction = () => {
       return <EmptyState />;
     }
 
-    return filteredAndSortedSalaries.map((item: SalaryItem, index: number) => (
-      <tr
-        key={item.id}
-        className="text-sm text-grey-primary font-medium border-b border-gray-200"
-      >
-        <td className="whitespace-nowrap px-3 py-2">
-          {(currentPage - 1) * itemsPerPage + index + 1}
-        </td>
-        <td className="whitespace-nowrap px-3 py-2">{item?.receiptNo}</td>
-        <td className="whitespace-nowrap px-3 py-2">
-          {formatData(
-            item?.invoice?.item?.[0]?.amount
-              ? formatAmount(item?.invoice.item[0].amount)
-              : "-"
-          )}
-        </td>
-        <td className="whitespace-nowrap px-3 py-2">
-          <button
-            className={`mr-2 rounded-full px-3 text-sm py-1 text-white ${getStatusColor(
-              item?.status
-            )}`}
+    return filteredAndSortedSalaries
+      .slice(0, 5)
+      .map((item: SalaryItem, index: number) => {
+        // Get amount from either salary or invoice
+        const amount = item.salary?.amount || item.invoice?.item?.[0]?.amount;
+
+        return (
+          <tr
+            key={item.id}
+            className="text-sm text-grey-primary font-medium border-b border-gray-200"
           >
-            {item?.status}
-          </button>
-        </td>
-      </tr>
-    ));
-  }, [
-    filteredAndSortedSalaries,
-    currentPage,
-    itemsPerPage,
-    formatData,
-    loading,
-  ]);
+            <td className="whitespace-nowrap px-3 py-2">{index + 1}</td>
+            <td className="whitespace-nowrap px-3 py-2">{item?.receiptNo}</td>
+            <td className="whitespace-nowrap px-3 py-2">
+              {amount ? `NGN ${formatAmount(amount)}` : "-"}
+            </td>
+            <td className="whitespace-nowrap px-3 py-2">
+              <button
+                className={`mr-2 rounded-full px-3 text-sm py-1 text-white ${getStatusColor(
+                  item?.status,
+                )}`}
+              >
+                {formatStatus(item?.status)}
+              </button>
+            </td>
+          </tr>
+        );
+      });
+  }, [filteredAndSortedSalaries, loading, formatStatus]);
 
   const renderBudgetTable = () => (
     <table className="w-full mt-4 border-collapse">
@@ -156,22 +184,22 @@ const Transaction = () => {
       </thead>
       <tbody>
         {budgets?.data?.length ? (
-          budgets?.data?.map((budget: Budget, index: number) => (
+          budgets?.data?.slice(0, 5).map((budget: Budget, index: number) => (
             <tr className="border-b border-gray-200" key={budget?.id}>
               <td className="px-3 py-2 text-sm">{index + 1}</td>
               <td className="px-3 py-2 text-sm">
                 {budget?.BudgetItem?.length
-                  ? `${formatAmount(calculateTotalAmount(budget?.BudgetItem))}`
+                  ? `NGN ${formatAmount(calculateTotalAmount(budget?.BudgetItem))}`
                   : "-"}
               </td>
               <td className="px-3 py-2 text-sm">{budget?.location || "-"}</td>
               <td className="px-3 py-2">
                 <span
                   className={`rounded-full px-3 py-1 text-white text-sm ${getStatusColor(
-                    budget?.status
+                    budget?.status,
                   )}`}
                 >
-                  {budget?.status || "-"}
+                  {formatStatus(budget?.status)}
                 </span>
               </td>
             </tr>
